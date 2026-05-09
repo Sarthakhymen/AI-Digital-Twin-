@@ -1,4 +1,4 @@
-"""AI Conversation Service - Ultra-Concise Business Guardrails"""
+"""AI Conversation Service - Groq-Powered Ultra-Concise Business AI"""
 import os
 import httpx
 from typing import Dict, List
@@ -10,8 +10,12 @@ load_dotenv()
 
 class ConversationService:
     def __init__(self):
-        self.openai_key = os.getenv("OPENAI_API_KEY")
-        self.client = AsyncOpenAI(api_key=self.openai_key) if self.openai_key else None
+        self.groq_key = os.getenv("GROQ_API_KEY")
+        # Groq is OpenAI-compatible — just change base_url
+        self.client = AsyncOpenAI(
+            api_key=self.groq_key,
+            base_url="https://api.groq.com/openai/v1"
+        ) if self.groq_key else None
         self.modal_url = os.getenv("MODAL_WEB_URL", "https://sarthak2005shavarn--digital-twin-mistral-chat.modal.run")
 
     async def process_message(self, message: str, history: List[Dict], profile: Dict, style: Dict) -> Dict:
@@ -64,8 +68,8 @@ User: "address?" → "Shop No. 45, Block C, Connaught Place, New Delhi 📍"
 User: "who is PM of India?" → "Sorry, I can only help with {business_name} queries! 😊"
 """
         
-        # Use OpenAI if Key is available
-        if self.client and self.openai_key and "sk-" in self.openai_key:
+        # Use Groq if Key is available
+        if self.client and self.groq_key:
             messages = [{"role": "system", "content": system_prompt}]
             for msg in history[-5:]:
                 role_map = {"user": "user", "assistant": "assistant", "twin": "assistant"}
@@ -75,10 +79,10 @@ User: "who is PM of India?" → "Sorry, I can only help with {business_name} que
 
             try:
                 response = await self.client.chat.completions.create(
-                    model="gpt-3.5-turbo",
+                    model="llama-3.3-70b-versatile",
                     messages=messages,
                     temperature=0.3,
-                    max_tokens=150  # Hard limit — forces short replies
+                    max_tokens=200
                 )
                 ai_response = response.choices[0].message.content
                 return {
@@ -87,10 +91,10 @@ User: "who is PM of India?" → "Sorry, I can only help with {business_name} que
                     "timestamp": datetime.utcnow().isoformat()
                 }
             except Exception as e:
-                print("OpenAI Error:", e)
+                print("Groq Error:", e)
                 pass
 
-        # Fallback to Modal — also with strict prompt
+        # Fallback to Modal
         strict_message = f"""[STRICT RULES: You are {business_name}'s customer support. 
 Reply in MAX 2 sentences. Use bullet points for lists. 
 NEVER say "As an AI" or "As a Digital Twin". 
@@ -101,7 +105,7 @@ Customer: {message}"""
 
         payload = {
             "message": strict_message,
-            "history": history[-3:],  # Limit history too
+            "history": history[-3:],
             "personality": profile,
             "style": style,
             "enable_web_search": False
@@ -113,7 +117,6 @@ Customer: {message}"""
                 if response.status_code == 200:
                     data = response.json()
                     raw_response = data.get("response", "No response")
-                    # Truncate Modal response if too long (fallback safety)
                     if len(raw_response) > 300:
                         sentences = raw_response.split('. ')
                         raw_response = '. '.join(sentences[:2]) + '.'
