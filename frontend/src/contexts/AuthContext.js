@@ -51,6 +51,11 @@ export const AuthProvider = ({ children }) => {
     return response.data;
   };
 
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+  };
+
   const setAuthData = (data) => {
     localStorage.setItem('token', data.access_token);
     setUser(data.user);

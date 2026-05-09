@@ -30,26 +30,12 @@ const GoogleSignIn = ({ onLoginSuccess, onLoginError }) => {
     }
   };
 
-  if (!loaded) {
-    return (
-      <Button
-        fullWidth
-        variant="outlined"
-        disabled
-        startIcon={<GoogleIcon />}
-        sx={{ mt: 2 }}
-      >
-        Loading Google Sign-In...
-      </Button>
-    );
-  }
-
   return (
     <Box sx={{ mt: 2 }}>
       <Button
         fullWidth
         variant="outlined"
-        onClick={handleDirectGoogleLogin}
+        onClick={() => login()}
         startIcon={<GoogleIcon />}
         sx={{
           textTransform: 'none',
