@@ -1,5 +1,5 @@
 > **BrainSync Context Pumper** 🧠
-> Dynamically loaded for active file: `backend\.env` (Domain: **Config/Infrastructure**)
+> Dynamically loaded for active file: `frontend\.env` (Domain: **Config/Infrastructure**)
 
 ### 📐 Config/Infrastructure Conventions & Fixes
 - **[what-changed] 🟢 Edited backend/.env (28 changes, 10min)**: Active editing session on backend/.env.
