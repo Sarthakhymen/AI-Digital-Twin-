@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
-import { Button, Box, Typography, Avatar } from '@mui/material';
+import { Button, Box } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 
 const GoogleSignIn = ({ onLoginSuccess, onLoginError }) => {
