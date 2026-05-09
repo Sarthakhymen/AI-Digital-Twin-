@@ -1,9 +1,7 @@
 > **BrainSync Context Pumper** 🧠
-> Dynamically loaded for active file: `frontend\.env` (Domain: **Config/Infrastructure**)
+> Dynamically loaded for active file: `test2.html` (Domain: **Generic Logic**)
 
-### 📐 Config/Infrastructure Conventions & Fixes
-- **[what-changed] 🟢 Edited backend/.env (28 changes, 10min)**: Active editing session on backend/.env.
-28 content changes over 10 minutes.
+### 📐 Generic Logic Conventions & Fixes
 - **[problem-fix] problem-fix in .gitignore**: File updated (external): .gitignore
 
 Content summary (63 lines):

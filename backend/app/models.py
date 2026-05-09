@@ -59,6 +59,7 @@ class DigitalTwin(Base):
     # Relationships
     business = relationship("Business", back_populates="digital_twins")
     conversations = relationship("Conversation", back_populates="digital_twin", cascade="all, delete-orphan")
+    knowledge_documents = relationship("KnowledgeDocument", back_populates="digital_twin", cascade="all, delete-orphan")
 
 class Conversation(Base):
     __tablename__ = "conversations"
@@ -77,3 +78,33 @@ class Conversation(Base):
     
     # Relationships
     digital_twin = relationship("DigitalTwin", back_populates="conversations")
+
+class KnowledgeDocument(Base):
+    __tablename__ = "knowledge_documents"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    digital_twin_id = Column(Integer, ForeignKey("digital_twins.id"), nullable=False)
+    filename = Column(String(255), nullable=False)
+    file_type = Column(String(50), default="pdf")  # pdf, txt, etc.
+    file_size = Column(Integer, default=0)  # bytes
+    chunk_count = Column(Integer, default=0)
+    status = Column(String(50), default="processing")  # processing, ready, error
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    digital_twin = relationship("DigitalTwin", back_populates="knowledge_documents")
+    chunks = relationship("KnowledgeChunk", back_populates="document", cascade="all, delete-orphan")
+
+class KnowledgeChunk(Base):
+    __tablename__ = "knowledge_chunks"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    document_id = Column(Integer, ForeignKey("knowledge_documents.id"), nullable=False)
+    digital_twin_id = Column(Integer, ForeignKey("digital_twins.id"), nullable=False)
+    content = Column(Text, nullable=False)
+    chunk_index = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    document = relationship("KnowledgeDocument", back_populates="chunks")
+

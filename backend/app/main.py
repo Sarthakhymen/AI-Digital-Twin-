@@ -9,7 +9,7 @@ from fastapi.security import HTTPBearer
 from contextlib import asynccontextmanager
 
 from .database import engine, Base
-from .api import auth, businesses, digital_twins, analytics, dashboard, integrations, whatsapp
+from .api import auth, businesses, digital_twins, analytics, dashboard, integrations, whatsapp, knowledge
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -68,6 +68,7 @@ app.include_router(analytics.router, prefix="/api/v1")
 app.include_router(dashboard.router, prefix="/api/v1")
 app.include_router(integrations.router, prefix="/api/v1")
 app.include_router(whatsapp.router, prefix="/api/v1/whatsapp", tags=["whatsapp"])
+app.include_router(knowledge.router, prefix="/api/v1")
 
 if __name__ == "__main__":
     import uvicorn

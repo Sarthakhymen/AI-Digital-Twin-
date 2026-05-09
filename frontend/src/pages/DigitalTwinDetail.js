@@ -1,27 +1,74 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Box, Typography, Paper, Grid, Chip, Button, Card, CardContent,
-  List, ListItem, ListItemText, Divider
+  List, ListItem, ListItemText, Divider, LinearProgress, Alert,
+  IconButton, Snackbar
 } from '@mui/material';
-import { ArrowBack, PlayArrow, Pause, Edit } from '@mui/icons-material';
+import { ArrowBack, PlayArrow, Pause, Edit, CloudUpload, Delete, Description } from '@mui/icons-material';
 import api from '../services/api';
 
 const DigitalTwinDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef(null);
+  const [uploadStatus, setUploadStatus] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   const { data: twin, isLoading } = useQuery({
     queryKey: ['digital-twin', id],
     queryFn: () => api.get(`/digital-twins/${id}`).then(res => res.data),
   });
 
+  const { data: documents = [], isLoading: docsLoading } = useQuery({
+    queryKey: ['knowledge-docs', id],
+    queryFn: () => api.get(`/knowledge/${id}/documents`).then(res => res.data),
+  });
+
   const activateMutation = useMutation({
     mutationFn: () => api.post(`/digital-twins/${id}/activate`),
     onSuccess: () => queryClient.invalidateQueries(['digital-twin', id]),
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: (docId) => api.delete(`/knowledge/${id}/documents/${docId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['knowledge-docs', id]);
+      setSnackbar({ open: true, message: 'Document deleted!', severity: 'success' });
+    },
+  });
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setUploadStatus('uploading');
+    try {
+      const response = await api.post(`/knowledge/${id}/upload`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setUploadStatus('success');
+      setSnackbar({ open: true, message: `✅ ${response.data.message} (${response.data.chunks_created} chunks created)`, severity: 'success' });
+      queryClient.invalidateQueries(['knowledge-docs', id]);
+    } catch (error) {
+      setUploadStatus('error');
+      setSnackbar({ open: true, message: `❌ Upload failed: ${error.response?.data?.detail || error.message}`, severity: 'error' });
+    }
+    // Reset file input
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setTimeout(() => setUploadStatus(null), 3000);
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -118,8 +165,106 @@ const DigitalTwinDetail = () => {
           </Grid>
         </Grid>
       </Paper>
+
+      {/* ========== KNOWLEDGE BASE SECTION ========== */}
+      <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>📚 Knowledge Base</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Upload PDFs or text files to train your Digital Twin with business-specific knowledge.
+            </Typography>
+          </Box>
+          <Box>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept=".pdf,.txt"
+              style={{ display: 'none' }}
+            />
+            <Button
+              variant="contained"
+              startIcon={<CloudUpload />}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadStatus === 'uploading'}
+              sx={{ 
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                '&:hover': { background: 'linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%)' }
+              }}
+            >
+              {uploadStatus === 'uploading' ? 'Uploading...' : 'Upload Document'}
+            </Button>
+          </Box>
+        </Box>
+
+        {uploadStatus === 'uploading' && (
+          <Box sx={{ mb: 2 }}>
+            <LinearProgress sx={{ borderRadius: 2 }} />
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              Processing your document... Extracting text and creating knowledge chunks...
+            </Typography>
+          </Box>
+        )}
+
+        {docsLoading ? (
+          <LinearProgress />
+        ) : documents.length === 0 ? (
+          <Alert severity="info" sx={{ borderRadius: 2 }}>
+            No documents uploaded yet. Upload a PDF or TXT file to give your AI Twin specific business knowledge!
+          </Alert>
+        ) : (
+          <Box>
+            {documents.map((doc) => (
+              <Paper
+                key={doc.id}
+                variant="outlined"
+                sx={{
+                  p: 2, mb: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  borderRadius: 2, '&:hover': { bgcolor: '#f5f5f5' }
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Description color="primary" />
+                  <Box>
+                    <Typography variant="subtitle2">{doc.filename}</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {formatFileSize(doc.file_size)} • {doc.chunk_count} chunks • 
+                      <Chip 
+                        label={doc.status} 
+                        size="small" 
+                        color={doc.status === 'ready' ? 'success' : 'warning'} 
+                        sx={{ ml: 1, height: 20, fontSize: '11px' }} 
+                      />
+                    </Typography>
+                  </Box>
+                </Box>
+                <IconButton 
+                  color="error" 
+                  size="small" 
+                  onClick={() => deleteMutation.mutate(doc.id)}
+                  title="Delete document"
+                >
+                  <Delete />
+                </IconButton>
+              </Paper>
+            ))}
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              💡 Tip: The more detailed your documents, the better your AI Twin can answer customer questions!
+            </Typography>
+          </Box>
+        )}
+      </Paper>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={5000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        message={snackbar.message}
+      />
     </Box>
   );
 };
 
 export default DigitalTwinDetail;
+

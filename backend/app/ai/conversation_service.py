@@ -28,6 +28,18 @@ class ConversationService:
         business_desc = profile.get("business_description", "")
         twin_desc = profile.get("description", "")
         website = profile.get("business_website", "")
+        knowledge_base = profile.get("knowledge_base", "")
+        
+        # Build knowledge section
+        knowledge_section = ""
+        if business_desc:
+            knowledge_section += f"Business Description: {business_desc}\n"
+        if twin_desc:
+            knowledge_section += f"Twin Description: {twin_desc}\n"
+        if website:
+            knowledge_section += f"Website: {website}\n"
+        if knowledge_base:
+            knowledge_section += f"\n--- UPLOADED DOCUMENTS KNOWLEDGE ---\n{knowledge_base}\n"
         
         # Strict System Prompt to Prevent General Knowledge Queries
         system_prompt = f"""You are {twin_name}, the official Digital Twin and AI Assistant for {business_name}.
@@ -37,9 +49,7 @@ Tone: {tone}
 Language: {language}
 
 BUSINESS KNOWLEDGE (Use this to answer user queries):
-{business_desc}
-{twin_desc}
-Website: {website}
+{knowledge_section}
 
 CRITICAL RULES:
 1. YOU ARE STRICTLY A BUSINESS ASSISTANT FOR {business_name}.
@@ -47,6 +57,7 @@ CRITICAL RULES:
 3. If the user asks something outside the context of your business, reply: "I apologize, but I am specifically trained to help you with {business_name} related queries. I cannot answer general questions."
 4. Do not break character. Do not admit you are an AI model like ChatGPT.
 5. Base all your factual answers ONLY on the BUSINESS KNOWLEDGE provided above. If the answer is not in the knowledge, say you don't know and offer to connect them to a human agent.
+6. Be concise, friendly, and helpful regarding business queries.
 """
         
         # Use OpenAI if Key is available
