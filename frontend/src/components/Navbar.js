@@ -18,13 +18,19 @@ const Navbar = () => {
         <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
           AI Digital Twin Creator
         </Typography>
-        {user && (
+        {user ? (
           <Box>
-            <Button color="inherit" component={Link} to="/">Dashboard</Button>
+            <Button color="inherit" component={Link} to="/">Home</Button>
+            <Button color="inherit" component={Link} to="/dashboard">Dashboard</Button>
             <Button color="inherit" component={Link} to="/businesses">Businesses</Button>
             <Button color="inherit" component={Link} to="/analytics">Analytics</Button>
             <Button color="inherit" component={Link} to="/settings">Settings</Button>
             <Button color="inherit" onClick={handleLogout}>Logout</Button>
+          </Box>
+        ) : (
+          <Box>
+            <Button color="inherit" component={Link} to="/login">Login</Button>
+            <Button color="inherit" component={Link} to="/register">Register</Button>
           </Box>
         )}
       </Toolbar>
