@@ -254,6 +254,42 @@ async def get_widget_js(twin_id: int):
             opacity: 0.5;
             cursor: not-allowed;
         }}
+        #dt-mic-button {{
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid #d1d5db;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }}
+        #dt-mic-button:hover {{ background: #f3f4f6; }}
+        #dt-mic-button.recording {{
+            background: #ef4444;
+            border-color: #ef4444;
+            animation: dt-mic-pulse 1s infinite;
+        }}
+        #dt-mic-button.recording svg {{ stroke: white; }}
+        @keyframes dt-mic-pulse {{
+            0%, 100% {{ box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }}
+            50% {{ box-shadow: 0 0 0 8px rgba(239,68,68,0); }}
+        }}
+        .dt-speak-btn {{
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px;
+            margin-top: 4px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            display: inline-flex;
+        }}
+        .dt-speak-btn:hover {{ opacity: 1; }}
+        .dt-speak-btn.speaking {{ opacity: 1; color: #667eea; }}
     `;
     document.head.appendChild(style);
 
@@ -284,7 +320,10 @@ async def get_widget_js(twin_id: int):
                 <button class="dt-quick-btn" data-msg="Do you deliver?">🛵 Delivery</button>
             </div>
             <div id="dt-chat-input-container">
-                <input type="text" id="dt-chat-input" placeholder="Type your message..." />
+                <button id="dt-mic-button" title="Hold to speak">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                </button>
+                <input type="text" id="dt-chat-input" placeholder="Type or speak..." />
                 <button id="dt-send-button">Send</button>
             </div>
         </div>
@@ -320,9 +359,63 @@ async def get_widget_js(twin_id: int):
         const msgDiv = document.createElement('div');
         msgDiv.className = `dt-message ${{sender}}`;
         msgDiv.textContent = text;
+        // Add speaker icon to AI messages
+        if (sender === 'twin') {{
+            const speakBtn = document.createElement('button');
+            speakBtn.className = 'dt-speak-btn';
+            speakBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+            speakBtn.title = 'Listen';
+            speakBtn.onclick = () => {{ speakText(text, speakBtn); }};
+            msgDiv.appendChild(speakBtn);
+        }}
         messagesEl.insertBefore(msgDiv, typingEl);
         messagesEl.scrollTop = messagesEl.scrollHeight;
     }};
+
+    // Text-to-Speech
+    const speakText = (text, btn) => {{
+        if ('speechSynthesis' in window) {{
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            utterance.lang = 'en-IN';
+            btn.classList.add('speaking');
+            utterance.onend = () => {{ btn.classList.remove('speaking'); }};
+            window.speechSynthesis.speak(utterance);
+        }}
+    }};
+
+    // Speech-to-Text (Mic)
+    const micBtn = document.getElementById('dt-mic-button');
+    let recognition = null;
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {{
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRec();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-IN';
+
+        recognition.onresult = (event) => {{
+            const transcript = event.results[0][0].transcript;
+            input.value = transcript;
+            micBtn.classList.remove('recording');
+            sendMessage(transcript);
+        }};
+        recognition.onerror = () => {{ micBtn.classList.remove('recording'); }};
+        recognition.onend = () => {{ micBtn.classList.remove('recording'); }};
+
+        micBtn.addEventListener('click', () => {{
+            if (micBtn.classList.contains('recording')) {{
+                recognition.stop();
+            }} else {{
+                recognition.start();
+                micBtn.classList.add('recording');
+            }}
+        }});
+    }} else {{
+        micBtn.style.display = 'none';
+    }}
 
     const showTyping = () => {{
         typingEl.style.display = 'block';
@@ -341,10 +434,7 @@ async def get_widget_js(twin_id: int):
         input.value = '';
         input.disabled = true;
         sendBtn.disabled = true;
-        
-        // Hide quick replies after first message
         quickRepliesEl.style.display = 'none';
-        
         showTyping();
 
         try {{
@@ -355,16 +445,14 @@ async def get_widget_js(twin_id: int):
             }});
             const data = await response.json();
             hideTyping();
-            
             if (response.ok && data.response) {{
                 addMessage(data.response, 'twin');
             }} else {{
-                addMessage('Sorry, having trouble connecting right now.', 'twin');
+                addMessage('Sorry, having trouble connecting.', 'twin');
             }}
         }} catch (error) {{
             hideTyping();
-            console.error('Widget error:', error);
-            addMessage('Error connecting to server. Please try again.', 'twin');
+            addMessage('Error connecting to server.', 'twin');
         }} finally {{
             input.disabled = false;
             sendBtn.disabled = false;
@@ -377,7 +465,6 @@ async def get_widget_js(twin_id: int):
         if (e.key === 'Enter') sendMessage();
     }});
 
-    // Quick Reply Buttons
     document.querySelectorAll('.dt-quick-btn').forEach(btn => {{
         btn.addEventListener('click', () => {{
             sendMessage(btn.getAttribute('data-msg'));
