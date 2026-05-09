@@ -1,0 +1,39 @@
+# YE VALUES .env FILE MEIN ADD KAREIN
+=====================================
+
+# Google OAuth Credentials
+GOOGLE_CLIENT_ID=862245864245-2am2o9dcmlt60180hfaciq5bh01teas3.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-google-client-secret-yahan-dalein
+
+# Backend .env file mein ye lines add karein:
+# Database
+DATABASE_URL=sqlite:///./digital_twin.db
+
+# Redis
+REDIS_URL=redis://localhost:6379/0
+
+# Security
+SECRET_KEY=your-super-secret-key-change-this-in-production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# OpenAI
+OPENAI_API_KEY=sk-your-openai-api-key
+
+# Modal.com
+MODAL_TOKEN_ID=your-modal-token-id
+MODAL_TOKEN_SECRET=your-modal-token-secret
+
+# Google OAuth (APNA CLIENT ID DAL DIYA HAI)
+GOOGLE_CLIENT_ID=862245864245-2am2o9dcmlt60180hfaciq5bh01teas3.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=ab-yahan-apna-secret-dalein
+
+# Frontend URL
+FRONTEND_URL=http://localhost:3000
+
+# Environment
+ENVIRONMENT=development
+DEBUG=true
+
+# IMPORTANT: GOOGLE_CLIENT_SECRET ABHI MISSING HAI
+# Google Cloud Console se Client Secret copy karke yahan paste karein

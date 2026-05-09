@@ -1,0 +1,89 @@
+OAuth Setup Karne Ke Liye Values
+==================================
+
+GOOGLE OAUTH KEYS KAHAN SE MILEIN
+-----------------------------------
+
+1. **Google Cloud Console** jaayein:
+   https://console.cloud.google.com/
+
+2. **Project select** karein ya naya banayein
+
+3. **APIs enable** karein:
+   - Google+ API
+   - Google OAuth2 API
+
+4. **OAuth 2.0 Client ID** banayein:
+   - Credentials par click karein
+   - "Create Credentials" > "OAuth 2.0 Client ID"
+   - Application type: "Web application"
+   - Authorized redirect URIs:
+     * http://localhost:8000/api/v1/auth/google/callback
+     * https://your-domain.com/api/v1/auth/google/callback (production ke liye)
+
+5. **Client ID aur Secret** copy karein
+
+.ENV FILE MEIN KYA DALNA HAI
+----------------------------------
+```bash
+# backend/.env file mein ye values add karein:
+
+GOOGLE_CLIENT_ID=123456789-abcdef.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GOCSPX-abcdefghijklmnopqrstuvwxyz123456
+
+# Ye values Google Cloud se copy karke paste karein
+```
+
+EXAMPLE KEYS (REAL NAHI - SAMPLE HAI)
+--------------------------------------
+```bash
+GOOGLE_CLIENT_ID=123456789-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GOCSPX-123456789abcdefghijklmnopqrstuvwxyz
+```
+
+REDIRECT URI SETUP
+-----------------
+**Local Development:**
+http://localhost:8000/api/v1/auth/google/callback
+
+**Production:**
+https://your-app-domain.com/api/v1/auth/google/callback
+
+TESTING KEEN LIYE
+------------------
+1. Backend restart karein:
+```bash
+cd backend
+uvicorn app.main:app --reload
+```
+
+2. Frontend restart karein:
+```bash
+cd frontend
+npm start
+```
+
+3. Browser mein check karein:
+   - http://localhost:3000/login
+   - "Continue with Google" button test karein
+
+TROUBLESHOOTING
+---------------
+❌ Agar "invalid_client" error aa raha:
+   - Client ID check karein
+   - Redirect URI match kar rahi hai ya nahi
+
+❌ Agar "redirect_uri_mismatch" error aa raha:
+   - Google Cloud mein redirect URI check karein
+   - http://https:// properly set kiya hai ya nahi
+
+❌ Agar button load nahi ho raha:
+   - Frontend mein @react-oauth/google install kiya hai ya nahi
+   - Internet connection check karein
+
+PRODUCTION KE LIYE
+-----------------
+1. Custom domain add karein Google Cloud mein
+2. HTTPS redirect URI set karein
+3. Environment variables update karein
+4. SSL certificate ensure karein

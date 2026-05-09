@@ -1,7 +1,7 @@
 
 
 # Project Memory — AI-Digital-Twin-
-> 44 notes | Score threshold: >40
+> 49 notes | Score threshold: >40
 
 ## Safety — Never Run Destructive Commands
 
@@ -16,25 +16,22 @@
 - **ALWAYS** ask the user before running commands that modify system state, install packages, or make network requests.
 - When in doubt, **show the command first** and wait for approval.
 
-**Stack:** JavaScript/Python · FastAPI + React · DB: PostgreSQL, Redis, SQLAlchemy
+**Stack:** JavaScript/Python · FastAPI + React + Tailwind · DB: PostgreSQL, Redis, SQLAlchemy
 
-## 📝 NOTE: 1 uncommitted file(s) in working tree.\n\n## Active: `.`
+## 📝 NOTE: 1 uncommitted file(s) in working tree.\n\n## Active: `backend`
 
-- **convention in .gitignore**
-- **problem-fix in .gitignore**
-- **🟢 Edited test.html (28 changes, 1min)**
-- **🟢 Edited test2.html (29 changes, 6min)**
+- **🟢 Edited backend/.env (28 changes, 10min)**
 
 ## Project Standards
 
 - convention in .gitignore
+- Git Commit: Enhanced Home page with animations, GIF demos, and video mod — confirmed 3x
 - Version your API from day 1 (/api/v1/)
 - Use consistent response format across all endpoints
 - Implement soft delete for important data — don't hard delete without confirmation
 - Handle timezone correctly — store UTC, display in user's timezone
 - Make layouts responsive from the start — mobile-first approach
 - Disable submit button during form submission — prevent double-submit
-- Always add empty states ("No items yet" with call-to-action)
 
 ## Verified Best Practices
 

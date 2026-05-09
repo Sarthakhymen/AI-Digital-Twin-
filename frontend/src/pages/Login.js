@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Container, Paper, TextField, Button, Typography, Box, Alert, Link, IconButton, InputAdornment } from '@mui/material';
+import { Container, Paper, TextField, Button, Typography, Box, Alert, Link, IconButton, InputAdornment, Divider } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import GoogleSignIn from '../components/GoogleSignIn';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -83,13 +84,17 @@ const Login = () => {
         </Box>
         <Box sx={{ mt: 2, textAlign: 'center' }}>
           <Link component={RouterLink} to="/register">Don't have an account? Register</Link>
-          <br />
-          <Link component={RouterLink} to="/register" sx={{ mt: 1 }}>
-            <Typography variant="body2" color="primary">
-              Create new account
-            </Typography>
-          </Link>
         </Box>
+
+        <Divider sx={{ mt: 3, mb: 2 }}>OR</Divider>
+
+        <GoogleSignIn
+          onLoginSuccess={(data) => {
+            localStorage.setItem('token', data.access_token);
+            navigate('/dashboard');
+          }}
+          onLoginError={(error) => setError(error)}
+        />
       </Paper>
     </Container>
   );
