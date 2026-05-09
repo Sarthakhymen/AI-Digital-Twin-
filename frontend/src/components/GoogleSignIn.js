@@ -4,7 +4,7 @@ import { Button, Box } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 
 const GoogleSignIn = ({ onLoginSuccess, onLoginError }) => {
-  const { signIn, loaded } = useGoogleLogin({
+  const { loaded } = useGoogleLogin({
     onSuccess: (credentialResponse) => {
       // Send Google credential to backend
       handleGoogleLogin(credentialResponse);
