@@ -1,7 +1,6 @@
 import React from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { Button, Box } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
 
 import api from '../services/api';
 
@@ -36,7 +35,6 @@ const GoogleSignIn = ({ onLoginSuccess, onLoginError }) => {
         fullWidth
         variant="outlined"
         onClick={() => login()}
-        startIcon={<GoogleIcon />}
         sx={{
           textTransform: 'none',
           borderColor: '#dadce0',
