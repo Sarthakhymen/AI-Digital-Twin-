@@ -13,11 +13,30 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
+    if (!formData.email || !formData.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
     try {
-      await login(formData.email, formData.password);
-      navigate('/dashboard');
+      const result = await login(formData.email, formData.password);
+
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Login failed');
+      }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Login failed');
+      console.error('Login error:', err);
+      setError('Login failed. Please try again.');
     }
   };
 
@@ -64,6 +83,12 @@ const Login = () => {
         </Box>
         <Box sx={{ mt: 2, textAlign: 'center' }}>
           <Link component={RouterLink} to="/register">Don't have an account? Register</Link>
+          <br />
+          <Link component={RouterLink} to="/register" sx={{ mt: 1 }}>
+            <Typography variant="body2" color="primary">
+              Create new account
+            </Typography>
+          </Link>
         </Box>
       </Paper>
     </Container>

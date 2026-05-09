@@ -30,11 +30,20 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const response = await api.post('/auth/login', { email, password });
-    const { access_token, user } = response.data;
-    localStorage.setItem('token', access_token);
-    setUser(user);
-    return user;
+    try {
+      const response = await api.post('/auth/login', { email, password });
+
+      if (response.data.access_token && response.data.user) {
+        localStorage.setItem('token', response.data.access_token);
+        setUser(response.data.user);
+        return { success: true, user: response.data.user };
+      } else {
+        return { success: false, error: 'Invalid login response from server' };
+      }
+    } catch (error) {
+      console.error('AuthContext login error:', error);
+      return { success: false, error: error.response?.data?.detail || 'Login failed' };
+    }
   };
 
   const register = async (userData) => {
