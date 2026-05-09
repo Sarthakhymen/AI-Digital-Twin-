@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Play, 
-  ArrowRight, 
-  Sparkles, 
-  Zap, 
-  Shield, 
-  Globe, 
+import {
+  Play,
+  ArrowRight,
+  Zap,
+  Shield,
+  Globe,
   MessageSquare,
   BarChart3,
   ChevronRight,
@@ -15,8 +14,6 @@ import {
   Menu,
   Mic,
   Bot,
-  Clock,
-  Users,
   Layers,
   CheckCircle2,
   Star
@@ -25,20 +22,13 @@ import {
 // Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
   }
 };
 
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: { 
-    opacity: 1,
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
-  }
-};
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -51,14 +41,6 @@ const staggerContainer = {
   }
 };
 
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
-  }
-};
 
 // Navigation Component
 // Navigation Component
@@ -95,14 +77,13 @@ const Navigation = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled ? 'glass py-3' : 'bg-transparent py-5'
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'glass py-3' : 'bg-transparent py-5'
+          }`}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <motion.div 
+            <motion.div
               onClick={() => navigate('/')}
               className="flex items-center gap-2 group cursor-pointer"
               whileHover={{ scale: 1.02 }}
@@ -227,7 +208,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <motion.div 
+      <motion.div
         style={{ opacity }}
         className="relative z-10 max-w-5xl mx-auto px-6 text-center"
       >
@@ -247,7 +228,7 @@ const Hero = () => {
           </motion.div>
 
           {/* Headline */}
-          <motion.h1 
+          <motion.h1
             variants={fadeInUp}
             className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight"
           >
@@ -257,16 +238,16 @@ const Hero = () => {
           </motion.h1>
 
           {/* Subheadline */}
-          <motion.p 
+          <motion.p
             variants={fadeInUp}
             className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed"
           >
-            Create voice-enabled AI versions of yourself or your team. 
+            Create voice-enabled AI versions of yourself or your team.
             Handle customer conversations, meetings, and tasks—24/7, without lifting a finger.
           </motion.p>
 
           {/* CTAs */}
-          <motion.div 
+          <motion.div
             variants={fadeInUp}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
@@ -290,7 +271,7 @@ const Hero = () => {
           </motion.div>
 
           {/* Trust Indicators */}
-          <motion.div 
+          <motion.div
             variants={fadeInUp}
             className="pt-8 flex flex-col items-center gap-4"
           >
@@ -350,7 +331,7 @@ const DashboardPreview = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Dashboard Content */}
             <div className="p-8 bg-slate-900/50">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -517,7 +498,7 @@ const Features = () => {
               <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                 <feature.icon className="w-6 h-6 text-white" />
               </div>
-              
+
               {/* Content */}
               <h3 className="text-xl font-semibold text-white mb-3">
                 {feature.title}
@@ -560,7 +541,7 @@ const HowItWorks = () => {
     <section className="relative py-32 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-slate-900 to-dark-950" />
-      
+
       <div className="relative max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -590,7 +571,7 @@ const HowItWorks = () => {
               {i < 2 && (
                 <div className="hidden lg:block absolute top-12 left-full w-full h-px bg-gradient-to-r from-indigo-500/50 to-transparent" />
               )}
-              
+
               <div className="p-8 rounded-2xl glass border border-slate-700/50">
                 <span className="text-5xl font-bold text-slate-700">{step.number}</span>
                 <h3 className="mt-6 text-2xl font-semibold text-white">{step.title}</h3>
@@ -693,7 +674,7 @@ const CTA = () => {
           {/* Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-violet-600 to-rose-500" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-30" />
-          
+
           {/* Content */}
           <div className="relative text-center">
             <motion.h2
@@ -711,7 +692,7 @@ const CTA = () => {
               transition={{ delay: 0.1 }}
               className="text-lg text-white/80 max-w-2xl mx-auto mb-10"
             >
-              Join 10,000+ founders who never miss a conversation. 
+              Join 10,000+ founders who never miss a conversation.
               Start free, no credit card required.
             </motion.p>
             <motion.div
@@ -762,15 +743,15 @@ const Footer = () => {
       { name: 'Settings', action: () => navigate('/settings') }
     ],
     Resources: [
-      { name: 'Documentation', action: () => {} },
-      { name: 'API Reference', action: () => {} },
-      { name: 'Guides', action: () => {} },
-      { name: 'Support', action: () => {} }
+      { name: 'Documentation', action: () => { } },
+      { name: 'API Reference', action: () => { } },
+      { name: 'Guides', action: () => { } },
+      { name: 'Support', action: () => { } }
     ],
     Legal: [
-      { name: 'Privacy', action: () => {} },
-      { name: 'Terms', action: () => {} },
-      { name: 'Security', action: () => {} }
+      { name: 'Privacy', action: () => { } },
+      { name: 'Terms', action: () => { } },
+      { name: 'Security', action: () => { } }
     ]
   };
 
@@ -780,7 +761,7 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           {/* Logo Column */}
           <div className="col-span-2">
-            <div 
+            <div
               onClick={() => navigate('/')}
               className="flex items-center gap-2 mb-4 cursor-pointer"
             >
@@ -801,7 +782,7 @@ const Footer = () => {
               <ul className="space-y-3">
                 {items.map((item) => (
                   <li key={item.name}>
-                    <button 
+                    <button
                       onClick={item.action}
                       className="text-sm text-slate-500 hover:text-slate-300 transition-colors text-left"
                     >
@@ -817,21 +798,21 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-600">
-            © 2024 AI Digital Twin. All rights reserved.
+            &copy; 2024 AI Digital Twin. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <a href="#" className="text-slate-500 hover:text-slate-300 transition-colors">
+            <button className="text-slate-500 hover:text-slate-300 transition-colors">
               <span className="sr-only">Twitter</span>
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/></svg>
-            </a>
-            <a href="#" className="text-slate-500 hover:text-slate-300 transition-colors">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
+            </button>
+            <button className="text-slate-500 hover:text-slate-300 transition-colors">
               <span className="sr-only">GitHub</span>
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd"/></svg>
-            </a>
-            <a href="#" className="text-slate-500 hover:text-slate-300 transition-colors">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" /></svg>
+            </button>
+            <button className="text-slate-500 hover:text-slate-300 transition-colors">
               <span className="sr-only">LinkedIn</span>
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clipRule="evenodd"/></svg>
-            </a>
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clipRule="evenodd" /></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -845,10 +826,10 @@ const Home = () => {
     <div className="relative min-h-screen bg-dark-950">
       {/* Noise Overlay */}
       <div className="noise-overlay" />
-      
+
       {/* Navigation */}
       <Navigation />
-      
+
       {/* Main Content */}
       <main>
         <Hero />
@@ -858,7 +839,7 @@ const Home = () => {
         <Testimonials />
         <CTA />
       </main>
-      
+
       {/* Footer */}
       <Footer />
     </div>
