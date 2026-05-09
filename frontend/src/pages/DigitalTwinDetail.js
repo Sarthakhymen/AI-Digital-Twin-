@@ -108,12 +108,12 @@ const DigitalTwinDetail = () => {
             <Typography variant="h6" gutterBottom color="primary">Integrations</Typography>
             <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>Web Widget Snippet</Typography>
             <Paper variant="outlined" sx={{ p: 2, bgcolor: '#f8f9fa', fontFamily: 'monospace', fontSize: '12px' }}>
-              {`<script src="http://localhost:8000/api/v1/integrations/${id}/widget.js"></script>`}
+              {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js"></script>`}
             </Paper>
             
             <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>WhatsApp Webhook URL</Typography>
             <Paper variant="outlined" sx={{ p: 2, bgcolor: '#f8f9fa', fontFamily: 'monospace', fontSize: '12px' }}>
-              {`http://your-domain.com/api/v1/integrations/whatsapp/webhook`}
+              {`${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/whatsapp/webhook`}
             </Paper>
           </Grid>
         </Grid>
