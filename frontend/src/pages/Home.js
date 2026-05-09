@@ -260,7 +260,7 @@ const Home = () => {
           sx={{ 
             mt: 15, 
             position: 'relative',
-            '&:before': {{
+            '&:before': {
               content: '""',
               position: 'absolute',
               top: '-20%',
@@ -270,7 +270,7 @@ const Home = () => {
               background: 'radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)',
               zIndex: -1,
               filter: 'blur(50px)'
-            }}
+            }
           }}
         >
           <Box sx={{ 

@@ -20,7 +20,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="*" element={
+        <Route path="/*" element={
           <>
             <Navbar />
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
