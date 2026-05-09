@@ -393,14 +393,30 @@ async def get_widget_js(twin_id: int):
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SpeechRec();
         recognition.continuous = false;
-        recognition.interimResults = false;
+        recognition.interimResults = true;
         recognition.lang = 'en-IN';
 
         recognition.onresult = (event) => {{
-            const transcript = event.results[0][0].transcript;
-            input.value = transcript;
-            micBtn.classList.remove('recording');
-            sendMessage(transcript);
+            let interimTranscript = '';
+            let finalTranscript = '';
+
+            for (let i = event.resultIndex; i < event.results.length; ++i) {{
+                if (event.results[i].isFinal) {{
+                    finalTranscript += event.results[i][0].transcript;
+                }} else {{
+                    interimTranscript += event.results[i][0].transcript;
+                }}
+            }}
+
+            if (interimTranscript) {{
+                input.value = interimTranscript;
+            }}
+            
+            if (finalTranscript) {{
+                input.value = finalTranscript;
+                micBtn.classList.remove('recording');
+                sendMessage(finalTranscript);
+            }}
         }};
         recognition.onerror = () => {{ micBtn.classList.remove('recording'); }};
         recognition.onend = () => {{ micBtn.classList.remove('recording'); }};
@@ -409,8 +425,13 @@ async def get_widget_js(twin_id: int):
             if (micBtn.classList.contains('recording')) {{
                 recognition.stop();
             }} else {{
-                recognition.start();
-                micBtn.classList.add('recording');
+                input.value = '';
+                try {{
+                    recognition.start();
+                    micBtn.classList.add('recording');
+                }} catch (e) {{
+                    console.error(e);
+                }}
             }}
         }});
     }} else {{
