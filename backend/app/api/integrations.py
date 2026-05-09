@@ -61,7 +61,6 @@ async def get_widget_js(twin_id: int):
     return Response(content=f"""
 (function() {{
     const twinId = {twin_id};
-    // Use the production URL of the API
     const apiUrl = 'https://ai-digital-twin-2le9.onrender.com/api/v1';
 
     // Inject CSS
@@ -78,50 +77,68 @@ async def get_widget_js(twin_id: int):
             width: 60px;
             height: 60px;
             border-radius: 30px;
-            background: #2563eb;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
             border: none;
             outline: none;
         }}
         #dt-chat-button:hover {{
-            transform: scale(1.05);
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.5);
         }}
         #dt-chat-window {{
             display: none;
             position: absolute;
             bottom: 80px;
             right: 0;
-            width: 350px;
-            height: 500px;
+            width: 370px;
+            height: 520px;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
             flex-direction: column;
             overflow: hidden;
             border: 1px solid #e5e7eb;
         }}
         #dt-chat-header {{
-            background: #2563eb;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 16px;
+            padding: 16px 20px;
             font-weight: 600;
             font-size: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }}
+        #dt-header-info {{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }}
+        #dt-header-dot {{
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: dt-pulse 2s infinite;
+        }}
+        @keyframes dt-pulse {{
+            0%, 100% {{ opacity: 1; }}
+            50% {{ opacity: 0.5; }}
+        }}
         #dt-close-button {{
             cursor: pointer;
             background: none;
             border: none;
             color: white;
-            font-size: 20px;
+            font-size: 22px;
+            line-height: 1;
         }}
         #dt-chat-messages {{
             flex: 1;
@@ -129,27 +146,78 @@ async def get_widget_js(twin_id: int):
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             background: #f9fafb;
         }}
         .dt-message {{
-            max-width: 80%;
+            max-width: 82%;
             padding: 10px 14px;
-            border-radius: 12px;
+            border-radius: 16px;
             font-size: 14px;
-            line-height: 1.4;
+            line-height: 1.5;
+            white-space: pre-line;
         }}
         .dt-message.user {{
-            background: #2563eb;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             align-self: flex-end;
             border-bottom-right-radius: 4px;
         }}
         .dt-message.twin {{
-            background: #e5e7eb;
+            background: white;
             color: #111827;
             align-self: flex-start;
             border-bottom-left-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }}
+        #dt-quick-replies {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 0 16px 12px;
+            background: #f9fafb;
+        }}
+        .dt-quick-btn {{
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #374151;
+            white-space: nowrap;
+        }}
+        .dt-quick-btn:hover {{
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }}
+        #dt-typing {{
+            display: none;
+            align-self: flex-start;
+            padding: 10px 14px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+        }}
+        .dt-typing-dots {{
+            display: flex;
+            gap: 4px;
+        }}
+        .dt-typing-dots span {{
+            width: 6px;
+            height: 6px;
+            background: #9ca3af;
+            border-radius: 50%;
+            animation: dt-bounce 1.4s infinite;
+        }}
+        .dt-typing-dots span:nth-child(2) {{ animation-delay: 0.2s; }}
+        .dt-typing-dots span:nth-child(3) {{ animation-delay: 0.4s; }}
+        @keyframes dt-bounce {{
+            0%, 60%, 100% {{ transform: translateY(0); }}
+            30% {{ transform: translateY(-6px); }}
         }}
         #dt-chat-input-container {{
             padding: 12px;
@@ -160,26 +228,31 @@ async def get_widget_js(twin_id: int):
         }}
         #dt-chat-input {{
             flex: 1;
-            padding: 10px;
+            padding: 10px 16px;
             border: 1px solid #d1d5db;
-            border-radius: 20px;
+            border-radius: 24px;
             outline: none;
             font-size: 14px;
+            transition: border-color 0.2s;
         }}
         #dt-chat-input:focus {{
-            border-color: #2563eb;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102,126,234,0.15);
         }}
         #dt-send-button {{
-            background: #2563eb;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 20px;
-            padding: 0 16px;
+            border-radius: 24px;
+            padding: 0 18px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 14px;
+            transition: opacity 0.2s;
         }}
         #dt-send-button:disabled {{
-            background: #9ca3af;
+            opacity: 0.5;
+            cursor: not-allowed;
         }}
     `;
     document.head.appendChild(style);
@@ -190,11 +263,25 @@ async def get_widget_js(twin_id: int):
     container.innerHTML = `
         <div id="dt-chat-window">
             <div id="dt-chat-header">
-                <span>AI Assistant</span>
+                <div id="dt-header-info">
+                    <div id="dt-header-dot"></div>
+                    <span>AI Assistant</span>
+                </div>
                 <button id="dt-close-button">&times;</button>
             </div>
             <div id="dt-chat-messages">
-                <div class="dt-message twin">Hi! How can I help you today?</div>
+                <div class="dt-message twin">Hi! 👋 How can I help you today?</div>
+                <div id="dt-typing">
+                    <div class="dt-typing-dots"><span></span><span></span><span></span></div>
+                </div>
+            </div>
+            <div id="dt-quick-replies">
+                <button class="dt-quick-btn" data-msg="Show me the menu">📋 Menu</button>
+                <button class="dt-quick-btn" data-msg="What are your best dishes?">⭐ Best Sellers</button>
+                <button class="dt-quick-btn" data-msg="What are your prices?">💰 Pricing</button>
+                <button class="dt-quick-btn" data-msg="What is your address?">📍 Address</button>
+                <button class="dt-quick-btn" data-msg="What are your timings?">⏰ Hours</button>
+                <button class="dt-quick-btn" data-msg="Do you deliver?">🛵 Delivery</button>
             </div>
             <div id="dt-chat-input-container">
                 <input type="text" id="dt-chat-input" placeholder="Type your message..." />
@@ -217,6 +304,8 @@ async def get_widget_js(twin_id: int):
     const input = document.getElementById('dt-chat-input');
     const sendBtn = document.getElementById('dt-send-button');
     const messagesEl = document.getElementById('dt-chat-messages');
+    const typingEl = document.getElementById('dt-typing');
+    const quickRepliesEl = document.getElementById('dt-quick-replies');
 
     const toggleChat = () => {{
         isOpen = !isOpen;
@@ -231,18 +320,32 @@ async def get_widget_js(twin_id: int):
         const msgDiv = document.createElement('div');
         msgDiv.className = `dt-message ${{sender}}`;
         msgDiv.textContent = text;
-        messagesEl.appendChild(msgDiv);
+        messagesEl.insertBefore(msgDiv, typingEl);
         messagesEl.scrollTop = messagesEl.scrollHeight;
     }};
 
-    const sendMessage = async () => {{
-        const text = input.value.trim();
+    const showTyping = () => {{
+        typingEl.style.display = 'block';
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }};
+
+    const hideTyping = () => {{
+        typingEl.style.display = 'none';
+    }};
+
+    const sendMessage = async (text) => {{
+        if (!text) text = input.value.trim();
         if (!text) return;
 
         addMessage(text, 'user');
         input.value = '';
         input.disabled = true;
         sendBtn.disabled = true;
+        
+        // Hide quick replies after first message
+        quickRepliesEl.style.display = 'none';
+        
+        showTyping();
 
         try {{
             const response = await fetch(`${{apiUrl}}/integrations/${{twinId}}/chat`, {{
@@ -251,15 +354,17 @@ async def get_widget_js(twin_id: int):
                 body: JSON.stringify({{ message: text, session_id: sessionId }})
             }});
             const data = await response.json();
+            hideTyping();
             
             if (response.ok && data.response) {{
                 addMessage(data.response, 'twin');
             }} else {{
-                addMessage('Sorry, I am having trouble connecting right now.', 'twin');
+                addMessage('Sorry, having trouble connecting right now.', 'twin');
             }}
         }} catch (error) {{
+            hideTyping();
             console.error('Widget error:', error);
-            addMessage('Error connecting to the AI server.', 'twin');
+            addMessage('Error connecting to server. Please try again.', 'twin');
         }} finally {{
             input.disabled = false;
             sendBtn.disabled = false;
@@ -267,9 +372,16 @@ async def get_widget_js(twin_id: int):
         }}
     }};
 
-    sendBtn.addEventListener('click', sendMessage);
+    sendBtn.addEventListener('click', () => sendMessage());
     input.addEventListener('keypress', (e) => {{
         if (e.key === 'Enter') sendMessage();
+    }});
+
+    // Quick Reply Buttons
+    document.querySelectorAll('.dt-quick-btn').forEach(btn => {{
+        btn.addEventListener('click', () => {{
+            sendMessage(btn.getAttribute('data-msg'));
+        }});
     }});
 }})();
     """, media_type="application/javascript")
