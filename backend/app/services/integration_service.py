@@ -43,9 +43,16 @@ class IntegrationService:
         history = conversation.messages if conversation.messages else []
         
         # 4. Generate AI response
-        # Ensure profile and style are dicts
         profile = twin.personality_profile if isinstance(twin.personality_profile, dict) else {}
         style = twin.communication_style if isinstance(twin.communication_style, dict) else {}
+        
+        # Add business info to profile
+        profile["name"] = twin.name
+        profile["description"] = twin.description or ""
+        if twin.business:
+            profile["business_name"] = twin.business.name
+            profile["business_description"] = twin.business.description or ""
+            profile["business_website"] = twin.business.website or ""
         
         ai_result = await conversation_service.process_message(
             message=message,
