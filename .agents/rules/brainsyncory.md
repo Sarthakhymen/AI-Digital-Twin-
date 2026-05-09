@@ -1,7 +1,7 @@
 
 
-# Project Memory — project
-> 33 notes | Score threshold: >40
+# Project Memory — AI-Digital-Twin-
+> 36 notes | Score threshold: >40
 
 ## Safety — Never Run Destructive Commands
 
@@ -17,6 +17,13 @@
 - When in doubt, **show the command first** and wait for approval.
 
 **Stack:** JavaScript/Python · FastAPI + React · DB: PostgreSQL, Redis, SQLAlchemy
+
+## 📝 NOTE: 1 uncommitted file(s) in working tree.\n\n## Active: `.`
+
+- **convention in .gitignore**
+- **problem-fix in .gitignore**
+- **🟢 Edited test.html (28 changes, 1min)**
+- **🟢 Edited test2.html (29 changes, 6min)**
 
 ## Project Standards
 

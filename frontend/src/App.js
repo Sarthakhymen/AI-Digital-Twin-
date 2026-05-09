@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Businesses from './pages/Businesses';
 import CreateTwin from './pages/CreateTwin';
@@ -16,6 +17,7 @@ function App() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="*" element={
@@ -23,7 +25,7 @@ function App() {
             <Navbar />
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
               <Routes>
-                <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/businesses" element={<ProtectedRoute><Businesses /></ProtectedRoute>} />
                 <Route path="/create-twin" element={<ProtectedRoute><CreateTwin /></ProtectedRoute>} />
                 <Route path="/twins/:id" element={<ProtectedRoute><DigitalTwinDetail /></ProtectedRoute>} />
