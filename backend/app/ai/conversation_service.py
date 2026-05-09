@@ -1,4 +1,4 @@
-"""AI Conversation Service - Strict Business Guardrails"""
+"""AI Conversation Service - Ultra-Concise Business Guardrails"""
 import os
 import httpx
 from typing import Dict, List
@@ -19,10 +19,6 @@ class ConversationService:
         
         business_name = profile.get("business_name", profile.get("name", "our business"))
         twin_name = profile.get("name", "AI Assistant")
-        role = profile.get("role", "Customer Support")
-        traits = profile.get("traits", "helpful and professional")
-        tone = style.get("tone", "polite")
-        language = style.get("language", "English")
         
         # Knowledge Base Info
         business_desc = profile.get("business_description", "")
@@ -33,37 +29,45 @@ class ConversationService:
         # Build knowledge section
         knowledge_section = ""
         if business_desc:
-            knowledge_section += f"Business Description: {business_desc}\n"
+            knowledge_section += f"{business_desc}\n"
         if twin_desc:
-            knowledge_section += f"Twin Description: {twin_desc}\n"
+            knowledge_section += f"{twin_desc}\n"
         if website:
             knowledge_section += f"Website: {website}\n"
         if knowledge_base:
-            knowledge_section += f"\n--- UPLOADED DOCUMENTS KNOWLEDGE ---\n{knowledge_base}\n"
+            knowledge_section += f"\n{knowledge_base}\n"
         
-        # Strict System Prompt — Concise, Human-like Behavior
-        system_prompt = f"""You are {twin_name}, a friendly customer support representative for {business_name}.
-Tone: {tone}
-Language: {language}
+        system_prompt = f"""You are a friendly human staff member at {business_name}. Your name is {twin_name}.
 
-BUSINESS KNOWLEDGE (INTERNAL — DO NOT DUMP THIS TO USER):
+INTERNAL KNOWLEDGE (NEVER show this raw data to user):
 {knowledge_section}
 
-BEHAVIORAL RULES (FOLLOW STRICTLY):
-1. GREETINGS: When user says hi/hello/hey, reply with a SHORT friendly greeting (1 sentence max). Example: "Hi! Welcome to {business_name}. How can I help you today?" — NOTHING MORE.
-2. CONCISE ANSWERS: Keep every reply under 2-3 sentences. Only give detailed info if the user SPECIFICALLY asks for it.
-3. NEVER DUMP INFORMATION: Do NOT list menus, prices, or policies unless the user explicitly asks. For example, if user says "hello", do NOT list the menu.
-4. ANSWER ONLY WHAT IS ASKED: If user asks "what is butter chicken price?", reply ONLY with the price. Do not add recommendations, side dishes, or extra info unless asked.
-5. BUSINESS ONLY: If user asks general knowledge (news, coding, politics, etc.), reply: "Sorry, I can only help with {business_name} related questions!"
-6. STAY IN CHARACTER: Never say you are ChatGPT, OpenAI, or an AI model. You are a human representative of {business_name}.
-7. UNKNOWN ANSWERS: If the answer is not in your knowledge, say: "I'm not sure about that. Let me connect you with our team — you can call us at our number or visit our website."
-8. NO ESSAYS: Never write paragraphs. Use short, WhatsApp-style replies. Think of yourself as replying on WhatsApp, not writing an email.
+STRICT RESPONSE FORMAT RULES:
+- MAXIMUM 2 sentences per reply. NEVER exceed this.
+- When user says hi/hello → Reply ONLY: "Hi! Welcome to {business_name} 👋 How can I help you?"
+- When listing items (food, prices, services) → Use bullet points, NOT paragraphs
+- NEVER say "As an AI" or "As a Digital Twin" or "I am programmed to" — you are a HUMAN staff member
+- NEVER repeat business history/background unless specifically asked "tell me about your restaurant"
+- If asked "best food" → List 3-4 items with prices in bullet points. Nothing else.
+- If asked "address/location" → Give ONLY the address. One line.
+- If asked "price of X" → Give ONLY the price. Example: "Butter Chicken is ₹399!"
+- For general/off-topic questions → "Sorry, I can only help with {business_name} queries! 😊"
+- NEVER start response with long introductions. Get straight to the answer.
+- Use emojis sparingly (1-2 max per message) to feel friendly
+- Think: you're texting on WhatsApp, not writing an email
+
+EXAMPLES OF GOOD RESPONSES:
+User: "hi" → "Hi! Welcome to {business_name} 👋 How can I help?"
+User: "butter chicken price?" → "Butter Chicken is ₹399! 🍗"
+User: "best dishes?" → "Our top picks:\n• Butter Chicken - ₹399\n• Dal Makhani - ₹299\n• Roomali Roti - ₹89\nWant to know more about any of these?"
+User: "address?" → "Shop No. 45, Block C, Connaught Place, New Delhi 📍"
+User: "who is PM of India?" → "Sorry, I can only help with {business_name} queries! 😊"
 """
         
         # Use OpenAI if Key is available
-        if self.client and "sk-" in self.openai_key:
+        if self.client and self.openai_key and "sk-" in self.openai_key:
             messages = [{"role": "system", "content": system_prompt}]
-            for msg in history[-5:]: # Only keep last 5 messages for context
+            for msg in history[-5:]:
                 role_map = {"user": "user", "assistant": "assistant", "twin": "assistant"}
                 role_val = role_map.get(msg.get("role", "user"), "user")
                 messages.append({"role": role_val, "content": msg.get("content", "")})
@@ -73,8 +77,8 @@ BEHAVIORAL RULES (FOLLOW STRICTLY):
                 response = await self.client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=messages,
-                    temperature=0.2, # Low temperature makes it strictly adhere to rules
-                    max_tokens=250
+                    temperature=0.3,
+                    max_tokens=150  # Hard limit — forces short replies
                 )
                 ai_response = response.choices[0].message.content
                 return {
@@ -84,13 +88,20 @@ BEHAVIORAL RULES (FOLLOW STRICTLY):
                 }
             except Exception as e:
                 print("OpenAI Error:", e)
-                # Fallback to Modal if OpenAI fails
                 pass
 
-        # Fallback to Modal
+        # Fallback to Modal — also with strict prompt
+        strict_message = f"""[STRICT RULES: You are {business_name}'s customer support. 
+Reply in MAX 2 sentences. Use bullet points for lists. 
+NEVER say "As an AI" or "As a Digital Twin". 
+NEVER give long paragraphs. Be short like WhatsApp messages.
+If off-topic, say "Sorry, I only help with {business_name} queries!"]
+
+Customer: {message}"""
+
         payload = {
-            "message": f"[SYSTEM: STRICT RULE - You are {business_name}'s assistant. Deny any general knowledge/news questions.]\nUser: {message}",
-            "history": history,
+            "message": strict_message,
+            "history": history[-3:],  # Limit history too
             "personality": profile,
             "style": style,
             "enable_web_search": False
@@ -101,9 +112,14 @@ BEHAVIORAL RULES (FOLLOW STRICTLY):
                 response = await client.post(self.modal_url, json=payload)
                 if response.status_code == 200:
                     data = response.json()
+                    raw_response = data.get("response", "No response")
+                    # Truncate Modal response if too long (fallback safety)
+                    if len(raw_response) > 300:
+                        sentences = raw_response.split('. ')
+                        raw_response = '. '.join(sentences[:2]) + '.'
                     return {
                         "success": True,
-                        "response": data.get("response", "No response"),
+                        "response": raw_response,
                         "timestamp": datetime.utcnow().isoformat()
                     }
                 else:
