@@ -9,7 +9,7 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const { login, setAuthData } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -90,7 +90,7 @@ const Login = () => {
 
         <GoogleSignIn
           onLoginSuccess={(data) => {
-            localStorage.setItem('token', data.access_token);
+            setAuthData(data);
             navigate('/dashboard');
           }}
           onLoginError={(error) => setError(error)}

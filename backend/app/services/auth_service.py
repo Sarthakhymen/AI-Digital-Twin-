@@ -73,6 +73,23 @@ def create_user(db: Session, user_data: UserCreate) -> User:
     db.refresh(db_user)
     return db_user
 
+def create_oauth_user(db: Session, user_data: dict) -> User:
+    """Create a new user from OAuth data"""
+    db_user = User(
+        email=user_data.get("email"),
+        full_name=user_data.get("full_name"),
+        oauth_provider=user_data.get("oauth_provider"),
+        oauth_id=user_data.get("oauth_id"),
+        profile_picture=user_data.get("profile_picture"),
+        is_verified=user_data.get("is_verified", True),
+        is_active=True
+    )
+    
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     """Authenticate user with email and password"""
     user = get_user_by_email(db, email)

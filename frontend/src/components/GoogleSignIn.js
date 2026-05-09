@@ -3,45 +3,31 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { Button, Box } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 
+import api from '../services/api';
+
 const GoogleSignIn = ({ onLoginSuccess, onLoginError }) => {
-  const { loaded } = useGoogleLogin({
-    onSuccess: (credentialResponse) => {
-      // Send Google credential to backend
-      handleGoogleLogin(credentialResponse);
-    },
-    onError: () => {
-      onLoginError('Google login failed');
-    },
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => handleGoogleLogin(codeResponse),
+    onError: (error) => onLoginError('Google login failed: ' + error.error_description),
     flow: 'auth-code',
   });
 
-  const handleGoogleLogin = async (credentialResponse) => {
+  const handleGoogleLogin = async (codeResponse) => {
     try {
-      // Option 1: Send credential to backend
-      const response = await fetch('/api/v1/auth/google', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          credential: credentialResponse.credential,
-        }),
+      // Send auth code to backend to exchange for token
+      const response = await api.post('/auth/google', {
+        code: codeResponse.code,
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        onLoginSuccess(data);
+      if (response.data.access_token) {
+        onLoginSuccess(response.data);
       } else {
-        throw new Error('Backend authentication failed');
+        onLoginError('Backend authentication failed');
       }
     } catch (error) {
-      onLoginError('Authentication failed');
+      console.error('Google login error:', error);
+      onLoginError(error.response?.data?.detail || 'Authentication failed');
     }
-  };
-
-  const handleDirectGoogleLogin = () => {
-    // Option 2: Redirect to Google OAuth
-    window.location.href = '/api/v1/auth/google';
   };
 
   if (!loaded) {

@@ -9,7 +9,7 @@ from fastapi.security import HTTPBearer
 from contextlib import asynccontextmanager
 
 from .database import engine, Base
-from .api import auth, businesses, digital_twins, analytics, dashboard, integrations, whatsapp, knowledge
+from .api import auth, businesses, digital_twins, analytics, dashboard, integrations, whatsapp, knowledge, google_auth
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -62,6 +62,7 @@ def health_check():
 
 # Include API routers with /api/v1 prefix
 app.include_router(auth.router, prefix="/api/v1")
+app.include_router(google_auth.router, prefix="/api/v1")
 app.include_router(businesses.router, prefix="/api/v1")
 app.include_router(digital_twins.router, prefix="/api/v1")
 app.include_router(analytics.router, prefix="/api/v1")

@@ -20,16 +20,22 @@ const Register = () => {
     e.preventDefault();
     try {
       await register(formData);
-      await login(formData.email, formData.password);
-      navigate('/');
+      const result = await login(formData.email, formData.password);
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Login failed after registration');
+      }
     } catch (err) {
+      console.error('Registration error:', err);
       const detail = err.response?.data?.detail;
       if (Array.isArray(detail)) {
         setError(detail[0].msg);
       } else if (typeof detail === 'string') {
         setError(detail);
       } else {
-        setError('Connection failed. Please check if backend is running on port 8000.');
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api/v1';
+        setError(`Connection failed to ${apiUrl}. Please ensure the backend is running.`);
       }
     }
   };
