@@ -5,9 +5,7 @@ import {
   Container, 
   Typography, 
   Grid, 
-  Stack, 
-  useTheme,
-  IconButton
+  Stack
 } from '@mui/material';
 import { 
   motion, 
@@ -20,14 +18,11 @@ import {
   MessageSquare, 
   Mic, 
   ShieldCheck, 
-  ArrowRight,
   Play,
-  Globe,
   Cpu
 } from 'lucide-react';
 
 const MotionBox = motion(Box);
-const MotionTypography = motion(Typography);
 
 const FeatureCard = ({ icon: Icon, title, desc, delay }) => (
   <MotionBox
@@ -85,7 +80,6 @@ const Home = () => {
   const navigate = useNavigate();
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   return (
     <Box sx={{ 
