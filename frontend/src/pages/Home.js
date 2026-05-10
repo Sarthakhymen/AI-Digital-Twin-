@@ -16,7 +16,8 @@ import {
   Bot,
   Layers,
   CheckCircle2,
-  Star
+  Star,
+  Check
 } from 'lucide-react';
 
 // Animation variants
@@ -57,7 +58,7 @@ const Navigation = () => {
 
   const navLinks = [
     { name: 'Product', href: '#features', type: 'scroll' },
-    { name: 'Solutions', href: '#solutions', type: 'scroll' },
+    { name: 'Pricing', href: '#pricing', type: 'scroll' },
     { name: 'Dashboard', href: '/dashboard', type: 'route' },
     { name: 'Analytics', href: '/analytics', type: 'route' }
   ];
@@ -252,21 +253,22 @@ const Hero = () => {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <motion.button
-              onClick={() => navigate('/register')}
+              onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Sales Inquiry"}
               className="group px-8 py-4 bg-white text-slate-900 rounded-xl font-semibold text-base hover:bg-slate-100 transition-all duration-200 flex items-center gap-2"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              Start Building Free
+              Contact for Sales
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </motion.button>
             <motion.button
+              onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Demo Request"}
               className="group px-8 py-4 glass-light text-white rounded-xl font-semibold text-base hover:bg-white/10 transition-all duration-200 flex items-center gap-2"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               <Play className="w-4 h-4 fill-current" />
-              Watch Demo
+              Request a Demo
             </motion.button>
           </motion.div>
 
@@ -658,6 +660,93 @@ const Testimonials = () => {
   );
 };
 
+// Pricing Section
+const Pricing = () => {
+  return (
+    <section id="pricing" className="relative py-32 bg-slate-900/20 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent" />
+      
+      <div className="relative max-w-7xl mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-20"
+        >
+          <span className="text-sm font-semibold text-indigo-400 tracking-wider uppercase">Enterprise Ready</span>
+          <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-white">
+            Tailored solutions for
+            <br />
+            <span className="gradient-text">high-impact teams</span>
+          </h2>
+          <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
+            We don't do generic plans. We build custom AI architectures designed to scale your personal or business brand.
+          </p>
+        </motion.div>
+
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="p-12 rounded-3xl border border-indigo-500/30 bg-slate-800/40 backdrop-blur-sm relative overflow-hidden"
+          >
+            {/* Background Glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px]" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h3 className="text-3xl font-bold text-white mb-6">Enterprise Suite</h3>
+                <ul className="space-y-4 mb-8">
+                  {[
+                    "Unlimited Digital Twins & Agents",
+                    "Custom Knowledge Base Architecture",
+                    "Dedicated High-Performance Compute",
+                    "WhatsApp, Slack & Phone Integrations",
+                    "White-label Dashboard Options",
+                    "24/7 Priority VIP Support"
+                  ].map((feature) => (
+                    <li key={feature} className="flex items-center gap-3 text-slate-300">
+                      <Check className="w-5 h-5 text-indigo-400 flex-shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="flex flex-col gap-4">
+                <div className="p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 text-center">
+                  <p className="text-sm text-indigo-300 font-medium mb-1 uppercase tracking-wider">Starting at</p>
+                  <p className="text-4xl font-bold text-white">Custom</p>
+                  <p className="text-xs text-slate-500 mt-2">Billed annually or monthly</p>
+                </div>
+                
+                <motion.button
+                  onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Enterprise Inquiry"}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-xl font-bold shadow-xl shadow-indigo-500/20"
+                >
+                  Contact for Sales
+                </motion.button>
+                
+                <motion.button
+                  onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Demo Request"}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-4 bg-white/5 text-white border border-white/10 rounded-xl font-bold hover:bg-white/10 transition-all"
+                >
+                  Request a Demo
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 // CTA Section
 const CTA = () => {
   const navigate = useNavigate();
@@ -683,7 +772,7 @@ const CTA = () => {
               viewport={{ once: true }}
               className="text-4xl md:text-5xl font-bold text-white mb-6"
             >
-              Ready to clone yourself?
+              Ready to scale yourself?
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -692,8 +781,8 @@ const CTA = () => {
               transition={{ delay: 0.1 }}
               className="text-lg text-white/80 max-w-2xl mx-auto mb-10"
             >
-              Join 10,000+ founders who never miss a conversation.
-              Start free, no credit card required.
+              Join elite creators and businesses using AI Digital Twins.
+              Custom architectures tailored to your specific needs.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -703,20 +792,20 @@ const CTA = () => {
               className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
               <motion.button
-                onClick={() => navigate('/register')}
+                onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Enterprise Inquiry"}
                 className="px-8 py-4 bg-white text-indigo-600 rounded-xl font-semibold hover:bg-slate-100 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Get Started Free
+                Contact for Sales
               </motion.button>
               <motion.button
-                onClick={() => navigate('/login')}
+                onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Demo Request"}
                 className="px-8 py-4 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-colors backdrop-blur-sm"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Sign In
+                Request a Demo
               </motion.button>
             </motion.div>
           </div>
@@ -837,6 +926,7 @@ const Home = () => {
         <Features />
         <HowItWorks />
         <Testimonials />
+        <Pricing />
         <CTA />
       </main>
 
