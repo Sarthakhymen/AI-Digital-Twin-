@@ -798,7 +798,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-600">
-            &copy; 2024 AI Digital Twin. All rights reserved.
+            &copy; 2026 AI Digital Twin. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <button className="text-slate-500 hover:text-slate-300 transition-colors">

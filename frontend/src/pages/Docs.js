@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Book, Code, HelpCircle, LifeBuoy, Search, ExternalLink, ChevronRight } from 'lucide-react';
+import { Book, Code, HelpCircle, LifeBuoy, Search, ChevronRight } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import LandingNavbar from '../components/LandingNavbar';
 
