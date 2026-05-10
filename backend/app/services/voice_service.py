@@ -2,7 +2,6 @@ import os
 import asyncio
 import edge_tts
 from deepgram import DeepgramClient
-from deepgram.models.listen import PrerecordedOptions
 import google.generativeai as genai
 from dotenv import load_dotenv
 
@@ -23,17 +22,27 @@ class VoiceService:
     async def transcribe_audio(self, audio_content):
         """Sunne wala kaam (Speech-to-Text)"""
         try:
-            options = PrerecordedOptions(
-                model="nova-2",
-                language="hi", # Primary Hindi but Nova-2 handles English too
-                smart_format=True,
-            )
+            # Using dictionary for options to be safe across v3 versions
+            options = {
+                "model": "nova-2",
+                "language": "hi",
+                "smart_format": True,
+            }
             
             payload = {"buffer": audio_content}
+            
+            # Use the synchronous transcribe_file but we can wrap it if needed
+            # In v3, listen.prerecorded.v("1").transcribe_file is standard
             response = self.deepgram.listen.prerecorded.v("1").transcribe_file(payload, options)
             
-            transcript = response.results.channels[0].alternatives[0].transcript
-            return transcript
+            # Extract transcript safely
+            if hasattr(response, 'results'):
+                transcript = response.results.channels[0].alternatives[0].transcript
+                return transcript
+            else:
+                # Handle case where response is a dict
+                return response['results']['channels'][0]['alternatives'][0]['transcript']
+                
         except Exception as e:
             print(f"Deepgram Error: {e}")
             return None
