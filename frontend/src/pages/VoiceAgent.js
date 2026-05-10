@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, MicOff, Volume2, Square, MessageSquare, History, Sparkles } from 'lucide-react';
+import { Mic, Square, History, Sparkles } from 'lucide-react';
 import axios from 'axios';
-import { Box, Typography, IconButton, Paper, Avatar } from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
