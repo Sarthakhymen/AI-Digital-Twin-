@@ -1,7 +1,7 @@
 
 
 # Project Memory — AI-Digital-Twin-
-> 52 notes | Score threshold: >40
+> 56 notes | Score threshold: >40
 
 ## Safety — Never Run Destructive Commands
 
@@ -18,7 +18,7 @@
 
 **Stack:** JavaScript/Python · FastAPI + React + Tailwind · DB: PostgreSQL, Redis, SQLAlchemy
 
-## Active: `backend`
+## 📝 NOTE: 1 uncommitted file(s) in working tree.\n\n## Active: `backend`
 
 - **🟢 Edited backend/.env (28 changes, 10min)**
 

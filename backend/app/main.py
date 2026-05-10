@@ -10,9 +10,48 @@ from contextlib import asynccontextmanager
 
 from .database import engine, Base
 from .api import auth, businesses, digital_twins, analytics, dashboard, integrations, whatsapp, knowledge, google_auth
+from sqlalchemy import text
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
+
+def run_migrations():
+    """Run simple migrations to update database schema"""
+    print("Running migrations...")
+    try:
+        with engine.begin() as conn:
+            # List of columns to check/add
+            columns = [
+                ("oauth_provider", "VARCHAR(50)"),
+                ("oauth_id", "VARCHAR(255)"),
+                ("profile_picture", "VARCHAR(500)")
+            ]
+            
+            for col_name, col_type in columns:
+                try:
+                    if "sqlite" not in str(engine.url):
+                        # PostgreSQL specific check and add
+                        conn.execute(text(f"""
+                            DO $$
+                            BEGIN
+                                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                                             WHERE table_name='users' AND column_name='{col_name}') THEN
+                                    ALTER TABLE users ADD COLUMN {col_name} {col_type};
+                                END IF;
+                            END
+                            $$;
+                        """))
+                    else:
+                        # SQLite simple add (will fail if exists, which we catch)
+                        conn.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"))
+                except Exception as e:
+                    # Ignore errors (column likely already exists)
+                    pass
+    except Exception as e:
+        print(f"Migration error: {e}")
+
+# Run migrations on startup
+run_migrations()
 
 # Security
 security = HTTPBearer()

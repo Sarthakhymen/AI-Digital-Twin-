@@ -1,7 +1,7 @@
 
 
 # Project Memory — AI-Digital-Twin-
-> 52 notes | Score threshold: >40
+> 56 notes | Score threshold: >40
 
 ## Safety — Never Run Destructive Commands
 
