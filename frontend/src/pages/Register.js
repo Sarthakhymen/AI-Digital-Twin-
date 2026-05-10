@@ -22,7 +22,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const { user, loading, register, login } = useAuth();
+  const { user, loading, register, login, setAuthData } = useAuth();
 
   useEffect(() => {
     if (!loading && user) {
