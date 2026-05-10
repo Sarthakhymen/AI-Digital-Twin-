@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, FileText, Lock, ChevronRight } from 'lucide-react';
+import { Shield, FileText, Lock } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import LandingNavbar from '../components/LandingNavbar';
 
