@@ -10,16 +10,19 @@ import { useAuth } from '../contexts/AuthContext';
 import GoogleSignIn from '../components/GoogleSignIn';
 
 const Register = () => {
+  const theme = useTheme();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    full_name: '',
     email: '',
     password: '',
-    full_name: '',
-    phone: ''
+    confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const { user, loading, register, login, setAuthData } = useAuth();
+  const { user, loading, register, login } = useAuth();
 
   useEffect(() => {
     if (!loading && user) {

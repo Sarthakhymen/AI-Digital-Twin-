@@ -10,6 +10,8 @@ import { useAuth } from '../contexts/AuthContext';
 import GoogleSignIn from '../components/GoogleSignIn';
 
 const Login = () => {
+  const theme = useTheme();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
