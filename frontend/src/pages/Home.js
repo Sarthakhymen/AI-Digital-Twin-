@@ -743,15 +743,15 @@ const Footer = () => {
       { name: 'Settings', action: () => navigate('/settings') }
     ],
     Resources: [
-      { name: 'Documentation', action: () => { } },
-      { name: 'API Reference', action: () => { } },
-      { name: 'Guides', action: () => { } },
-      { name: 'Support', action: () => { } }
+      { name: 'Documentation', action: () => navigate('/documentation') },
+      { name: 'API Reference', action: () => navigate('/api-reference') },
+      { name: 'Guides', action: () => navigate('/guides') },
+      { name: 'Support', action: () => navigate('/support') }
     ],
     Legal: [
-      { name: 'Privacy', action: () => { } },
-      { name: 'Terms', action: () => { } },
-      { name: 'Security', action: () => { } }
+      { name: 'Privacy', action: () => navigate('/privacy') },
+      { name: 'Terms', action: () => navigate('/terms') },
+      { name: 'Security', action: () => navigate('/security') }
     ]
   };
 

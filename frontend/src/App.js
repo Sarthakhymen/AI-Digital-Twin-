@@ -12,6 +12,8 @@ import CreateTwin from './pages/CreateTwin';
 import DigitalTwinDetail from './pages/DigitalTwinDetail';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
+import Legal from './pages/Legal';
+import Docs from './pages/Docs';
 
 function App() {
   return (
@@ -20,6 +22,16 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        
+        {/* Public Information Pages */}
+        <Route path="/privacy" element={<Legal />} />
+        <Route path="/terms" element={<Legal />} />
+        <Route path="/security" element={<Legal />} />
+        <Route path="/documentation" element={<Docs />} />
+        <Route path="/api-reference" element={<Docs />} />
+        <Route path="/guides" element={<Docs />} />
+        <Route path="/support" element={<Docs />} />
+
         <Route path="/*" element={
           <>
             <Navbar />
