@@ -24,8 +24,19 @@ const client = new Client({
         dataPath: './sessions'
     }),
     puppeteer: {
-        args: ['--no-sandbox'],
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-gpu'
+        ],
     }
+
 });
 
 // Socket.io connection
@@ -81,3 +92,9 @@ client.on('message', async (msg) => {
 
 // Start the client
 client.initialize();
+
+// Start the server
+server.listen(PORT, () => {
+    console.log(`🚀 WhatsApp Bridge Service running on http://localhost:${PORT}`);
+});
+
