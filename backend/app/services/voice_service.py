@@ -1,7 +1,8 @@
 import os
 import asyncio
 import edge_tts
-from deepgram import DeepgramClient, PrerecordedOptions
+from deepgram import DeepgramClient
+from deepgram.models.listen import PrerecordedOptions
 import google.generativeai as genai
 from dotenv import load_dotenv
 
