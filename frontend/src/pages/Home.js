@@ -186,7 +186,6 @@ const Navigation = () => {
 
 // Hero Section
 const Hero = () => {
-  const navigate = useNavigate();
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 150]);
   const y2 = useTransform(scrollY, [0, 500], [0, -100]);
@@ -749,7 +748,6 @@ const Pricing = () => {
 
 // CTA Section
 const CTA = () => {
-  const navigate = useNavigate();
 
   return (
     <section className="relative py-32 overflow-hidden">
