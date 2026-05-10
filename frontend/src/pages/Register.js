@@ -20,7 +20,6 @@ const Register = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, loading, register, login, setAuthData } = useAuth();
 
