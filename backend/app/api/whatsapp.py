@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Request, Form, Depends, HTTPException, Response
+from pydantic import BaseModel, Field
+
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
 import os
@@ -17,7 +19,40 @@ TWILIO_NUMBER = os.getenv("TWILIO_WHATSAPP_NUMBER")
 
 client = Client(TWILIO_SID, TWILIO_TOKEN)
 
+class WhatsAppRequest(BaseModel):
+    from_number: str = Field(alias="from")
+    body: str
+
+@router.post("/process")
+async def process_whatsapp_direct(request: WhatsAppRequest):
+    """
+    Direct endpoint for WhatsApp QR Bridge (no Twilio).
+    """
+    print(f"Received direct message from {request.from_number}: {request.body}")
+    
+    try:
+        result = await conversation_service.process_message(
+            message=request.body,
+            history=[],
+            profile={
+                "name": "Sarthak's Digital Twin",
+                "role": "AI Business Assistant",
+                "traits": "Helpful, Professional, Energetic"
+            },
+            style={
+                "tone": "Casual but respectful",
+                "language": "Hindi-English Mix (Hinglish)"
+            }
+        )
+        
+        return {"response": result.get("response", "Sorry, something went wrong.")}
+
+    except Exception as e:
+        print(f"Error in direct WhatsApp process: {e}")
+        return {"response": "I'm having a bit of a glitch. Can you say that again?"}
+
 @router.post("/webhook")
+
 async def whatsapp_webhook(
     Body: str = Form(...),
     From: str = Form(...)

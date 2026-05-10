@@ -8,6 +8,8 @@ import {
 } from '@mui/material';
 import { ArrowBack, PlayArrow, Pause, Edit, CloudUpload, Delete, Description } from '@mui/icons-material';
 import api from '../services/api';
+import WhatsAppScanner from '../components/WhatsAppScanner';
+
 
 const DigitalTwinDetail = () => {
   const { id } = useParams();
@@ -153,18 +155,18 @@ const DigitalTwinDetail = () => {
             <Divider sx={{ my: 3 }} />
             
             <Typography variant="h6" gutterBottom color="primary">Integrations</Typography>
-            <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>Web Widget Snippet</Typography>
+            
+            <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>WhatsApp Connection (Beta)</Typography>
+            <WhatsAppScanner twinId={id} />
+
+            <Typography variant="subtitle2" gutterBottom sx={{ mt: 4 }}>Web Widget Snippet</Typography>
             <Paper variant="outlined" sx={{ p: 2, bgcolor: '#f8f9fa', fontFamily: 'monospace', fontSize: '12px' }}>
               {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js"></script>`}
-            </Paper>
-            
-            <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>WhatsApp Webhook URL</Typography>
-            <Paper variant="outlined" sx={{ p: 2, bgcolor: '#f8f9fa', fontFamily: 'monospace', fontSize: '12px' }}>
-              {`${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/whatsapp/webhook`}
             </Paper>
           </Grid>
         </Grid>
       </Paper>
+
 
       {/* ========== KNOWLEDGE BASE SECTION ========== */}
       <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
