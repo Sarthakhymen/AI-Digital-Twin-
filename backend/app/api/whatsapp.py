@@ -1,110 +1,73 @@
 from fastapi import APIRouter, Request, Form, Depends, HTTPException, Response
-from pydantic import BaseModel, Field
-
-from twilio.twiml.messaging_response import MessagingResponse
-from twilio.rest import Client
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models import DigitalTwin
+from app.services.integration_service import integration_service
 import os
 import httpx
 from dotenv import load_dotenv
-from app.ai.conversation_service import conversation_service
 
 load_dotenv()
 
 router = APIRouter()
 
-# Twilio Client
-TWILIO_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_NUMBER = os.getenv("TWILIO_WHATSAPP_NUMBER")
-
-client = Client(TWILIO_SID, TWILIO_TOKEN)
-
-class WhatsAppRequest(BaseModel):
-    from_number: str = Field(alias="from")
-    body: str
-
 @router.post("/process")
-async def process_whatsapp_direct(request: WhatsAppRequest):
+async def process_whatsapp_direct(request: dict, db: Session = Depends(get_db)):
     """
     Direct endpoint for WhatsApp QR Bridge (no Twilio).
+    Expects {"from": "...", "body": "...", "twin_id": 123}
     """
-    print(f"Received direct message from {request.from_number}: {request.body}")
+    from_number = request.get("from")
+    body = request.get("body")
+    twin_id = request.get("twin_id")
     
-    try:
-        result = await conversation_service.process_message(
-            message=request.body,
-            history=[],
-            profile={
-                "name": "Sarthak's Digital Twin",
-                "role": "AI Business Assistant",
-                "traits": "Helpful, Professional, Energetic"
-            },
-            style={
-                "tone": "Casual but respectful",
-                "language": "Hindi-English Mix (Hinglish)"
-            }
-        )
-        
-        return {"response": result.get("response", "Sorry, something went wrong.")}
+    print(f"Received direct message from {from_number}: {body}")
+    
+    # If twin_id not provided, try to find the first active twin (MVP heuristic)
+    if not twin_id:
+        active_twin = db.query(DigitalTwin).filter(DigitalTwin.status == "active").order_by(DigitalTwin.id.desc()).first()
+        if not active_twin:
+            return {"response": "Sorry, no active digital twin found for this number."}
+        twin_id = active_twin.id
 
-    except Exception as e:
-        print(f"Error in direct WhatsApp process: {e}")
-        return {"response": "I'm having a bit of a glitch. Can you say that again?"}
+    result = await integration_service.process_public_message(
+        db=db,
+        twin_id=twin_id,
+        message=body,
+        customer_name="WhatsApp User",
+        session_id=from_number # Use phone number as session ID
+    )
+    
+    return {"response": result.get("response", "Sorry, something went wrong.")}
 
 @router.post("/webhook")
-
 async def whatsapp_webhook(
     Body: str = Form(...),
-    From: str = Form(...)
+    From: str = Form(...),
+    db: Session = Depends(get_db)
 ):
     """
     Webhook to receive WhatsApp messages from Twilio.
     """
     print(f"Received message from {From}: {Body}")
     
-    try:
-        # 1. Get response from our Digital Twin (Modal AI)
-        # For MVP, we use default personality traits
-        result = await conversation_service.process_message(
-            message=Body,
-            history=[], # We can add session memory later
-            profile={
-                "name": "Sarthak's Digital Twin",
-                "role": "AI Business Assistant",
-                "traits": "Helpful, Professional, Energetic"
-            },
-            style={
-                "tone": "Casual but respectful",
-                "language": "Hindi-English Mix (Hinglish)"
-            }
-        )
-        
-        ai_response = result.get("response", "Sorry, something went wrong.")
-        
-        # 2. Prepare Twilio Response
-        resp = MessagingResponse()
-        resp.message(ai_response)
-        
-        return Response(content=str(resp), media_type="application/xml")
+    # Heuristic: Find first active twin
+    active_twin = db.query(DigitalTwin).filter(DigitalTwin.status == "active").order_by(DigitalTwin.id.desc()).first()
+    if not active_twin:
+        return Response(content="<Response><Message>No active twin found.</Message></Response>", media_type="application/xml")
 
-    except Exception as e:
-        print(f"Error in WhatsApp webhook: {e}")
-        resp = MessagingResponse()
-        resp.message("Sorry, I'm having a little trouble thinking right now. Please try again in a bit!")
-        return Response(content=str(resp), media_type="application/xml")
-
-@router.get("/test-send")
-async def test_send(to: str, message: str):
-    """
-    Test endpoint to send a message manually.
-    Example: /test-send?to=whatsapp:+919876543210&message=Hello
-    """
-    try:
-        message = client.messages.create(
-            body=message,
-            from_=TWILIO_NUMBER,
-            to=to
-        )
-        return {"status": "success", "sid": message.sid}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+    result = await integration_service.process_public_message(
+        db=db,
+        twin_id=active_twin.id,
+        message=Body,
+        customer_name="WhatsApp User",
+        session_id=From
+    )
+    
+    ai_response = result.get("response", "Sorry, I'm having trouble thinking right now.")
+    
+    from twilio.twiml.messaging_response import MessagingResponse
+    resp = MessagingResponse()
+    resp.message(ai_response)
+    
+    return Response(content=str(resp), media_type="application/xml")

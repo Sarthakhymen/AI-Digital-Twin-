@@ -1,8 +1,9 @@
+import json
+import re
 from sqlalchemy.orm import Session
 from datetime import datetime
 from ..models import DigitalTwin, Conversation, KnowledgeChunk
 from ..ai.conversation_service import conversation_service
-import json
 
 class IntegrationService:
     async def process_public_message(self, db: Session, twin_id: int, message: str, customer_name: str = "Visitor", session_id: str = None):
@@ -52,6 +53,15 @@ class IntegrationService:
         
         # 5. KNOWLEDGE BASE RAG — Fetch relevant chunks
         knowledge_text = self._get_relevant_knowledge(db, twin_id, message)
+        
+        # DEBUG LOGS
+        print(f"--- AI DEBUG START ---")
+        print(f"Business: {profile.get('business_name')}")
+        print(f"Twin: {profile.get('name')}")
+        print(f"Message: {message}")
+        print(f"Knowledge Found: {'Yes' if knowledge_text else 'No'} ({len(knowledge_text)} chars)")
+        print(f"--- AI DEBUG END ---")
+
         if knowledge_text:
             profile["knowledge_base"] = knowledge_text
         
@@ -78,10 +88,10 @@ class IntegrationService:
             "success": ai_result["success"]
         }
     
-    def _get_relevant_knowledge(self, db: Session, twin_id: int, query: str, max_chunks: int = 8) -> str:
+    def _get_relevant_knowledge(self, db: Session, twin_id: int, query: str, max_chunks: int = 5) -> str:
         """
         Fetch the most relevant knowledge chunks for a query.
-        Uses simple keyword matching for MVP.
+        Improved keyword matching for better RAG.
         """
         # Get ALL chunks for this twin
         all_chunks = db.query(KnowledgeChunk).filter(
@@ -91,22 +101,37 @@ class IntegrationService:
         if not all_chunks:
             return ""
         
-        # Simple keyword relevance scoring
-        query_words = set(query.lower().split())
-        scored_chunks = []
+        # Better keyword relevance scoring
+        stop_words = {'the', 'and', 'for', 'you', 'are', 'can', 'with', 'this', 'that', 'who', 'what', 'where', 'how', 'about', 'your'}
+        query_words = [w.lower() for w in re.findall(r'\w+', query) if len(w) > 2 and w.lower() not in stop_words]
         
+        # If query is too short or common (e.g. "hi"), use general business context
+        if not query_words:
+            # Return first 3 chunks as general context
+            general_chunks = [c.content for c in all_chunks[:3]]
+            return "\n---\n".join(general_chunks)
+
+        scored_chunks = []
         for chunk in all_chunks:
             chunk_lower = chunk.content.lower()
-            score = sum(1 for word in query_words if word in chunk_lower and len(word) > 2)
-            scored_chunks.append((score, chunk.content))
+            score = 0
+            for word in query_words:
+                if word in chunk_lower:
+                    score += 1
+                    # Bonus for exact match as separate word
+                    if f" {word} " in f" {chunk_lower} ":
+                        score += 2
+            
+            if score > 0:
+                scored_chunks.append((score, chunk.content))
         
-        # Sort by relevance score (highest first)
+        # Sort by relevance score
         scored_chunks.sort(key=lambda x: x[0], reverse=True)
         
-        # Take top chunks (mix of relevant + first few for general context)
+        # Take top chunks
         relevant = [c[1] for c in scored_chunks[:max_chunks]]
         
-        # If no keyword matches, still include some chunks for general knowledge
+        # Fallback: if no keyword matches, still include some chunks for general context
         if not relevant:
             relevant = [c.content for c in all_chunks[:max_chunks]]
         
