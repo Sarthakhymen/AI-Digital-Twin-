@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Book, Code, HelpCircle, LifeBuoy, Search, ExternalLink } from 'lucide-react';
+import { Book, Code, HelpCircle, LifeBuoy, Search, ExternalLink, ChevronRight } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import LandingNavbar from '../components/LandingNavbar';
 
@@ -15,69 +15,103 @@ const Docs = () => {
   const content = {
     documentation: {
       title: 'Documentation',
-      description: 'Everything you need to know about AI Twin.',
+      description: 'Comprehensive guides to build and manage your AI Digital Twin.',
       icon: <Book className="w-12 h-12 text-blue-500" />,
       categories: [
         {
           title: 'Getting Started',
-          items: ['Quick Start Guide', 'Account Setup', 'Creating Your First Twin', 'Best Practices']
+          items: [
+            { name: 'Platform Overview', desc: 'Understand the core concepts of AI Digital Twins.' },
+            { name: 'Quick Start Guide', desc: 'Create your first twin in less than 5 minutes.' },
+            { name: 'Account Setup', desc: 'Configure your profile and integration settings.' }
+          ]
         },
         {
-          title: 'Platform Features',
-          items: ['Knowledge Base', 'Voice Integration', 'Meeting Assistant', 'Analytics Dashboard']
+          title: 'Core Features',
+          items: [
+            { name: 'Knowledge Base', desc: 'Upload documents to train your twin with custom data.' },
+            { name: 'Voice & Chat', desc: 'Configure how your twin interacts via voice and text.' },
+            { name: 'Personalization', desc: 'Fine-tune your twin\'s personality and tone of voice.' }
+          ]
         },
         {
-          title: 'Advanced Usage',
-          items: ['Custom Personalities', 'Data Syncing', 'Enterprise Features', 'Security Configuration']
+          title: 'Advanced',
+          items: [
+            { name: 'Custom Integrations', desc: 'Connect AI Twin to your existing CRM or tools.' },
+            { name: 'Team Collaboration', desc: 'Manage multiple twins and team permissions.' },
+            { name: 'Analytics & Insights', desc: 'Track performance and interaction quality.' }
+          ]
         }
       ]
     },
     'api-reference': {
       title: 'API Reference',
-      description: 'Integrate AI Twin into your own applications.',
+      description: 'Developer tools to integrate AI Twin power into your apps.',
       icon: <Code className="w-12 h-12 text-purple-500" />,
       categories: [
         {
           title: 'Authentication',
-          items: ['API Keys', 'OAuth2 Flow', 'Token Management']
+          items: [
+            { name: 'API Key Management', desc: 'Generate and rotate secure access keys.' },
+            { name: 'Rate Limiting', desc: 'Understanding our API usage tiers and limits.' }
+          ]
         },
         {
-          title: 'Endpoints',
-          items: ['Twins API', 'Chat API', 'Training API', 'Analytics API']
+          title: 'Twin Management',
+          items: [
+            { name: 'Create Twin', desc: 'POST /v1/twins' },
+            { name: 'List Twins', desc: 'GET /v1/twins' },
+            { name: 'Update Training', desc: 'PATCH /v1/twins/:id/train' }
+          ]
         },
         {
-          title: 'SDKs',
-          items: ['JavaScript SDK', 'Python Client', 'React Hooks']
+          title: 'Interactions',
+          items: [
+            { name: 'Send Message', desc: 'POST /v1/chat/message' },
+            { name: 'Process Voice', desc: 'POST /v1/voice/process' }
+          ]
         }
       ]
     },
     guides: {
       title: 'Guides & Tutorials',
-      description: 'Step-by-step instructions for common tasks.',
+      description: 'Deep dives and practical examples for every use case.',
       icon: <HelpCircle className="w-12 h-12 text-orange-500" />,
       categories: [
         {
-          title: 'Video Tutorials',
-          items: ['Platform Overview', 'Training Your Twin', 'Embedding in Websites']
+          title: 'Build Guides',
+          items: [
+            { name: 'Customer Support Bot', desc: 'Set up a twin to handle 24/7 support queries.' },
+            { name: 'Personal Meeting Assistant', desc: 'Let your twin take notes and summarize meetings.' }
+          ]
         },
         {
-          title: 'Use Cases',
-          items: ['Customer Support', 'Personal Assistant', 'Knowledge Management']
+          title: 'Optimization',
+          items: [
+            { name: 'Improving Accuracy', desc: 'Tips for structuring your knowledge documents.' },
+            { name: 'Tone Consistency', desc: 'How to maintain a professional persona.' }
+          ]
         }
       ]
     },
     support: {
       title: 'Support Center',
-      description: 'We are here to help you succeed.',
+      description: 'Help is always available whenever you need it.',
       icon: <LifeBuoy className="w-12 h-12 text-pink-500" />,
       categories: [
         {
-          title: 'Helpful Resources',
-          items: ['Frequently Asked Questions', 'Community Forum', 'System Status']
+          title: 'Self-Help',
+          items: [
+            { name: 'FAQ', desc: 'Common questions and quick answers.' },
+            { name: 'Troubleshooting', desc: 'Solve common integration and training issues.' }
+          ]
         },
         {
-          title: 'Direct Support',
-          items: ['Contact Us', 'Live Chat', 'Schedule a Demo']
+          title: 'Contact',
+          items: [
+            { name: 'Email Support', desc: 'support@aitwin.com (Typical response < 2h)' },
+            { name: 'Live Chat', desc: 'Available for Pro and Enterprise users.' }
+          ]
         }
       ]
     }
@@ -127,16 +161,20 @@ const Docs = () => {
               transition={{ delay: idx * 0.1 }}
               className="p-8 rounded-3xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all group"
             >
-              <h3 className="text-xl font-bold text-white mb-6 flex items-center justify-between">
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center justify-between border-b border-slate-800 pb-4">
                 {category.title}
-                <ExternalLink className="w-4 h-4 text-slate-600 group-hover:text-indigo-400 transition-colors" />
               </h3>
-              <ul className="space-y-4">
+              <ul className="space-y-6">
                 {category.items.map(item => (
-                  <li key={item}>
-                    <button className="text-slate-400 hover:text-indigo-400 transition-colors flex items-center gap-2 group/item">
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-700 group-hover/item:bg-indigo-500 transition-colors" />
-                      {item}
+                  <li key={item.name}>
+                    <button className="text-left group/item w-full">
+                      <div className="flex items-center gap-2 text-indigo-400 font-medium mb-1 group-hover/item:text-indigo-300 transition-colors">
+                        {item.name}
+                        <ChevronRight className="w-4 h-4 opacity-0 group-hover/item:opacity-100 -translate-x-2 group-hover/item:translate-x-0 transition-all" />
+                      </div>
+                      <div className="text-sm text-slate-500 leading-snug">
+                        {item.desc}
+                      </div>
                     </button>
                   </li>
                 ))}
