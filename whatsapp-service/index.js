@@ -10,12 +10,21 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*", // In production, replace with your frontend URL
+        origin: "*",
         methods: ["GET", "POST"]
-    }
+    },
+    transports: ['websocket']
 });
 
-const PORT = process.env.WHATSAPP_SERVICE_PORT || 3001;
+app.get('/', (req, res) => {
+    res.send('WhatsApp Bridge is Running!');
+});
+
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', message: 'Bridge is alive' });
+});
+
+const PORT = process.env.PORT || 3001;
 const BACKEND_URL = process.env.BACKEND_URL || 'https://ai-digital-twin-2le9.onrender.com';
 
 
@@ -24,7 +33,7 @@ const client = new Client({
         dataPath: './sessions'
     }),
     puppeteer: {
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
+        headless: true,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -32,11 +41,9 @@ const client = new Client({
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--single-process',
             '--disable-gpu'
         ],
     }
-
 });
 
 // Socket.io connection
@@ -72,13 +79,28 @@ client.on('message', async (msg) => {
 
     console.log(`📩 Message from ${msg.from}: ${msg.body}`);
 
+    // 3. Command to manually stop AI for a chat
+    if (msg.body === '/stop') {
+        console.log('AI stopped for this chat by command');
+        return;
+    }
+
     try {
+        // 4. SMART FILTER: Only reply to UNSAVED numbers (New Customers)
+        // This prevents AI from replying to family/friends in your contacts
+        // const contact = await msg.getContact();
+        // if (contact.isMyContact) {
+        //     console.log('User is in contacts, skipping AI reply.');
+        //     return;
+        // }
+
         const response = await axios.post(`${BACKEND_URL}/api/v1/whatsapp/process`, {
             from: msg.from,
             body: msg.body
         });
 
         if (response.data && response.data.response) {
+
             msg.reply(response.data.response);
         }
     } catch (error) {

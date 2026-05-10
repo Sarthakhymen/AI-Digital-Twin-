@@ -19,6 +19,6 @@ services:
     plan: free # Change to starter if you need more RAM for Chrome
     envVars:
       - key: BACKEND_URL
-        value: https://ai-digital-twin-backend.onrender.com # Use internal or external URL
+        value: https://ai-digital-twin-2le9.onrender.com
       - key: WHATSAPP_SERVICE_PORT
         value: 3001

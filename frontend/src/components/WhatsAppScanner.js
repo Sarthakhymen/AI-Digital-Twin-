@@ -12,7 +12,10 @@ const WhatsAppScanner = ({ twinId }) => {
 
   useEffect(() => {
     // Connect to our WhatsApp Bridge Service
-    const socket = io(process.env.REACT_APP_WHATSAPP_SERVICE_URL || 'http://localhost:3001');
+    const socket = io(process.env.REACT_APP_WHATSAPP_SERVICE_URL || 'http://localhost:3001', {
+      transports: ['websocket'],
+      upgrade: false
+    });
 
     socket.on('connect', () => {
       console.log('Connected to WhatsApp service');

@@ -4,11 +4,8 @@
   "description": "WhatsApp Web Bridge for AI Digital Twin",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "postinstall": "puppeteer install"
+    "start": "node index.js"
   },
-
   "dependencies": {
     "whatsapp-web.js": "^1.23.0",
     "qrcode-terminal": "^0.12.0",
@@ -17,9 +14,5 @@
     "express": "^4.18.2",
     "socket.io": "^4.7.2",
     "puppeteer": "^21.5.0"
-  },
-
-  "devDependencies": {
-    "nodemon": "^3.0.1"
   }
 }
