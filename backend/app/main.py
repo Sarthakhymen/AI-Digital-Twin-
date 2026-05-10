@@ -95,7 +95,7 @@ def root():
     }
 
 # Health check endpoint
-@app.get("/health")
+@app.get("/health", methods=["GET", "HEAD"])
 def health_check():
     return {"status": "healthy"}
 
