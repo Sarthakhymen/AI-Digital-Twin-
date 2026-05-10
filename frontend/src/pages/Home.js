@@ -19,6 +19,7 @@ import {
   Star,
   Check
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 // Animation variants
 const fadeInUp = {
@@ -49,6 +50,7 @@ const Navigation = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { user, loading, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -59,8 +61,10 @@ const Navigation = () => {
   const navLinks = [
     { name: 'Product', href: '#features', type: 'scroll' },
     { name: 'Pricing', href: '#pricing', type: 'scroll' },
-    { name: 'Dashboard', href: '/dashboard', type: 'route' },
-    { name: 'Analytics', href: '/analytics', type: 'route' }
+    ...(user ? [
+      { name: 'Dashboard', href: '/dashboard', type: 'route' },
+      { name: 'Analytics', href: '/analytics', type: 'route' }
+    ] : [])
   ];
 
   const handleNavClick = (link) => {
@@ -114,22 +118,47 @@ const Navigation = () => {
 
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              <motion.button
-                onClick={() => navigate('/login')}
-                className="text-sm text-slate-300 hover:text-white transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Sign in
-              </motion.button>
-              <motion.button
-                onClick={() => navigate('/register')}
-                className="px-4 py-2 bg-white text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Get Started
-              </motion.button>
+              {loading ? (
+                <div className="h-10 w-24 bg-slate-800/50 animate-pulse rounded-lg" />
+              ) : user ? (
+                <>
+                  <motion.button
+                    onClick={() => navigate('/dashboard')}
+                    className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-lg text-sm font-medium hover:from-indigo-600 hover:to-violet-700 transition-all shadow-lg shadow-indigo-500/20"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Dashboard
+                  </motion.button>
+                  <motion.button
+                    onClick={logout}
+                    className="text-sm text-slate-400 hover:text-white transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Logout
+                  </motion.button>
+                </>
+              ) : (
+                <>
+                  <motion.button
+                    onClick={() => navigate('/login')}
+                    className="text-sm text-slate-300 hover:text-white transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Sign in
+                  </motion.button>
+                  <motion.button
+                    onClick={() => navigate('/register')}
+                    className="px-4 py-2 bg-white text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Get Started
+                  </motion.button>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -150,31 +179,52 @@ const Navigation = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 glass pt-20 px-6 md:hidden"
+            className="fixed inset-0 z-40 glass-dark pt-24 px-6 md:hidden"
           >
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-6">
               {navLinks.map((link) => (
                 <button
                   key={link.name}
                   onClick={() => { handleNavClick(link); setMobileMenuOpen(false); }}
-                  className="text-lg text-slate-300 hover:text-white py-2 text-left"
+                  className="text-xl text-slate-300 hover:text-white py-2 text-left font-medium"
                 >
                   {link.name}
                 </button>
               ))}
-              <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-slate-700">
-                <button
-                  onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}
-                  className="text-left text-lg text-slate-300 hover:text-white py-2"
-                >
-                  Sign in
-                </button>
-                <button
-                  onClick={() => { navigate('/register'); setMobileMenuOpen(false); }}
-                  className="w-full py-3 bg-white text-slate-900 rounded-lg font-medium"
-                >
-                  Get Started
-                </button>
+              <div className="flex flex-col gap-4 mt-6 pt-6 border-t border-slate-800">
+                {loading ? (
+                  <div className="h-12 w-full bg-slate-800 animate-pulse rounded-xl" />
+                ) : user ? (
+                  <>
+                    <button
+                      onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }}
+                      className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-xl font-semibold"
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      onClick={() => { logout(); setMobileMenuOpen(false); }}
+                      className="text-center text-lg text-slate-400 hover:text-white py-2"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}
+                      className="text-center text-lg text-slate-300 hover:text-white py-2"
+                    >
+                      Sign in
+                    </button>
+                    <button
+                      onClick={() => { navigate('/register'); setMobileMenuOpen(false); }}
+                      className="w-full py-4 bg-white text-slate-900 rounded-xl font-semibold"
+                    >
+                      Get Started
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
@@ -813,39 +863,47 @@ const CTA = () => {
   );
 };
 
-// Footer
+// Footer Component
 const Footer = () => {
   const navigate = useNavigate();
+  const { user, loading, logout } = useAuth();
+
+  const accountLinks = loading 
+    ? [
+        { name: 'Loading...', action: () => {} }
+      ]
+    : user 
+      ? [
+          { name: 'Dashboard', action: () => navigate('/dashboard') },
+          { name: 'Settings', action: () => navigate('/settings') },
+          { name: 'Logout', action: () => { logout(); navigate('/'); } }
+        ]
+      : [
+          { name: 'Sign In', action: () => navigate('/login') },
+          { name: 'Get Started', action: () => navigate('/register') }
+        ];
 
   const links = {
     Product: [
       { name: 'Features', action: () => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }) },
-      { name: 'Dashboard', action: () => navigate('/dashboard') },
-      { name: 'Businesses', action: () => navigate('/businesses') },
-      { name: 'Analytics', action: () => navigate('/analytics') }
+      { name: 'Pricing', action: () => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }) },
+      { name: 'Voice AI', action: () => {} }
     ],
-    Account: [
-      { name: 'Sign In', action: () => navigate('/login') },
-      { name: 'Get Started', action: () => navigate('/register') },
-      { name: 'Settings', action: () => navigate('/settings') }
+    Company: [
+      { name: 'About', action: () => {} },
+      { name: 'Contact', action: () => window.location.href = "mailto:hello@aitwin.ai" },
+      { name: 'Legal', action: () => navigate('/legal') }
     ],
-    Resources: [
-      { name: 'Documentation', action: () => navigate('/documentation') },
-      { name: 'API Reference', action: () => navigate('/api-reference') },
-      { name: 'Guides', action: () => navigate('/guides') },
-      { name: 'Support', action: () => navigate('/support') }
-    ],
-    Legal: [
-      { name: 'Privacy', action: () => navigate('/privacy') },
-      { name: 'Terms', action: () => navigate('/terms') },
-      { name: 'Security', action: () => navigate('/security') }
-    ]
+    Account: accountLinks
   };
 
   return (
-    <footer className="relative py-16 border-t border-slate-800">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+    <footer className="pt-24 pb-12 border-t border-slate-800 bg-dark-950 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[120px]" />
+      
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-12 mb-16">
           {/* Logo Column */}
           <div className="col-span-2">
             <div

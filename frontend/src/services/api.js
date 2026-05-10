@@ -23,7 +23,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      // Removed hard redirect to /login to prevent kicking users from public pages
     }
     return Promise.reject(error);
   }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   TextField, Button, Typography, Box, Alert, 
   Link, IconButton, InputAdornment, useTheme, useMediaQuery, Divider 
@@ -18,10 +18,14 @@ const Register = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const { register, login, setAuthData } = useAuth();
-  const navigate = useNavigate();
-  const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { user, loading, register, login, setAuthData } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/dashboard');
+    }
+  }, [user, loading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

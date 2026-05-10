@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -18,7 +18,9 @@ const Navbar = () => {
         <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
           AI Digital Twin Creator
         </Typography>
-        {user ? (
+        {loading ? (
+          <Box sx={{ width: 100, height: 40, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: 1 }} />
+        ) : user ? (
           <Box>
             <Button color="inherit" component={Link} to="/">Home</Button>
             <Button color="inherit" component={Link} to="/dashboard">Dashboard</Button>
