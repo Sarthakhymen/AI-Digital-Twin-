@@ -22,21 +22,31 @@ async def process_voice(file: UploadFile = File(...)):
         audio_content = await file.read()
         
         # 2. Transcribe (STT)
-        transcript = await voice_service.transcribe_audio(audio_content)
+        try:
+            transcript = await voice_service.transcribe_audio(audio_content)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"STT Error: {str(e)}")
+            
         if not transcript:
-            raise HTTPException(status_code=400, detail="Could not transcribe audio")
+            raise HTTPException(status_code=400, detail="Could not transcribe audio (Empty transcript)")
         
         # 3. Get AI Brain Response (LLM)
-        ai_text = await voice_service.get_ai_response(transcript)
+        try:
+            ai_text = await voice_service.get_ai_response(transcript)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"LLM Error: {str(e)}")
         
         # 4. Convert Text to Speech (TTS)
         output_filename = f"{uuid.uuid4()}.mp3"
         output_path = os.path.join(TEMP_DIR, output_filename)
         
-        success = await voice_service.text_to_speech(ai_text, output_path)
+        try:
+            success = await voice_service.text_to_speech(ai_text, output_path)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"TTS Error: {str(e)}")
         
         if not success:
-            raise HTTPException(status_code=500, detail="Could not generate speech")
+            raise HTTPException(status_code=500, detail="TTS Generation Failed")
         
         # 5. Read generated audio and encode to base64
         with open(output_path, "rb") as audio_file:

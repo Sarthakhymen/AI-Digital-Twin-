@@ -95,7 +95,8 @@ const VoiceAgent = () => {
             
         } catch (err) {
             console.error("Error processing voice:", err);
-            setAiResponse("Sorry, I encountered an error. Please try again.");
+            const errorMsg = err.response?.data?.detail || "Connection error. Check your API URL.";
+            setAiResponse(`Error: ${errorMsg}`);
         } finally {
             setIsProcessing(false);
         }

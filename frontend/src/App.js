@@ -12,7 +12,6 @@ import CreateTwin from './pages/CreateTwin';
 import DigitalTwinDetail from './pages/DigitalTwinDetail';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
-import VoiceAgent from './pages/VoiceAgent';
 
 function App() {
   return (
@@ -32,7 +31,6 @@ function App() {
                 <Route path="/twins/:id" element={<ProtectedRoute><DigitalTwinDetail /></ProtectedRoute>} />
                 <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                <Route path="/voice-agent" element={<ProtectedRoute><VoiceAgent /></ProtectedRoute>} />
               </Routes>
             </Box>
           </>

@@ -9,7 +9,7 @@ from fastapi.security import HTTPBearer
 from contextlib import asynccontextmanager
 
 from .database import engine, Base
-from .api import auth, businesses, digital_twins, analytics, dashboard, integrations, whatsapp, knowledge, google_auth, voice
+from .api import auth, businesses, digital_twins, analytics, dashboard, integrations, whatsapp, knowledge, google_auth
 from sqlalchemy import text
 
 # Create database tables
@@ -109,7 +109,6 @@ app.include_router(dashboard.router, prefix="/api/v1")
 app.include_router(integrations.router, prefix="/api/v1")
 app.include_router(whatsapp.router, prefix="/api/v1/whatsapp", tags=["whatsapp"])
 app.include_router(knowledge.router, prefix="/api/v1")
-app.include_router(voice.router, prefix="/api/v1", tags=["voice"])
 
 if __name__ == "__main__":
     import uvicorn
