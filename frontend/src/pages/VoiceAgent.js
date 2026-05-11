@@ -280,5 +280,3 @@ const VoiceAgent = () => {
 };
 
 export default VoiceAgent;
-
-export default VoiceAgent;
