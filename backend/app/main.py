@@ -44,14 +44,18 @@ def run_migrations():
                     else:
                         # SQLite simple add (will fail if exists, which we catch)
                         conn.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"))
+                except Exception:
+                    # Ignore errors (column likely already exists)
+                    pass
+            
             # Ensure hashed_password is nullable for OAuth users
             try:
                 if "sqlite" not in str(engine.url):
                     conn.execute(text("ALTER TABLE users ALTER COLUMN hashed_password DROP NOT NULL;"))
             except Exception as e:
                 print(f"Hashed password migration error (non-critical): {e}")
-        except Exception as e:
-            print(f"Migration error: {e}")
+    except Exception as e:
+        print(f"Migration error: {e}")
 
 # Run migrations on startup
 run_migrations()
