@@ -22,7 +22,7 @@ class VoiceService:
         ) if self.groq_key else None
         
         # Initialize Deepgram
-        self.deepgram = DeepgramClient(self.dg_key) if self.dg_key else None
+        self.deepgram = DeepgramClient(api_key=self.dg_key) if self.dg_key else None
 
     async def transcribe_audio(self, audio_content):
         """Sunne wala kaam (Speech-to-Text)"""
