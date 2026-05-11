@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, Typography, Box, Button, Card, CardContent, Paper } from '@mui/material';
-import { Business, SmartToy, Chat, TrendingUp } from '@mui/icons-material';
+import { Business, SmartToy, Chat, TrendingUp, IntegrationInstructions } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import StatCard from '../components/StatCard';
@@ -29,7 +29,17 @@ const Dashboard = () => {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>Dashboard</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4">Dashboard</Typography>
+        <Button 
+          variant="outlined" 
+          startIcon={<IntegrationInstructions />}
+          onClick={() => navigate('/guide')}
+          sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}
+        >
+          View Setup Guide
+        </Button>
+      </Box>
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard

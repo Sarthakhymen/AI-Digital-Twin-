@@ -24,6 +24,7 @@ const Navbar = () => {
           <Box>
             <Button color="inherit" component={Link} to="/">Home</Button>
             <Button color="inherit" component={Link} to="/dashboard">Dashboard</Button>
+            <Button color="inherit" component={Link} to="/guide">Guide</Button>
             <Button color="inherit" component={Link} to="/businesses">Businesses</Button>
             <Button color="inherit" component={Link} to="/analytics">Analytics</Button>
             <Button color="inherit" component={Link} to="/settings">Settings</Button>
@@ -31,6 +32,7 @@ const Navbar = () => {
           </Box>
         ) : (
           <Box>
+            <Button color="inherit" component={Link} to="/guide">Guide</Button>
             <Button color="inherit" component={Link} to="/login">Login</Button>
             <Button color="inherit" component={Link} to="/register">Register</Button>
           </Box>

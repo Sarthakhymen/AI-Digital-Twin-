@@ -16,6 +16,7 @@ import Legal from './pages/Legal';
 import Docs from './pages/Docs';
 import VoiceAgent from './pages/VoiceAgent';
 import Pricing from './pages/Pricing';
+import Guide from './pages/Guide';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path="/support" element={<Docs />} />
         <Route path="/voice-agent" element={<VoiceAgent />} />
         <Route path="/pricing" element={<Pricing />} />
+        <Route path="/guide" element={<Guide />} />
 
         <Route path="/*" element={
           <>

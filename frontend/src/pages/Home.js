@@ -60,7 +60,8 @@ const Navigation = () => {
 
   const navLinks = [
     { name: 'Product', href: '#features', type: 'scroll' },
-    { name: 'Pricing', href: '#pricing', type: 'scroll' },
+    { name: 'Pricing', href: '/pricing', type: 'route' },
+    { name: 'Guide', href: '/guide', type: 'route' },
     ...(user ? [
       { name: 'Dashboard', href: '/dashboard', type: 'route' },
       { name: 'Analytics', href: '/analytics', type: 'route' }
