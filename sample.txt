@@ -1,0 +1,179 @@
+Company Name: TechFlow AI Solutions
+
+Industry: AI SaaS & Business Automation
+
+Founded: 2021
+
+Headquarters: Gurugram, Haryana, India
+
+Founder & CEO: Arjun Mehta
+
+Website: www.techflowai.in
+
+Email: support@techflowai.in
+
+Phone: +91-9876543210
+
+About Company:
+TechFlow AI Solutions is an AI-powered software company that helps businesses automate operations, improve customer support, generate AI content, and increase productivity using modern AI technologies. The company mainly works with startups, creators, agencies, educational institutes, and e-commerce businesses.
+
+Mission:
+“To make AI simple, affordable, and useful for every business.”
+
+Vision:
+To become India’s leading AI automation company helping businesses save time and scale faster using intelligent systems.
+
+Core Services:
+
+1. AI Chatbot Development
+- Website chatbots
+- WhatsApp chatbots
+- Instagram automation
+- Customer support AI
+- Lead generation systems
+Features:
+- 24/7 automated replies
+- Human-like conversations
+- Multi-language support
+- CRM integration
+Pricing:
+- Starter: ₹4,999/month
+- Business: ₹14,999/month
+- Enterprise: Custom pricing
+
+2. AI Website Development
+Website Types:
+- Startup websites
+- SaaS landing pages
+- Portfolio websites
+- E-commerce stores
+- AI product websites
+Technologies Used:
+- React.js
+- Next.js
+- Tailwind CSS
+- Node.js
+- MongoDB
+Delivery Time:
+- Basic website: 3–5 days
+- Advanced website: 1–3 weeks
+
+3. AI Content Studio
+Generates:
+- YouTube scripts
+- SEO blogs
+- Instagram captions
+- LinkedIn posts
+- Product descriptions
+Benefits:
+- Faster content creation
+- Better SEO
+- Higher engagement
+
+4. AI Analytics Dashboard
+Tracks:
+- Website traffic
+- Sales performance
+- Customer behavior
+- Marketing campaigns
+Features:
+- Real-time analytics
+- AI-generated insights
+- Interactive charts
+- Export reports
+
+5. AI Automation Services
+Automates:
+- Email workflows
+- Lead management
+- CRM tasks
+- Social media scheduling
+- Customer onboarding
+Tools Used:
+- Zapier
+- Make.com
+- Python automation
+- APIs
+- AI agents
+
+Target Customers:
+- Startups
+- Agencies
+- Coaches
+- YouTubers
+- SaaS founders
+- E-commerce businesses
+- Educational organizations
+
+Competitive Advantages:
+- Affordable pricing
+- Fast delivery
+- AI-first approach
+- Modern UI/UX
+- Human-like AI systems
+- Custom solutions
+
+Company Team:
+CEO: Arjun Mehta
+CTO: Rohan Verma
+Head of AI: Kavya Sharma
+Marketing Lead: Priya Khanna
+
+Departments:
+- AI Development
+- Web Development
+- UI/UX Design
+- Marketing
+- Customer Support
+- Content Team
+
+Support Details:
+- Email support
+- WhatsApp support
+- Live AI chatbot
+- Zoom consultations
+Support Timing:
+Monday to Saturday
+10 AM – 7 PM IST
+
+Future Plans:
+- AI voice assistants
+- AI CRM software
+- Mobile AI apps
+- No-code automation tools
+- International expansion
+
+FAQs:
+
+Q: What does TechFlow AI Solutions do?
+A: The company provides AI chatbot development, AI automation, AI content generation, analytics dashboards, and website development services.
+
+Q: Do you build WhatsApp AI chatbots?
+A: Yes, the company develops AI-powered WhatsApp chatbots with automated replies, lead generation, and CRM integration.
+
+Q: How much does a website cost?
+A: Basic websites start from ₹15,000 while advanced AI-powered websites are priced according to project requirements.
+
+Q: Do you provide custom AI solutions?
+A: Yes, the company develops customized AI systems according to business requirements.
+
+Q: What technologies are used?
+A: React.js, Node.js, MongoDB, Python, AI models, RAG architecture, and cloud technologies.
+
+Sample Customer Query:
+User: “What services do you provide?”
+Response: “TechFlow AI Solutions provides AI chatbot development, AI automation, AI content generation, AI analytics dashboards, and modern website development services.”
+
+Company Tone:
+- Professional
+- Friendly
+- Modern
+- Startup-focused
+- Tech-oriented
+
+Assistant Instructions:
+- Answer confidently and professionally.
+- Keep responses concise unless detailed explanations are requested.
+- Recommend suitable services based on customer needs.
+- Promote AI automation and chatbot solutions naturally.
+- Maintain a modern startup communication style.

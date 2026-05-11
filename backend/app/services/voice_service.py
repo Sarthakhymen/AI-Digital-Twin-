@@ -1,8 +1,9 @@
 import os
 import asyncio
 import edge_tts
+from livekit import api
 from deepgram import DeepgramClient
-import google.generativeai as genai
+from openai import AsyncOpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,14 +11,18 @@ load_dotenv()
 class VoiceService:
     def __init__(self):
         self.dg_key = os.getenv("DEEPGRAM_API_KEY")
-        self.gemini_key = os.getenv("GOOGLE_AI_STUDIO_KEY")
+        self.groq_key = os.getenv("GROQ_API_KEY")
+        self.lk_api_key = os.getenv("LIVEKIT_API_KEY")
+        self.lk_api_secret = os.getenv("LIVEKIT_API_SECRET")
         
-        # Initialize Gemini
-        genai.configure(api_key=self.gemini_key)
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        # Initialize Groq (OpenAI-compatible)
+        self.client = AsyncOpenAI(
+            api_key=self.groq_key,
+            base_url="https://api.groq.com/openai/v1"
+        ) if self.groq_key else None
         
         # Initialize Deepgram
-        self.deepgram = DeepgramClient(self.dg_key)
+        self.deepgram = DeepgramClient(self.dg_key) if self.dg_key else None
 
     async def transcribe_audio(self, audio_content):
         """Sunne wala kaam (Speech-to-Text)"""
@@ -47,22 +52,47 @@ class VoiceService:
             print(f"Deepgram Error: {e}")
             return None
 
-    async def get_ai_response(self, text, history=[]):
-        """Dimag wala kaam (LLM)"""
+    async def get_ai_response(self, text, profile={}):
+        """Dimag wala kaam (LLM) - Using Groq for speed"""
         try:
-            chat = self.model.start_chat(history=history)
+            twin_name = profile.get("name", "AI Twin")
+            business_name = profile.get("business_name", "our business")
+            
             system_prompt = (
-                "You are a helpful and friendly Indian AI Digital Twin. "
-                "Respond in a natural 'Hinglish' style (mix of Hindi and English). "
-                "Keep your answers concise and conversational, just like a voice assistant (Siri). "
-                "Do not use complex formatting like markdown bold or lists, as this will be spoken aloud."
+                f"You are {twin_name}, a friendly human staff member at {business_name}. "
+                "Respond in a natural 'Hinglish' style. "
+                "Keep your answers VERY CONCISE (max 1-2 short sentences). "
+                "Do not use markdown formatting. Talk like a person on a phone call."
             )
             
-            response = chat.send_message(f"{system_prompt}\n\nUser: {text}")
-            return response.text
+            response = await self.client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": text}
+                ],
+                temperature=0.3,
+                max_tokens=150
+            )
+            return response.choices[0].message.content
         except Exception as e:
-            print(f"Gemini Error: {e}")
-            return "Maaf kijiye, mujhe samajhne mein thodi dikkat ho rahi hai. Kya aap phir se bol sakte hain?"
+            print(f"Groq Voice Error: {e}")
+            return "Maaf kijiye, connectivity issue ki wajah se main sun nahi paayi. Kya aap phir se bolenge?"
+
+    def generate_livekit_token(self, participant_name: str, room_name: str):
+        """Generate Access Token for LiveKit room"""
+        try:
+            token = api.AccessToken(self.lk_api_key, self.lk_api_secret) \
+                .with_identity(participant_name) \
+                .with_name(participant_name) \
+                .with_grants(api.VideoGrants(
+                    room_join=True,
+                    room=room_name,
+                ))
+            return token.to_jwt()
+        except Exception as e:
+            print(f"LiveKit Token Error: {e}")
+            return None
 
     async def text_to_speech(self, text, output_path):
         """Bolne wala kaam (Text-to-Speech) - Using Edge-TTS (Free & High Quality)"""

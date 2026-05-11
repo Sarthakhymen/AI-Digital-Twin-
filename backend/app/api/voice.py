@@ -11,6 +11,16 @@ TEMP_DIR = "temp_audio"
 if not os.path.exists(TEMP_DIR):
     os.makedirs(TEMP_DIR)
 
+@router.get("/token")
+async def get_token(participant_name: str, room_name: str):
+    """
+    Generates a LiveKit access token for a user to join a voice room.
+    """
+    token = voice_service.generate_livekit_token(participant_name, room_name)
+    if not token:
+        raise HTTPException(status_code=500, detail="Could not generate token")
+    return {"token": token, "url": os.getenv("LIVEKIT_URL")}
+
 @router.post("/process-voice")
 async def process_voice(file: UploadFile = File(...)):
     """
