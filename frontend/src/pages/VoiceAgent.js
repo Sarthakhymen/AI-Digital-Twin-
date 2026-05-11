@@ -87,7 +87,9 @@ const VoiceAgent = () => {
         formData.append('file', blob, 'recording.wav');
 
         try {
-            const { data } = await axios.post(`${API_URL}/api/voice/process-voice`, formData);
+            // Remove /api/v1 from the end of API_URL if it exists to get the base domain
+            const baseApiUrl = API_URL.replace(/\/api\/v1\/?$/, '');
+            const { data } = await axios.post(`${baseApiUrl}/api/voice/process-voice`, formData);
             setAiResponse(data.ai_response);
             
             // Play AI Response
