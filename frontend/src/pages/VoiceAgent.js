@@ -1,21 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, PhoneOff, History, Sparkles, Volume2 } from 'lucide-react';
+import { Mic, PhoneOff, Sparkles, Volume2 } from 'lucide-react';
 import axios from 'axios';
-import { Box, Typography, Paper, Button, IconButton } from '@mui/material';
-import { Room, RoomEvent, VideoPresets } from 'livekit-client';
+import { Box, Typography, Paper, IconButton } from '@mui/material';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 const VoiceAgent = () => {
     const [searchParams] = useState(new URLSearchParams(window.location.search));
     const isWidget = searchParams.get('widget') === 'true';
-    const twinId = searchParams.get('twin_id');
-    
     const [status, setStatus] = useState('idle'); // idle, connecting, active, speaking, error
-    const [transcript, setTranscript] = useState('');
     const [aiResponse, setAiResponse] = useState('');
-    const [history, setHistory] = useState([]);
     
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
@@ -93,7 +88,6 @@ const VoiceAgent = () => {
 
         try {
             const { data } = await axios.post(`${API_URL}/api/voice/process-voice`, formData);
-            setTranscript(data.transcript);
             setAiResponse(data.ai_response);
             
             // Play AI Response
@@ -136,7 +130,6 @@ const VoiceAgent = () => {
             audioRef.current.src = "";
         }
         setStatus('idle');
-        setTranscript('');
         setAiResponse('');
     };
 
