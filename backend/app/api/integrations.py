@@ -518,7 +518,11 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
 }})();
     """, media_type="application/javascript")
 
+@router.get("/test-voice")
+def test_voice_route():
+    return {"status": "voice integration active"}
 
+# Route for Voice AI Widget script injection
 @router.get("/{twin_id}/voice-widget.js")
 async def get_voice_widget_js(twin_id: int, db: Session = Depends(get_db)):
     """
