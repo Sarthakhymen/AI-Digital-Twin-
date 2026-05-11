@@ -18,7 +18,7 @@ const WhatsAppScanner = ({ twinId }) => {
         }}
       >
         {/* Coming Soon Badge */}
-        <Box sx={{ position: 'absolute', top: 20, right: -35, transform: 'rotate(45deg)', width: 150, z-index: 1 }}>
+        <Box sx={{ position: 'absolute', top: 20, right: -35, transform: 'rotate(45deg)', width: 150, zIndex: 1 }}>
           <Chip 
             label="COMING SOON" 
             color="success" 
