@@ -8,24 +8,38 @@ import { Room, RoomEvent, VideoPresets } from 'livekit-client';
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 const VoiceAgent = () => {
-    const [status, setStatus] = useState('idle'); // idle, connecting, active, error
+    const [searchParams] = useState(new URLSearchParams(window.location.search));
+    const isWidget = searchParams.get('widget') === 'true';
+    const twinId = searchParams.get('twin_id');
+    
+    const [status, setStatus] = useState('idle'); // idle, connecting, active, speaking, error
     const [transcript, setTranscript] = useState('');
     const [aiResponse, setAiResponse] = useState('');
     const [history, setHistory] = useState([]);
-    const [room, setRoom] = useState(null);
+    
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+    const audioRef = useRef(new Audio());
     
     // Siri-like Orb Animation Variants
     const orbVariants = {
         idle: {
-            scale: [1, 1.1, 1],
-            opacity: 0.8,
+            scale: [1, 1.05, 1],
+            opacity: 0.6,
             transition: { duration: 3, repeat: Infinity, ease: "easeInOut" }
         },
         active: {
-            scale: [1, 1.3, 1.1, 1.4, 1],
+            scale: [1, 1.2, 1.1, 1.3, 1],
             opacity: 1,
             boxShadow: "0 0 50px rgba(99, 102, 241, 0.8)",
             transition: { duration: 0.6, repeat: Infinity, ease: "easeInOut" }
+        },
+        speaking: {
+            scale: [1, 1.5, 1.2, 1.6, 1],
+            opacity: 1,
+            background: 'radial-gradient(circle at 30% 30%, #818cf8, #4338ca)',
+            boxShadow: "0 0 80px rgba(129, 140, 248, 0.9)",
+            transition: { duration: 0.4, repeat: Infinity, ease: "easeInOut" }
         },
         connecting: {
             rotate: 360,
@@ -35,47 +49,91 @@ const VoiceAgent = () => {
     };
 
     const startCall = async () => {
-        setStatus('connecting');
         try {
-            // 1. Get Token from backend
-            const participantName = `User_${Math.floor(Math.random() * 1000)}`;
-            const roomName = "VoiceRoom_1";
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorderRef.current = new MediaRecorder(stream);
             
-            const { data } = await axios.get(`${API_URL}/api/voice/token`, {
-                params: { participant_name: participantName, room_name: roomName }
-            });
+            mediaRecorderRef.current.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
 
-            // 2. Connect to LiveKit Room
-            const newRoom = new Room({
-                adaptiveStream: true,
-                dynacast: true,
-            });
+            mediaRecorderRef.current.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+                await processAudio(audioBlob);
+                audioChunksRef.current = [];
+            };
 
-            await newRoom.connect(data.url, data.token);
-            setRoom(newRoom);
-            
-            // 3. Enable Audio
-            await newRoom.localParticipant.setMicrophoneEnabled(true);
-            
             setStatus('active');
             setAiResponse("Connected! I'm listening...");
-
-            // 4. Handle Audio Events
-            newRoom.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
-                // We can use this to animate the orb based on who is talking
-            });
+            
+            // Start recording automatically
+            mediaRecorderRef.current.start();
+            
+            // Auto-stop recording after 4 seconds of silence or fixed duration for now
+            // In a real app, we'd use VAD (Voice Activity Detection)
+            setTimeout(() => {
+                if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+                    mediaRecorderRef.current.stop();
+                }
+            }, 5000);
 
         } catch (err) {
-            console.error("Call Error:", err);
+            console.error("Microphone Error:", err);
             setStatus('error');
-            setAiResponse("Could not connect to voice server.");
+            setAiResponse("Please allow microphone access to talk.");
         }
     };
 
-    const endCall = async () => {
-        if (room) {
-            await room.disconnect();
-            setRoom(null);
+    const processAudio = async (blob) => {
+        setStatus('connecting');
+        const formData = new FormData();
+        formData.append('file', blob, 'recording.wav');
+
+        try {
+            const { data } = await axios.post(`${API_URL}/api/voice/process-voice`, formData);
+            setTranscript(data.transcript);
+            setAiResponse(data.ai_response);
+            
+            // Play AI Response
+            if (data.audio_base64) {
+                const audioSrc = `data:audio/mp3;base64,${data.audio_base64}`;
+                audioRef.current.src = audioSrc;
+                setStatus('speaking');
+                await audioRef.current.play();
+                
+                audioRef.current.onended = () => {
+                    setStatus('active');
+                    // Resume listening
+                    if (mediaRecorderRef.current) {
+                        mediaRecorderRef.current.start();
+                        setTimeout(() => {
+                            if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+                                mediaRecorderRef.current.stop();
+                            }
+                        }, 5000);
+                    }
+                };
+            }
+        } catch (err) {
+            console.error("Processing Error:", err);
+            setStatus('active');
+            setAiResponse("Sorry, I couldn't hear that clearly. Can you repeat?");
+        }
+    };
+
+    const endCall = () => {
+        if (mediaRecorderRef.current) {
+            if (mediaRecorderRef.current.state !== 'inactive') {
+                mediaRecorderRef.current.stop();
+            }
+            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+            mediaRecorderRef.current = null;
+        }
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.src = "";
         }
         setStatus('idle');
         setTranscript('');
@@ -109,6 +167,15 @@ const VoiceAgent = () => {
                 <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)' }}>
                     Real-time human-like conversation powered by Groq & LiveKit
                 </Typography>
+                
+                {isWidget && (
+                    <IconButton 
+                        onClick={() => window.close()} 
+                        sx={{ position: 'absolute', top: -40, right: 0, color: 'rgba(255,255,255,0.4)' }}
+                    >
+                        <PhoneOff size={20} />
+                    </IconButton>
+                )}
             </motion.div>
 
             {/* Siri-like Orb Container */}

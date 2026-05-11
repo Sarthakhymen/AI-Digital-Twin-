@@ -14,6 +14,7 @@ import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Legal from './pages/Legal';
 import Docs from './pages/Docs';
+import VoiceAgent from './pages/VoiceAgent';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/api-reference" element={<Docs />} />
         <Route path="/guides" element={<Docs />} />
         <Route path="/support" element={<Docs />} />
+        <Route path="/voice-agent" element={<VoiceAgent />} />
 
         <Route path="/*" element={
           <>

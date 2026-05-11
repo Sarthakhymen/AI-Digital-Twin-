@@ -510,10 +510,107 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
     }};
 
     sendBtn.addEventListener('click', () => sendMessage());
-    input.addEventListener('keypress', (e) => {{ if (e.key === 'Enter') sendMessage(); }});
+    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
-    document.querySelectorAll('.dt-quick-btn').forEach(btn => {{
+    document.querySelectorAll('.dt-quick-btn').forEach(btn => {
         btn.addEventListener('click', () => sendMessage(btn.getAttribute('data-msg')));
-    }});
-}})();
+    });
+})();
     """, media_type="application/javascript")
+
+
+@router.get("/{twin_id}/voice-widget.js")
+async def get_voice_widget_js(twin_id: int, db: Session = Depends(get_db)):
+    """
+    Returns the javascript snippet to inject the Voice AI "Call" button into any website.
+    """
+    twin = db.query(DigitalTwin).filter(DigitalTwin.id == twin_id).first()
+    twin_name = twin.name if twin else "AI Voice"
+    
+    return Response(content=f"""
+(function() {{
+    const twinId = {twin_id};
+    const scriptTag = document.currentScript;
+    const scriptUrl = scriptTag ? scriptTag.src : '';
+    const baseUrl = scriptUrl.split('/api/integrations/')[0];
+    
+    // Frontend URL - For production, this should be your Vercel URL
+    const frontendUrl = baseUrl.replace(':8000', ':3000'); 
+
+    // Inject CSS
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #ai-voice-widget {{
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            z-index: 999999;
+        }}
+        #ai-voice-button {{
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            outline: none;
+            font-size: 24px;
+        }}
+        #ai-voice-button:hover {{
+            transform: scale(1.1) rotate(-5deg);
+            box-shadow: 0 6px 25px rgba(79, 70, 229, 0.6);
+        }}
+        #ai-voice-tooltip {{
+            position: absolute;
+            right: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            font-family: sans-serif;
+        }}
+        #ai-voice-widget:hover #ai-voice-tooltip {{
+            opacity: 1;
+            visibility: visible;
+            right: 80px;
+        }}
+    `;
+    document.head.appendChild(style);
+
+    // Create Widget
+    const container = document.createElement('div');
+    container.id = 'ai-voice-widget';
+    container.innerHTML = `
+        <div id="ai-voice-tooltip">Call {twin_name}</div>
+        <button id="ai-voice-button">📞</button>
+    `;
+    document.body.appendChild(container);
+
+    // Click Event
+    document.getElementById('ai-voice-button').onclick = function() {{
+        const width = 450;
+        const height = 700;
+        const left = (window.innerWidth / 2) - (width / 2);
+        const top = (window.innerHeight / 2) - (height / 2);
+        
+        window.open(
+            `${{frontendUrl}}/voice-agent?twin_id=${{twinId}}&widget=true`,
+            'AIVoiceAgent',
+            `width=${{width}},height=${{height}},top=${{top}},left=${{left}},status=no,menubar=no,toolbar=no`
+        );
+    }};
+}})();
+""", media_type="application/javascript")

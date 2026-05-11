@@ -188,7 +188,7 @@ const DigitalTwinDetail = () => {
                     onClick={() => {
                       const snippet = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js"></script>`;
                       navigator.clipboard.writeText(snippet);
-                      setSnackbar({ open: true, message: 'Snippet copied to clipboard!', severity: 'success' });
+                      setSnackbar({ open: true, message: 'Chat snippet copied!', severity: 'success' });
                     }}
                   >
                     <ContentCopy fontSize="small" />
@@ -202,16 +202,74 @@ const DigitalTwinDetail = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
                 <Box 
                   sx={{ 
-                    width: 40, height: 40, borderRadius: '50%', 
+                    width: 32, height: 32, borderRadius: '50%', 
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     boxShadow: '0 4px 10px rgba(102,126,234,0.3)'
                   }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 </Box>
                 <Typography variant="caption" color="text.secondary">
-                  Widget will appear as a sleek chat bubble in the bottom-right corner.
+                  Chat bubble in the bottom-right corner.
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box sx={{ mt: 3, p: 3, borderRadius: 3, bgcolor: 'rgba(79, 70, 229, 0.04)', border: '1px solid rgba(79, 70, 229, 0.1)' }}>
+              <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <PlayArrow color="primary" /> AI Voice Call Widget
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Enable users to call your AI Twin directly. This adds a "Call" floating button to your site.
+              </Typography>
+              
+              <Paper 
+                variant="outlined" 
+                sx={{ 
+                  p: 2, 
+                  bgcolor: '#1e1e1e', 
+                  color: '#d4d4d4',
+                  fontFamily: '"Fira Code", monospace', 
+                  fontSize: '12px',
+                  position: 'relative',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  border: 'none',
+                  mb: 2
+                }}
+              >
+                <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+                  <IconButton 
+                    size="small" 
+                    sx={{ color: '#aaa', '&:hover': { color: '#fff' } }}
+                    onClick={() => {
+                      const snippet = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/voice-widget.js"></script>`;
+                      navigator.clipboard.writeText(snippet);
+                      setSnackbar({ open: true, message: 'Voice snippet copied!', severity: 'success' });
+                    }}
+                  >
+                    <ContentCopy fontSize="small" />
+                  </IconButton>
+                </Box>
+                <code style={{ wordBreak: 'break-all' }}>
+                  {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/voice-widget.js"></script>`}
+                </code>
+              </Paper>
+
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
+                <Box 
+                  sx={{ 
+                    width: 32, height: 32, borderRadius: '50%', 
+                    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 4px 10px rgba(79, 70, 229, 0.3)'
+                  }}
+                >
+                  <Typography sx={{ fontSize: '16px' }}>📞</Typography>
+                </Box>
+                <Typography variant="caption" color="text.secondary">
+                  Voice call button will appear above the chat widget.
                 </Typography>
               </Box>
             </Box>
