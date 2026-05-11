@@ -2,15 +2,14 @@ import React from 'react';
 import { 
   Box, Typography, Container, Grid, Card, Button, 
   List, ListItem, ListItemIcon, ListItemText, Switch, 
-  Chip, useTheme, useMediaQuery, Alpha 
+  Chip, useTheme, useMediaQuery
 } from '@mui/material';
-import { Check, Star, Speed, SupportAgent, CloudDone, RocketLaunch } from '@mui/icons-material';
+import { Check, Star, SupportAgent, RocketLaunch } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 
 const Pricing = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [annual, setAnnual] = React.useState(true);
 
   const plans = [
