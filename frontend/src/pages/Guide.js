@@ -21,42 +21,42 @@ const steps = [
   {
     title: 'Login & Signup',
     description: 'Sabse pehle apna account create karein ya login karein. Aap Google account se bhi turant sign-in kar sakte hain.',
-    image: '/media_ad89a055-0077-490e-a948-07d7895bc0a5_1778465080036.png',
+    image: '/assets/guide/step1.png',
     icon: <Login />,
     color: '#6366F1'
   },
   {
     title: 'Dashboard Access',
     description: 'Login ke baad aap seedhe Dashboard pe aayenge, jo aapka control center hai.',
-    image: null, // No specific image for dashboard general view requested, using a placeholder or icon
+    image: '/assets/guide/step2.png',
     icon: <DashboardIcon />,
     color: '#8B5CF6'
   },
   {
     title: 'Add Your Business',
     description: 'Business section mein jayein aur "+ ADD BUSINESS" button pe click karke apne business ki details fill karein.',
-    image: '/media_ad89a055-0077-490e-a948-07d7895bc0a5_1778465080345.png',
+    image: '/assets/guide/step3.png',
     icon: <BusinessCenter />,
     color: '#EC4899'
   },
   {
     title: 'Create Digital Twin',
     description: 'Dashboard pe aakar "CREATE TWIN" button dabayein, apna business select karein aur required details bharein.',
-    image: '/media_ad89a055-0077-490e-a948-07d7895bc0a5_1778465080645.png',
+    image: '/assets/guide/step4.png',
     icon: <SmartToy />,
     color: '#F59E0B'
   },
   {
     title: 'Activate & Train AI',
     description: 'Apne naye Digital Twin pe click karein, use "Activate" karein, aur page ke bottom mein training files (PDF/Docs) upload karein.',
-    image: null,
+    image: '/assets/guide/step5.png',
     icon: <Bolt />,
     color: '#10B981'
   },
   {
     title: 'Copy & Paste Script',
     description: 'Ab apna unique script tag copy karein aur apni website ki HTML file mein <body> tag ke andar paste kar dein.',
-    image: null,
+    image: '/assets/guide/step6.png',
     icon: <Code />,
     color: '#3B82F6'
   }
