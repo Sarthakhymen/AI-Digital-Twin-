@@ -16,9 +16,9 @@
 - **ALWAYS** ask the user before running commands that modify system state, install packages, or make network requests.
 - When in doubt, **show the command first** and wait for approval.
 
-**Stack:** JavaScript/Python · FastAPI + React + Tailwind · DB: PostgreSQL, Redis, SQLAlchemy
+**Stack:** JavaScript/Python · Express + FastAPI + React + Tailwind · DB: PostgreSQL, Redis, SQLAlchemy
 
-## 📝 NOTE: 1 uncommitted file(s) in working tree.\n\n## Active: `backend`
+## Active: `backend`
 
 - **🟢 Edited backend/.env (28 changes, 10min)**
 

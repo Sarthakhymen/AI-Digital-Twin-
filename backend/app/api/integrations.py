@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..services.integration_service import integration_service
+from ..models import DigitalTwin
 from pydantic import BaseModel
 from typing import Optional
 
@@ -54,14 +55,21 @@ async def whatsapp_webhook(
 from fastapi.responses import Response
 
 @router.get("/{twin_id}/widget.js")
-async def get_widget_js(twin_id: int):
+async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
     """
     Returns the javascript snippet to inject the Digital Twin chat widget into any website.
     """
+    # Fetch twin name for personalization
+    twin = db.query(DigitalTwin).filter(DigitalTwin.id == twin_id).first()
+    twin_name = twin.name if twin else "AI Assistant"
+    
     return Response(content=f"""
 (function() {{
     const twinId = {twin_id};
-    const apiUrl = 'https://ai-digital-twin-2le9.onrender.com/api/v1';
+    // Auto-detect API URL based on script location
+    const scriptTag = document.currentScript;
+    const scriptUrl = scriptTag ? scriptTag.src : '';
+    const apiUrl = scriptUrl.split('/integrations/')[0];
 
     // Inject CSS
     const style = document.createElement('style');
@@ -71,7 +79,7 @@ async def get_widget_js(twin_id: int):
             bottom: 20px;
             right: 20px;
             z-index: 999999;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }}
         #dt-chat-button {{
             width: 60px;
@@ -83,35 +91,43 @@ async def get_widget_js(twin_id: int):
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(102,126,234,0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: none;
             outline: none;
         }}
         #dt-chat-button:hover {{
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(102,126,234,0.5);
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.5);
         }}
         #dt-chat-window {{
             display: none;
             position: absolute;
             bottom: 80px;
             right: 0;
-            width: 370px;
-            height: 520px;
+            width: 380px;
+            height: 580px;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
             flex-direction: column;
             overflow: hidden;
-            border: 1px solid #e5e7eb;
+            border: 1px solid rgba(0,0,0,0.05);
+            transform-origin: bottom right;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            opacity: 0;
+        }}
+        #dt-chat-window.open {{
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
         }}
         #dt-chat-header {{
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 16px 20px;
+            padding: 20px;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 17px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -119,43 +135,57 @@ async def get_widget_js(twin_id: int):
         #dt-header-info {{
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }}
         #dt-header-dot {{
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: #4ade80;
             border-radius: 50%;
+            box-shadow: 0 0 8px #4ade80;
             animation: dt-pulse 2s infinite;
         }}
         @keyframes dt-pulse {{
-            0%, 100% {{ opacity: 1; }}
-            50% {{ opacity: 0.5; }}
+            0%, 100% {{ transform: scale(1); opacity: 1; }}
+            50% {{ transform: scale(1.2); opacity: 0.7; }}
         }}
         #dt-close-button {{
             cursor: pointer;
-            background: none;
+            background: rgba(255,255,255,0.2);
             border: none;
             color: white;
-            font-size: 22px;
-            line-height: 1;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: background 0.2s;
         }}
+        #dt-close-button:hover {{ background: rgba(255,255,255,0.3); }}
         #dt-chat-messages {{
             flex: 1;
-            padding: 16px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            background: #f9fafb;
+            gap: 12px;
+            background: #fcfcfd;
         }}
         .dt-message {{
-            max-width: 82%;
-            padding: 10px 14px;
-            border-radius: 16px;
-            font-size: 14px;
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14.5px;
             line-height: 1.5;
             white-space: pre-line;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            animation: dt-fade-in 0.3s ease;
+        }}
+        @keyframes dt-fade-in {{
+            from {{ opacity: 0; transform: translateY(10px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
         }}
         .dt-message.user {{
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -165,51 +195,52 @@ async def get_widget_js(twin_id: int):
         }}
         .dt-message.twin {{
             background: white;
-            color: #111827;
+            color: #1f2937;
             align-self: flex-start;
             border-bottom-left-radius: 4px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid #f3f4f6;
         }}
         #dt-quick-replies {{
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            padding: 0 16px 12px;
-            background: #f9fafb;
+            gap: 8px;
+            padding: 0 20px 15px;
+            background: #fcfcfd;
         }}
         .dt-quick-btn {{
             background: white;
-            border: 1px solid #d1d5db;
+            border: 1.5px solid #e5e7eb;
             border-radius: 20px;
-            padding: 6px 14px;
-            font-size: 12px;
+            padding: 8px 16px;
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.2s;
-            color: #374151;
-            white-space: nowrap;
+            color: #4b5563;
+            font-weight: 500;
         }}
         .dt-quick-btn:hover {{
-            background: #667eea;
-            color: white;
+            background: #f3f4f6;
             border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-2px);
         }}
         #dt-typing {{
             display: none;
             align-self: flex-start;
-            padding: 10px 14px;
+            padding: 12px 16px;
             background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
+            border: 1px solid #f3f4f6;
+            border-radius: 18px;
             border-bottom-left-radius: 4px;
         }}
         .dt-typing-dots {{
             display: flex;
-            gap: 4px;
+            gap: 5px;
         }}
         .dt-typing-dots span {{
-            width: 6px;
-            height: 6px;
-            background: #9ca3af;
+            width: 7px;
+            height: 7px;
+            background: #cbd5e1;
             border-radius: 50%;
             animation: dt-bounce 1.4s infinite;
         }}
@@ -217,48 +248,52 @@ async def get_widget_js(twin_id: int):
         .dt-typing-dots span:nth-child(3) {{ animation-delay: 0.4s; }}
         @keyframes dt-bounce {{
             0%, 60%, 100% {{ transform: translateY(0); }}
-            30% {{ transform: translateY(-6px); }}
+            30% {{ transform: translateY(-8px); }}
         }}
         #dt-chat-input-container {{
-            padding: 12px;
+            padding: 15px;
             background: white;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid #f3f4f6;
             display: flex;
-            gap: 8px;
+            gap: 10px;
+            align-items: center;
         }}
         #dt-chat-input {{
             flex: 1;
-            padding: 10px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 24px;
+            padding: 12px 18px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 25px;
             outline: none;
-            font-size: 14px;
-            transition: border-color 0.2s;
+            font-size: 14.5px;
+            transition: all 0.2s;
+            background: #f9fafb;
         }}
         #dt-chat-input:focus {{
             border-color: #667eea;
-            box-shadow: 0 0 0 2px rgba(102,126,234,0.15);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
         }}
         #dt-send-button {{
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 24px;
-            padding: 0 18px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: opacity 0.2s;
-        }}
-        #dt-send-button:disabled {{
-            opacity: 0.5;
-            cursor: not-allowed;
-        }}
-        #dt-mic-button {{
-            width: 38px;
-            height: 38px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            border: 1px solid #d1d5db;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }}
+        #dt-send-button:hover {{ transform: scale(1.05); }}
+        #dt-send-button:disabled {{ opacity: 0.5; filter: grayscale(1); }}
+        #dt-mic-button {{
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1.5px solid #e5e7eb;
             background: white;
             cursor: pointer;
             display: flex;
@@ -267,29 +302,36 @@ async def get_widget_js(twin_id: int):
             transition: all 0.2s;
             flex-shrink: 0;
         }}
-        #dt-mic-button:hover {{ background: #f3f4f6; }}
         #dt-mic-button.recording {{
             background: #ef4444;
             border-color: #ef4444;
-            animation: dt-mic-pulse 1s infinite;
+            animation: dt-mic-pulse 1.5s infinite;
         }}
         #dt-mic-button.recording svg {{ stroke: white; }}
         @keyframes dt-mic-pulse {{
             0%, 100% {{ box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }}
-            50% {{ box-shadow: 0 0 0 8px rgba(239,68,68,0); }}
+            50% {{ box-shadow: 0 0 0 10px rgba(239,68,68,0); }}
         }}
         .dt-speak-btn {{
-            background: none;
+            background: rgba(102,126,234,0.1);
             border: none;
             cursor: pointer;
-            padding: 2px;
-            margin-top: 4px;
-            opacity: 0.5;
-            transition: opacity 0.2s;
+            padding: 5px;
+            border-radius: 50%;
+            margin-top: 6px;
+            color: #667eea;
             display: inline-flex;
+            transition: all 0.2s;
         }}
-        .dt-speak-btn:hover {{ opacity: 1; }}
-        .dt-speak-btn.speaking {{ opacity: 1; color: #667eea; }}
+        .dt-speak-btn:hover {{ background: rgba(102,126,234,0.2); }}
+        .dt-branding {{
+            text-align: center;
+            font-size: 10px;
+            color: #9ca3af;
+            padding-bottom: 10px;
+            background: #fcfcfd;
+        }}
+        .dt-branding a {{ color: #764ba2; text-decoration: none; font-weight: 600; }}
     `;
     document.head.appendChild(style);
 
@@ -301,34 +343,34 @@ async def get_widget_js(twin_id: int):
             <div id="dt-chat-header">
                 <div id="dt-header-info">
                     <div id="dt-header-dot"></div>
-                    <span>AI Assistant</span>
+                    <span>{twin_name}</span>
                 </div>
                 <button id="dt-close-button">&times;</button>
             </div>
             <div id="dt-chat-messages">
-                <div class="dt-message twin">Hi! 👋 How can I help you today?</div>
+                <div class="dt-message twin">Hi! 👋 I'm your AI assistant. How can I help you today?</div>
                 <div id="dt-typing">
                     <div class="dt-typing-dots"><span></span><span></span><span></span></div>
                 </div>
             </div>
             <div id="dt-quick-replies">
-                <button class="dt-quick-btn" data-msg="Show me the menu">📋 Menu</button>
-                <button class="dt-quick-btn" data-msg="What are your best dishes?">⭐ Best Sellers</button>
-                <button class="dt-quick-btn" data-msg="What are your prices?">💰 Pricing</button>
-                <button class="dt-quick-btn" data-msg="What is your address?">📍 Address</button>
-                <button class="dt-quick-btn" data-msg="What are your timings?">⏰ Hours</button>
-                <button class="dt-quick-btn" data-msg="Do you deliver?">🛵 Delivery</button>
+                <button class="dt-quick-btn" data-msg="Tell me about your business">🏢 About Us</button>
+                <button class="dt-quick-btn" data-msg="What services do you offer?">🛠️ Services</button>
+                <button class="dt-quick-btn" data-msg="How can I contact you?">📞 Contact</button>
             </div>
+            <div class="dt-branding">Powered by <a href="#" target="_blank">Sahayak AI</a></div>
             <div id="dt-chat-input-container">
                 <button id="dt-mic-button" title="Hold to speak">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                 </button>
-                <input type="text" id="dt-chat-input" placeholder="Type or speak..." />
-                <button id="dt-send-button">Send</button>
+                <input type="text" id="dt-chat-input" placeholder="Type a message..." />
+                <button id="dt-send-button" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
             </div>
         </div>
         <button id="dt-chat-button">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
         </button>
     `;
     document.body.appendChild(container);
@@ -348,18 +390,28 @@ async def get_widget_js(twin_id: int):
 
     const toggleChat = () => {{
         isOpen = !isOpen;
-        windowEl.style.display = isOpen ? 'flex' : 'none';
-        if (isOpen) input.focus();
+        if (isOpen) {{
+            windowEl.style.display = 'flex';
+            setTimeout(() => windowEl.classList.add('open'), 10);
+            input.focus();
+        }} else {{
+            windowEl.classList.remove('open');
+            setTimeout(() => windowEl.style.display = 'none', 300);
+        }}
     }};
 
     button.addEventListener('click', toggleChat);
     closeBtn.addEventListener('click', toggleChat);
 
+    input.addEventListener('input', () => {{
+        sendBtn.disabled = !input.value.trim();
+    }});
+
     const addMessage = (text, sender) => {{
         const msgDiv = document.createElement('div');
         msgDiv.className = `dt-message ${{sender}}`;
         msgDiv.textContent = text;
-        // Add speaker icon to AI messages
+        
         if (sender === 'twin') {{
             const speakBtn = document.createElement('button');
             speakBtn.className = 'dt-speak-btn';
@@ -368,128 +420,101 @@ async def get_widget_js(twin_id: int):
             speakBtn.onclick = () => {{ speakText(text, speakBtn); }};
             msgDiv.appendChild(speakBtn);
         }}
+        
         messagesEl.insertBefore(msgDiv, typingEl);
         messagesEl.scrollTop = messagesEl.scrollHeight;
     }};
 
-    // Text-to-Speech
     const speakText = (text, btn) => {{
         if ('speechSynthesis' in window) {{
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = 1;
-            utterance.pitch = 1;
             utterance.lang = 'en-IN';
-            btn.classList.add('speaking');
-            utterance.onend = () => {{ btn.classList.remove('speaking'); }};
+            btn.style.color = '#764ba2';
+            utterance.onend = () => {{ btn.style.color = '#667eea'; }};
             window.speechSynthesis.speak(utterance);
         }}
     }};
 
-    // Speech-to-Text (Mic)
+    // Speech Recognition
     const micBtn = document.getElementById('dt-mic-button');
-    let recognition = null;
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {{
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRec();
+        const recognition = new SpeechRec();
         recognition.continuous = false;
         recognition.interimResults = true;
         recognition.lang = 'en-IN';
 
         recognition.onresult = (event) => {{
-            let interimTranscript = '';
-            let finalTranscript = '';
-
-            for (let i = event.resultIndex; i < event.results.length; ++i) {{
-                if (event.results[i].isFinal) {{
-                    finalTranscript += event.results[i][0].transcript;
-                }} else {{
-                    interimTranscript += event.results[i][0].transcript;
-                }}
-            }}
-
-            if (interimTranscript) {{
-                input.value = interimTranscript;
-            }}
-            
-            if (finalTranscript) {{
-                input.value = finalTranscript;
+            const transcript = Array.from(event.results).map(result => result[0].transcript).join('');
+            input.value = transcript;
+            sendBtn.disabled = !transcript.trim();
+            if (event.results[0].isFinal) {{
                 micBtn.classList.remove('recording');
-                sendMessage(finalTranscript);
+                sendMessage(transcript);
             }}
         }};
-        recognition.onerror = () => {{ micBtn.classList.remove('recording'); }};
-        recognition.onend = () => {{ micBtn.classList.remove('recording'); }};
+        
+        recognition.onerror = () => micBtn.classList.remove('recording');
+        recognition.onend = () => micBtn.classList.remove('recording');
 
         micBtn.addEventListener('click', () => {{
             if (micBtn.classList.contains('recording')) {{
                 recognition.stop();
             }} else {{
                 input.value = '';
-                try {{
-                    recognition.start();
-                    micBtn.classList.add('recording');
-                }} catch (e) {{
-                    console.error(e);
-                }}
+                recognition.start();
+                micBtn.classList.add('recording');
             }}
         }});
     }} else {{
         micBtn.style.display = 'none';
     }}
 
-    const showTyping = () => {{
+    const sendMessage = async (text) => {{
+        const msg = text || input.value.trim();
+        if (!msg) return;
+
+        addMessage(msg, 'user');
+        input.value = '';
+        sendBtn.disabled = true;
+        input.disabled = true;
+        quickRepliesEl.style.display = 'none';
+        
         typingEl.style.display = 'block';
         messagesEl.scrollTop = messagesEl.scrollHeight;
-    }};
-
-    const hideTyping = () => {{
-        typingEl.style.display = 'none';
-    }};
-
-    const sendMessage = async (text) => {{
-        if (!text) text = input.value.trim();
-        if (!text) return;
-
-        addMessage(text, 'user');
-        input.value = '';
-        input.disabled = true;
-        sendBtn.disabled = true;
-        quickRepliesEl.style.display = 'none';
-        showTyping();
 
         try {{
             const response = await fetch(`${{apiUrl}}/integrations/${{twinId}}/chat`, {{
                 method: 'POST',
                 headers: {{ 'Content-Type': 'application/json' }},
-                body: JSON.stringify({{ message: text, session_id: sessionId }})
+                body: JSON.stringify({{ message: msg, session_id: sessionId }})
             }});
             const data = await response.json();
-            hideTyping();
+            typingEl.style.display = 'none';
+            
             if (response.ok && data.response) {{
                 addMessage(data.response, 'twin');
             }} else {{
-                addMessage('Sorry, having trouble connecting.', 'twin');
+                addMessage('Something went wrong. Please try again.', 'twin');
             }}
-        }} catch (error) {{
-            hideTyping();
-            addMessage('Error connecting to server.', 'twin');
+        } catch (error) {{
+            typingEl.style.display = 'none';
+            addMessage('Connection error. Please check your internet.', 'twin');
         }} finally {{
             input.disabled = false;
-            sendBtn.disabled = false;
+            sendBtn.disabled = !input.value.trim();
             input.focus();
         }}
     }};
 
     sendBtn.addEventListener('click', () => sendMessage());
-    input.addEventListener('keypress', (e) => {{
-        if (e.key === 'Enter') sendMessage();
-    }});
+    input.addEventListener('keypress', (e) => {{ if (e.key === 'Enter') sendMessage(); }});
 
     document.querySelectorAll('.dt-quick-btn').forEach(btn => {{
-        btn.addEventListener('click', () => {{
-            sendMessage(btn.getAttribute('data-msg'));
-        }});
+        btn.addEventListener('click', () => sendMessage(btn.getAttribute('data-msg')));
     }});
-}})();
+})();
     """, media_type="application/javascript")
+ation/javascript")
