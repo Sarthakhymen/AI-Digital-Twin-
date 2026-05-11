@@ -510,12 +510,12 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
     }};
 
     sendBtn.addEventListener('click', () => sendMessage());
-    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+    input.addEventListener('keypress', (e) => {{ if (e.key === 'Enter') sendMessage(); }});
 
-    document.querySelectorAll('.dt-quick-btn').forEach(btn => {
+    document.querySelectorAll('.dt-quick-btn').forEach(btn => {{
         btn.addEventListener('click', () => sendMessage(btn.getAttribute('data-msg')));
-    });
-})();
+    }});
+}})();
     """, media_type="application/javascript")
 
 
