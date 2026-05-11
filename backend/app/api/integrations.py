@@ -517,4 +517,3 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
     }});
 })();
     """, media_type="application/javascript")
-ation/javascript")
