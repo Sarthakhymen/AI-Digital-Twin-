@@ -1,99 +1,76 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper, Button, CircularProgress, Alert } from '@mui/material';
-import { io } from 'socket.io-client';
-import { QRCodeSVG } from 'qrcode.react';
-import { WhatsApp, CheckCircle, Refresh } from '@mui/icons-material';
+import React from 'react';
+import { Box, Typography, Paper, Chip } from '@mui/material';
+import { WhatsApp, Timer } from '@mui/icons-material';
 
 const WhatsAppScanner = ({ twinId }) => {
-  const [qrCode, setQrCode] = useState(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Connect to our WhatsApp Bridge Service
-    const socket = io(process.env.REACT_APP_WHATSAPP_SERVICE_URL || 'http://localhost:3001', {
-      transports: ['websocket'],
-      upgrade: false
-    });
-
-    socket.on('connect', () => {
-      console.log('Connected to WhatsApp service');
-      setIsLoading(false);
-    });
-
-    socket.on('qr', (qr) => {
-      console.log('Received QR Code');
-      setQrCode(qr);
-      setIsConnected(false);
-    });
-
-    socket.on('ready', () => {
-      console.log('WhatsApp is ready!');
-      setIsConnected(true);
-      setQrCode(null);
-    });
-
-    socket.on('connect_error', (err) => {
-      console.error('Socket connection error:', err);
-      setError('Could not connect to WhatsApp Service. Make sure it is running.');
-      setIsLoading(false);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
   return (
     <Box sx={{ mt: 2 }}>
-      {isLoading ? (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <CircularProgress />
-          <Typography sx={{ mt: 2 }}>Connecting to bridge service...</Typography>
+      <Paper 
+        elevation={0} 
+        sx={{ 
+          p: 4, 
+          textAlign: 'center', 
+          bgcolor: 'rgba(37, 211, 102, 0.05)', 
+          borderRadius: 3, 
+          border: '1px dashed rgba(37, 211, 102, 0.3)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Coming Soon Badge */}
+        <Box sx={{ position: 'absolute', top: 20, right: -35, transform: 'rotate(45deg)', width: 150, z-index: 1 }}>
+          <Chip 
+            label="COMING SOON" 
+            color="success" 
+            size="small" 
+            sx={{ fontWeight: 'bold', fontSize: '10px', borderRadius: 0, width: '100%' }} 
+          />
         </Box>
-      ) : error ? (
-        <Alert severity="error" action={
-          <Button color="inherit" size="small" onClick={() => window.location.reload()}>
-            Retry
-          </Button>
-        }>
-          {error}
-        </Alert>
-      ) : isConnected ? (
-        <Paper elevation={0} sx={{ p: 3, textAlign: 'center', bgcolor: '#e3f2fd', borderRadius: 2, border: '1px solid #90caf9' }}>
-          <CheckCircle sx={{ fontSize: 48, color: '#2e7d32', mb: 1 }} />
-          <Typography variant="h6" color="primary">WhatsApp Connected!</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Your Digital Twin is now live on your WhatsApp number.
-          </Typography>
-        </Paper>
-      ) : qrCode ? (
-        <Paper elevation={0} sx={{ p: 3, textAlign: 'center', bgcolor: '#f5f5f5', borderRadius: 2, border: '1px dashed #ccc' }}>
-          <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600 }}>
-            Step 4: Scan to Link WhatsApp
-          </Typography>
-          <Box sx={{ p: 2, bgcolor: 'white', display: 'inline-block', borderRadius: 2, mb: 2 }}>
-            <QRCodeSVG value={qrCode} size={200} />
+
+        <WhatsApp sx={{ fontSize: 48, color: '#25D366', mb: 2, opacity: 0.8 }} />
+        
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+          WhatsApp Integration
+        </Typography>
+        
+        <Box 
+          sx={{ 
+            p: 2, 
+            bgcolor: 'white', 
+            display: 'inline-block', 
+            borderRadius: 2, 
+            mb: 2, 
+            position: 'relative',
+            filter: 'blur(4px)',
+            opacity: 0.3,
+            userSelect: 'none'
+          }}
+        >
+          {/* Dummy QR Code Pattern */}
+          <Box sx={{ width: 160, height: 160, display: 'flex', flexWrap: 'wrap' }}>
+            {Array.from({ length: 64 }).map((_, i) => (
+              <Box 
+                key={i} 
+                sx={{ 
+                  width: 20, height: 20, 
+                  bgcolor: Math.random() > 0.5 ? '#000' : 'transparent' 
+                }} 
+              />
+            ))}
           </Box>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Open WhatsApp on your phone {'>'} Linked Devices {'>'} Link a Device
-          </Typography>
-          <Button 
-            variant="outlined" 
-            startIcon={<Refresh />} 
-            size="small"
-            onClick={() => window.location.reload()}
-          >
-            Refresh QR
-          </Button>
-        </Paper>
-      ) : (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <WhatsApp sx={{ fontSize: 48, color: '#ccc', mb: 1 }} />
-          <Typography color="text.secondary">Waiting for QR Code...</Typography>
         </Box>
-      )}
+
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mt: 1 }}>
+          <Timer fontSize="small" color="action" />
+          <Typography variant="body2" color="text.secondary">
+            We are working on a stable, 24/7 cloud connection for WhatsApp.
+          </Typography>
+        </Box>
+        
+        <Typography variant="caption" display="block" sx={{ mt: 2, color: 'text.disabled' }}>
+          Expected Release: Next Update
+        </Typography>
+      </Paper>
     </Box>
   );
 };

@@ -499,7 +499,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             }} else {{
                 addMessage('Something went wrong. Please try again.', 'twin');
             }}
-        } catch (error) {{
+        }} catch (error) {{
             typingEl.style.display = 'none';
             addMessage('Connection error. Please check your internet.', 'twin');
         }} finally {{
