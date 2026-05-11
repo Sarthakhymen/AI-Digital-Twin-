@@ -5,10 +5,11 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api/v1';
 
-const GoogleSignIn = ({ onLoginSuccess, onLoginError }) => {
+const GoogleSignIn = ({ onLoginSuccess, onLoginError, onLoginStart }) => {
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
+        if (onLoginStart) onLoginStart();
         console.log('Google Auth success, exchanging code...');
         const response = await axios.post(`${API_URL}/auth/google`, {
           code: tokenResponse.code,

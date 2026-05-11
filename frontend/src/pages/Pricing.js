@@ -1,0 +1,225 @@
+import React from 'react';
+import { 
+  Box, Typography, Container, Grid, Card, Button, 
+  List, ListItem, ListItemIcon, ListItemText, Switch, 
+  Chip, useTheme, useMediaQuery, Alpha 
+} from '@mui/material';
+import { Check, Star, Speed, SupportAgent, CloudDone, RocketLaunch } from '@mui/icons-material';
+import { motion } from 'framer-motion';
+import Navbar from '../components/Navbar';
+
+const Pricing = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [annual, setAnnual] = React.useState(true);
+
+  const plans = [
+    {
+      title: "Free",
+      price: "0",
+      description: "Perfect for exploring the possibilities of AI Digital Twins.",
+      features: [
+        "1 Digital Twin",
+        "100 Messages / month",
+        "Basic Document Training",
+        "Standard Web Widget",
+        "Community Support"
+      ],
+      buttonText: "Get Started",
+      premium: false,
+      icon: <RocketLaunch color="primary" />
+    },
+    {
+      title: "Pro",
+      price: annual ? "1,999" : "2,499",
+      description: "Ideal for growing businesses and professional creators.",
+      features: [
+        "5 Digital Twins",
+        "Unlimited Messages",
+        "Advanced Knowledge Base",
+        "WhatsApp Integration",
+        "Voice Agent Access",
+        "Priority Email Support"
+      ],
+      buttonText: "Go Pro",
+      premium: true,
+      badge: "Most Popular",
+      icon: <Star sx={{ color: '#F59E0B' }} />
+    },
+    {
+      title: "Enterprise",
+      price: "Custom",
+      description: "Tailored solutions for large scale deployments and APIs.",
+      features: [
+        "Unlimited Digital Twins",
+        "Custom API Access",
+        "Dedicated Account Manager",
+        "White-label Options",
+        "SLA Guarantee",
+        "On-premise Deployment"
+      ],
+      buttonText: "Contact Sales",
+      premium: false,
+      icon: <SupportAgent color="secondary" />
+    }
+  ];
+
+  return (
+    <Box sx={{ bgcolor: '#0F172A', minHeight: '100vh', color: 'white', pb: 10 }}>
+      <Navbar />
+      
+      <Container maxWidth="lg" sx={{ pt: 12 }}>
+        <Box sx={{ textAlign: 'center', mb: 8 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Typography variant="overline" sx={{ color: '#6366F1', fontWeight: 700, letterSpacing: 2 }}>
+              PRICING PLANS
+            </Typography>
+            <Typography variant="h2" sx={{ fontWeight: 900, mb: 3, background: 'linear-gradient(to right, #FFF, #94A3B8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Scale your digital presence.
+            </Typography>
+            <Typography variant="h6" sx={{ color: '#94A3B8', mb: 4, maxWidth: '600px', mx: 'auto' }}>
+              Choose a plan that fits your ambition. From personal twins to enterprise scale automation.
+            </Typography>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+              <Typography sx={{ color: annual ? '#94A3B8' : '#FFF' }}>Monthly</Typography>
+              <Switch 
+                checked={annual} 
+                onChange={() => setAnnual(!annual)}
+                sx={{ 
+                  '& .MuiSwitch-switchBase.Mui-checked': { color: '#6366F1' },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#6366F1' }
+                }}
+              />
+              <Typography sx={{ color: annual ? '#FFF' : '#94A3B8' }}>
+                Yearly <Chip label="Save 20%" size="small" sx={{ bgcolor: 'rgba(99, 102, 241, 0.2)', color: '#818CF8', fontWeight: 700, ml: 1 }} />
+              </Typography>
+            </Box>
+          </motion.div>
+        </Box>
+
+        <Grid container spacing={4} alignItems="stretch">
+          {plans.map((plan, index) => (
+            <Grid item xs={12} md={4} key={index}>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                style={{ height: '100%' }}
+              >
+                <Card sx={{ 
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  p: 4,
+                  bgcolor: plan.premium ? 'rgba(30, 41, 59, 0.7)' : 'transparent',
+                  border: plan.premium ? '2px solid #6366F1' : '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '24px',
+                  position: 'relative',
+                  overflow: 'visible',
+                  backdropFilter: 'blur(10px)',
+                  transition: 'transform 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-10px)',
+                    boxShadow: plan.premium ? '0 20px 40px rgba(99, 102, 241, 0.2)' : '0 20px 40px rgba(0,0,0,0.3)'
+                  }
+                }}>
+                  {plan.badge && (
+                    <Chip 
+                      label={plan.badge} 
+                      sx={{ 
+                        position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)',
+                        bgcolor: '#6366F1', color: 'white', fontWeight: 800, px: 2
+                      }} 
+                    />
+                  )}
+
+                  <Box sx={{ mb: 4 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                      {plan.icon}
+                      <Typography variant="h5" sx={{ fontWeight: 800 }}>{plan.title}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+                      <Typography variant="h3" sx={{ fontWeight: 900 }}>
+                        {plan.price !== "Custom" ? `₹${plan.price}` : plan.price}
+                      </Typography>
+                      {plan.price !== "Custom" && (
+                        <Typography sx={{ color: '#94A3B8', ml: 1 }}>
+                          /{annual ? 'year' : 'month'}
+                        </Typography>
+                      )}
+                    </Box>
+                    <Typography sx={{ color: '#94A3B8', mt: 2, fontSize: '0.95rem' }}>
+                      {plan.description}
+                    </Typography>
+                  </Box>
+
+                  <List sx={{ mb: 4, flexGrow: 1 }}>
+                    {plan.features.map((feature, i) => (
+                      <ListItem key={i} disableGutters sx={{ py: 0.75 }}>
+                        <ListItemIcon sx={{ minWidth: 32 }}>
+                          <Check sx={{ color: '#6366F1', fontSize: 20 }} />
+                        </ListItemIcon>
+                        <ListItemText 
+                          primary={feature} 
+                          primaryTypographyProps={{ sx: { color: '#CBD5E1', fontSize: '0.95rem' } }} 
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+
+                  <Button 
+                    fullWidth 
+                    variant={plan.premium ? "contained" : "outlined"}
+                    sx={{ 
+                      py: 1.5, 
+                      borderRadius: '12px', 
+                      fontWeight: 800,
+                      textTransform: 'none',
+                      fontSize: '1rem',
+                      ...(plan.premium ? {
+                        bgcolor: '#6366F1',
+                        '&:hover': { bgcolor: '#4F46E5' }
+                      } : {
+                        borderColor: 'rgba(255,255,255,0.2)',
+                        color: 'white',
+                        '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.05)' }
+                      })
+                    }}
+                  >
+                    {plan.buttonText}
+                  </Button>
+                </Card>
+              </motion.div>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Box sx={{ mt: 10, p: 4, bgcolor: 'rgba(99, 102, 241, 0.05)', borderRadius: '24px', border: '1px dashed rgba(99, 102, 241, 0.3)' }}>
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={8}>
+              <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>
+                Secure Payments Powered by Dodo Payments
+              </Typography>
+              <Typography sx={{ color: '#94A3B8' }}>
+                We support UPI, Credit/Debit Cards, and Netbanking. All transactions are secure and tax-compliant globally. No extra fees for Indian customers.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={4} sx={{ textAlign: 'right' }}>
+              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                <Chip label="UPI Supported" variant="outlined" sx={{ color: '#10B981', borderColor: '#10B981' }} />
+                <Chip label="Secure" variant="outlined" sx={{ color: '#3B82F6', borderColor: '#3B82F6' }} />
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+      </Container>
+    </Box>
+  );
+};
+
+export default Pricing;

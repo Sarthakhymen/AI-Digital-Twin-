@@ -8,6 +8,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import GoogleSignIn from '../components/GoogleSignIn';
+import LoginLoading from '../components/LoginLoading';
 
 const Register = () => {
   const theme = useTheme();
@@ -19,6 +20,7 @@ const Register = () => {
     confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, loading, register, login, setAuthData } = useAuth();
@@ -39,17 +41,20 @@ const Register = () => {
     }
 
     try {
+      setIsSubmitting(true);
       await register(formData);
       const result = await login(formData.email, formData.password);
       if (result.success) {
         navigate('/dashboard');
       } else {
         setError(result.error || 'Login failed after registration');
+        setIsSubmitting(false);
       }
     } catch (err) {
       console.error('Registration error:', err);
       const detail = err.response?.data?.detail;
       setError(typeof detail === 'string' ? detail : 'Registration failed. Please try again.');
+      setIsSubmitting(false);
     }
   };
 
@@ -60,6 +65,7 @@ const Register = () => {
       bgcolor: '#F8FAFC',
       color: '#1E293B'
     }}>
+      <LoginLoading open={isSubmitting} />
       {/* Left Side - Value Prop (Hidden on Mobile) */}
       {!isMobile && (
         <Box sx={{ 
@@ -227,11 +233,15 @@ const Register = () => {
           </Box>
 
           <GoogleSignIn
+            onLoginStart={() => setIsSubmitting(true)}
             onLoginSuccess={(data) => {
               setAuthData(data);
               navigate('/dashboard');
             }}
-            onLoginError={(error) => setError(error)}
+            onLoginError={(error) => {
+              setError(error);
+              setIsSubmitting(false);
+            }}
           />
 
           <Box sx={{ mt: 4, textAlign: 'center' }}>

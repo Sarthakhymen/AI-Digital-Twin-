@@ -8,12 +8,14 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import GoogleSignIn from '../components/GoogleSignIn';
+import LoginLoading from '../components/LoginLoading';
 
 const Login = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, loading, login, setAuthData } = useAuth();
@@ -34,15 +36,18 @@ const Login = () => {
     }
 
     try {
+      setIsSubmitting(true);
       const result = await login(formData.email, formData.password);
       if (result.success) {
         navigate('/dashboard');
       } else {
         setError(result.error || 'Login failed');
+        setIsSubmitting(false);
       }
     } catch (err) {
       console.error('Login error:', err);
       setError('Login failed. Please try again.');
+      setIsSubmitting(false);
     }
   };
 
@@ -53,6 +58,7 @@ const Login = () => {
       bgcolor: '#F8FAFC',
       color: '#1E293B'
     }}>
+      <LoginLoading open={isSubmitting} />
       {/* Left Side - Hero/Marketing (Hidden on Mobile) */}
       {!isMobile && (
         <Box sx={{ 
@@ -224,11 +230,15 @@ const Login = () => {
           </Box>
 
           <GoogleSignIn
+            onLoginStart={() => setIsSubmitting(true)}
             onLoginSuccess={(data) => {
               setAuthData(data);
               navigate('/dashboard');
             }}
-            onLoginError={(error) => setError(error)}
+            onLoginError={(error) => {
+              setError(error);
+              setIsSubmitting(false);
+            }}
           />
 
           <Box sx={{ mt: 4, textAlign: 'center' }}>

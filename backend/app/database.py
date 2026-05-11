@@ -15,10 +15,12 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./digital_twin.db")
 
 engine = create_engine(
     DATABASE_URL, 
-    echo=True, 
+    echo=False,           # Disable SQL logging in production for speed
+    pool_size=10 if "sqlite" not in DATABASE_URL else 5, 
+    max_overflow=20 if "sqlite" not in DATABASE_URL else 10,
     connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
-    pool_pre_ping=True,  # Checks connection before using it
-    pool_recycle=300     # Recycles connection every 5 minutes
+    pool_pre_ping=True,   # Checks connection before using it
+    pool_recycle=300      # Recycles connection every 5 minutes
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
-import requests
+import httpx
 from ..database import get_db
 from ..services import auth_service
 from ..models import User
@@ -31,7 +31,7 @@ oauth.register(
 async def google_auth_frontend(data: GoogleLogin, db: Session = Depends(get_db)):
     """Handle Google OAuth from frontend (exchanging code for token)"""
     try:
-        # 1. Exchange code for tokens
+        # 1. Exchange code for tokens using async httpx
         token_endpoint = "https://oauth2.googleapis.com/token"
         payload = {
             "code": data.code,
@@ -41,21 +41,22 @@ async def google_auth_frontend(data: GoogleLogin, db: Session = Depends(get_db))
             "grant_type": "authorization_code",
         }
         
-        response = requests.post(token_endpoint, data=payload)
-        if not response.ok:
-            raise HTTPException(status_code=400, detail=f"Failed to exchange code: {response.text}")
+        async with httpx.AsyncClient() as client:
+            response = await client.post(token_endpoint, data=payload)
+            if response.status_code != 200:
+                raise HTTPException(status_code=400, detail=f"Failed to exchange code: {response.text}")
+                
+            token_data = response.json()
+            google_access_token = token_data.get("access_token")
             
-        token_data = response.json()
-        google_access_token = token_data.get("access_token")
-        
-        # 2. Get user info using the access token
-        userinfo_endpoint = "https://www.googleapis.com/oauth2/v3/userinfo"
-        userinfo_response = requests.get(userinfo_endpoint, headers={"Authorization": f"Bearer {google_access_token}"})
-        
-        if not userinfo_response.ok:
-            raise HTTPException(status_code=400, detail="Failed to get user info from Google")
+            # 2. Get user info using the access token
+            userinfo_endpoint = "https://www.googleapis.com/oauth2/v3/userinfo"
+            userinfo_response = await client.get(userinfo_endpoint, headers={"Authorization": f"Bearer {google_access_token}"})
             
-        user_info = userinfo_response.json()
+            if userinfo_response.status_code != 200:
+                raise HTTPException(status_code=400, detail="Failed to get user info from Google")
+                
+            user_info = userinfo_response.json()
         
         # 3. Handle user creation/update
         email = user_info.get('email')
