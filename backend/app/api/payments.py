@@ -10,8 +10,12 @@ from typing import Optional
 
 router = APIRouter(prefix="/payments", tags=["Payments"])
 
-DODO_API_KEY = os.getenv("DODO_PAYMENTS_API_KEY")
-DODO_BASE_URL = "https://api.dodopayments.com/v1"
+DODO_API_KEY = os.getenv("DODO_PAYMENTS_API_KEY", "")
+# Determine base URL based on API key prefix (test_ or live_)
+if DODO_API_KEY.startswith("test_"):
+    DODO_BASE_URL = "https://test.dodopayments.com"
+else:
+    DODO_BASE_URL = "https://live.dodopayments.com"
 
 class CheckoutRequest(BaseModel):
     plan_type: str
@@ -38,15 +42,19 @@ async def create_checkout(
         raise HTTPException(status_code=400, detail="Invalid plan type or Product ID not set")
 
     payload = {
-        "product_id": product_id,
-        "quantity": 1,
+        "product_cart": [
+            {
+                "product_id": product_id,
+                "quantity": 1
+            }
+        ],
         "customer": {
             "email": current_user.email,
             "name": current_user.full_name or "Valued Customer"
         },
         "billing_cycle": request.billing_cycle,
-        "return_url": os.getenv("FRONTEND_URL", "https://ai-digital-twin-seven.vercel.app") + "/dashboard?payment=success",
-        "cancel_url": os.getenv("FRONTEND_URL", "https://ai-digital-twin-seven.vercel.app") + "/pricing?payment=cancelled",
+        "return_url": os.getenv("FRONTEND_URL", "https://ai-digital-twin-seven.vercel.app").rstrip('/') + "/dashboard?payment=success",
+        "cancel_url": os.getenv("FRONTEND_URL", "https://ai-digital-twin-seven.vercel.app").rstrip('/') + "/pricing?payment=cancelled",
         "metadata": {
             "user_id": str(current_user.id),
             "plan_type": request.plan_type
