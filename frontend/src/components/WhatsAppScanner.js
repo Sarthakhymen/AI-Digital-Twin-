@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper, Chip, CircularProgress, Button, Alert } from '@mui/material';
+import { Box, Typography, Paper, CircularProgress, Button, Alert } from '@mui/material';
 import { WhatsApp, CheckCircle, Sync, ErrorOutline } from '@mui/icons-material';
 import { io } from 'socket.io-client';
 import api from '../services/api';

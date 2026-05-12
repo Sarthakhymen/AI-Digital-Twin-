@@ -4,7 +4,7 @@ import {
   List, ListItem, ListItemIcon, ListItemText, Switch, 
   Chip, CircularProgress
 } from '@mui/material';
-import { Check, Star, SupportAgent, RocketLaunch, Diamond } from '@mui/icons-material';
+import { Check, Star, RocketLaunch, Diamond } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import axios from 'axios';
