@@ -7,7 +7,7 @@ import {
 import { Check, Star, RocketLaunch, Diamond } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
-import axios from 'axios';
+import api from '../services/api';
 
 const Pricing = () => {
   const [annual, setAnnual] = useState(true);
@@ -23,13 +23,12 @@ const Pricing = () => {
         return;
       }
 
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api/v1/payments/create-checkout`,
+      const response = await api.post(
+        '/payments/create-checkout',
         { 
           plan_type: planType,
           billing_cycle: annual ? 'yearly' : 'monthly'
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        }
       );
 
       if (response.data.checkout_url) {

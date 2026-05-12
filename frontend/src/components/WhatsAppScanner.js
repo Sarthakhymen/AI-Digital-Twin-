@@ -3,6 +3,7 @@ import { Box, Typography, Paper, CircularProgress, Button, Alert } from '@mui/ma
 import { WhatsApp, CheckCircle, Sync, ErrorOutline } from '@mui/icons-material';
 import { io } from 'socket.io-client';
 import api from '../services/api';
+import axios from 'axios';
 
 const BRIDGE_URL = process.env.REACT_APP_WHATSAPP_BRIDGE_URL || 'http://localhost:3001';
 
@@ -26,7 +27,7 @@ const WhatsAppScanner = ({ twinId }) => {
     socket.on('connect', () => {
       console.log("Connected to WhatsApp Bridge");
       // Request a connection for this user
-      api.post(`${BRIDGE_URL}/connect`, { userId: String(userId) })
+      axios.post(`${BRIDGE_URL}/connect`, { userId: String(userId) })
         .then(() => setStatus('connecting'))
         .catch(() => setStatus('error'));
     });
