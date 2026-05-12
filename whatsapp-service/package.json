@@ -1,18 +1,22 @@
 {
   "name": "whatsapp-service",
   "version": "1.0.0",
-  "description": "WhatsApp Web Bridge for AI Digital Twin",
+  "description": "WhatsApp Multi-Device Bridge (Baileys) for AI Digital Twin",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
-    "whatsapp-web.js": "^1.23.0",
-    "qrcode-terminal": "^0.12.0",
+    "@whiskeysockets/baileys": "^6.5.0",
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "socket.io": "^4.7.2",
-    "puppeteer": "^21.5.0"
+    "qrcode": "^1.5.3",
+    "pino": "^8.16.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }

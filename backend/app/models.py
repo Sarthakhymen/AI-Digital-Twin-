@@ -20,6 +20,8 @@ class User(Base):
     oauth_provider = Column(String(50))  # 'google', 'microsoft', etc.
     oauth_id = Column(String(255))  # Provider's user ID
     profile_picture = Column(String(500))  # URL to profile image
+    subscription_plan = Column(String(50), default="starter")  # starter, pro, enterprise
+    subscription_status = Column(String(50), default="active")  # active, past_due, canceled
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     

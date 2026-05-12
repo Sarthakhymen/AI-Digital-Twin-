@@ -1,122 +1,121 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
-const axios = require('axios');
+const { 
+    default: makeWASocket, 
+    useMultiFileAuthState, 
+    DisconnectReason,
+    fetchLatestBaileysVersion,
+    makeCacheableSignalKeyStore
+} = require('@whiskeysockets/baileys');
+const { Boom } = require('@hapi/boom');
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const QRCode = require('qrcode');
+const axios = require('axios');
+const pino = require('pino');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    },
-    transports: ['websocket']
-});
-
-app.get('/', (req, res) => {
-    res.send('WhatsApp Bridge is Running!');
-});
-
-app.get('/health', (req, res) => {
-    res.json({ status: 'ok', message: 'Bridge is alive' });
+    cors: { origin: "*" }
 });
 
 const PORT = process.env.PORT || 3001;
-const BACKEND_URL = process.env.BACKEND_URL || 'https://ai-digital-twin-2le9.onrender.com';
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
 
+app.use(express.json());
 
-const client = new Client({
-    authStrategy: new LocalAuth({
-        dataPath: './sessions'
-    }),
-    puppeteer: {
-        headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--no-first-run',
-            '--no-zygote',
-            '--disable-gpu'
-        ],
-    }
-});
+// Multi-session storage (for different owners)
+const sessions = new Map();
 
-// Socket.io connection
-io.on('connection', (socket) => {
-    console.log('User connected to WhatsApp Socket');
-});
+async function startSession(userId) {
+    const sessionDir = path.join(__dirname, 'auth', userId);
+    const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+    const { version } = await fetchLatestBaileysVersion();
 
-client.on('qr', (qr) => {
-    console.log('🔄 QR Code generated');
-    qrcode.generate(qr, { small: true });
-    io.emit('qr', qr); // Send QR to frontend
-});
+    const sock = makeWASocket({
+        version,
+        logger: pino({ level: 'silent' }),
+        auth: {
+            creds: state.creds,
+            keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })),
+        },
+        printQRInTerminal: false,
+    });
 
-client.on('ready', () => {
-    console.log('✅ WhatsApp Client is ready!');
-    io.emit('ready', { message: 'WhatsApp is connected!' });
-});
+    sessions.set(userId, sock);
 
-client.on('authenticated', () => {
-    console.log('✅ Authenticated');
-    io.emit('authenticated', true);
-});
+    sock.ev.on('connection.update', async (update) => {
+        const { connection, lastDisconnect, qr } = update;
 
-client.on('message', async (msg) => {
-    // 1. IMPORTANT: Check if message is from the owner themselves
-    if (msg.fromMe) {
-        console.log('Owner is typing, AI staying quiet.');
-        return;
-    }
-
-    // 2. Ignore groups
-    if (msg.from.includes('@g.us')) return;
-
-    console.log(`📩 Message from ${msg.from}: ${msg.body}`);
-
-    // 3. Command to manually stop AI for a chat
-    if (msg.body === '/stop') {
-        console.log('AI stopped for this chat by command');
-        return;
-    }
-
-    try {
-        // 4. SMART FILTER: Only reply to UNSAVED numbers (New Customers)
-        // This prevents AI from replying to family/friends in your contacts
-        // const contact = await msg.getContact();
-        // if (contact.isMyContact) {
-        //     console.log('User is in contacts, skipping AI reply.');
-        //     return;
-        // }
-
-        const response = await axios.post(`${BACKEND_URL}/api/v1/whatsapp/process`, {
-            from: msg.from,
-            body: msg.body
-        });
-
-        if (response.data && response.data.response) {
-
-            msg.reply(response.data.response);
+        if (qr) {
+            console.log(`[QR] Generating for user: ${userId}`);
+            const qrDataURL = await QRCode.toDataURL(qr);
+            io.emit('qr', { userId, qr: qrDataURL });
         }
-    } catch (error) {
-        console.error('❌ Backend Error:', error.message);
-        if (error.code === 'ECONNREFUSED') {
-            console.error('👉 Make sure your Python backend is running on http://localhost:8000');
+
+        if (connection === 'close') {
+            const shouldReconnect = (lastDisconnect.error instanceof Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
+            console.log(`[Session] Closed for ${userId}. Reconnecting: ${shouldReconnect}`);
+            if (shouldReconnect) startSession(userId);
+            else sessions.delete(userId);
+        } else if (connection === 'open') {
+            console.log(`[Session] Connected for ${userId}`);
+            io.emit('ready', { userId });
         }
-    }
+    });
+
+    sock.ev.on('creds.update', saveCreds);
+
+    sock.ev.on('messages.upsert', async ({ messages, type }) => {
+        if (type !== 'notify') return;
+        
+        for (const msg of messages) {
+            if (!msg.message || msg.key.fromMe) continue;
+
+            const sender = msg.key.remoteJid;
+            const text = msg.message.conversation || msg.message.extendedTextMessage?.text;
+
+            if (text) {
+                console.log(`[Message] From ${sender}: ${text}`);
+                
+                try {
+                    // Send to backend AI bridge
+                    const response = await axios.post(`${BACKEND_URL}/api/v1/whatsapp/bridge`, {
+                        user_id: userId,
+                        sender: sender,
+                        text: text
+                    });
+
+                    if (response.data && response.data.reply) {
+                        await sock.sendMessage(sender, { text: response.data.reply });
+                    }
+                } catch (error) {
+                    console.error('[Backend Error]', error.message);
+                }
+            }
+        }
+    });
+
+    return sock;
+}
+
+// REST Endpoints
+app.get('/status/:userId', (req, res) => {
+    const { userId } = req.params;
+    const isConnected = sessions.has(userId) && sessions.get(userId).ws?.readyState === 1;
+    res.json({ connected: isConnected });
 });
 
+app.post('/connect', async (req, res) => {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ error: 'userId required' });
+    
+    await startSession(userId);
+    res.json({ status: 'initializing' });
+});
 
-// Start the client
-client.initialize();
-
-// Start the server
 server.listen(PORT, () => {
-    console.log(`🚀 WhatsApp Bridge Service running on http://localhost:${PORT}`);
+    console.log(`WhatsApp Bridge running on port ${PORT}`);
 });
-

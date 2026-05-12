@@ -40,6 +40,44 @@ async def process_whatsapp_direct(request: dict, db: Session = Depends(get_db)):
     
     return {"response": result.get("response", "Sorry, something went wrong.")}
 
+@router.post("/bridge")
+async def process_whatsapp_bridge(request: dict, db: Session = Depends(get_db)):
+    """
+    Endpoint for Baileys WhatsApp Bridge.
+    Expects {"user_id": "...", "sender": "...", "text": "..."}
+    """
+    user_id = request.get("user_id")
+    sender = request.get("sender")
+    message_text = request.get("text")
+    
+    print(f"Bridge message from {sender} for user {user_id}: {message_text}")
+    
+    # Find the active twin for this user
+    try:
+        u_id = int(user_id)
+    except:
+        u_id = 0
+
+    active_twin = db.query(DigitalTwin).filter(
+        DigitalTwin.user_id == u_id,
+        DigitalTwin.status == "active"
+    ).order_by(DigitalTwin.id.desc()).first()
+
+    if not active_twin:
+        active_twin = db.query(DigitalTwin).filter(DigitalTwin.status == "active").first()
+        if not active_twin:
+            return {"reply": "Sorry, no active digital twin found."}
+
+    result = await integration_service.process_public_message(
+        db=db,
+        twin_id=active_twin.id,
+        message=message_text,
+        customer_name="WhatsApp User",
+        session_id=sender
+    )
+    
+    return {"reply": result.get("response", "Sorry, I'm having trouble thinking right now.")}
+
 @router.post("/webhook")
 async def whatsapp_webhook(
     Body: str = Form(...),

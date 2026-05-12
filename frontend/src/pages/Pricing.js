@@ -1,64 +1,101 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Box, Typography, Container, Grid, Card, Button, 
   List, ListItem, ListItemIcon, ListItemText, Switch, 
-  Chip
+  Chip, CircularProgress
 } from '@mui/material';
-import { Check, Star, SupportAgent, RocketLaunch } from '@mui/icons-material';
+import { Check, Star, SupportAgent, RocketLaunch, Diamond } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
+import axios from 'axios';
 
 const Pricing = () => {
-  const [annual, setAnnual] = React.useState(true);
+  const [annual, setAnnual] = useState(true);
+  const [loading, setLoading] = useState(null);
+
+  const handlePurchase = async (planType) => {
+    try {
+      setLoading(planType);
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api/v1/payments/create-checkout`,
+        { 
+          plan_type: planType,
+          billing_cycle: annual ? 'yearly' : 'monthly'
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.checkout_url) {
+        window.location.href = response.data.checkout_url;
+      }
+    } catch (error) {
+      console.error('Payment Error:', error);
+      alert('Bhai, payment session start nahi ho paya. Ek baar check kar!');
+    } finally {
+      setLoading(null);
+    }
+  };
 
   const plans = [
     {
-      title: "Free",
-      price: "0",
-      description: "Perfect for exploring the possibilities of AI Digital Twins.",
+      id: "starter",
+      title: "Starter",
+      price: annual ? "9,999" : "999",
+      description: "Everything you need to launch your first AI Digital Twin.",
       features: [
         "1 Digital Twin",
-        "100 Messages / month",
-        "Basic Document Training",
-        "Standard Web Widget",
-        "Community Support"
+        "1,000 Messages / month",
+        "Document Training (PDF, TXT)",
+        "Premium Web Widget",
+        "Email Support",
+        "Basic Analytics"
       ],
-      buttonText: "Get Started",
+      buttonText: "Start Growth",
       premium: false,
       icon: <RocketLaunch color="primary" />
     },
     {
-      title: "Pro",
-      price: annual ? "1,999" : "2,499",
-      description: "Ideal for growing businesses and professional creators.",
+      id: "pro",
+      title: "Business Pro",
+      price: annual ? "24,999" : "2,499",
+      description: "Advanced automation for businesses that want to scale fast.",
       features: [
         "5 Digital Twins",
         "Unlimited Messages",
-        "Advanced Knowledge Base",
         "WhatsApp Integration",
         "Voice Agent Access",
-        "Priority Email Support"
+        "Meeting Scheduling",
+        "Priority 24/7 Support",
+        "Advanced Training"
       ],
-      buttonText: "Go Pro",
+      buttonText: "Upgrade to Pro",
       premium: true,
       badge: "Most Popular",
       icon: <Star sx={{ color: '#F59E0B' }} />
     },
     {
+      id: "enterprise",
       title: "Enterprise",
       price: "Custom",
-      description: "Tailored solutions for large scale deployments and APIs.",
+      description: "Full-scale AI transformation for large organizations.",
       features: [
-        "Unlimited Digital Twins",
+        "Unlimited Twins",
+        "White-label Solution",
         "Custom API Access",
-        "Dedicated Account Manager",
-        "White-label Options",
-        "SLA Guarantee",
-        "On-premise Deployment"
+        "Dedicated Manager",
+        "On-premise Options",
+        "SLA Guarantee"
       ],
       buttonText: "Contact Sales",
       premium: false,
-      icon: <SupportAgent color="secondary" />
+      icon: <Diamond sx={{ color: '#C084FC' }} />
     }
   ];
 
@@ -74,13 +111,13 @@ const Pricing = () => {
             transition={{ duration: 0.6 }}
           >
             <Typography variant="overline" sx={{ color: '#6366F1', fontWeight: 700, letterSpacing: 2 }}>
-              PRICING PLANS
+              PREMIUM ACCESS
             </Typography>
             <Typography variant="h2" sx={{ fontWeight: 900, mb: 3, background: 'linear-gradient(to right, #FFF, #94A3B8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Scale your digital presence.
+              Invest in your digital future.
             </Typography>
             <Typography variant="h6" sx={{ color: '#94A3B8', mb: 4, maxWidth: '600px', mx: 'auto' }}>
-              Choose a plan that fits your ambition. From personal twins to enterprise scale automation.
+              No free tiers, just pure performance. Choose the plan that aligns with your business goals.
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
@@ -173,6 +210,8 @@ const Pricing = () => {
                   <Button 
                     fullWidth 
                     variant={plan.premium ? "contained" : "outlined"}
+                    disabled={loading !== null}
+                    onClick={() => plan.id !== 'enterprise' ? handlePurchase(plan.id) : (window.location.href = 'mailto:sales@shavarn.in')}
                     sx={{ 
                       py: 1.5, 
                       borderRadius: '12px', 
@@ -189,7 +228,7 @@ const Pricing = () => {
                       })
                     }}
                   >
-                    {plan.buttonText}
+                    {loading === plan.id ? <CircularProgress size={24} color="inherit" /> : plan.buttonText}
                   </Button>
                 </Card>
               </motion.div>
@@ -204,13 +243,13 @@ const Pricing = () => {
                 Secure Payments Powered by Dodo Payments
               </Typography>
               <Typography sx={{ color: '#94A3B8' }}>
-                We support UPI, Credit/Debit Cards, and Netbanking. All transactions are secure and tax-compliant globally. No extra fees for Indian customers.
+                We support UPI, Credit/Debit Cards, and Netbanking. All transactions are secure and tax-compliant globally via Dodo Payments.
               </Typography>
             </Grid>
             <Grid item xs={12} md={4} sx={{ textAlign: 'right' }}>
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                 <Chip label="UPI Supported" variant="outlined" sx={{ color: '#10B981', borderColor: '#10B981' }} />
-                <Chip label="Secure" variant="outlined" sx={{ color: '#3B82F6', borderColor: '#3B82F6' }} />
+                <Chip label="Zero Compliance Hassle" variant="outlined" sx={{ color: '#3B82F6', borderColor: '#3B82F6' }} />
               </Box>
             </Grid>
           </Grid>
@@ -221,3 +260,4 @@ const Pricing = () => {
 };
 
 export default Pricing;
+
