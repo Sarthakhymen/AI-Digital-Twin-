@@ -2,12 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Header, Backgrou
 from sqlalchemy.orm import Session
 import os
 import httpx
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from datetime import datetime
 from ..database import get_db
 from ..models import User, ManualPayment
 from ..api.auth import get_current_user
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Any
-from twilio.rest import Client
 
 router = APIRouter(prefix="/payments", tags=["Payments"])
 
@@ -18,38 +21,95 @@ if DODO_API_KEY and DODO_API_KEY.startswith("test_"):
 else:
     DODO_BASE_URL = "https://live.dodopayments.com"
 
-TWILIO_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_WHATSAPP = os.getenv("TWILIO_WHATSAPP_NUMBER")
-OWNER_WHATSAPP = "whatsapp:+919625410112"
+# Email Notification Config
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "sarthak2005shavarn@gmail.com")
+SMTP_EMAIL = os.getenv("SMTP_EMAIL", "sarthak2005shavarn@gmail.com")
+SMTP_PASSWORD = os.getenv("SMTP_APP_PASSWORD", "")  # Gmail App Password
 
 class ManualPaymentSubmit(BaseModel):
     email: EmailStr
     transaction_id: str
 
-def send_whatsapp_notification(email: str, tx_id: str):
-    """Send instant WhatsApp notification to the owner"""
-    if not all([TWILIO_SID, TWILIO_TOKEN, TWILIO_WHATSAPP]):
-        print("⚠️ Twilio not configured, skipping notification")
+def send_email_notification(user_email: str, tx_id: str):
+    """Send instant email notification to admin when a payment is submitted"""
+    if not SMTP_PASSWORD:
+        print("⚠️ SMTP App Password not configured, skipping email notification")
         return
     
     try:
-        client = Client(TWILIO_SID, TWILIO_TOKEN)
-        message_body = (
-            f"🚀 *New Pro Payment Alert!*\n\n"
-            f"📧 *Email:* {email}\n"
-            f"🆔 *TX ID:* {tx_id}\n\n"
-            f"Please verify and activate within 12-24 hours."
+        # Create the email
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = f"🚀 New Payment Alert — UTR: {tx_id}"
+        msg["From"] = SMTP_EMAIL
+        msg["To"] = ADMIN_EMAIL
+
+        now = datetime.utcnow().strftime("%d %b %Y, %I:%M %p UTC")
+
+        # Plain text version
+        text_body = (
+            f"New Pro Payment Submitted!\n\n"
+            f"User Email: {user_email}\n"
+            f"UTR / Transaction ID: {tx_id}\n"
+            f"Submitted At: {now}\n\n"
+            f"Please verify this payment in your Admin Dashboard and activate the user's account."
         )
-        
-        client.messages.create(
-            from_=TWILIO_WHATSAPP,
-            body=message_body,
-            to=OWNER_WHATSAPP
-        )
-        print(f"✅ WhatsApp notification sent to owner")
+
+        # HTML version (premium styled)
+        html_body = f"""
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #0f172a; border-radius: 16px; overflow: hidden; border: 1px solid #1e293b;">
+            <div style="background: linear-gradient(135deg, #e11d48, #be123c); padding: 24px 32px;">
+                <h1 style="color: white; margin: 0; font-size: 20px; font-weight: 700;">🚀 New Payment Alert!</h1>
+                <p style="color: rgba(255,255,255,0.8); margin: 6px 0 0; font-size: 13px;">AI Digital Twin — Admin Notification</p>
+            </div>
+            
+            <div style="padding: 32px;">
+                <div style="background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="padding: 10px 0; color: #94a3b8; font-size: 13px; font-weight: 600; width: 140px;">📧 User Email</td>
+                            <td style="padding: 10px 0; color: #f1f5f9; font-size: 14px; font-weight: 700;">{user_email}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px 0; border-top: 1px solid #334155; color: #94a3b8; font-size: 13px; font-weight: 600;">🆔 UTR / TX ID</td>
+                            <td style="padding: 10px 0; border-top: 1px solid #334155; color: #fb923c; font-size: 14px; font-weight: 700; font-family: monospace;">{tx_id}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px 0; border-top: 1px solid #334155; color: #94a3b8; font-size: 13px; font-weight: 600;">🕐 Submitted At</td>
+                            <td style="padding: 10px 0; border-top: 1px solid #334155; color: #f1f5f9; font-size: 13px;">{now}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style="background: #172554; border: 1px solid #1e3a5f; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+                    <p style="color: #60a5fa; margin: 0; font-size: 13px; line-height: 1.5;">
+                        ⚡ <strong>Action Required:</strong> Open the Admin Dashboard → Payment Requests → Verify this transaction to activate the user's Pro account.
+                    </p>
+                </div>
+
+                <a href="{os.getenv('FRONTEND_URL', 'https://ai-digital-twin-seven.vercel.app').rstrip('/')}/admin" 
+                   style="display: block; text-align: center; background: linear-gradient(135deg, #e11d48, #be123c); color: white; text-decoration: none; padding: 14px 24px; border-radius: 10px; font-weight: 700; font-size: 14px;">
+                    Open Admin Dashboard →
+                </a>
+            </div>
+            
+            <div style="padding: 16px 32px; background: #0b1120; border-top: 1px solid #1e293b; text-align: center;">
+                <p style="color: #475569; margin: 0; font-size: 11px;">Nexora AI Digital Twin — Automated Payment Notification</p>
+            </div>
+        </div>
+        """
+
+        msg.attach(MIMEText(text_body, "plain"))
+        msg.attach(MIMEText(html_body, "html"))
+
+        # Send via Gmail SMTP
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(SMTP_EMAIL, SMTP_PASSWORD)
+            server.sendmail(SMTP_EMAIL, ADMIN_EMAIL, msg.as_string())
+
+        print(f"✅ Email notification sent to {ADMIN_EMAIL}")
+
     except Exception as e:
-        print(f"❌ Failed to send WhatsApp notification: {e}")
+        print(f"❌ Failed to send email notification: {e}")
 
 @router.post("/manual-submit")
 async def submit_manual_payment(
@@ -82,8 +142,8 @@ async def submit_manual_payment(
     db.commit()
     db.refresh(new_payment)
     
-    # Send notification in background
-    background_tasks.add_task(send_whatsapp_notification, payment.email, payment.transaction_id)
+    # Send email notification in background
+    background_tasks.add_task(send_email_notification, payment.email, payment.transaction_id)
     
     return {"message": "Payment details submitted successfully. We will verify and activate your account soon."}
 
