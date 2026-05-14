@@ -1,14 +1,79 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Header
+from fastapi import APIRouter, Depends, HTTPException, Request, Header, BackgroundTasks
 from sqlalchemy.orm import Session
 import os
 import httpx
 from ..database import get_db
-from ..models import User
+from ..models import User, ManualPayment
 from ..api.auth import get_current_user
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
+from twilio.rest import Client
 
 router = APIRouter(prefix="/payments", tags=["Payments"])
+
+DODO_API_KEY = os.getenv("DODO_PAYMENTS_API_KEY", "")
+TWILIO_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_WHATSAPP = os.getenv("TWILIO_WHATSAPP_NUMBER")
+OWNER_WHATSAPP = "whatsapp:+919625410112"
+
+class ManualPaymentSubmit(BaseModel):
+    email: EmailStr
+    transaction_id: str
+
+def send_whatsapp_notification(email: str, tx_id: str):
+    """Send instant WhatsApp notification to the owner"""
+    if not all([TWILIO_SID, TWILIO_TOKEN, TWILIO_WHATSAPP]):
+        print("⚠️ Twilio not configured, skipping notification")
+        return
+    
+    try:
+        client = Client(TWILIO_SID, TWILIO_TOKEN)
+        message_body = (
+            f"🚀 *New Pro Payment Alert!*\n\n"
+            f"📧 *Email:* {email}\n"
+            f"🆔 *TX ID:* {tx_id}\n\n"
+            f"Please verify and activate within 12-24 hours."
+        )
+        
+        client.messages.create(
+            from_=TWILIO_WHATSAPP,
+            body=message_body,
+            to=OWNER_WHATSAPP
+        )
+        print(f"✅ WhatsApp notification sent to owner")
+    except Exception as e:
+        print(f"❌ Failed to send WhatsApp notification: {e}")
+
+@router.post("/manual-submit")
+async def submit_manual_payment(
+    payment: ManualPaymentSubmit,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    """Submit manual UPI payment details"""
+    # Check if transaction ID already exists
+    existing = db.query(ManualPayment).filter(ManualPayment.transaction_id == payment.transaction_id).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Transaction ID already submitted")
+    
+    # Save to database
+    new_payment = ManualPayment(
+        email=payment.email,
+        transaction_id=payment.transaction_id,
+        status="pending"
+    )
+    db.add(new_payment)
+    db.commit()
+    db.refresh(new_payment)
+    
+    # Send notification in background
+    background_tasks.add_task(send_whatsapp_notification, payment.email, payment.transaction_id)
+    
+    return {"message": "Payment details submitted successfully. We will verify and activate your account soon."}
+
+class CheckoutRequest(BaseModel):
+# ... existing code ...
 
 DODO_API_KEY = os.getenv("DODO_PAYMENTS_API_KEY", "")
 # Determine base URL based on API key prefix (test_ or live_)

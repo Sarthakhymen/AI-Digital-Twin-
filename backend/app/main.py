@@ -56,6 +56,31 @@ def run_migrations():
                     conn.execute(text("ALTER TABLE users ALTER COLUMN hashed_password DROP NOT NULL;"))
             except Exception as e:
                 print(f"Hashed password migration error (non-critical): {e}")
+            # Create manual_payments table if not exists (for SQLite/Postgres)
+            if "sqlite" in str(engine.url):
+                conn.execute(text("""
+                    CREATE TABLE IF NOT EXISTS manual_payments (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        email VARCHAR(255) NOT NULL,
+                        transaction_id VARCHAR(100) NOT NULL UNIQUE,
+                        amount FLOAT DEFAULT 0.0,
+                        status VARCHAR(50) DEFAULT 'pending',
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        verified_at DATETIME
+                    );
+                """))
+            else:
+                conn.execute(text("""
+                    CREATE TABLE IF NOT EXISTS manual_payments (
+                        id SERIAL PRIMARY KEY,
+                        email VARCHAR(255) NOT NULL,
+                        transaction_id VARCHAR(100) NOT NULL UNIQUE,
+                        amount FLOAT DEFAULT 0.0,
+                        status VARCHAR(50) DEFAULT 'pending',
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                        verified_at TIMESTAMP WITH TIME ZONE
+                    );
+                """))
     except Exception as e:
         print(f"Migration error: {e}")
 

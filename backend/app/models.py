@@ -113,3 +113,14 @@ class KnowledgeChunk(Base):
     # Relationships
     document = relationship("KnowledgeDocument", back_populates="chunks")
 
+class ManualPayment(Base):
+    __tablename__ = "manual_payments"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255), nullable=False)
+    transaction_id = Column(String(100), nullable=False, unique=True)
+    amount = Column(Float, default=0.0)
+    status = Column(String(50), default="pending")  # pending, verified, rejected
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    verified_at = Column(DateTime(timezone=True))
+

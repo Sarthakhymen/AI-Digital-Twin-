@@ -16,7 +16,8 @@ import {
   Bot,
   Layers,
   CheckCircle2,
-  Check
+  Check,
+  Copy
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -43,7 +44,194 @@ const staggerContainer = {
 };
 
 
-// Navigation Component
+// Custom Premium Logo Component
+const LogoIcon = ({ className = "w-8 h-8" }) => (
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <defs>
+      <linearGradient id="logo-rose" x1="8" y1="8" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#F43F5E" />
+        <stop offset="1" stopColor="#E11D48" />
+      </linearGradient>
+      <linearGradient id="logo-silver" x1="24" y1="8" x2="8" y2="24" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#F8FAFC" />
+        <stop offset="1" stopColor="#94A3B8" />
+      </linearGradient>
+    </defs>
+    {/* Outer glow ring (subtle) */}
+    <circle cx="16" cy="16" r="10" stroke="#F43F5E" strokeWidth="1" strokeOpacity="0.1" />
+    {/* Left intersecting ring (Human) */}
+    <path d="M20 16C20 19.866 16.866 23 13 23C9.13401 23 6 19.866 6 16C6 12.134 9.13401 9 13 9" stroke="url(#logo-rose)" strokeWidth="3" strokeLinecap="round" />
+    {/* Right intersecting ring (Twin) */}
+    <path d="M12 16C12 12.134 15.134 9 19 9C22.866 9 26 12.134 26 16C26 19.866 22.866 23 19 23" stroke="url(#logo-silver)" strokeWidth="3" strokeLinecap="round" />
+    {/* Core intelligence spark */}
+    <circle cx="16" cy="16" r="2.5" fill="#FFFFFF" />
+  </svg>
+);
+
+// Payment Modal Component
+const PaymentModal = ({ isOpen, onClose }) => {
+  const [copied, setCopied] = useState(false);
+  const upiId = "9625410112@paytm";
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(upiId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="absolute inset-0 bg-slate-950/90 backdrop-blur-md"
+        />
+        
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          className="relative w-full max-w-lg bg-slate-900 border border-slate-700/50 rounded-[2.5rem] overflow-hidden shadow-2xl"
+        >
+          {/* Top accent bar */}
+          <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-rose-500 via-red-600 to-rose-500" />
+
+          {/* Header */}
+          <div className="p-8 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-1">Upgrade to Pro</h3>
+              <p className="text-sm text-slate-400">Scan QR and submit transaction details</p>
+            </div>
+            <button 
+              onClick={onClose}
+              className="p-2.5 hover:bg-slate-800 rounded-2xl transition-colors border border-slate-700/50"
+            >
+              <X className="w-5 h-5 text-slate-400" />
+            </button>
+          </div>
+
+          <div className="p-8 space-y-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
+            {/* Step 1: Scan & Pay */}
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400 font-bold border border-rose-500/20">1</div>
+                <h4 className="text-white font-semibold">Pay via UPI QR</h4>
+              </div>
+              
+              <div className="relative group mx-auto w-64 aspect-square bg-white rounded-3xl p-5 shadow-2xl shadow-rose-500/10 ring-1 ring-slate-200">
+                <img 
+                  src="/qr_code.png" 
+                  alt="Payment QR Code" 
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    // Fallback to dynamic QR if file not found
+                    e.target.src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=9625410112@paytm&pn=NexoraAI&cu=INR";
+                  }}
+                />
+                <div className="absolute inset-0 bg-slate-900/5 rounded-3xl pointer-events-none" />
+              </div>
+              
+              <div className="space-y-3">
+                <p className="text-center text-xs text-slate-500 font-medium uppercase tracking-widest">Or Use UPI ID</p>
+                <div className="flex items-center gap-2 p-4 bg-slate-950/50 rounded-2xl border border-slate-800/50 w-full justify-between group hover:border-rose-500/30 transition-colors">
+                  <code className="text-rose-300 font-bold tracking-wide">{upiId}</code>
+                  <button 
+                    onClick={copyToClipboard}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs text-slate-300 hover:text-white transition-all border border-slate-700/50"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? "Copied" : "Copy"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2: Submit Details */}
+            <div className="space-y-5 pt-2">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400 font-bold border border-rose-500/20">2</div>
+                <h4 className="text-white font-semibold">Submit Payment Verification</h4>
+              </div>
+
+              <form 
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.target);
+                  const data = {
+                    email: formData.get("email"),
+                    transaction_id: formData.get("transaction_id")
+                  };
+
+                  try {
+                    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api/v1/payments/manual-submit`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                      alert("Payment details submitted! We will verify and activate your account within 12-24 hours.");
+                      onClose();
+                    } else {
+                      const error = await response.json();
+                      alert(error.detail || "Something went wrong. Please try again.");
+                    }
+                  } catch (err) {
+                    alert("Connection error. Please try again later.");
+                  }
+                }}
+                className="space-y-5"
+              >
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-400 ml-1">Email Address</label>
+                  <input 
+                    type="email" 
+                    name="email"
+                    required
+                    placeholder="your@email.com"
+                    className="w-full px-5 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/20 transition-all placeholder:text-slate-600"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-400 ml-1">Transaction ID / UTR</label>
+                  <input 
+                    type="text" 
+                    name="transaction_id"
+                    required
+                    placeholder="Enter 12-digit ID"
+                    className="w-full px-5 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/20 transition-all placeholder:text-slate-600"
+                  />
+                </div>
+
+                <div className="p-5 bg-emerald-500/5 border border-emerald-500/10 rounded-[1.5rem] flex gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-[13px] text-slate-300 leading-relaxed">
+                    Account will be activated within <span className="text-emerald-400 font-bold">12-24 hours</span>. You will receive an instant WhatsApp notification once verified.
+                  </p>
+                </div>
+
+                <button 
+                  type="submit"
+                  className="w-full py-5 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-2xl font-bold shadow-xl shadow-rose-500/20 hover:shadow-rose-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group"
+                >
+                  Verify & Activate Subscription
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </form>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+};
+
 // Navigation Component
 const Navigation = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -94,8 +282,8 @@ const Navigation = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
-                <Bot className="w-5 h-5 text-white" />
+              <div className="flex items-center justify-center p-1.5 rounded-xl bg-slate-800/80 border border-slate-700/50 shadow-lg shadow-rose-500/10 backdrop-blur-md">
+                <LogoIcon className="w-6 h-6" />
               </div>
               <span className="text-xl font-bold text-white tracking-tight">
                 AI Twin
@@ -727,8 +915,12 @@ const TheMission = () => {
 
 // Pricing Section
 const Pricing = () => {
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+
   return (
     <section id="pricing" className="relative py-32 bg-slate-900/20 overflow-hidden">
+      <PaymentModal isOpen={isPaymentOpen} onClose={() => setIsPaymentOpen(false)} />
+      
       <div className="absolute inset-0 bg-gradient-to-b from-rose-500/5 to-transparent" />
       
       <div className="relative max-w-7xl mx-auto px-6">
@@ -738,80 +930,112 @@ const Pricing = () => {
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <span className="text-sm font-semibold text-rose-400 tracking-wider uppercase">Enterprise Ready</span>
+          <span className="text-sm font-semibold text-rose-400 tracking-wider uppercase">Simple Pricing</span>
           <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-white">
-            Tailored solutions for
+            Start free, upgrade when
             <br />
-            <span className="gradient-text">high-impact teams</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-white to-rose-400 drop-shadow-[0_0_30px_rgba(244,63,94,0.2)]">you're ready.</span>
           </h2>
           <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
-            We don't do generic plans. We build custom AI architectures designed to scale your personal or business brand.
+            Experience the full power of your AI Twin before committing. Transparent pricing for creators and startups.
           </p>
         </motion.div>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {/* Free Trial Card */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="p-12 rounded-3xl border border-rose-500/30 bg-slate-800/40 backdrop-blur-sm relative overflow-hidden"
+            className="p-10 rounded-3xl border border-slate-700/50 bg-slate-800/30 backdrop-blur-sm relative overflow-hidden flex flex-col"
+          >
+            <h3 className="text-2xl font-bold text-white mb-2">Free Trial</h3>
+            <p className="text-slate-400 mb-6">Test the waters and see the magic.</p>
+            
+            <div className="mb-8">
+              <span className="text-5xl font-bold text-white">₹0</span>
+              <span className="text-slate-400 ml-2">/ for 1 day (24 hours)</span>
+            </div>
+
+            <ul className="space-y-4 mb-8 flex-1">
+              {[
+                "Full Access to all features",
+                "Voice & Text AI capabilities",
+                "Knowledge Base integration",
+                "Sub-100ms response time",
+                "No credit card required"
+              ].map((feature) => (
+                <li key={feature} className="flex items-center gap-3 text-slate-300">
+                  <Check className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <motion.button
+              onClick={() => window.location.href = "/register"}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-xl font-bold hover:bg-white/10 transition-all"
+            >
+              Start 1-Day Trial
+            </motion.button>
+          </motion.div>
+
+          {/* Pro Subscription Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="p-10 rounded-3xl border border-rose-500/50 bg-slate-800/60 backdrop-blur-sm relative overflow-hidden flex flex-col"
           >
             {/* Background Glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 blur-[80px]" />
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-rose-500 to-red-600" />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div>
-                <h3 className="text-3xl font-bold text-white mb-6">Private Beta</h3>
-                <ul className="space-y-4 mb-8">
-                  {[
-                    "Early Access to Digital Twins",
-                    "Knowledge Base Integration",
-                    "High-Performance Compute",
-                    "Priority WhatsApp Support",
-                    "Founding Member Pricing",
-                    "Direct feedback loop with founders"
-                  ].map((feature) => (
-                    <li key={feature} className="flex items-center gap-3 text-slate-300">
-                      <Check className="w-5 h-5 text-rose-400 flex-shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              
-              <div className="flex flex-col gap-4">
-                <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 mb-4 text-center">
-                  <p className="text-sm text-rose-300 font-medium mb-1 uppercase tracking-wider">Starting at</p>
-                  <p className="text-4xl font-bold text-white">Custom</p>
-                  <p className="text-xs text-slate-500 mt-2">Billed annually or monthly</p>
-                </div>
-                
-                <motion.button
-                  onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Enterprise Inquiry"}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full py-4 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-xl font-bold shadow-xl shadow-rose-500/20"
-                >
-                  Contact for Sales
-                </motion.button>
-                
-                <motion.button
-                  onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Demo Request"}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full py-4 bg-white/5 text-white border border-white/10 rounded-xl font-bold hover:bg-white/10 transition-all"
-                >
-                  Request a Demo
-                </motion.button>
-
-                {/* Direct Contact */}
-                <div className="text-center mt-4">
-                  <p className="text-xs text-slate-400 mb-1">Or reach us directly:</p>
-                  <a href="mailto:nexora.aidigital.twin@gmail.com" className="block text-sm text-slate-300 hover:text-white transition-colors">nexora.aidigital.twin@gmail.com</a>
-                  <a href="tel:+919625410112" className="block text-sm text-slate-300 hover:text-white transition-colors">+91 9625410112</a>
-                </div>
-              </div>
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-2xl font-bold text-white">Pro Subscription</h3>
+              <span className="px-3 py-1 text-xs font-semibold rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">Premium</span>
             </div>
+            <p className="text-slate-400 mb-6">Unleash the full potential of your AI Twin.</p>
+            
+            <div className="mb-8">
+              <span className="text-5xl font-bold text-white">Custom</span>
+              <span className="text-slate-400 ml-2">/ month</span>
+            </div>
+
+            <ul className="space-y-4 mb-8 flex-1">
+              {[
+                "Unlimited AI interactions",
+                "WhatsApp & Web integration",
+                "Advanced Analytics Dashboard",
+                "Priority Support via WhatsApp",
+                "Manual Activation (12-24 Hrs)",
+                "Secure Payment via UPI"
+              ].map((feature) => (
+                <li key={feature} className="flex items-center gap-3 text-slate-300">
+                  <Check className="w-5 h-5 text-rose-400 flex-shrink-0" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="text-center mb-4">
+              <p className="text-xs text-rose-300/80 bg-rose-500/10 py-2 px-3 rounded-lg border border-rose-500/20">
+                Note: Pay via UPI and submit Transaction ID. Account activated within 12-24 hours.
+              </p>
+            </div>
+
+            <motion.button
+              onClick={() => setIsPaymentOpen(true)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-4 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-xl font-bold shadow-xl shadow-rose-500/20 flex items-center justify-center gap-2 group"
+            >
+              Get Pro Now
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </motion.button>
           </motion.div>
         </div>
       </div>
@@ -951,8 +1175,8 @@ const Footer = () => {
               onClick={() => navigate('/')}
               className="flex items-center gap-2 mb-4 cursor-pointer"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center">
-                <Bot className="w-5 h-5 text-white" />
+              <div className="flex items-center justify-center p-1.5 rounded-xl bg-slate-800/80 border border-slate-700/50 backdrop-blur-md">
+                <LogoIcon className="w-6 h-6" />
               </div>
               <span className="text-xl font-bold text-white">AI Twin</span>
             </div>
