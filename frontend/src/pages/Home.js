@@ -244,34 +244,81 @@ const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-slate-950 overflow-hidden">
-        {/* Digital AI Video Background */}
+      <div className="absolute inset-0 bg-[#0A0A0A] overflow-hidden">
+        {/* Cinematic Video Background Placeholder */}
         <video 
           autoPlay 
           loop 
           muted 
           playsInline 
-          className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity"
+          className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-screen"
         >
-          {/* Local fallback if user downloads it */}
-          <source src="/assets/ai-bg.mp4" type="video/mp4" />
-          {/* Pixabay direct link placeholder (Digital Network/AI) */}
-          <source src="https://cdn.pixabay.com/video/2020/04/09/35882-410065795_tiny.mp4" type="video/mp4" />
+          <source src="/assets/cinematic-ai-clone.mp4" type="video/mp4" />
+          <source src="https://cdn.pixabay.com/video/2023/04/20/159781-819875600_tiny.mp4" type="video/mp4" />
         </video>
         
-        {/* Deep AI Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-cyan-950/40 to-slate-950" />
+        {/* Deep Overlay for Luxury SaaS feel */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/90 via-[#0A0A0A]/40 to-[#0A0A0A]" />
 
-        {/* Gradient Orbs */}
+        {/* Neural Network / Nodes Overlay */}
+        <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==')] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
+
+        {/* Floating Holographic UI Elements */}
+        
+        {/* WhatsApp Bubble 1 */}
+        <motion.div
+          animate={{ y: [-10, 10, -10], opacity: [0.5, 0.8, 0.5] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 left-[15%] max-w-[200px] p-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 backdrop-blur-md hidden md:block"
+        >
+          <div className="flex gap-3 items-center">
+            <MessageSquare className="w-5 h-5 text-[#25D366]" />
+            <div className="h-2 w-20 bg-[#25D366]/40 rounded-full" />
+          </div>
+        </motion.div>
+
+        {/* WhatsApp Bubble 2 */}
+        <motion.div
+          animate={{ y: [10, -10, 10], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          className="absolute bottom-1/3 right-[15%] max-w-[200px] p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md hidden md:block"
+        >
+          <div className="flex gap-3 items-center justify-end">
+            <div className="h-2 w-16 bg-white/40 rounded-full" />
+            <Bot className="w-5 h-5 text-indigo-400" />
+          </div>
+        </motion.div>
+
+        {/* Streaming Documents */}
+        <motion.div
+          animate={{ y: [0, -50], opacity: [0, 0.5, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+          className="absolute top-1/2 left-1/3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 backdrop-blur-sm hidden lg:block"
+        >
+          <Layers className="w-6 h-6 text-blue-400" />
+        </motion.div>
+        
+        {/* Voice Waveform */}
+        <div className="absolute bottom-1/4 left-1/4 flex gap-1 items-end h-10 hidden md:flex">
+          {[...Array(5)].map((_, i) => (
+            <motion.div
+              key={i}
+              animate={{ height: ['20%', '100%', '20%'] }}
+              transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
+              className="w-1.5 bg-violet-500/50 rounded-full"
+            />
+          ))}
+        </div>
+
+        {/* Gradient Orbs for lighting */}
         <motion.div
           style={{ y: y1 }}
-          className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px]"
+          className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-[#0070F3]/10 rounded-full blur-[120px] mix-blend-screen"
         />
         <motion.div
           style={{ y: y2 }}
-          className="absolute bottom-20 right-1/4 w-[400px] h-[400px] bg-violet-600/20 rounded-full blur-[100px]"
+          className="absolute bottom-20 right-1/4 w-[400px] h-[400px] bg-[#7928CA]/10 rounded-full blur-[100px] mix-blend-screen"
         />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[150px]" />
       </div>
 
       {/* Content */}
@@ -287,27 +334,27 @@ const Hero = () => {
         >
           {/* Badge */}
           <motion.div variants={fadeInUp} className="flex justify-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light">
-              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              <span className="text-sm text-slate-300">Now with Voice AI</span>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
+              <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
+              <span className="text-sm font-medium text-slate-300">Your clone is born</span>
+              <ChevronRight className="w-4 h-4 text-slate-500" />
             </div>
           </motion.div>
 
           {/* Headline */}
           <motion.h1
             variants={fadeInUp}
-            className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight drop-shadow-2xl"
+            className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight"
           >
             Your time is finite.
             <br />
-            <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent animate-pulse">Your impact shouldn't be.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400 drop-shadow-[0_0_30px_rgba(99,102,241,0.3)]">Your impact shouldn't be.</span>
           </motion.h1>
 
           {/* Subheadline */}
           <motion.p
             variants={fadeInUp}
-            className="text-lg sm:text-xl text-cyan-100/70 max-w-2xl mx-auto leading-relaxed"
+            className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed font-light"
           >
             Create a digital version of yourself that shares your expertise and connects with your audience 24/7. Reclaim your time without losing your personal touch.
           </motion.p>
@@ -315,22 +362,22 @@ const Hero = () => {
           {/* CTAs */}
           <motion.div
             variants={fadeInUp}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
           >
             <motion.button
               onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Sales Inquiry"}
-              className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-bold text-base hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300 flex items-center gap-2"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="group px-8 py-4 bg-white text-[#0A0A0A] rounded-full font-medium text-sm hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 flex items-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               Contact for Sales
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </motion.button>
             <motion.button
               onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Demo Request"}
-              className="group px-8 py-4 bg-slate-900/50 border border-cyan-500/30 text-cyan-400 rounded-xl font-bold text-base hover:bg-cyan-950/50 hover:border-cyan-400 transition-all duration-300 flex items-center gap-2 backdrop-blur-md"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="group px-8 py-4 bg-[#0A0A0A] border border-white/10 text-white rounded-full font-medium text-sm hover:bg-white/5 transition-all duration-300 flex items-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               <Play className="w-4 h-4 fill-current" />
               Request a Demo
