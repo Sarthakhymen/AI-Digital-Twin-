@@ -26,7 +26,7 @@ const Pricing = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.data.message.includes('successfully')) {
-        alert("Trial activated! You have 24 hours of premium access.");
+        alert("Trial activated! You have 7 days of premium access with 50 free messages.");
         navigate('/dashboard');
       }
     } catch (err) {
@@ -40,32 +40,56 @@ const Pricing = () => {
     {
       name: 'Free Trial',
       price: '₹0',
-      period: 'for 1 day (24 hours)',
+      period: 'for 7 days',
       description: 'Test the waters and see the magic of AI Twins.',
       features: [
-        'Full Access to all features',
-        'Voice & Text AI capabilities',
-        'Knowledge Base integration',
+        '50 AI Interactions limit',
+        'Website Integration (Embed)',
+        'Knowledge Base (1 Document)',
         'Sub-100ms response time',
         'No credit card required'
       ],
-      cta: 'Start 1-Day Trial',
+      cta: 'Start 7-Day Trial',
       action: handleTrial,
       icon: Clock,
       color: 'blue'
     },
     {
+      name: 'Standard',
+      price: '₹1299',
+      period: 'per month',
+      description: 'Essential AI features for growing businesses.',
+      features: [
+        '2000 AI Interactions / month',
+        'WhatsApp & Web integration',
+        'Basic Analytics Dashboard',
+        'Knowledge Base (10 Documents)',
+        'Up to 3 AI Twins'
+      ],
+      cta: 'Get Standard',
+      action: () => {
+        if (!user) {
+          navigate('/login');
+          return;
+        }
+        setSelectedPlan({ name: 'Standard', price: '₹1299' });
+        setIsPaymentOpen(true);
+      },
+      icon: Zap,
+      color: 'amber'
+    },
+    {
       name: 'Business Pro',
-      price: '₹1',
+      price: '₹2999',
       period: 'per month',
       description: 'Unleash the full potential of your AI Twin.',
       features: [
         'Unlimited AI interactions',
-        'WhatsApp & Web integration',
+        'WhatsApp, Web & Voice integration',
         'Advanced Analytics Dashboard',
         'Priority Support via WhatsApp',
-        'Manual Activation (12-24 Hrs)',
-        'Secure Payment via UPI'
+        'Knowledge Base (50 Documents)',
+        'Up to 10 AI Twins'
       ],
       cta: 'Get Pro Now',
       action: () => {
@@ -73,7 +97,7 @@ const Pricing = () => {
           navigate('/login');
           return;
         }
-        setSelectedPlan({ name: 'Business Pro', price: '₹1' });
+        setSelectedPlan({ name: 'Business Pro', price: '₹2999' });
         setIsPaymentOpen(true);
       },
       icon: Star,
@@ -131,10 +155,10 @@ const Pricing = () => {
 
                 <div className="mb-8 text-left">
                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${
-                    plan.color === 'rose' ? 'bg-rose-500/10' : 'bg-blue-500/10'
+                    plan.color === 'rose' ? 'bg-rose-500/10' : plan.color === 'amber' ? 'bg-amber-500/10' : 'bg-blue-500/10'
                   }`}>
                     <plan.icon className={`w-7 h-7 ${
-                      plan.color === 'rose' ? 'text-rose-500' : 'text-blue-500'
+                      plan.color === 'rose' ? 'text-rose-500' : plan.color === 'amber' ? 'text-amber-500' : 'text-blue-500'
                     }`} />
                   </div>
                   <h3 className="text-3xl font-bold text-white mb-2">{plan.name}</h3>
@@ -152,10 +176,10 @@ const Pricing = () => {
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-3 group/item">
                       <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
-                        plan.color === 'rose' ? 'bg-rose-500/10 group-hover/item:bg-rose-500/20' : 'bg-blue-500/10 group-hover/item:bg-blue-500/20'
+                        plan.color === 'rose' ? 'bg-rose-500/10 group-hover/item:bg-rose-500/20' : plan.color === 'amber' ? 'bg-amber-500/10 group-hover/item:bg-amber-500/20' : 'bg-blue-500/10 group-hover/item:bg-blue-500/20'
                       }`}>
                         <Check className={`w-3.5 h-3.5 ${
-                          plan.color === 'rose' ? 'text-rose-500' : 'text-blue-500'
+                          plan.color === 'rose' ? 'text-rose-500' : plan.color === 'amber' ? 'text-amber-500' : 'text-blue-500'
                         }`} />
                       </div>
                       <span className="text-slate-300 group-hover/item:text-white transition-colors">{feature}</span>

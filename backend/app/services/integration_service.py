@@ -6,13 +6,30 @@ from ..models import DigitalTwin, Conversation, KnowledgeChunk
 from ..ai.conversation_service import conversation_service
 
 class IntegrationService:
-    async def process_public_message(self, db: Session, twin_id: int, message: str, customer_name: str = "Visitor", session_id: str = None):
-        """Process a message from a public integration (web widget, etc.)"""
+    async def process_public_message(self, db: Session, twin_id: int, message: str, customer_name: str = "Visitor", session_id: str = None, channel: str = "web_widget"):
+        """Process a message from a public integration (web widget, whatsapp, etc.)"""
         
         # 1. Verify twin exists and is active
         twin = db.query(DigitalTwin).filter(DigitalTwin.id == twin_id, DigitalTwin.status == "active").first()
         if not twin:
             return {"error": "Digital twin not found or not active"}
+
+        # 1.5 Check Plan Limits and increment message count
+        owner = twin.business.owner if twin.business else None
+        if owner:
+            from app.api.payments import PLAN_LIMITS
+            plan = owner.subscription_plan or "free"
+            limits = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])
+            
+            # Check feature restrictions based on channel
+            if channel == "whatsapp" and not limits.get("whatsapp", False):
+                return {"response": "WhatsApp integration is not available on your current plan. Please upgrade to Standard or Business Pro.", "success": False}
+                
+            if limits["max_messages"] != -1 and owner.message_count >= limits["max_messages"]:
+                return {"response": "This AI assistant has reached its message limit. Please contact the business owner.", "success": False}
+            
+            owner.message_count += 1
+            db.commit()
             
         # 2. Get or create conversation
         conversation = None
@@ -27,7 +44,7 @@ class IntegrationService:
             conversation = Conversation(
                 digital_twin_id=twin_id,
                 customer_name=customer_name,
-                channel="web_widget",
+                channel=channel,
                 messages=[],
                 status="active",
                 created_at=datetime.utcnow()

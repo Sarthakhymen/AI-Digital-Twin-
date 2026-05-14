@@ -241,15 +241,72 @@ async def start_trial(
     current_user: Any = Depends(get_current_user),
     db: Any = Depends(get_db)
 ):
-    """Start a 24-hour free trial"""
-    if current_user.trial_started_at:
-        raise HTTPException(status_code=400, detail="Trial already used or started.")
+    """Start a free trial — one-time only, per email"""
+    # Block repeat trials
+    if current_user.has_used_trial:
+        raise HTTPException(status_code=400, detail="Free trial already used on this account. Please upgrade to a paid plan.")
+    
+    # Block if already on a paid plan
+    if current_user.subscription_plan in ("standard", "business_pro"):
+        raise HTTPException(status_code=400, detail="You already have an active paid plan.")
     
     from datetime import datetime, timedelta
     current_user.trial_started_at = datetime.utcnow()
-    current_user.subscription_plan = "trial"
+    current_user.subscription_plan = "free"
     current_user.subscription_status = "active"
-    current_user.subscription_expires_at = datetime.utcnow() + timedelta(hours=24)
+    current_user.subscription_expires_at = datetime.utcnow() + timedelta(days=7)
+    current_user.has_used_trial = True
+    current_user.message_count = 0  # Reset message count
     
     db.commit()
-    return {"message": "Trial started successfully! You have 24 hours of premium access."}
+    return {"message": "Free trial started successfully! You get 50 AI messages and website embedding for 7 days."}
+
+# ============ Plan Limits Config ============
+PLAN_LIMITS = {
+    "free": {
+        "max_messages": 50,
+        "features": ["website_embed"],
+        "whatsapp": False,
+        "voice_agent": False,
+        "analytics": False,
+        "knowledge_docs": 1,
+        "max_twins": 1
+    },
+    "standard": {
+        "max_messages": 2000,
+        "features": ["website_embed", "whatsapp", "analytics"],
+        "whatsapp": True,
+        "voice_agent": False,
+        "analytics": True,
+        "knowledge_docs": 10,
+        "max_twins": 3
+    },
+    "business_pro": {
+        "max_messages": -1,  # Unlimited
+        "features": ["website_embed", "whatsapp", "voice_agent", "analytics", "priority_support"],
+        "whatsapp": True,
+        "voice_agent": True,
+        "analytics": True,
+        "knowledge_docs": 50,
+        "max_twins": 10
+    }
+}
+
+@router.get("/plan-limits")
+async def get_plan_limits(
+    current_user: Any = Depends(get_current_user)
+):
+    """Get current user's plan limits and usage"""
+    plan = current_user.subscription_plan or "free"
+    limits = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])
+    
+    return {
+        "plan": plan,
+        "message_count": current_user.message_count or 0,
+        "max_messages": limits["max_messages"],
+        "features": limits["features"],
+        "has_used_trial": current_user.has_used_trial,
+        "subscription_status": current_user.subscription_status,
+        "expires_at": current_user.subscription_expires_at.isoformat() if current_user.subscription_expires_at else None
+    }
+

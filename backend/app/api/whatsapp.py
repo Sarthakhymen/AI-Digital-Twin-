@@ -31,20 +31,13 @@ async def process_whatsapp_direct(request: dict, db: Session = Depends(get_db)):
             return {"response": "Sorry, no active digital twin found for this number."}
         twin_id = active_twin.id
 
-    # Find the owner and check subscription
-    owner = db.query(User).join(Business).join(DigitalTwin).filter(DigitalTwin.id == twin_id).first()
-    if owner:
-        from app.services.auth_service import check_user_subscription
-        owner = check_user_subscription(db, owner)
-        if owner.subscription_status == "expired":
-            return {"response": "This service is currently unavailable. Please contact the business owner."}
-
     result = await integration_service.process_public_message(
         db=db,
         twin_id=twin_id,
         message=body,
         customer_name="WhatsApp User",
-        session_id=from_number # Use phone number as session ID
+        session_id=from_number, # Use phone number as session ID
+        channel="whatsapp"
     )
     
     return {"response": result.get("response", "Sorry, something went wrong.")}
@@ -77,20 +70,13 @@ async def process_whatsapp_bridge(request: dict, db: Session = Depends(get_db)):
         if not active_twin:
             return {"reply": "Sorry, no active digital twin found."}
 
-    # Find the owner and check subscription
-    owner = db.query(User).join(Business).join(DigitalTwin).filter(DigitalTwin.id == active_twin.id).first()
-    if owner:
-        from app.services.auth_service import check_user_subscription
-        owner = check_user_subscription(db, owner)
-        if owner.subscription_status == "expired":
-            return {"reply": "This AI assistant's subscription has expired. Please upgrade to continue."}
-
     result = await integration_service.process_public_message(
         db=db,
         twin_id=active_twin.id,
         message=message_text,
         customer_name="WhatsApp User",
-        session_id=sender
+        session_id=sender,
+        channel="whatsapp"
     )
     
     return {"reply": result.get("response", "Sorry, I'm having trouble thinking right now.")}
@@ -111,23 +97,13 @@ async def whatsapp_webhook(
     if not active_twin:
         return Response(content="<Response><Message>No active twin found.</Message></Response>", media_type="application/xml")
 
-    # Find the owner and check subscription
-    owner = db.query(User).join(Business).join(DigitalTwin).filter(DigitalTwin.id == active_twin.id).first()
-    if owner:
-        from app.services.auth_service import check_user_subscription
-        owner = check_user_subscription(db, owner)
-        if owner.subscription_status == "expired":
-            from twilio.twiml.messaging_response import MessagingResponse
-            resp = MessagingResponse()
-            resp.message("This service is currently unavailable due to an expired subscription. Please upgrade to continue.")
-            return Response(content=str(resp), media_type="application/xml")
-
     result = await integration_service.process_public_message(
         db=db,
         twin_id=active_twin.id,
         message=Body,
         customer_name="WhatsApp User",
-        session_id=From
+        session_id=From,
+        channel="whatsapp"
     )
     
     ai_response = result.get("response", "Sorry, I'm having trouble thinking right now.")

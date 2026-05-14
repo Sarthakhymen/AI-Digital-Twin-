@@ -21,10 +21,12 @@ class User(Base):
     oauth_provider = Column(String(50))  # 'google', 'microsoft', etc.
     oauth_id = Column(String(255))  # Provider's user ID
     profile_picture = Column(String(500))  # URL to profile image
-    subscription_plan = Column(String(50), default="starter")  # starter, pro, enterprise
+    subscription_plan = Column(String(50), default="free")  # free, standard, business_pro
     subscription_status = Column(String(50), default="active")  # active, expired, pending_verification
-    trial_started_at = Column(DateTime(timezone=True), server_default=func.now())
+    has_used_trial = Column(Boolean, default=False)  # Prevent repeat free trials
+    trial_started_at = Column(DateTime(timezone=True))
     subscription_expires_at = Column(DateTime(timezone=True))
+    message_count = Column(Integer, default=0)  # Track messages per billing cycle
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
