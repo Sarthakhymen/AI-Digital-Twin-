@@ -16,7 +16,6 @@ import {
   Bot,
   Layers,
   CheckCircle2,
-  Star,
   Check
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
