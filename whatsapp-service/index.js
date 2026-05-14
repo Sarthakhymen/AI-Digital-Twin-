@@ -7,8 +7,7 @@ const {
 } = require('@whiskeysockets/baileys');
 const { Boom } = require('@hapi/boom');
 const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+const cors = require('cors');
 const QRCode = require('qrcode');
 const axios = require('axios');
 const pino = require('pino');
@@ -16,23 +15,35 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-    cors: { origin: "*" }
-});
-
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 7860;
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
 
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-// Multi-session storage (for different owners)
+// In-memory storage for sessions and QR codes
 const sessions = new Map();
+const qrCodes = new Map();      // userId -> qrDataURL
+const sessionStatus = new Map(); // userId -> 'connecting' | 'qr' | 'ready' | 'error'
+
+// Health check endpoint
+app.get('/', (req, res) => {
+    res.json({ status: 'WhatsApp Bridge is running', uptime: process.uptime() });
+});
 
 async function startSession(userId) {
+    // Prevent duplicate sessions
+    if (sessions.has(userId)) {
+        const existingSock = sessions.get(userId);
+        try { existingSock.end(); } catch(e) {}
+        sessions.delete(userId);
+    }
+
     const sessionDir = path.join(__dirname, 'auth', userId);
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
     const { version } = await fetchLatestBaileysVersion();
+
+    sessionStatus.set(userId, 'connecting');
 
     const sock = makeWASocket({
         version,
@@ -52,17 +63,26 @@ async function startSession(userId) {
         if (qr) {
             console.log(`[QR] Generating for user: ${userId}`);
             const qrDataURL = await QRCode.toDataURL(qr);
-            io.emit('qr', { userId, qr: qrDataURL });
+            qrCodes.set(userId, qrDataURL);
+            sessionStatus.set(userId, 'qr');
         }
 
         if (connection === 'close') {
-            const shouldReconnect = (lastDisconnect.error instanceof Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log(`[Session] Closed for ${userId}. Reconnecting: ${shouldReconnect}`);
-            if (shouldReconnect) startSession(userId);
-            else sessions.delete(userId);
+            const statusCode = (lastDisconnect?.error)?.output?.statusCode;
+            const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+            console.log(`[Session] Closed for ${userId}. Code: ${statusCode}. Reconnecting: ${shouldReconnect}`);
+            if (shouldReconnect) {
+                sessionStatus.set(userId, 'connecting');
+                setTimeout(() => startSession(userId), 3000);
+            } else {
+                sessions.delete(userId);
+                qrCodes.delete(userId);
+                sessionStatus.set(userId, 'idle');
+            }
         } else if (connection === 'open') {
             console.log(`[Session] Connected for ${userId}`);
-            io.emit('ready', { userId });
+            qrCodes.delete(userId);
+            sessionStatus.set(userId, 'ready');
         }
     });
 
@@ -101,21 +121,51 @@ async function startSession(userId) {
     return sock;
 }
 
-// REST Endpoints
-app.get('/status/:userId', (req, res) => {
-    const { userId } = req.params;
-    const isConnected = sessions.has(userId) && sessions.get(userId).ws?.readyState === 1;
-    res.json({ connected: isConnected });
-});
+// ============ REST API Endpoints (No WebSocket needed!) ============
 
+// Start a new WhatsApp session
 app.post('/connect', async (req, res) => {
     const { userId } = req.body;
     if (!userId) return res.status(400).json({ error: 'userId required' });
     
+    console.log(`[API] Connect request for user: ${userId}`);
     await startSession(userId);
-    res.json({ status: 'initializing' });
+    res.json({ status: 'initializing', message: 'Session started. Poll /qr/:userId for QR code.' });
 });
 
-server.listen(PORT, () => {
-    console.log(`WhatsApp Bridge running on port ${PORT}`);
+// Get QR code for a user (Frontend polls this every 2 seconds)
+app.get('/qr/:userId', (req, res) => {
+    const { userId } = req.params;
+    const currentStatus = sessionStatus.get(userId) || 'idle';
+    const qr = qrCodes.get(userId) || null;
+
+    res.json({ 
+        status: currentStatus, 
+        qr: qr,
+        userId: userId
+    });
+});
+
+// Get connection status
+app.get('/status/:userId', (req, res) => {
+    const { userId } = req.params;
+    const currentStatus = sessionStatus.get(userId) || 'idle';
+    const isConnected = currentStatus === 'ready';
+    res.json({ connected: isConnected, status: currentStatus });
+});
+
+// Disconnect a session
+app.post('/disconnect', (req, res) => {
+    const { userId } = req.body;
+    if (sessions.has(userId)) {
+        try { sessions.get(userId).end(); } catch(e) {}
+        sessions.delete(userId);
+        qrCodes.delete(userId);
+        sessionStatus.set(userId, 'idle');
+    }
+    res.json({ status: 'disconnected' });
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`WhatsApp Bridge Service running on http://localhost:${PORT}`);
 });

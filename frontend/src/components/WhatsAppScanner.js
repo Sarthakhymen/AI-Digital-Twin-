@@ -1,57 +1,79 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Paper, CircularProgress, Button, Alert } from '@mui/material';
 import { WhatsApp, CheckCircle, Sync, ErrorOutline } from '@mui/icons-material';
-import { io } from 'socket.io-client';
 import api from '../services/api';
 import axios from 'axios';
 
-const BRIDGE_URL = process.env.REACT_APP_WHATSAPP_BRIDGE_URL || 'http://localhost:3001';
+const BRIDGE_URL = process.env.REACT_APP_WHATSAPP_BRIDGE_URL || process.env.REACT_APP_WHATSAPP_SERVICE_URL || 'https://sarthak5481-ai-digital-twin2.hf.space';
 
 const WhatsAppScanner = ({ twinId }) => {
   const [qr, setQr] = useState(null);
   const [status, setStatus] = useState('idle'); // idle, connecting, qr, ready, error
   const [userId, setUserId] = useState(null);
+  const pollingRef = useRef(null);
 
   useEffect(() => {
-    // Get current user ID to manage their specific session
+    // Get current user ID
     api.get('/auth/me').then(res => {
       setUserId(res.data.id);
     }).catch(err => console.error("Auth error", err));
+
+    // Cleanup polling on unmount
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
   }, []);
 
-  useEffect(() => {
+  const startPolling = (uid) => {
+    // Clear any existing polling
+    if (pollingRef.current) clearInterval(pollingRef.current);
+
+    // Poll every 2 seconds for QR code / status updates
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await axios.get(`${BRIDGE_URL}/qr/${uid}`);
+        const data = res.data;
+
+        if (data.status === 'qr' && data.qr) {
+          setQr(data.qr);
+          setStatus('qr');
+        } else if (data.status === 'ready') {
+          setQr(null);
+          setStatus('ready');
+          // Stop polling once connected
+          if (pollingRef.current) clearInterval(pollingRef.current);
+        } else if (data.status === 'connecting') {
+          setStatus('connecting');
+        }
+      } catch (err) {
+        console.error('Polling error:', err.message);
+        // Don't immediately show error - bridge might be waking up
+      }
+    }, 2000);
+  };
+
+  const handleConnect = async () => {
     if (!userId) return;
+    
+    setStatus('connecting');
+    try {
+      await axios.post(`${BRIDGE_URL}/connect`, { userId: String(userId) });
+      // Start polling for QR code
+      startPolling(String(userId));
+    } catch (err) {
+      console.error('Connect error:', err.message);
+      setStatus('error');
+    }
+  };
 
-    const socket = io(BRIDGE_URL);
-
-    socket.on('connect', () => {
-      console.log("Connected to WhatsApp Bridge");
-      // Request a connection for this user
-      axios.post(`${BRIDGE_URL}/connect`, { userId: String(userId) })
-        .then(() => setStatus('connecting'))
-        .catch(() => setStatus('error'));
-    });
-
-    socket.on('qr', (data) => {
-      if (data.userId === String(userId)) {
-        setQr(data.qr);
-        setStatus('qr');
-      }
-    });
-
-    socket.on('ready', (data) => {
-      if (data.userId === String(userId)) {
-        setStatus('ready');
-        setQr(null);
-      }
-    });
-
-    socket.on('disconnect', () => {
-      console.log("Disconnected from bridge");
-    });
-
-    return () => socket.disconnect();
-  }, [userId]);
+  const handleDisconnect = async () => {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    try {
+      await axios.post(`${BRIDGE_URL}/disconnect`, { userId: String(userId) });
+    } catch(e) {}
+    setStatus('idle');
+    setQr(null);
+  };
 
   const getStatusDisplay = () => {
     switch (status) {
@@ -75,7 +97,7 @@ const WhatsAppScanner = ({ twinId }) => {
               sx={{ width: 200, height: 200, p: 1, bgcolor: 'white', borderRadius: 2, boxShadow: 1, mb: 1 }} 
             />
             <Typography variant="caption" display="block" color="text.secondary">
-              Open WhatsApp > Linked Devices > Link a Device
+              Open WhatsApp &gt; Linked Devices &gt; Link a Device
             </Typography>
           </Box>
         );
@@ -94,7 +116,7 @@ const WhatsAppScanner = ({ twinId }) => {
               variant="outlined" 
               color="error" 
               sx={{ mt: 2, borderRadius: 10 }}
-              onClick={() => setStatus('idle')} // In a real app, this would call logout
+              onClick={handleDisconnect}
             >
               Disconnect
             </Button>
@@ -102,9 +124,19 @@ const WhatsAppScanner = ({ twinId }) => {
         );
       case 'error':
         return (
-          <Alert severity="error" icon={<ErrorOutline />} sx={{ borderRadius: 2 }}>
-            Bridge service is offline. Please try again later.
-          </Alert>
+          <Box sx={{ textAlign: 'center', py: 2 }}>
+            <Alert severity="error" icon={<ErrorOutline />} sx={{ borderRadius: 2, mb: 2 }}>
+              Bridge service is waking up or offline. Please try again.
+            </Alert>
+            <Button 
+              variant="contained" 
+              startIcon={<Sync />}
+              onClick={handleConnect}
+              sx={{ bgcolor: '#25D366', '&:hover': { bgcolor: '#128C7E' } }}
+            >
+              Retry Connection
+            </Button>
+          </Box>
         );
       default:
         return (
@@ -116,7 +148,7 @@ const WhatsAppScanner = ({ twinId }) => {
             <Button 
               variant="contained" 
               startIcon={<Sync />}
-              onClick={() => setUserId(userId)} // Trigger reconnect
+              onClick={handleConnect}
               sx={{ mt: 1, bgcolor: '#25D366', '&:hover': { bgcolor: '#128C7E' } }}
             >
               Connect WhatsApp
