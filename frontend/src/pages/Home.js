@@ -283,9 +283,9 @@ const Hero = () => {
             variants={fadeInUp}
             className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight"
           >
-            Build AI twins that
+            Your time is finite.
             <br />
-            <span className="gradient-text">work while you sleep</span>
+            <span className="gradient-text">Your impact shouldn't be.</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -293,8 +293,7 @@ const Hero = () => {
             variants={fadeInUp}
             className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed"
           >
-            Create voice-enabled AI versions of yourself or your team.
-            Handle customer conversations, meetings, and tasks—24/7, without lifting a finger.
+            Create a digital version of yourself that shares your expertise and connects with your audience 24/7. Reclaim your time without losing your personal touch.
           </motion.p>
 
           {/* CTAs */}
@@ -322,18 +321,7 @@ const Hero = () => {
             </motion.button>
           </motion.div>
 
-          {/* Trust Indicators */}
-          <motion.div
-            variants={fadeInUp}
-            className="pt-8 flex flex-col items-center gap-4"
-          >
-            <p className="text-sm text-slate-500">Trusted by teams at</p>
-            <div className="flex items-center gap-8 text-slate-600">
-              {['Notion', 'Figma', 'Linear', 'Vercel', 'Raycast'].map((company) => (
-                <span key={company} className="text-sm font-medium">{company}</span>
-              ))}
-            </div>
-          </motion.div>
+
         </motion.div>
       </motion.div>
 
@@ -389,9 +377,9 @@ const DashboardPreview = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Stats Cards */}
                 {[
-                  { label: 'Active Twins', value: '12', change: '+3 this week', icon: Bot },
-                  { label: 'Conversations', value: '24.5K', change: '+18% vs last month', icon: MessageSquare },
-                  { label: 'Avg Response', value: '<100ms', change: 'Faster than human', icon: Zap }
+                  { label: 'Knowledge Sources', value: 'Syncing', change: 'Connected', icon: Layers },
+                  { label: 'Response Quality', value: 'Learning', change: 'Adapting to your voice', icon: MessageSquare },
+                  { label: 'Availability', value: '24/7', change: 'Always active', icon: Shield }
                 ].map((stat, i) => (
                   <motion.div
                     key={stat.label}
@@ -450,8 +438,8 @@ const DashboardPreview = () => {
                 <CheckCircle2 className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-sm font-medium text-white">New conversation</p>
-                <p className="text-xs text-slate-400">2 seconds ago</p>
+                <p className="text-sm font-medium text-white">Knowledge Synced</p>
+                <p className="text-xs text-slate-400">Just now</p>
               </div>
             </div>
           </motion.div>
@@ -462,8 +450,8 @@ const DashboardPreview = () => {
             className="absolute -left-8 bottom-32 p-4 rounded-xl glass border border-slate-700/50 shadow-xl"
           >
             <div className="flex items-center gap-2">
-              <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-              <span className="text-sm text-white">5.0 rating</span>
+              <Mic className="w-4 h-4 text-indigo-400" />
+              <span className="text-sm text-white">Voice Model Ready</span>
             </div>
           </motion.div>
         </motion.div>
@@ -525,12 +513,12 @@ const Features = () => {
         >
           <span className="text-sm font-semibold text-indigo-400 tracking-wider uppercase">Features</span>
           <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-white">
-            Everything you need to
+            Scale your expertise,
             <br />
-            <span className="gradient-text">scale yourself</span>
+            <span className="gradient-text">not your stress</span>
           </h2>
           <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
-            Build AI twins that are indistinguishable from you. Complete with your knowledge, voice, and personality.
+            We built AI Twin to help experts be everywhere at once, giving you the freedom to focus on what truly matters.
           </p>
         </motion.div>
 
@@ -637,74 +625,32 @@ const HowItWorks = () => {
   );
 };
 
-// Testimonials Section
-const Testimonials = () => {
-  const testimonials = [
-    {
-      quote: "Our AI twin handled 80% of customer support queries on day one. It's like having a team that never sleeps.",
-      author: "Sarah Chen",
-      role: "CEO, TechStart",
-      avatar: "SC"
-    },
-    {
-      quote: "The voice cloning is scary good. My clients can't tell if they're talking to me or my AI twin.",
-      author: "Marcus Johnson",
-      role: "Founder, MJ Consulting",
-      avatar: "MJ"
-    },
-    {
-      quote: "Setup took literally 10 minutes. Now my AI qualifies leads while I focus on closing deals.",
-      author: "Emily Rodriguez",
-      role: "Sales Director, CloudScale",
-      avatar: "ER"
-    }
-  ];
-
+// The Mission Section
+const TheMission = () => {
   return (
     <section className="relative py-32">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-4xl mx-auto px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-20"
+          className="p-12 rounded-3xl bg-slate-800/30 border border-slate-700/50 relative overflow-hidden"
         >
-          <span className="text-sm font-semibold text-indigo-400 tracking-wider uppercase">Testimonials</span>
-          <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-white">
-            Loved by founders
-            <br />
-            <span className="gradient-text">worldwide</span>
+          {/* Background Glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/10 blur-[80px]" />
+          
+          <span className="text-sm font-semibold text-indigo-400 tracking-wider uppercase">Why we built this</span>
+          <h2 className="mt-4 text-3xl sm:text-4xl font-bold text-white mb-8">
+            Technology should give you time back,<br />
+            <span className="gradient-text">not demand more of it.</span>
           </h2>
+          <p className="text-lg text-slate-300 leading-relaxed mb-6">
+            As creators, experts, and founders, we know the pain of repeating the same advice and answering the same questions day in and day out. 
+          </p>
+          <p className="text-lg text-slate-300 leading-relaxed">
+            We built AI Twin not just to automate tasks, but to preserve your energy. Your expertise is valuable. Your time is priceless. Let's protect both.
+          </p>
         </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((t, i) => (
-            <motion.div
-              key={t.author}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="p-8 rounded-2xl bg-slate-800/30 border border-slate-700/50"
-            >
-              <div className="flex gap-1 mb-6">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
-                ))}
-              </div>
-              <p className="text-slate-300 leading-relaxed mb-8">&ldquo;{t.quote}&rdquo;</p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-semibold">
-                  {t.avatar}
-                </div>
-                <div>
-                  <p className="text-white font-medium">{t.author}</p>
-                  <p className="text-sm text-slate-500">{t.role}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   );
@@ -746,15 +692,15 @@ const Pricing = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
-                <h3 className="text-3xl font-bold text-white mb-6">Enterprise Suite</h3>
+                <h3 className="text-3xl font-bold text-white mb-6">Private Beta</h3>
                 <ul className="space-y-4 mb-8">
                   {[
-                    "Unlimited Digital Twins & Agents",
-                    "Custom Knowledge Base Architecture",
-                    "Dedicated High-Performance Compute",
-                    "WhatsApp, Slack & Phone Integrations",
-                    "White-label Dashboard Options",
-                    "24/7 Priority VIP Support"
+                    "Early Access to Digital Twins",
+                    "Knowledge Base Integration",
+                    "High-Performance Compute",
+                    "Priority WhatsApp Support",
+                    "Founding Member Pricing",
+                    "Direct feedback loop with founders"
                   ].map((feature) => (
                     <li key={feature} className="flex items-center gap-3 text-slate-300">
                       <Check className="w-5 h-5 text-indigo-400 flex-shrink-0" />
@@ -982,7 +928,7 @@ const Home = () => {
         <DashboardPreview />
         <Features />
         <HowItWorks />
-        <Testimonials />
+        <TheMission />
         <Pricing />
         <CTA />
       </main>
