@@ -2,7 +2,7 @@
 Authentication Service
 """
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Any
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -117,7 +117,7 @@ def check_user_subscription(db: Session, user: User) -> User:
                 db.commit()
     return user
 
-def get_current_user(db: Session, token: str) -> User:
+def get_current_user(db: Any, token: str) -> User:
     """Get current user from JWT token"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

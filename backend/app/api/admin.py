@@ -8,7 +8,7 @@ from datetime import datetime
 
 from ..database import get_db, engine
 from ..models import User, ManualPayment, DigitalTwin, Business
-from ..services.auth_service import get_current_user
+from .auth import get_current_user
 from ..schemas import UserResponse, DigitalTwinResponse
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
