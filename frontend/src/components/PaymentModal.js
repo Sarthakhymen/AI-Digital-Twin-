@@ -29,12 +29,11 @@ const PaymentModal = ({ isOpen, onClose, plan, userEmail }) => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/payments/manual-submit`, {
         transaction_id: transactionId,
-        plan_name: plan.name,
-        amount: parseFloat(plan.price.replace('₹', '').replace(',', '')),
         email: userEmail
       });
 
-      if (response.data.status === 'success') {
+      // Backend returns {"message": "Payment details submitted successfully..."}
+      if (response.data && response.data.message) {
         setPaymentStep('success');
         setMessage({ type: 'success', text: 'Payment details submitted! We will verify and activate your premium status shortly.' });
       }
