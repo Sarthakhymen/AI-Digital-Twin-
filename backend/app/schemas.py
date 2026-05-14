@@ -39,6 +39,9 @@ class UserResponse(UserBase):
     id: int
     is_active: bool
     is_verified: bool
+    subscription_status: str
+    trial_started_at: Optional[datetime] = None
+    subscription_expires_at: Optional[datetime] = None
     created_at: datetime
     
     class Config:

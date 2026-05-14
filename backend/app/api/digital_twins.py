@@ -43,6 +43,13 @@ def create_digital_twin(
     db: Session = Depends(get_db)
 ):
     """Create a new digital twin"""
+    # Check subscription status
+    if current_user.subscription_status == "expired":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Your subscription has expired. Please upgrade to Pro to create more digital twins."
+        )
+    
     # Verify business ownership
     business = db.query(Business).filter(
         Business.id == twin_data.business_id,

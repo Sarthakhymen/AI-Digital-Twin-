@@ -71,7 +71,7 @@ const LogoIcon = ({ className = "w-8 h-8" }) => (
 // Payment Modal Component
 const PaymentModal = ({ isOpen, onClose }) => {
   const [copied, setCopied] = useState(false);
-  const upiId = "9625410112@paytm";
+  const upiId = "9625410112@nyes";
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(upiId);
@@ -125,13 +125,9 @@ const PaymentModal = ({ isOpen, onClose }) => {
               
               <div className="relative group mx-auto w-64 aspect-square bg-white rounded-3xl p-5 shadow-2xl shadow-rose-500/10 ring-1 ring-slate-200">
                 <img 
-                  src="/qr_code.png" 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${upiId}&pn=NexoraAI&cu=INR`}
                   alt="Payment QR Code" 
                   className="w-full h-full object-contain"
-                  onError={(e) => {
-                    // Fallback to dynamic QR if file not found
-                    e.target.src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=9625410112@paytm&pn=NexoraAI&cu=INR";
-                  }}
                 />
                 <div className="absolute inset-0 bg-slate-900/5 rounded-3xl pointer-events-none" />
               </div>

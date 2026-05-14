@@ -7,9 +7,12 @@ import StatCard from '../components/StatCard';
 import RecentActivity from '../components/RecentActivity';
 import ConversationChart from '../components/ConversationChart';
 import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import { Alert, AlertTitle } from '@mui/material';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => api.get('/dashboard/').then(res => res.data),
@@ -29,6 +32,28 @@ const Dashboard = () => {
 
   return (
     <Box>
+      {user?.subscription_status === 'expired' && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
+          <AlertTitle>Subscription Expired</AlertTitle>
+          Your trial or subscription has expired. Please upgrade to Pro to continue using Nexora AI features.
+          <Button 
+            variant="contained" 
+            color="error" 
+            size="small" 
+            sx={{ ml: 2, textTransform: 'none' }}
+            onClick={() => navigate('/pricing')}
+          >
+            Upgrade Now
+          </Button>
+        </Alert>
+      )}
+
+      {user?.subscription_status === 'pending_verification' && (
+        <Alert severity="warning" sx={{ mb: 3, borderRadius: '12px' }}>
+          <AlertTitle>Payment Verification Pending</AlertTitle>
+          We've received your payment submission. Your Pro features will be unlocked within 12-24 hours after verification.
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4">Dashboard</Typography>
         <Button 
@@ -83,6 +108,7 @@ const Dashboard = () => {
               variant="contained" 
               onClick={() => navigate('/create-twin')}
               size="small"
+              disabled={user?.subscription_status === 'expired'}
             >
               Create Twin
             </Button>

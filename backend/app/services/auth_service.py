@@ -99,6 +99,24 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
         return None
     return user
 
+def check_user_subscription(db: Session, user: User) -> User:
+    """Check and update user subscription status if expired"""
+    # Automatic Trial Expiration Check (24 hours)
+    if user.subscription_plan == "starter" and user.subscription_status == "active":
+        if user.trial_started_at:
+            # If trial started more than 24 hours ago
+            if (datetime.utcnow() - user.trial_started_at.replace(tzinfo=None)) > timedelta(hours=24):
+                user.subscription_status = "expired"
+                db.commit()
+    
+    # Pro Subscription Expiration Check
+    if user.subscription_plan == "pro" and user.subscription_status == "active":
+        if user.subscription_expires_at:
+            if datetime.utcnow() > user.subscription_expires_at.replace(tzinfo=None):
+                user.subscription_status = "expired"
+                db.commit()
+    return user
+
 def get_current_user(db: Session, token: str) -> User:
     """Get current user from JWT token"""
     credentials_exception = HTTPException(
@@ -107,10 +125,11 @@ def get_current_user(db: Session, token: str) -> User:
         headers={"WWW-Authenticate": "Bearer"},
     )
     
-    payload = decode_token(token)
-    if payload is None:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except JWTError:
         raise credentials_exception
-    
+        
     email: str = payload.get("sub")
     user_id: int = payload.get("user_id")
     
@@ -121,7 +140,7 @@ def get_current_user(db: Session, token: str) -> User:
     if user is None:
         raise credentials_exception
     
-    return user
+    return check_user_subscription(db, user)
 
 def refresh_token(db: Session, token: str) -> dict:
     """Refresh an access token"""

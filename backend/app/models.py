@@ -21,7 +21,9 @@ class User(Base):
     oauth_id = Column(String(255))  # Provider's user ID
     profile_picture = Column(String(500))  # URL to profile image
     subscription_plan = Column(String(50), default="starter")  # starter, pro, enterprise
-    subscription_status = Column(String(50), default="active")  # active, past_due, canceled
+    subscription_status = Column(String(50), default="active")  # active, expired, pending_verification
+    trial_started_at = Column(DateTime(timezone=True), server_default=func.now())
+    subscription_expires_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
@@ -117,6 +119,7 @@ class ManualPayment(Base):
     __tablename__ = "manual_payments"
     
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     email = Column(String(255), nullable=False)
     transaction_id = Column(String(100), nullable=False, unique=True)
     amount = Column(Float, default=0.0)

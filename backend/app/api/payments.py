@@ -63,13 +63,22 @@ async def submit_manual_payment(
     if existing:
         raise HTTPException(status_code=400, detail="Transaction ID already submitted")
     
+    # Try to find user by email to link
+    user = db.query(User).filter(User.email == payment.email).first()
+    
     # Save to database
     new_payment = ManualPayment(
         email=payment.email,
+        user_id=user.id if user else None,
         transaction_id=payment.transaction_id,
         status="pending"
     )
     db.add(new_payment)
+    
+    # Update user status to pending if they exist
+    if user:
+        user.subscription_status = "pending_verification"
+        
     db.commit()
     db.refresh(new_payment)
     
@@ -77,6 +86,46 @@ async def submit_manual_payment(
     background_tasks.add_task(send_whatsapp_notification, payment.email, payment.transaction_id)
     
     return {"message": "Payment details submitted successfully. We will verify and activate your account soon."}
+
+class PaymentVerification(BaseModel):
+    transaction_id: str
+    action: str  # 'verify' or 'reject'
+
+@router.post("/verify-payment")
+async def verify_payment(
+    verification: PaymentVerification,
+    # In a real app, you'd add admin authentication here
+    db: Session = Depends(get_db)
+):
+    """Admin endpoint to verify or reject manual payments"""
+    payment = db.query(ManualPayment).filter(ManualPayment.transaction_id == verification.transaction_id).first()
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment record not found")
+    
+    if verification.action == "verify":
+        payment.status = "verified"
+        from datetime import datetime, timedelta
+        payment.verified_at = datetime.utcnow()
+        
+        # Activate user
+        user = db.query(User).filter(User.email == payment.email).first()
+        if user:
+            user.subscription_plan = "pro"
+            user.subscription_status = "active"
+            # Set expiration to 30 days from now (default monthly)
+            user.subscription_expires_at = datetime.utcnow() + timedelta(days=30)
+            db.commit()
+            return {"message": f"Payment verified. User {user.email} is now PRO."}
+        else:
+            db.commit()
+            return {"message": "Payment verified but no matching user found for this email."}
+    
+    elif verification.action == "reject":
+        payment.status = "rejected"
+        db.commit()
+        return {"message": "Payment rejected."}
+    
+    return {"message": "Invalid action."}
 
 
 

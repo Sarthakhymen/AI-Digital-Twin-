@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Request, Form, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models import DigitalTwin
+from app.models import DigitalTwin, User, Business
 from app.services.integration_service import integration_service
+from app.services.auth_service import get_current_user
 import os
 import httpx
 from dotenv import load_dotenv
@@ -29,6 +30,14 @@ async def process_whatsapp_direct(request: dict, db: Session = Depends(get_db)):
         if not active_twin:
             return {"response": "Sorry, no active digital twin found for this number."}
         twin_id = active_twin.id
+
+    # Find the owner and check subscription
+    owner = db.query(User).join(Business).join(DigitalTwin).filter(DigitalTwin.id == twin_id).first()
+    if owner:
+        from app.services.auth_service import check_user_subscription
+        owner = check_user_subscription(db, owner)
+        if owner.subscription_status == "expired":
+            return {"response": "This service is currently unavailable. Please contact the business owner."}
 
     result = await integration_service.process_public_message(
         db=db,
@@ -67,6 +76,14 @@ async def process_whatsapp_bridge(request: dict, db: Session = Depends(get_db)):
         active_twin = db.query(DigitalTwin).filter(DigitalTwin.status == "active").first()
         if not active_twin:
             return {"reply": "Sorry, no active digital twin found."}
+
+    # Find the owner and check subscription
+    owner = db.query(User).join(Business).join(DigitalTwin).filter(DigitalTwin.id == active_twin.id).first()
+    if owner:
+        from app.services.auth_service import check_user_subscription
+        owner = check_user_subscription(db, owner)
+        if owner.subscription_status == "expired":
+            return {"reply": "This AI assistant's subscription has expired. Please upgrade to continue."}
 
     result = await integration_service.process_public_message(
         db=db,
