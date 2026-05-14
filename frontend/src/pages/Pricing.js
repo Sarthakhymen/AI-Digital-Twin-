@@ -56,7 +56,7 @@ const Pricing = () => {
     },
     {
       name: 'Business Pro',
-      price: '₹2,499',
+      price: '₹1',
       period: 'per month',
       description: 'Unleash the full potential of your AI Twin.',
       features: [
@@ -73,7 +73,7 @@ const Pricing = () => {
           navigate('/login');
           return;
         }
-        setSelectedPlan({ name: 'Business Pro', price: '₹2,499' });
+        setSelectedPlan({ name: 'Business Pro', price: '₹1' });
         setIsPaymentOpen(true);
       },
       icon: Star,

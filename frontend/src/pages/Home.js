@@ -654,7 +654,7 @@ const Pricing = () => {
             <p className="text-slate-400 mb-6">Unleash the full potential of your AI Twin.</p>
             
             <div className="mb-8">
-              <span className="text-5xl font-bold text-white">₹2,499</span>
+              <span className="text-5xl font-bold text-white">₹1</span>
               <span className="text-slate-400 ml-2">/ month</span>
             </div>
 
@@ -686,7 +686,7 @@ const Pricing = () => {
                   navigate('/login');
                   return;
                 }
-                setSelectedPlan({ name: 'Business Pro', price: '₹2,499' });
+                setSelectedPlan({ name: 'Business Pro', price: '₹1' });
                 setIsPaymentOpen(true);
               }}
               whileHover={{ scale: 1.02 }}
