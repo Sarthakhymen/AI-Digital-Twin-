@@ -12,6 +12,12 @@ from twilio.rest import Client
 router = APIRouter(prefix="/payments", tags=["Payments"])
 
 DODO_API_KEY = os.getenv("DODO_PAYMENTS_API_KEY", "")
+# Determine base URL based on API key prefix (test_ or live_)
+if DODO_API_KEY and DODO_API_KEY.startswith("test_"):
+    DODO_BASE_URL = "https://test.dodopayments.com"
+else:
+    DODO_BASE_URL = "https://live.dodopayments.com"
+
 TWILIO_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_WHATSAPP = os.getenv("TWILIO_WHATSAPP_NUMBER")
@@ -72,15 +78,8 @@ async def submit_manual_payment(
     
     return {"message": "Payment details submitted successfully. We will verify and activate your account soon."}
 
-class CheckoutRequest(BaseModel):
-# ... existing code ...
 
-DODO_API_KEY = os.getenv("DODO_PAYMENTS_API_KEY", "")
-# Determine base URL based on API key prefix (test_ or live_)
-if DODO_API_KEY.startswith("test_"):
-    DODO_BASE_URL = "https://test.dodopayments.com"
-else:
-    DODO_BASE_URL = "https://live.dodopayments.com"
+
 
 class CheckoutRequest(BaseModel):
     plan_type: str
