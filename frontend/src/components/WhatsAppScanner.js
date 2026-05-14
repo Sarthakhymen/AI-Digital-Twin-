@@ -4,7 +4,7 @@ import { WhatsApp, CheckCircle, Sync, ErrorOutline } from '@mui/icons-material';
 import api from '../services/api';
 import axios from 'axios';
 
-const BRIDGE_URL = process.env.REACT_APP_WHATSAPP_BRIDGE_URL || process.env.REACT_APP_WHATSAPP_SERVICE_URL || 'https://sarthak5481-ai-digital-twin2.hf.space';
+const BRIDGE_URL = process.env.REACT_APP_WHATSAPP_BRIDGE_URL || process.env.REACT_APP_WHATSAPP_SERVICE_URL || 'https://whatsapp-bridge-4w1c.onrender.com';
 
 const WhatsAppScanner = ({ twinId }) => {
   const [qr, setQr] = useState(null);
