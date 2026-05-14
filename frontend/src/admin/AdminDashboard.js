@@ -4,10 +4,7 @@ import {
   Users, 
   Bot, 
   IndianRupee,
-  TrendingUp,
-  Clock,
-  RefreshCcw,
-  Bell
+  Clock
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';

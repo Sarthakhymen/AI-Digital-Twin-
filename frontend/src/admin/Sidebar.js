@@ -7,7 +7,6 @@ import {
   Bot, 
   Terminal, 
   Activity, 
-  Settings,
   LogOut,
   ShieldCheck
 } from 'lucide-react';
