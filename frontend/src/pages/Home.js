@@ -244,7 +244,24 @@ const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-dark-950">
+      <div className="absolute inset-0 bg-slate-950 overflow-hidden">
+        {/* Digital AI Video Background */}
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity"
+        >
+          {/* Local fallback if user downloads it */}
+          <source src="/assets/ai-bg.mp4" type="video/mp4" />
+          {/* Pixabay direct link placeholder (Digital Network/AI) */}
+          <source src="https://cdn.pixabay.com/video/2020/04/09/35882-410065795_tiny.mp4" type="video/mp4" />
+        </video>
+        
+        {/* Deep AI Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-cyan-950/40 to-slate-950" />
+
         {/* Gradient Orbs */}
         <motion.div
           style={{ y: y1 }}
@@ -280,17 +297,17 @@ const Hero = () => {
           {/* Headline */}
           <motion.h1
             variants={fadeInUp}
-            className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight"
+            className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight drop-shadow-2xl"
           >
             Your time is finite.
             <br />
-            <span className="gradient-text">Your impact shouldn't be.</span>
+            <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent animate-pulse">Your impact shouldn't be.</span>
           </motion.h1>
 
           {/* Subheadline */}
           <motion.p
             variants={fadeInUp}
-            className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed"
+            className="text-lg sm:text-xl text-cyan-100/70 max-w-2xl mx-auto leading-relaxed"
           >
             Create a digital version of yourself that shares your expertise and connects with your audience 24/7. Reclaim your time without losing your personal touch.
           </motion.p>
@@ -301,19 +318,19 @@ const Hero = () => {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <motion.button
-              onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Sales Inquiry"}
-              className="group px-8 py-4 bg-white text-slate-900 rounded-xl font-semibold text-base hover:bg-slate-100 transition-all duration-200 flex items-center gap-2"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Sales Inquiry"}
+              className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-bold text-base hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300 flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               Contact for Sales
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </motion.button>
             <motion.button
-              onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Demo Request"}
-              className="group px-8 py-4 glass-light text-white rounded-xl font-semibold text-base hover:bg-white/10 transition-all duration-200 flex items-center gap-2"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Demo Request"}
+              className="group px-8 py-4 bg-slate-900/50 border border-cyan-500/30 text-cyan-400 rounded-xl font-bold text-base hover:bg-cyan-950/50 hover:border-cyan-400 transition-all duration-300 flex items-center gap-2 backdrop-blur-md"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <Play className="w-4 h-4 fill-current" />
               Request a Demo
@@ -717,7 +734,7 @@ const Pricing = () => {
                 </div>
                 
                 <motion.button
-                  onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Enterprise Inquiry"}
+                  onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Enterprise Inquiry"}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-xl font-bold shadow-xl shadow-indigo-500/20"
@@ -726,7 +743,7 @@ const Pricing = () => {
                 </motion.button>
                 
                 <motion.button
-                  onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Demo Request"}
+                  onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Demo Request"}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="w-full py-4 bg-white/5 text-white border border-white/10 rounded-xl font-bold hover:bg-white/10 transition-all"
@@ -786,7 +803,7 @@ const CTA = () => {
               className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
               <motion.button
-                onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Enterprise Inquiry"}
+                onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Enterprise Inquiry"}
                 className="px-8 py-4 bg-white text-indigo-600 rounded-xl font-semibold hover:bg-slate-100 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -794,7 +811,7 @@ const CTA = () => {
                 Contact for Sales
               </motion.button>
               <motion.button
-                onClick={() => window.location.href = "mailto:sales@aitwin.ai?subject=Demo Request"}
+                onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Demo Request"}
                 className="px-8 py-4 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-colors backdrop-blur-sm"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -837,7 +854,7 @@ const Footer = () => {
     ],
     Company: [
       { name: 'About', action: () => {} },
-      { name: 'Contact', action: () => window.location.href = "mailto:hello@aitwin.ai" },
+      { name: 'Contact', action: () => window.location.href = "mailto:nexora.aidigital.twin@gmail.com" },
       { name: 'Legal', action: () => navigate('/legal') }
     ],
     Account: accountLinks

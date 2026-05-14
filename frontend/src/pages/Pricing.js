@@ -210,7 +210,7 @@ const Pricing = () => {
                     fullWidth 
                     variant={plan.premium ? "contained" : "outlined"}
                     disabled={loading !== null}
-                    onClick={() => plan.id !== 'enterprise' ? handlePurchase(plan.id) : (window.location.href = 'mailto:sales@shavarn.in')}
+                    onClick={() => plan.id !== 'enterprise' ? handlePurchase(plan.id) : (window.location.href = 'mailto:nexora.aidigital.twin@gmail.com')}
                     sx={{ 
                       py: 1.5, 
                       borderRadius: '12px', 
