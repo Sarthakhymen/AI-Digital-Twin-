@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, QrCode, Copy, Check } from 'lucide-react';
+import { X, CheckCircle2, QrCode, Copy, Check } from 'lucide-react';
 import axios from 'axios';
 
 const PaymentModal = ({ isOpen, onClose, plan, userEmail }) => {

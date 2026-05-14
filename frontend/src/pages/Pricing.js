@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, Star, Clock } from 'lucide-react';
+import { Check, Star, Zap, Shield, Rocket, Clock } from 'lucide-react';
 import LandingNavbar from '../components/LandingNavbar';
 import PaymentModal from '../components/PaymentModal';
 import { useAuth } from '../contexts/AuthContext';

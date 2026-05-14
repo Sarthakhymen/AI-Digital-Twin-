@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   Play,
@@ -9,6 +9,7 @@ import {
   Globe,
   MessageSquare,
   BarChart3,
+  ChevronRight,
   Mic,
   Bot,
   Layers,
