@@ -61,14 +61,14 @@ async def process_whatsapp_bridge(request: dict, db: Session = Depends(get_db)):
     
     print(f"Bridge message from {sender} for user {user_id}: {message_text}")
     
-    # Find the active twin for this user
+    # Find the active twin for this user (DigitalTwin -> Business -> User)
     try:
         u_id = int(user_id)
     except:
         u_id = 0
 
-    active_twin = db.query(DigitalTwin).filter(
-        DigitalTwin.user_id == u_id,
+    active_twin = db.query(DigitalTwin).join(Business).filter(
+        Business.owner_id == u_id,
         DigitalTwin.status == "active"
     ).order_by(DigitalTwin.id.desc()).first()
 
