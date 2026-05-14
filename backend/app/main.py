@@ -64,6 +64,7 @@ def run_migrations():
                 conn.execute(text("""
                     CREATE TABLE IF NOT EXISTS manual_payments (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER REFERENCES users(id),
                         email VARCHAR(255) NOT NULL,
                         transaction_id VARCHAR(100) NOT NULL UNIQUE,
                         amount FLOAT DEFAULT 0.0,
@@ -76,6 +77,7 @@ def run_migrations():
                 conn.execute(text("""
                     CREATE TABLE IF NOT EXISTS manual_payments (
                         id SERIAL PRIMARY KEY,
+                        user_id INTEGER REFERENCES users(id),
                         email VARCHAR(255) NOT NULL,
                         transaction_id VARCHAR(100) NOT NULL UNIQUE,
                         amount FLOAT DEFAULT 0.0,
@@ -84,6 +86,20 @@ def run_migrations():
                         verified_at TIMESTAMP WITH TIME ZONE
                     );
                 """))
+                # Add user_id column if table already exists without it
+                try:
+                    conn.execute(text("""
+                        DO $$
+                        BEGIN
+                            IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                                         WHERE table_name='manual_payments' AND column_name='user_id') THEN
+                                ALTER TABLE manual_payments ADD COLUMN user_id INTEGER REFERENCES users(id);
+                            END IF;
+                        END
+                        $$;
+                    """))
+                except Exception:
+                    pass
     except Exception as e:
         print(f"Migration error: {e}")
 
