@@ -124,12 +124,13 @@ async function startSession(userId) {
 // ============ REST API Endpoints (No WebSocket needed!) ============
 
 // Start a new WhatsApp session
-app.post('/connect', async (req, res) => {
+app.post('/connect', (req, res) => {
     const { userId } = req.body;
     if (!userId) return res.status(400).json({ error: 'userId required' });
     
     console.log(`[API] Connect request for user: ${userId}`);
-    await startSession(userId);
+    // Fire-and-forget: don't await, respond immediately
+    startSession(userId).catch(err => console.error('[Session Error]', err.message));
     res.json({ status: 'initializing', message: 'Session started. Poll /qr/:userId for QR code.' });
 });
 

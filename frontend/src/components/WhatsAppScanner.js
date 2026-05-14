@@ -56,14 +56,13 @@ const WhatsAppScanner = ({ twinId }) => {
     if (!userId) return;
     
     setStatus('connecting');
-    try {
-      await axios.post(`${BRIDGE_URL}/connect`, { userId: String(userId) });
-      // Start polling for QR code
-      startPolling(String(userId));
-    } catch (err) {
+    const uid = String(userId);
+    // Fire-and-forget: don't wait for POST to complete
+    axios.post(`${BRIDGE_URL}/connect`, { userId: uid }).catch(err => {
       console.error('Connect error:', err.message);
-      setStatus('error');
-    }
+    });
+    // Start polling immediately for QR code
+    startPolling(uid);
   };
 
   const handleDisconnect = async () => {
