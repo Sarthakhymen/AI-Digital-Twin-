@@ -17,6 +17,7 @@ class User(Base):
     phone = Column(String(50))
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
+    is_admin = Column(Boolean, default=False)
     oauth_provider = Column(String(50))  # 'google', 'microsoft', etc.
     oauth_id = Column(String(255))  # Provider's user ID
     profile_picture = Column(String(500))  # URL to profile image

@@ -214,3 +214,21 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
                 print(f"✅ User {user_id} upgraded to {plan_type}")
                 
     return {"status": "success"}
+
+@router.post("/trial")
+async def start_trial(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Start a 24-hour free trial"""
+    if current_user.trial_started_at:
+        raise HTTPException(status_code=400, detail="Trial already used or started.")
+    
+    from datetime import datetime, timedelta
+    current_user.trial_started_at = datetime.utcnow()
+    current_user.subscription_plan = "trial"
+    current_user.subscription_status = "active"
+    current_user.subscription_expires_at = datetime.utcnow() + timedelta(hours=24)
+    
+    db.commit()
+    return {"message": "Trial started successfully! You have 24 hours of premium access."}

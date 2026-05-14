@@ -20,6 +20,7 @@ import {
   Copy
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 
 // Animation variants
 const fadeInUp = {
@@ -164,21 +165,11 @@ const PaymentModal = ({ isOpen, onClose }) => {
                   };
 
                   try {
-                    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api/v1/payments/manual-submit`, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify(data)
-                    });
-
-                    if (response.ok) {
-                      alert("Payment details submitted! We will verify and activate your account within 12-24 hours.");
-                      onClose();
-                    } else {
-                      const error = await response.json();
-                      alert(error.detail || "Something went wrong. Please try again.");
-                    }
+                    const response = await api.post('/payments/manual-submit', data);
+                    alert(response.data.message || "Payment details submitted! We will verify and activate your account within 12-24 hours.");
+                    onClose();
                   } catch (err) {
-                    alert("Connection error. Please try again later.");
+                    alert(err.response?.data?.detail || "Something went wrong. Please try again.");
                   }
                 }}
                 className="space-y-5"
@@ -969,7 +960,14 @@ const Pricing = () => {
             </ul>
 
             <motion.button
-              onClick={() => window.location.href = "/register"}
+              onClick={async () => {
+                try {
+                  const response = await api.post('/payments/trial');
+                  alert(response.data.message);
+                } catch (error) {
+                  alert(error.response?.data?.detail || "Bhai, trial start nahi ho paya!");
+                }
+              }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-xl font-bold hover:bg-white/10 transition-all"
@@ -997,7 +995,7 @@ const Pricing = () => {
             <p className="text-slate-400 mb-6">Unleash the full potential of your AI Twin.</p>
             
             <div className="mb-8">
-              <span className="text-5xl font-bold text-white">Custom</span>
+              <span className="text-5xl font-bold text-white">₹2,499</span>
               <span className="text-slate-400 ml-2">/ month</span>
             </div>
 

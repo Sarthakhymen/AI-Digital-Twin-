@@ -17,6 +17,7 @@ import Docs from './pages/Docs';
 import VoiceAgent from './pages/VoiceAgent';
 import Pricing from './pages/Pricing';
 import Guide from './pages/Guide';
+import AdminDashboard from './admin/AdminDashboard';
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/twins/:id" element={<ProtectedRoute><DigitalTwinDetail /></ProtectedRoute>} />
                 <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               </Routes>
             </Box>
           </>

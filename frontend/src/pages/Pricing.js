@@ -1,262 +1,319 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
-  Box, Typography, Container, Grid, Card, Button, 
-  List, ListItem, ListItemIcon, ListItemText, Switch, 
-  Chip, CircularProgress
-} from '@mui/material';
-import { Check, Star, RocketLaunch, Diamond } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+  Check, 
+  ArrowRight, 
+  AccessTime, 
+  Star, 
+  QrCodeScanner, 
+  X, 
+  Copy, 
+  CheckCircle2 
+} from 'lucide-react';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
 
-const Pricing = () => {
-  const [annual, setAnnual] = useState(true);
-  const [loading, setLoading] = useState(null);
+const PaymentModal = ({ isOpen, onClose }) => {
+  const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const upiId = "9625410112@nyes";
 
-  const handlePurchase = async (planType) => {
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(upiId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleManualSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = {
+      email: formData.get("email"),
+      transaction_id: formData.get("transaction_id")
+    };
+
     try {
-      setLoading(planType);
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        window.location.href = '/login';
-        return;
-      }
-
-      const response = await api.post(
-        '/payments/create-checkout',
-        { 
-          plan_type: planType,
-          billing_cycle: annual ? 'yearly' : 'monthly'
-        }
-      );
-
-      if (response.data.checkout_url) {
-        window.location.href = response.data.checkout_url;
-      }
-    } catch (error) {
-      console.error('Payment Error:', error);
-      alert('Bhai, payment session start nahi ho paya. Ek baar check kar!');
+      setLoading(true);
+      const response = await api.post('/payments/manual-submit', data);
+      alert(response.data.message);
+      onClose();
+    } catch (err) {
+      alert(err.response?.data?.detail || "Something went wrong. Please try again.");
     } finally {
-      setLoading(null);
+      setLoading(false);
     }
   };
 
-  const plans = [
-    {
-      id: "starter",
-      title: "Starter",
-      price: annual ? "9,999" : "999",
-      description: "Everything you need to launch your first AI Digital Twin.",
-      features: [
-        "1 Digital Twin",
-        "1,000 Messages / month",
-        "Document Training (PDF, TXT)",
-        "Premium Web Widget",
-        "Email Support",
-        "Basic Analytics"
-      ],
-      buttonText: "Start Growth",
-      premium: false,
-      icon: <RocketLaunch color="primary" />
-    },
-    {
-      id: "pro",
-      title: "Business Pro",
-      price: annual ? "24,999" : "2,499",
-      description: "Advanced automation for businesses that want to scale fast.",
-      features: [
-        "5 Digital Twins",
-        "Unlimited Messages",
-        "WhatsApp Integration",
-        "Voice Agent Access",
-        "Meeting Scheduling",
-        "Priority 24/7 Support",
-        "Advanced Training"
-      ],
-      buttonText: "Upgrade to Pro",
-      premium: true,
-      badge: "Most Popular",
-      icon: <Star sx={{ color: '#F59E0B' }} />
-    },
-    {
-      id: "enterprise",
-      title: "Enterprise",
-      price: "Custom",
-      description: "Full-scale AI transformation for large organizations.",
-      features: [
-        "Unlimited Twins",
-        "White-label Solution",
-        "Custom API Access",
-        "Dedicated Manager",
-        "On-premise Options",
-        "SLA Guarantee"
-      ],
-      buttonText: "Contact Sales",
-      premium: false,
-      icon: <Diamond sx={{ color: '#C084FC' }} />
-    }
-  ];
+  if (!isOpen) return null;
 
   return (
-    <Box sx={{ bgcolor: '#0F172A', minHeight: '100vh', color: 'white', pb: 10 }}>
+    <AnimatePresence>
+      <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="absolute inset-0 bg-slate-950/90 backdrop-blur-md"
+        />
+        
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          className="relative w-full max-w-lg bg-slate-900 border border-slate-700/50 rounded-[2.5rem] overflow-hidden shadow-2xl"
+        >
+          <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-rose-500 via-red-600 to-rose-500" />
+
+          <div className="p-8 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-1">Pay via UPI</h3>
+              <p className="text-sm text-slate-400">Scan QR and submit transaction details</p>
+            </div>
+            <button 
+              onClick={onClose}
+              className="p-2.5 hover:bg-slate-800 rounded-2xl transition-colors border border-slate-700/50"
+            >
+              <X className="w-5 h-5 text-slate-400" />
+            </button>
+          </div>
+
+          <div className="p-8 space-y-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400 font-bold border border-rose-500/20">1</div>
+                <h4 className="text-white font-semibold">Scan QR Code</h4>
+              </div>
+              
+              <div className="mx-auto w-64 aspect-square bg-white rounded-3xl p-5 shadow-2xl ring-1 ring-slate-200">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${upiId}&pn=NexoraAI&cu=INR&am=2499`}
+                  alt="Payment QR Code" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              
+              <div className="space-y-3">
+                <p className="text-center text-xs text-slate-500 font-medium uppercase tracking-widest">Or Use UPI ID</p>
+                <div className="flex items-center gap-2 p-4 bg-slate-950/50 rounded-2xl border border-slate-800/50 w-full justify-between group hover:border-rose-500/30 transition-colors">
+                  <code className="text-rose-300 font-bold tracking-wide">{upiId}</code>
+                  <button 
+                    onClick={copyToClipboard}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs text-slate-300 hover:text-white transition-all border border-slate-700/50"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? "Copied" : "Copy"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-5 pt-2">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400 font-bold border border-rose-500/20">2</div>
+                <h4 className="text-white font-semibold">Submit Transaction Details</h4>
+              </div>
+
+              <form onSubmit={handleManualSubmit} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-400 ml-1">Email Address</label>
+                  <input 
+                    type="email" 
+                    name="email"
+                    required
+                    placeholder="your@email.com"
+                    className="w-full px-5 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/20 transition-all"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-400 ml-1">Transaction ID / UTR</label>
+                  <input 
+                    type="text" 
+                    name="transaction_id"
+                    required
+                    placeholder="Enter 12-digit ID"
+                    className="w-full px-5 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/20 transition-all"
+                  />
+                </div>
+
+                <div className="p-5 bg-emerald-500/5 border border-emerald-500/10 rounded-[1.5rem] flex gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-[13px] text-slate-300 leading-relaxed">
+                    Account will be activated within <span className="text-emerald-400 font-bold">12-24 hours</span>.
+                  </p>
+                </div>
+
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-5 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-2xl font-bold shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+                >
+                  {loading ? "Submitting..." : "Verify & Activate Account"}
+                  {!loading && <ArrowRight className="w-5 h-5" />}
+                </button>
+              </form>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+};
+
+const Pricing = () => {
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleTrial = async () => {
+    try {
+      setLoading(true);
+      const response = await api.post('/payments/trial');
+      alert(response.data.message);
+      navigate('/dashboard');
+    } catch (error) {
+      alert(error.response?.data?.detail || "Bhai, trial start nahi ho paya!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0F172A] text-white">
       <Navbar />
-      
-      <Container maxWidth="lg" sx={{ pt: 12 }}>
-        <Box sx={{ textAlign: 'center', mb: 8 }}>
+      <PaymentModal isOpen={isPaymentOpen} onClose={() => setIsPaymentOpen(false)} />
+
+      <div className="max-w-7xl mx-auto px-6 pt-32 pb-20">
+        <div className="text-center mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Typography variant="overline" sx={{ color: '#6366F1', fontWeight: 700, letterSpacing: 2 }}>
-              PREMIUM ACCESS
-            </Typography>
-            <Typography variant="h2" sx={{ fontWeight: 900, mb: 3, background: 'linear-gradient(to right, #FFF, #94A3B8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <h2 className="text-sm font-bold text-rose-500 tracking-widest uppercase mb-4">Premium Access</h2>
+            <h1 className="text-4xl md:text-6xl font-black mb-6 bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
               Invest in your digital future.
-            </Typography>
-            <Typography variant="h6" sx={{ color: '#94A3B8', mb: 4, maxWidth: '600px', mx: 'auto' }}>
-              No free tiers, just pure performance. Choose the plan that aligns with your business goals.
-            </Typography>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-              <Typography sx={{ color: annual ? '#94A3B8' : '#FFF' }}>Monthly</Typography>
-              <Switch 
-                checked={annual} 
-                onChange={() => setAnnual(!annual)}
-                sx={{ 
-                  '& .MuiSwitch-switchBase.Mui-checked': { color: '#6366F1' },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#6366F1' }
-                }}
-              />
-              <Typography sx={{ color: annual ? '#FFF' : '#94A3B8' }}>
-                Yearly <Chip label="Save 20%" size="small" sx={{ bgcolor: 'rgba(99, 102, 241, 0.2)', color: '#818CF8', fontWeight: 700, ml: 1 }} />
-              </Typography>
-            </Box>
+            </h1>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+              Choose a plan that fits your growth. Try it free or pay manually via UPI for instant business activation.
+            </p>
           </motion.div>
-        </Box>
+        </div>
 
-        <Grid container spacing={4} alignItems="stretch">
-          {plans.map((plan, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                style={{ height: '100%' }}
-              >
-                <Card sx={{ 
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  p: 4,
-                  bgcolor: plan.premium ? 'rgba(30, 41, 59, 0.7)' : 'transparent',
-                  border: plan.premium ? '2px solid #6366F1' : '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '24px',
-                  position: 'relative',
-                  overflow: 'visible',
-                  backdropFilter: 'blur(10px)',
-                  transition: 'transform 0.3s ease',
-                  '&:hover': {
-                    transform: 'translateY(-10px)',
-                    boxShadow: plan.premium ? '0 20px 40px rgba(99, 102, 241, 0.2)' : '0 20px 40px rgba(0,0,0,0.3)'
-                  }
-                }}>
-                  {plan.badge && (
-                    <Chip 
-                      label={plan.badge} 
-                      sx={{ 
-                        position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)',
-                        bgcolor: '#6366F1', color: 'white', fontWeight: 800, px: 2
-                      }} 
-                    />
-                  )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {/* Trial Card */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="p-10 rounded-[2.5rem] bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-all flex flex-col"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
+                <AccessTime className="w-6 h-6 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold">1-Day Trial</h3>
+                <p className="text-slate-500 text-sm">Experience the magic</p>
+              </div>
+            </div>
 
-                  <Box sx={{ mb: 4 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                      {plan.icon}
-                      <Typography variant="h5" sx={{ fontWeight: 800 }}>{plan.title}</Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
-                      <Typography variant="h3" sx={{ fontWeight: 900 }}>
-                        {plan.price !== "Custom" ? `₹${plan.price}` : plan.price}
-                      </Typography>
-                      {plan.price !== "Custom" && (
-                        <Typography sx={{ color: '#94A3B8', ml: 1 }}>
-                          /{annual ? 'year' : 'month'}
-                        </Typography>
-                      )}
-                    </Box>
-                    <Typography sx={{ color: '#94A3B8', mt: 2, fontSize: '0.95rem' }}>
-                      {plan.description}
-                    </Typography>
-                  </Box>
+            <div className="mb-8">
+              <span className="text-5xl font-black">₹0</span>
+              <span className="text-slate-500 ml-2">/ 24 hours</span>
+            </div>
 
-                  <List sx={{ mb: 4, flexGrow: 1 }}>
-                    {plan.features.map((feature, i) => (
-                      <ListItem key={i} disableGutters sx={{ py: 0.75 }}>
-                        <ListItemIcon sx={{ minWidth: 32 }}>
-                          <Check sx={{ color: '#6366F1', fontSize: 20 }} />
-                        </ListItemIcon>
-                        <ListItemText 
-                          primary={feature} 
-                          primaryTypographyProps={{ sx: { color: '#CBD5E1', fontSize: '0.95rem' } }} 
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
+            <ul className="space-y-4 mb-10 flex-1">
+              {[
+                "Full Platform Access",
+                "WhatsApp Sync (Trial)",
+                "Voice Agent Access",
+                "Valid for 24 Hours",
+                "No Credit Card Required"
+              ].map((f) => (
+                <li key={f} className="flex items-center gap-3 text-slate-300">
+                  <Check className="w-5 h-5 text-emerald-400" />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
 
-                  <Button 
-                    fullWidth 
-                    variant={plan.premium ? "contained" : "outlined"}
-                    disabled={loading !== null}
-                    onClick={() => plan.id !== 'enterprise' ? handlePurchase(plan.id) : (window.location.href = 'mailto:nexora.aidigital.twin@gmail.com')}
-                    sx={{ 
-                      py: 1.5, 
-                      borderRadius: '12px', 
-                      fontWeight: 800,
-                      textTransform: 'none',
-                      fontSize: '1rem',
-                      ...(plan.premium ? {
-                        bgcolor: '#6366F1',
-                        '&:hover': { bgcolor: '#4F46E5' }
-                      } : {
-                        borderColor: 'rgba(255,255,255,0.2)',
-                        color: 'white',
-                        '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.05)' }
-                      })
-                    }}
-                  >
-                    {loading === plan.id ? <CircularProgress size={24} color="inherit" /> : plan.buttonText}
-                  </Button>
-                </Card>
-              </motion.div>
-            </Grid>
-          ))}
-        </Grid>
+            <button
+              onClick={handleTrial}
+              disabled={loading}
+              className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-2xl font-bold transition-all"
+            >
+              {loading ? "Starting..." : "Start Free Trial"}
+            </button>
+          </motion.div>
 
-        <Box sx={{ mt: 10, p: 4, bgcolor: 'rgba(99, 102, 241, 0.05)', borderRadius: '24px', border: '1px dashed rgba(99, 102, 241, 0.3)' }}>
-          <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={8}>
-              <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>
-                Secure Payments Powered by Dodo Payments
-              </Typography>
-              <Typography sx={{ color: '#94A3B8' }}>
-                We support UPI, Credit/Debit Cards, and Netbanking. All transactions are secure and tax-compliant globally via Dodo Payments.
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={4} sx={{ textAlign: 'right' }}>
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                <Chip label="UPI Supported" variant="outlined" sx={{ color: '#10B981', borderColor: '#10B981' }} />
-                <Chip label="Zero Compliance Hassle" variant="outlined" sx={{ color: '#3B82F6', borderColor: '#3B82F6' }} />
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-      </Container>
-    </Box>
+          {/* Pro Card */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="p-10 rounded-[2.5rem] bg-slate-900 border-2 border-rose-500/50 relative overflow-hidden flex flex-col shadow-2xl shadow-rose-500/10"
+          >
+            <div className="absolute top-0 right-0 p-4">
+              <span className="px-4 py-1.5 bg-rose-500 text-white text-xs font-black rounded-full uppercase tracking-tighter">Most Popular</span>
+            </div>
+
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center">
+                <Star className="w-6 h-6 text-rose-500" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold">Business Pro</h3>
+                <p className="text-slate-500 text-sm">Scale your expertise</p>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <span className="text-5xl font-black">₹2,499</span>
+              <span className="text-slate-500 ml-2">/ month</span>
+            </div>
+
+            <ul className="space-y-4 mb-10 flex-1">
+              {[
+                "Unlimited Digital Twins",
+                "Full WhatsApp Integration",
+                "Voice Agent (Premium)",
+                "Advanced Training (PDF/URL)",
+                "12-24h Manual Activation",
+                "Priority Support"
+              ].map((f) => (
+                <li key={f} className="flex items-center gap-3 text-slate-300">
+                  <Check className="w-5 h-5 text-rose-500" />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+
+            <button
+              onClick={() => setIsPaymentOpen(true)}
+              className="w-full py-4 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-2xl font-bold hover:shadow-xl transition-all flex items-center justify-center gap-2"
+            >
+              Get Pro Now
+              <QrCodeScanner className="w-5 h-5" />
+            </button>
+          </motion.div>
+        </div>
+
+        {/* Info Box */}
+        <div className="mt-16 p-8 rounded-[2rem] bg-slate-900/30 border border-slate-800/50 flex flex-col md:flex-row items-center gap-6">
+          <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+            <QrCodeScanner className="w-7 h-7 text-blue-400" />
+          </div>
+          <div>
+            <h4 className="text-xl font-bold mb-1">Manual UPI Activation</h4>
+            <p className="text-slate-400">
+              For users in India, we support direct UPI payments for faster onboarding. Simply pay, submit your TXID, and our team will activate your Pro features within 12-24 hours.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
 export default Pricing;
-
