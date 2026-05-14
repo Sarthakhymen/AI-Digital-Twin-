@@ -94,7 +94,7 @@ const Navigation = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
                 <Bot className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-white tracking-tight">
@@ -124,7 +124,7 @@ const Navigation = () => {
                 <>
                   <motion.button
                     onClick={() => navigate('/dashboard')}
-                    className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-lg text-sm font-medium hover:from-indigo-600 hover:to-violet-700 transition-all shadow-lg shadow-indigo-500/20"
+                    className="px-4 py-2 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-lg text-sm font-medium hover:from-rose-600 hover:to-red-700 transition-all shadow-lg shadow-rose-500/20"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -198,7 +198,7 @@ const Navigation = () => {
                   <>
                     <button
                       onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }}
-                      className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-xl font-semibold"
+                      className="w-full py-4 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-xl font-semibold"
                     >
                       Dashboard
                     </button>
@@ -245,57 +245,51 @@ const Hero = () => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-[#0A0A0A] overflow-hidden">
-        {/* Cinematic Video Background Placeholder */}
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-screen"
-        >
-          <source src="/assets/cinematic-ai-clone.mp4" type="video/mp4" />
-          <source src="https://cdn.pixabay.com/video/2023/04/20/159781-819875600_tiny.mp4" type="video/mp4" />
-        </video>
         
-        {/* Deep Overlay for Luxury SaaS feel */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/90 via-[#0A0A0A]/40 to-[#0A0A0A]" />
+        {/* Deep Animated Gradient Overlay for Luxury SaaS feel */}
+        <motion.div 
+          animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
+          transition={{ duration: 20, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
+          className="absolute inset-0 opacity-40 mix-blend-screen"
+          style={{ backgroundImage: 'radial-gradient(circle at center, rgba(229, 231, 235, 0.15) 0%, rgba(244, 63, 94, 0.05) 40%, rgba(10, 10, 10, 1) 100%)', backgroundSize: '200% 200%' }}
+        />
 
-        {/* Neural Network / Nodes Overlay */}
-        <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==')] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
+        {/* Soft Grid Overlay */}
+        <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==')] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
 
         {/* Floating Holographic UI Elements */}
         
-        {/* WhatsApp Bubble 1 */}
+        {/* Support Chat Bubble */}
         <motion.div
           animate={{ y: [-10, 10, -10], opacity: [0.5, 0.8, 0.5] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 left-[15%] max-w-[200px] p-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 backdrop-blur-md hidden md:block"
+          className="absolute top-1/4 left-[15%] max-w-[200px] p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md hidden md:block shadow-[0_0_30px_rgba(255,255,255,0.05)]"
         >
           <div className="flex gap-3 items-center">
-            <MessageSquare className="w-5 h-5 text-[#25D366]" />
-            <div className="h-2 w-20 bg-[#25D366]/40 rounded-full" />
+            <MessageSquare className="w-5 h-5 text-slate-300" />
+            <div className="h-2 w-20 bg-slate-400/40 rounded-full" />
           </div>
         </motion.div>
 
-        {/* WhatsApp Bubble 2 */}
+        {/* AI Twin Bubble */}
         <motion.div
           animate={{ y: [10, -10, 10], opacity: [0.4, 0.7, 0.4] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute bottom-1/3 right-[15%] max-w-[200px] p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md hidden md:block"
+          className="absolute bottom-1/3 right-[15%] max-w-[200px] p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 backdrop-blur-md hidden md:block shadow-[0_0_30px_rgba(244,63,94,0.1)]"
         >
           <div className="flex gap-3 items-center justify-end">
-            <div className="h-2 w-16 bg-white/40 rounded-full" />
-            <Bot className="w-5 h-5 text-indigo-400" />
+            <div className="h-2 w-16 bg-rose-400/40 rounded-full" />
+            <Bot className="w-5 h-5 text-rose-400" />
           </div>
         </motion.div>
 
-        {/* Streaming Documents */}
+        {/* Data Stream */}
         <motion.div
           animate={{ y: [0, -50], opacity: [0, 0.5, 0] }}
           transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/2 left-1/3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 backdrop-blur-sm hidden lg:block"
+          className="absolute top-1/2 left-1/3 p-3 rounded-lg bg-slate-300/10 border border-slate-300/20 backdrop-blur-sm hidden lg:block"
         >
-          <Layers className="w-6 h-6 text-blue-400" />
+          <Layers className="w-6 h-6 text-slate-300" />
         </motion.div>
         
         {/* Voice Waveform */}
@@ -305,7 +299,7 @@ const Hero = () => {
               key={i}
               animate={{ height: ['20%', '100%', '20%'] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
-              className="w-1.5 bg-violet-500/50 rounded-full"
+              className="w-1.5 bg-rose-500/50 rounded-full"
             />
           ))}
         </div>
@@ -313,11 +307,11 @@ const Hero = () => {
         {/* Gradient Orbs for lighting */}
         <motion.div
           style={{ y: y1 }}
-          className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-[#0070F3]/10 rounded-full blur-[120px] mix-blend-screen"
+          className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-slate-300/10 rounded-full blur-[120px] mix-blend-screen"
         />
         <motion.div
           style={{ y: y2 }}
-          className="absolute bottom-20 right-1/4 w-[400px] h-[400px] bg-[#7928CA]/10 rounded-full blur-[100px] mix-blend-screen"
+          className="absolute bottom-20 right-1/4 w-[400px] h-[400px] bg-rose-500/10 rounded-full blur-[120px] mix-blend-screen"
         />
       </div>
 
@@ -335,7 +329,7 @@ const Hero = () => {
           {/* Badge */}
           <motion.div variants={fadeInUp} className="flex justify-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
-              <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
+              <span className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.8)]" />
               <span className="text-sm font-medium text-slate-300">Your clone is born</span>
               <ChevronRight className="w-4 h-4 text-slate-500" />
             </div>
@@ -348,7 +342,7 @@ const Hero = () => {
           >
             Your time is finite.
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400 drop-shadow-[0_0_30px_rgba(99,102,241,0.3)]">Your impact shouldn't be.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-white to-rose-400 drop-shadow-[0_0_30px_rgba(244,63,94,0.2)]">Your impact shouldn't be.</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -362,26 +356,38 @@ const Hero = () => {
           {/* CTAs */}
           <motion.div
             variants={fadeInUp}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+            className="flex flex-col items-center justify-center gap-6 pt-4"
           >
-            <motion.button
-              onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Sales Inquiry"}
-              className="group px-8 py-4 bg-white text-[#0A0A0A] rounded-full font-medium text-sm hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 flex items-center gap-2"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Contact for Sales
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-            <motion.button
-              onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Demo Request"}
-              className="group px-8 py-4 bg-[#0A0A0A] border border-white/10 text-white rounded-full font-medium text-sm hover:bg-white/5 transition-all duration-300 flex items-center gap-2"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Play className="w-4 h-4 fill-current" />
-              Request a Demo
-            </motion.button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <motion.button
+                onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Sales Inquiry"}
+                className="group px-8 py-4 bg-white text-[#0A0A0A] rounded-full font-medium text-sm hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 flex items-center gap-2"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Start Free Trial
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </motion.button>
+              <motion.button
+                onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Demo Request"}
+                className="group px-8 py-4 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-full font-medium text-sm hover:bg-rose-500/20 transition-all duration-300 flex items-center gap-2"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Play className="w-4 h-4 fill-current" />
+                Watch Demo
+              </motion.button>
+            </div>
+            
+            {/* Direct Contact Info */}
+            <div className="flex flex-col items-center gap-1 text-sm text-slate-400 mt-2">
+              <p>Prefer to talk directly? Reach out anytime:</p>
+              <div className="flex items-center gap-4 text-slate-300 font-medium">
+                <a href="mailto:nexora.aidigital.twin@gmail.com" className="hover:text-white transition-colors">nexora.aidigital.twin@gmail.com</a>
+                <span className="w-1 h-1 rounded-full bg-slate-600" />
+                <a href="tel:+919625410112" className="hover:text-white transition-colors">+91 9625410112</a>
+              </div>
+            </div>
           </motion.div>
 
 
@@ -420,7 +426,7 @@ const DashboardPreview = () => {
           className="relative"
         >
           {/* Browser Frame */}
-          <div className="rounded-2xl overflow-hidden glass border border-slate-700/50 shadow-2xl shadow-indigo-500/10">
+          <div className="rounded-2xl overflow-hidden glass border border-slate-700/50 shadow-2xl shadow-rose-500/10">
             {/* Browser Chrome */}
             <div className="px-4 py-3 bg-slate-800/80 border-b border-slate-700/50 flex items-center gap-2">
               <div className="flex gap-1.5">
@@ -450,11 +456,11 @@ const DashboardPreview = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    className="p-6 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:border-indigo-500/30 transition-colors"
+                    className="p-6 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:border-rose-500/30 transition-colors"
                   >
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-                        <stat.icon className="w-5 h-5 text-indigo-400" />
+                      <div className="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center">
+                        <stat.icon className="w-5 h-5 text-rose-400" />
                       </div>
                     </div>
                     <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
@@ -469,7 +475,7 @@ const DashboardPreview = () => {
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-sm font-semibold text-white">Conversation Volume</h3>
                   <div className="flex gap-2">
-                    <span className="px-2 py-1 text-xs rounded bg-indigo-500/20 text-indigo-300">24h</span>
+                    <span className="px-2 py-1 text-xs rounded bg-rose-500/20 text-rose-300">24h</span>
                     <span className="px-2 py-1 text-xs rounded bg-slate-700 text-slate-400">7d</span>
                     <span className="px-2 py-1 text-xs rounded bg-slate-700 text-slate-400">30d</span>
                   </div>
@@ -482,7 +488,7 @@ const DashboardPreview = () => {
                       whileInView={{ height: `${h}%` }}
                       viewport={{ once: true }}
                       transition={{ delay: i * 0.05, duration: 0.5 }}
-                      className="flex-1 rounded-t bg-gradient-to-t from-indigo-600 to-violet-500 opacity-80 hover:opacity-100 transition-opacity"
+                      className="flex-1 rounded-t bg-gradient-to-t from-slate-400 to-rose-500 opacity-80 hover:opacity-100 transition-opacity"
                     />
                   ))}
                 </div>
@@ -513,7 +519,7 @@ const DashboardPreview = () => {
             className="absolute -left-8 bottom-32 p-4 rounded-xl glass border border-slate-700/50 shadow-xl"
           >
             <div className="flex items-center gap-2">
-              <Mic className="w-4 h-4 text-indigo-400" />
+              <Mic className="w-4 h-4 text-rose-400" />
               <span className="text-sm text-white">Voice Model Ready</span>
             </div>
           </motion.div>
@@ -574,7 +580,7 @@ const Features = () => {
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <span className="text-sm font-semibold text-indigo-400 tracking-wider uppercase">Features</span>
+          <span className="text-sm font-semibold text-rose-400 tracking-wider uppercase">Features</span>
           <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-white">
             Scale your expertise,
             <br />
@@ -595,7 +601,7 @@ const Features = () => {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
               whileHover={{ y: -4 }}
-              className="group relative p-8 rounded-2xl bg-slate-800/30 border border-slate-700/50 hover:border-indigo-500/30 transition-all duration-300"
+              className="group relative p-8 rounded-2xl bg-slate-800/30 border border-slate-700/50 hover:border-rose-500/30 transition-all duration-300"
             >
               {/* Icon */}
               <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
@@ -611,7 +617,7 @@ const Features = () => {
               </p>
 
               {/* Hover Glow */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500/0 to-violet-500/0 group-hover:from-indigo-500/5 group-hover:to-violet-500/5 transition-all duration-500" />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-rose-500/0 to-red-500/0 group-hover:from-rose-500/5 group-hover:to-red-500/5 transition-all duration-500" />
             </motion.div>
           ))}
         </div>
@@ -652,7 +658,7 @@ const HowItWorks = () => {
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <span className="text-sm font-semibold text-indigo-400 tracking-wider uppercase">How It Works</span>
+          <span className="text-sm font-semibold text-rose-400 tracking-wider uppercase">How It Works</span>
           <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-white">
             Create your twin in
             <br />
@@ -672,7 +678,7 @@ const HowItWorks = () => {
             >
               {/* Connector Line */}
               {i < 2 && (
-                <div className="hidden lg:block absolute top-12 left-full w-full h-px bg-gradient-to-r from-indigo-500/50 to-transparent" />
+                <div className="hidden lg:block absolute top-12 left-full w-full h-px bg-gradient-to-r from-rose-500/50 to-transparent" />
               )}
 
               <div className="p-8 rounded-2xl glass border border-slate-700/50">
@@ -700,9 +706,9 @@ const TheMission = () => {
           className="p-12 rounded-3xl bg-slate-800/30 border border-slate-700/50 relative overflow-hidden"
         >
           {/* Background Glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/10 blur-[80px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-rose-500/10 blur-[80px]" />
           
-          <span className="text-sm font-semibold text-indigo-400 tracking-wider uppercase">Why we built this</span>
+          <span className="text-sm font-semibold text-rose-400 tracking-wider uppercase">Why we built this</span>
           <h2 className="mt-4 text-3xl sm:text-4xl font-bold text-white mb-8">
             Technology should give you time back,<br />
             <span className="gradient-text">not demand more of it.</span>
@@ -723,7 +729,7 @@ const TheMission = () => {
 const Pricing = () => {
   return (
     <section id="pricing" className="relative py-32 bg-slate-900/20 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-rose-500/5 to-transparent" />
       
       <div className="relative max-w-7xl mx-auto px-6">
         <motion.div
@@ -732,7 +738,7 @@ const Pricing = () => {
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <span className="text-sm font-semibold text-indigo-400 tracking-wider uppercase">Enterprise Ready</span>
+          <span className="text-sm font-semibold text-rose-400 tracking-wider uppercase">Enterprise Ready</span>
           <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-white">
             Tailored solutions for
             <br />
@@ -748,10 +754,10 @@ const Pricing = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="p-12 rounded-3xl border border-indigo-500/30 bg-slate-800/40 backdrop-blur-sm relative overflow-hidden"
+            className="p-12 rounded-3xl border border-rose-500/30 bg-slate-800/40 backdrop-blur-sm relative overflow-hidden"
           >
             {/* Background Glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px]" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 blur-[80px]" />
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
@@ -766,7 +772,7 @@ const Pricing = () => {
                     "Direct feedback loop with founders"
                   ].map((feature) => (
                     <li key={feature} className="flex items-center gap-3 text-slate-300">
-                      <Check className="w-5 h-5 text-indigo-400 flex-shrink-0" />
+                      <Check className="w-5 h-5 text-rose-400 flex-shrink-0" />
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -774,8 +780,8 @@ const Pricing = () => {
               </div>
               
               <div className="flex flex-col gap-4">
-                <div className="p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 text-center">
-                  <p className="text-sm text-indigo-300 font-medium mb-1 uppercase tracking-wider">Starting at</p>
+                <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 mb-4 text-center">
+                  <p className="text-sm text-rose-300 font-medium mb-1 uppercase tracking-wider">Starting at</p>
                   <p className="text-4xl font-bold text-white">Custom</p>
                   <p className="text-xs text-slate-500 mt-2">Billed annually or monthly</p>
                 </div>
@@ -784,7 +790,7 @@ const Pricing = () => {
                   onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Enterprise Inquiry"}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-xl font-bold shadow-xl shadow-indigo-500/20"
+                  className="w-full py-4 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-xl font-bold shadow-xl shadow-rose-500/20"
                 >
                   Contact for Sales
                 </motion.button>
@@ -797,6 +803,13 @@ const Pricing = () => {
                 >
                   Request a Demo
                 </motion.button>
+
+                {/* Direct Contact */}
+                <div className="text-center mt-4">
+                  <p className="text-xs text-slate-400 mb-1">Or reach us directly:</p>
+                  <a href="mailto:nexora.aidigital.twin@gmail.com" className="block text-sm text-slate-300 hover:text-white transition-colors">nexora.aidigital.twin@gmail.com</a>
+                  <a href="tel:+919625410112" className="block text-sm text-slate-300 hover:text-white transition-colors">+91 9625410112</a>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -819,7 +832,7 @@ const CTA = () => {
           className="relative p-12 md:p-16 rounded-3xl overflow-hidden"
         >
           {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-violet-600 to-rose-500" />
+          <div className="absolute inset-0 bg-gradient-to-br from-rose-600 via-red-600 to-slate-800" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-30" />
 
           {/* Content */}
@@ -851,7 +864,7 @@ const CTA = () => {
             >
               <motion.button
                 onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Enterprise Inquiry"}
-                className="px-8 py-4 bg-white text-indigo-600 rounded-xl font-semibold hover:bg-slate-100 transition-colors"
+                className="px-8 py-4 bg-white text-rose-600 rounded-xl font-semibold hover:bg-slate-100 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -865,6 +878,24 @@ const CTA = () => {
               >
                 Request a Demo
               </motion.button>
+            </motion.div>
+            
+            {/* Direct Contact Info */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="mt-8 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-white/90 font-medium"
+            >
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">✉️</span>
+                <a href="mailto:nexora.aidigital.twin@gmail.com" className="hover:text-white transition-colors">nexora.aidigital.twin@gmail.com</a>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">📞</span>
+                <a href="tel:+919625410112" className="hover:text-white transition-colors">+91 9625410112</a>
+              </div>
             </motion.div>
           </div>
         </motion.div>
@@ -910,7 +941,7 @@ const Footer = () => {
   return (
     <footer className="pt-24 pb-12 border-t border-slate-800 bg-dark-950 relative overflow-hidden">
       {/* Background Glow */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[120px]" />
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-rose-600/5 rounded-full blur-[120px]" />
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-12 mb-16">
@@ -920,7 +951,7 @@ const Footer = () => {
               onClick={() => navigate('/')}
               className="flex items-center gap-2 mb-4 cursor-pointer"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center">
                 <Bot className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-white">AI Twin</span>
@@ -948,6 +979,23 @@ const Footer = () => {
               </ul>
             </div>
           ))}
+
+          {/* Direct Contact Column */}
+          <div className="col-span-2 md:col-span-1">
+            <h4 className="text-sm font-semibold text-white mb-4">Contact Us</h4>
+            <ul className="space-y-3">
+              <li>
+                <a href="mailto:nexora.aidigital.twin@gmail.com" className="text-sm text-slate-500 hover:text-slate-300 transition-colors break-words">
+                  nexora.aidigital.twin@gmail.com
+                </a>
+              </li>
+              <li>
+                <a href="tel:+919625410112" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
+                  +91 9625410112
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Bottom Bar */}
