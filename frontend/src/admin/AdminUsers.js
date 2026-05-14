@@ -40,7 +40,8 @@ const AdminUsers = ({ users, onToggleAdmin }) => {
               <tr className="bg-slate-950/50 border-b border-slate-800">
                 <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest">User Info</th>
                 <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest">Status</th>
-                <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest">Plan</th>
+                 <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest">Plan</th>
+                <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest">Expires</th>
                 <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest">Joined</th>
                 <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest text-right">Actions</th>
               </tr>
@@ -76,6 +77,11 @@ const AdminUsers = ({ users, onToggleAdmin }) => {
                     <span className="text-xs font-bold text-slate-300 bg-slate-800 px-2 py-1 rounded">
                       {u.subscription_plan?.toUpperCase() || 'STARTER'}
                     </span>
+                  </td>
+                  <td className="px-6 py-5">
+                    <div className="text-xs font-mono text-slate-400">
+                      {u.subscription_expires_at ? new Date(u.subscription_expires_at).toLocaleDateString() : 'N/A'}
+                    </div>
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-1.5 text-xs text-slate-400">

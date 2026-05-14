@@ -110,6 +110,13 @@ def update_digital_twin(
     if not digital_twin:
         raise HTTPException(status_code=404, detail="Digital twin not found")
     
+    # Check subscription status
+    if current_user.subscription_status == "expired":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Your subscription has expired. Please upgrade to Pro to update digital twins."
+        )
+    
     for key, value in twin_data.dict(exclude_unset=True).items():
         setattr(digital_twin, key, value)
     
@@ -133,6 +140,13 @@ def upload_voice_sample(
     if not digital_twin:
         raise HTTPException(status_code=404, detail="Digital twin not found")
     
+    # Check subscription status
+    if current_user.subscription_status == "expired":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Your subscription has expired. Please upgrade to Pro to upload voice samples."
+        )
+    
     result = digital_twin_service.process_voice_sample(db, twin_id, file)
     return result
 
@@ -150,6 +164,13 @@ def activate_digital_twin(
     
     if not digital_twin:
         raise HTTPException(status_code=404, detail="Digital twin not found")
+    
+    # Check subscription status
+    if current_user.subscription_status == "expired":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Your subscription has expired. Please upgrade to Pro to activate digital twins."
+        )
     
     # In MVP, allow activation from training state
     # if digital_twin.status != "trained":

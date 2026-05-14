@@ -28,7 +28,11 @@ def get_conversation_analytics(
     current_user: User = Depends(get_current_user_dependency),
     db: Session = Depends(get_db)
 ):
-    """Get conversation analytics"""
+    """Get conversation analytics slice"""
+    # Check subscription status
+    if current_user.subscription_status == "expired":
+        raise HTTPException(status_code=403, detail="Subscription expired. Please upgrade to Pro to view analytics.")
+        
     start_date = datetime.utcnow() - timedelta(days=days)
     
     query = db.query(Conversation).join(DigitalTwin).join(Business).filter(
@@ -71,6 +75,10 @@ def get_performance_analytics(
     db: Session = Depends(get_db)
 ):
     """Get performance analytics for all digital twins"""
+    # Check subscription status
+    if current_user.subscription_status == "expired":
+        raise HTTPException(status_code=403, detail="Subscription expired. Please upgrade to Pro to view analytics.")
+        
     # Get all digital twins for user
     digital_twins = db.query(DigitalTwin).join(Business).filter(
         Business.owner_id == current_user.id
@@ -109,7 +117,11 @@ def get_channel_analytics(
     current_user: User = Depends(get_current_user_dependency),
     db: Session = Depends(get_db)
 ):
-    """Get conversation breakdown by channel"""
+    """Get conversation breakdown by channel slice"""
+    # Check subscription status
+    if current_user.subscription_status == "expired":
+        raise HTTPException(status_code=403, detail="Subscription expired. Please upgrade to Pro to view analytics.")
+        
     start_date = datetime.utcnow() - timedelta(days=days)
     
     channels = db.query(

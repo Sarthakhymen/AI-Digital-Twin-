@@ -101,20 +101,32 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
 
 def check_user_subscription(db: Session, user: User) -> User:
     """Check and update user subscription status if expired"""
-    # Automatic Trial Expiration Check (24 hours)
-    if user.subscription_plan == "starter" and user.subscription_status == "active":
-        if user.trial_started_at:
-            # If trial started more than 24 hours ago
-            if (datetime.utcnow() - user.trial_started_at.replace(tzinfo=None)) > timedelta(hours=24):
-                user.subscription_status = "expired"
-                db.commit()
+    if user.subscription_status != "active":
+        return user
+
+    # Check for expiration if a timestamp is set
+    if user.subscription_expires_at:
+        # Convert to offset-naive if necessary for comparison
+        expires_at = user.subscription_expires_at
+        if expires_at.tzinfo is not None:
+            expires_at = expires_at.replace(tzinfo=None)
+            
+        if datetime.utcnow() > expires_at:
+            user.subscription_status = "expired"
+            db.commit()
+            db.refresh(user)
     
-    # Pro Subscription Expiration Check
-    if user.subscription_plan == "pro" and user.subscription_status == "active":
-        if user.subscription_expires_at:
-            if datetime.utcnow() > user.subscription_expires_at.replace(tzinfo=None):
-                user.subscription_status = "expired"
-                db.commit()
+    # Fallback for trial started without explicit expiration set (legacy)
+    elif user.subscription_plan == "trial" and user.trial_started_at:
+        trial_start = user.trial_started_at
+        if trial_start.tzinfo is not None:
+            trial_start = trial_start.replace(tzinfo=None)
+            
+        if (datetime.utcnow() - trial_start) > timedelta(hours=24):
+            user.subscription_status = "expired"
+            db.commit()
+            db.refresh(user)
+
     return user
 
 def get_current_user(db: Any, token: str) -> User:

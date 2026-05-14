@@ -4,7 +4,6 @@ import {
   XCircle, 
   Clock, 
   IndianRupee,
-  ExternalLink,
   MessageSquare
 } from 'lucide-react';
 
@@ -67,12 +66,15 @@ const AdminPayments = ({ payments, onVerify }) => {
                 </button>
                 {p.status === 'pending' && (
                   <>
-                    <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl text-sm font-semibold transition-all">
+                    <button 
+                      onClick={() => onVerify(p.transaction_id, 'reject')}
+                      className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl text-sm font-semibold transition-all"
+                    >
                       <XCircle className="w-4 h-4" />
                       Reject
                     </button>
                     <button 
-                      onClick={() => onVerify(p.transaction_id)}
+                      onClick={() => onVerify(p.transaction_id, 'verify')}
                       className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95"
                     >
                       <CheckCircle className="w-4 h-4" />

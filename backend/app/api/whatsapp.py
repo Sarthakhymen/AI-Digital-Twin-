@@ -106,10 +106,21 @@ async def whatsapp_webhook(
     """
     print(f"Received message from {From}: {Body}")
     
-    # Heuristic: Find first active twin
+    # Find first active twin
     active_twin = db.query(DigitalTwin).filter(DigitalTwin.status == "active").order_by(DigitalTwin.id.desc()).first()
     if not active_twin:
         return Response(content="<Response><Message>No active twin found.</Message></Response>", media_type="application/xml")
+
+    # Find the owner and check subscription
+    owner = db.query(User).join(Business).join(DigitalTwin).filter(DigitalTwin.id == active_twin.id).first()
+    if owner:
+        from app.services.auth_service import check_user_subscription
+        owner = check_user_subscription(db, owner)
+        if owner.subscription_status == "expired":
+            from twilio.twiml.messaging_response import MessagingResponse
+            resp = MessagingResponse()
+            resp.message("This service is currently unavailable due to an expired subscription. Please upgrade to continue.")
+            return Response(content=str(resp), media_type="application/xml")
 
     result = await integration_service.process_public_message(
         db=db,

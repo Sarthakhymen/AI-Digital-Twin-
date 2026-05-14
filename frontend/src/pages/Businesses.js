@@ -6,11 +6,16 @@ import {
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import { Alert, AlertTitle } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Businesses = () => {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [formData, setFormData] = useState({ name: '', description: '', industry: '', website: '', phone: '', email: '' });
+  const { user } = useAuth();
+  const navigate = useNavigate();
   
   const queryClient = useQueryClient();
 
@@ -65,9 +70,30 @@ const Businesses = () => {
 
   return (
     <Box>
+      {user?.subscription_status === 'expired' && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
+          <AlertTitle>Subscription Expired</AlertTitle>
+          Your trial or subscription has expired. Please upgrade to Pro to continue adding or editing businesses.
+          <Button 
+            variant="contained" 
+            color="error" 
+            size="small" 
+            sx={{ ml: 2, textTransform: 'none' }}
+            onClick={() => navigate('/pricing')}
+          >
+            Upgrade Now
+          </Button>
+        </Alert>
+      )}
+
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
         <Typography variant="h4">Businesses</Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>
+        <Button 
+          variant="contained" 
+          startIcon={<Add />} 
+          onClick={() => handleOpen()}
+          disabled={user?.subscription_status === 'expired'}
+        >
           Add Business
         </Button>
       </Box>
@@ -82,8 +108,15 @@ const Businesses = () => {
                 <Typography variant="body2" sx={{ mt: 1 }}>{business.description}</Typography>
               </CardContent>
               <CardActions>
-                <IconButton onClick={() => handleOpen(business)}><Edit /></IconButton>
-                <IconButton onClick={() => deleteMutation.mutate(business.id)} color="error"><Delete /></IconButton>
+                <IconButton 
+                  onClick={() => handleOpen(business)} 
+                  disabled={user?.subscription_status === 'expired'}
+                ><Edit /></IconButton>
+                <IconButton 
+                  onClick={() => deleteMutation.mutate(business.id)} 
+                  color="error"
+                  disabled={user?.subscription_status === 'expired'}
+                ><Delete /></IconButton>
               </CardActions>
             </Card>
           </Grid>

@@ -10,6 +10,8 @@ from ..database import get_db, engine
 from ..models import User, ManualPayment, DigitalTwin, Business
 from .auth import get_current_user
 from ..schemas import UserResponse, DigitalTwinResponse
+from pydantic import BaseModel, EmailStr
+from datetime import timedelta
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -79,6 +81,46 @@ def list_payments(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
     """List all manual payments"""
     return db.query(ManualPayment).order_by(ManualPayment.created_at.desc()).all()
 
+class PaymentVerification(BaseModel):
+    transaction_id: str
+    action: str  # 'verify' or 'reject'
+
+@router.post("/payments/verify")
+def verify_payment(verification: PaymentVerification, db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
+    """Verify a manual payment and activate the user"""
+    payment = db.query(ManualPayment).filter(ManualPayment.transaction_id == verification.transaction_id).first()
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment record not found")
+    
+    if verification.action == "verify":
+        payment.status = "verified"
+        payment.verified_at = datetime.utcnow()
+        
+        # Activate user
+        user = db.query(User).filter(User.email == payment.email).first()
+        if user:
+            user.subscription_plan = "pro"
+            user.subscription_status = "active"
+            # Set expiration to 30 days from now
+            user.subscription_expires_at = datetime.utcnow() + timedelta(days=30)
+            db.commit()
+            return {"message": f"Payment verified. User {user.email} is now PRO."}
+        else:
+            db.commit()
+            return {"message": "Payment verified but no matching user found for this email."}
+    
+    elif verification.action == "reject":
+        payment.status = "rejected"
+        # If user exists, reset their status
+        user = db.query(User).filter(User.email == payment.email).first()
+        if user and user.subscription_status == "pending_verification":
+            user.subscription_status = "expired" # Or whatever appropriate
+            
+        db.commit()
+        return {"message": "Payment rejected."}
+    
+    return {"message": "Invalid action."}
+
 @router.get("/digital-twins", response_model=List[DigitalTwinResponse])
 def list_all_twins(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
     """List all digital twins across the platform"""
@@ -100,5 +142,17 @@ def execute_raw_query(query: str, db: Any = Depends(get_db), admin: Any = Depend
         else:
             db.commit()
             return {"message": "Query executed successfully", "rows_affected": result.rowcount}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/db/tables")
+def list_tables(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
+    """List all tables in the database"""
+    try:
+        if engine.name == "sqlite":
+            result = db.execute(text("SELECT name FROM sqlite_master WHERE type='table';"))
+        else:
+            result = db.execute(text("SELECT table_name FROM information_schema.tables WHERE table_schema='public';"))
+        return [row[0] for row in result if not row[0].startswith('sqlite_')]
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

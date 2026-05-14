@@ -2,15 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, 
-  CreditCard, 
   Bot, 
-  Activity, 
-  Terminal, 
   IndianRupee,
   TrendingUp,
   Clock,
   RefreshCcw,
-  Search,
   Bell
 } from 'lucide-react';
 import api from '../services/api';
@@ -32,15 +28,14 @@ const AdminDashboard = () => {
   const [payments, setPayments] = useState([]);
   const [twins, setTwins] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [queryResult, setQueryResult] = useState(null);
+  const [tables, setTables] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const fetchData = async () => {
     setLoading(true);
-    setError(null);
     try {
       const [statusRes, usersRes, paymentsRes, twinsRes] = await Promise.all([
         api.get('/admin/status'),
@@ -53,9 +48,18 @@ const AdminDashboard = () => {
       setPayments(paymentsRes.data);
       setTwins(twinsRes.data);
     } catch (err) {
-      setError(err.response?.data?.detail || "Failed to fetch admin data");
+      console.error(err.response?.data?.detail || "Failed to fetch admin data");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTables = async () => {
+    try {
+      const res = await api.get('/admin/db/tables');
+      setTables(res.data);
+    } catch (err) {
+      console.error("Failed to fetch tables:", err);
     }
   };
 
@@ -65,14 +69,18 @@ const AdminDashboard = () => {
       return;
     }
     fetchData();
+    fetchTables();
   }, [user, navigate]);
 
-  const handleVerify = async (transactionId) => {
+  const handleVerify = async (transactionId, action = 'verify') => {
     try {
-      await api.post('/payments/verify-payment', { transaction_id: transactionId });
+      await api.post('/admin/payments/verify', { 
+        transaction_id: transactionId,
+        action: action 
+      });
       fetchData();
     } catch (err) {
-      alert("Verification failed: " + (err.response?.data?.detail || err.message));
+      alert(`${action.charAt(0).toUpperCase() + action.slice(1)} failed: ` + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -319,6 +327,7 @@ const AdminDashboard = () => {
                   setQuery={setQuery} 
                   onRunQuery={runQuery} 
                   result={queryResult} 
+                  tables={tables}
                 />
               </motion.div>
             )}

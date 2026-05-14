@@ -1,17 +1,13 @@
 import React from 'react';
 import { 
   Activity, 
-  Server, 
   Cpu, 
   HardDrive, 
   Wifi, 
   ShieldCheck,
-  AlertTriangle,
   Terminal as TerminalIcon
 } from 'lucide-react';
 import { 
-  LineChart, 
-  Line, 
   XAxis, 
   YAxis, 
   CartesianGrid, 

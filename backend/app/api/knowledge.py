@@ -75,6 +75,9 @@ async def upload_knowledge_document(
     db: Session = Depends(get_db)
 ):
     """Upload a PDF/TXT file to train a Digital Twin's knowledge base"""
+    # Check subscription status
+    if current_user.subscription_status == "expired":
+        raise HTTPException(status_code=403, detail="Subscription expired. Please upgrade to Pro to manage knowledge base.")
     
     # 1. Verify twin ownership
     twin = db.query(DigitalTwin).join(Business).filter(

@@ -3,12 +3,17 @@ import { Box, Typography, Grid, Paper, Tabs, Tab, FormControl, InputLabel, Selec
 import { useQuery } from '@tanstack/react-query';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import { Alert, AlertTitle, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 const Analytics = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [days, setDays] = useState(30);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const { data: conversationData } = useQuery({
     queryKey: ['analytics-conversations', days],
@@ -32,6 +37,25 @@ const Analytics = () => {
   return (
     <Box>
       <Typography variant="h4" gutterBottom>Analytics</Typography>
+      
+      {user?.subscription_status === 'expired' && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
+          <AlertTitle>Subscription Expired</AlertTitle>
+          Your trial or subscription has expired. Please upgrade to Pro to view advanced analytics.
+          <Button 
+            variant="contained" 
+            color="error" 
+            size="small" 
+            sx={{ ml: 2, textTransform: 'none' }}
+            onClick={() => navigate('/pricing')}
+          >
+            Upgrade Now
+          </Button>
+        </Alert>
+      )}
+
+      {user?.subscription_status !== 'expired' && (
+        <>
       
       <FormControl sx={{ mb: 3, minWidth: 120 }}>
         <InputLabel>Time Period</InputLabel>
@@ -114,6 +138,8 @@ const Analytics = () => {
             </BarChart>
           </ResponsiveContainer>
         </Paper>
+      )}
+        </>
       )}
     </Box>
   );

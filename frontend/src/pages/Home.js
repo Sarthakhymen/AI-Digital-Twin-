@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   Play,
@@ -10,17 +10,17 @@ import {
   MessageSquare,
   BarChart3,
   ChevronRight,
-  X,
-  Menu,
   Mic,
   Bot,
   Layers,
   CheckCircle2,
-  Check,
-  Copy
+  Check
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import api from '../services/api';
+import axios from 'axios';
+import LandingNavbar from '../components/LandingNavbar';
+import PaymentModal from '../components/PaymentModal';
+import LogoIcon from '../components/LogoIcon';
 
 // Animation variants
 const fadeInUp = {
@@ -903,10 +903,41 @@ const TheMission = () => {
 // Pricing Section
 const Pricing = () => {
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [trialLoading, setTrialLoading] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleTrial = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    
+    setTrialLoading(true);
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/payments/trial`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (response.data.status === 'success') {
+        alert("Trial activated! You have 24 hours of premium access.");
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      alert(err.response?.data?.detail || "Failed to start trial");
+    } finally {
+      setTrialLoading(false);
+    }
+  };
 
   return (
     <section id="pricing" className="relative py-32 bg-slate-900/20 overflow-hidden">
-      <PaymentModal isOpen={isPaymentOpen} onClose={() => setIsPaymentOpen(false)} />
+      <PaymentModal 
+        isOpen={isPaymentOpen} 
+        onClose={() => setIsPaymentOpen(false)} 
+        plan={selectedPlan}
+        userEmail={user?.email}
+      />
       
       <div className="absolute inset-0 bg-gradient-to-b from-rose-500/5 to-transparent" />
       
@@ -960,19 +991,13 @@ const Pricing = () => {
             </ul>
 
             <motion.button
-              onClick={async () => {
-                try {
-                  const response = await api.post('/payments/trial');
-                  alert(response.data.message);
-                } catch (error) {
-                  alert(error.response?.data?.detail || "Bhai, trial start nahi ho paya!");
-                }
-              }}
+              onClick={handleTrial}
+              disabled={trialLoading}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-xl font-bold hover:bg-white/10 transition-all"
+              className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-xl font-bold hover:bg-white/10 transition-all disabled:opacity-50"
             >
-              Start 1-Day Trial
+              {trialLoading ? "Starting..." : "Start 1-Day Trial"}
             </motion.button>
           </motion.div>
 
@@ -1022,7 +1047,14 @@ const Pricing = () => {
             </div>
 
             <motion.button
-              onClick={() => setIsPaymentOpen(true)}
+              onClick={() => {
+                if (!user) {
+                  navigate('/login');
+                  return;
+                }
+                setSelectedPlan({ name: 'Business Pro', price: '₹2,499' });
+                setIsPaymentOpen(true);
+              }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="w-full py-4 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-xl font-bold shadow-xl shadow-rose-500/20 flex items-center justify-center gap-2 group"
