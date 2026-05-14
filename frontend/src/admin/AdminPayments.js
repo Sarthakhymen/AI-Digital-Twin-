@@ -40,7 +40,7 @@ const AdminPayments = ({ payments, onVerify }) => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-lg font-black text-white">₹2,499</span>
+                    <span className="text-lg font-black text-white">₹{p.amount}</span>
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter ${
                       p.status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'
                     }`}>

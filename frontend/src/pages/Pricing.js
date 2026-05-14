@@ -22,10 +22,10 @@ const Pricing = () => {
     
     setTrialLoading(true);
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/payments/trial`, {}, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/payments/trial`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      if (response.data.status === 'success') {
+      if (response.data.message.includes('successfully')) {
         alert("Trial activated! You have 24 hours of premium access.");
         navigate('/dashboard');
       }

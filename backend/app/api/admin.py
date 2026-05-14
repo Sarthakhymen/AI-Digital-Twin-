@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from typing import List, Dict, Any
-import psutil
 import platform
 from datetime import datetime
 
@@ -26,7 +25,7 @@ def check_admin(current_user: Any = Depends(get_current_user)):
     return current_user
 
 @router.get("/status", response_model=None)
-def get_system_status(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
+def get_system_status(db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
     """Get system and database status"""
     # DB Status
     db_ok = False
@@ -36,10 +35,25 @@ def get_system_status(db: Any = Depends(get_db), admin: Any = Depends(check_admi
     except Exception as e:
         print(f"DB Status Error: {e}")
 
-    # System Stats
-    cpu_usage = psutil.cpu_percent()
-    memory = psutil.virtual_memory()
-    disk = psutil.disk_usage('/')
+    # System Stats (Imported inside to prevent startup failures on some environments)
+    try:
+        import psutil
+        cpu_usage = psutil.cpu_percent()
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+        sys_stats = {
+            "platform": platform.system(),
+            "cpu_usage": f"{cpu_usage}%",
+            "memory_usage": f"{memory.percent}%",
+            "disk_usage": f"{disk.percent}%"
+        }
+    except Exception:
+        sys_stats = {
+            "platform": platform.system(),
+            "cpu_usage": "N/A",
+            "memory_usage": "N/A",
+            "disk_usage": "N/A"
+        }
 
     return {
         "status": "healthy" if db_ok else "degraded",
@@ -50,23 +64,17 @@ def get_system_status(db: Any = Depends(get_db), admin: Any = Depends(check_admi
             "total_payments": db.query(ManualPayment).count(),
             "total_twins": db.query(DigitalTwin).count()
         },
-        "system": {
-            "platform": platform.system(),
-            "cpu_usage": f"{cpu_usage}%",
-            "memory_usage": f"{memory.percent}%",
-            "disk_usage": f"{disk.percent}%",
-            "uptime": "N/A" # In a real app we'd track this
-        },
+        "system": sys_stats,
         "timestamp": datetime.utcnow()
     }
 
 @router.get("/users", response_model=List[UserResponse])
-def list_users(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
+def list_users(db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
     """List all registered users"""
     return db.query(User).all()
 
 @router.post("/users/{user_id}/toggle-admin")
-def toggle_user_admin(user_id: int, db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
+def toggle_user_admin(user_id: int, db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
     """Toggle admin status for a user"""
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -77,7 +85,7 @@ def toggle_user_admin(user_id: int, db: Any = Depends(get_db), admin: Any = Depe
     return {"message": f"User admin status set to {user.is_admin}"}
 
 @router.get("/payments")
-def list_payments(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
+def list_payments(db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
     """List all manual payments"""
     return db.query(ManualPayment).order_by(ManualPayment.created_at.desc()).all()
 
@@ -86,7 +94,7 @@ class PaymentVerification(BaseModel):
     action: str  # 'verify' or 'reject'
 
 @router.post("/payments/verify")
-def verify_payment(verification: PaymentVerification, db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
+def verify_payment(verification: PaymentVerification, db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
     """Verify a manual payment and activate the user"""
     payment = db.query(ManualPayment).filter(ManualPayment.transaction_id == verification.transaction_id).first()
     if not payment:
@@ -122,16 +130,16 @@ def verify_payment(verification: PaymentVerification, db: Any = Depends(get_db),
     return {"message": "Invalid action."}
 
 @router.get("/digital-twins", response_model=List[DigitalTwinResponse])
-def list_all_twins(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
+def list_all_twins(db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
     """List all digital twins across the platform"""
     return db.query(DigitalTwin).all()
 
 @router.post("/db/execute")
-def execute_raw_query(query: str, db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
+def execute_raw_query(query: str, db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
     """Execute a raw SQL query (USE WITH EXTREME CAUTION)"""
     # Block dangerous keywords for minimal safety
     dangerous = ["DROP", "TRUNCATE", "DELETE", "UPDATE"]
-    if any(word in query.upper() for word in dangerous) and admin.email != "nexora.aidigital.twin@gmail.com":
+    if any(word in query.upper() for word in dangerous) and admin_user.email != "nexora.aidigital.twin@gmail.com":
         raise HTTPException(status_code=403, detail="Destructive queries are restricted to the main owner.")
 
     try:
@@ -146,7 +154,7 @@ def execute_raw_query(query: str, db: Any = Depends(get_db), admin: Any = Depend
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/db/tables")
-def list_tables(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
+def list_tables(db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
     """List all tables in the database"""
     try:
         if engine.name == "sqlite":
@@ -156,3 +164,4 @@ def list_tables(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
         return [row[0] for row in result if not row[0].startswith('sqlite_')]
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+

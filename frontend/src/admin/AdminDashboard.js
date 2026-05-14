@@ -105,7 +105,7 @@ const AdminDashboard = () => {
   // Calculate stats
   const totalRevenue = payments
     .filter(p => p.status === 'verified')
-    .reduce((acc, curr) => acc + (curr.amount || 2499), 0);
+    .reduce((acc, curr) => acc + (curr.amount || 1), 0);
 
   const activeTrials = users.filter(u => u.subscription_plan === 'trial').length;
 

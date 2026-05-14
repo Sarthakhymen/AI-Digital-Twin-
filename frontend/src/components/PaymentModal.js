@@ -27,7 +27,7 @@ const PaymentModal = ({ isOpen, onClose, plan, userEmail }) => {
 
     setSubmitting(true);
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/payments/manual-submit`, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/payments/manual-submit`, {
         transaction_id: transactionId,
         plan_name: plan.name,
         amount: parseFloat(plan.price.replace('₹', '').replace(',', '')),
