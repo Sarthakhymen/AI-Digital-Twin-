@@ -29,7 +29,9 @@ def run_migrations():
                 ("subscription_status", "VARCHAR(50) DEFAULT 'active'"),
                 ("trial_started_at", "TIMESTAMP WITH TIME ZONE"),
                 ("subscription_expires_at", "TIMESTAMP WITH TIME ZONE"),
-                ("is_admin", "BOOLEAN DEFAULT FALSE")
+                ("is_admin", "BOOLEAN DEFAULT FALSE"),
+                ("has_used_trial", "BOOLEAN DEFAULT FALSE"),
+                ("message_count", "INTEGER DEFAULT 0")
             ]
             
             for col_name, col_type in columns:
