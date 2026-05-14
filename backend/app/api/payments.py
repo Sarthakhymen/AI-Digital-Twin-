@@ -6,7 +6,7 @@ from ..database import get_db
 from ..models import User, ManualPayment
 from ..api.auth import get_current_user
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, Any
 from twilio.rest import Client
 
 router = APIRouter(prefix="/payments", tags=["Payments"])
@@ -55,7 +55,7 @@ def send_whatsapp_notification(email: str, tx_id: str):
 async def submit_manual_payment(
     payment: ManualPaymentSubmit,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    db: Any = Depends(get_db)
 ):
     """Submit manual UPI payment details"""
     # Check if transaction ID already exists
@@ -95,7 +95,7 @@ class PaymentVerification(BaseModel):
 async def verify_payment(
     verification: PaymentVerification,
     # In a real app, you'd add admin authentication here
-    db: Session = Depends(get_db)
+    db: Any = Depends(get_db)
 ):
     """Admin endpoint to verify or reject manual payments"""
     payment = db.query(ManualPayment).filter(ManualPayment.transaction_id == verification.transaction_id).first()
@@ -137,8 +137,8 @@ class CheckoutRequest(BaseModel):
 @router.post("/create-checkout")
 async def create_checkout(
     request: CheckoutRequest,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: Any = Depends(get_current_user),
+    db: Any = Depends(get_db)
 ):
     """Create a Dodo Payments checkout session"""
     if not DODO_API_KEY:
@@ -194,7 +194,7 @@ async def create_checkout(
             raise HTTPException(status_code=500, detail="Internal payment error")
 
 @router.post("/webhook")
-async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
+async def dodo_webhook(request: Request, db: Any = Depends(get_db)):
     """Handle Dodo Payments webhooks"""
     # In production, verify webhook signature here
     payload = await request.json()
@@ -217,8 +217,8 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
 
 @router.post("/trial")
 async def start_trial(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: Any = Depends(get_current_user),
+    db: Any = Depends(get_db)
 ):
     """Start a 24-hour free trial"""
     if current_user.trial_started_at:

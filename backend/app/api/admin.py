@@ -13,7 +13,7 @@ from ..schemas import UserResponse, DigitalTwinResponse
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
-def check_admin(current_user: User = Depends(get_current_user)):
+def check_admin(current_user: Any = Depends(get_current_user)):
     """Middleware to ensure only admins can access these routes"""
     # Specifically check for your email or is_admin flag
     if not current_user.is_admin and current_user.email != "nexora.aidigital.twin@gmail.com":
@@ -23,8 +23,8 @@ def check_admin(current_user: User = Depends(get_current_user)):
         )
     return current_user
 
-@router.get("/status")
-def get_system_status(db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+@router.get("/status", response_model=None)
+def get_system_status(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
     """Get system and database status"""
     # DB Status
     db_ok = False
@@ -59,12 +59,12 @@ def get_system_status(db: Session = Depends(get_db), admin: User = Depends(check
     }
 
 @router.get("/users", response_model=List[UserResponse])
-def list_users(db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+def list_users(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
     """List all registered users"""
     return db.query(User).all()
 
 @router.post("/users/{user_id}/toggle-admin")
-def toggle_user_admin(user_id: int, db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+def toggle_user_admin(user_id: int, db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
     """Toggle admin status for a user"""
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -75,17 +75,17 @@ def toggle_user_admin(user_id: int, db: Session = Depends(get_db), admin: User =
     return {"message": f"User admin status set to {user.is_admin}"}
 
 @router.get("/payments")
-def list_payments(db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+def list_payments(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
     """List all manual payments"""
     return db.query(ManualPayment).order_by(ManualPayment.created_at.desc()).all()
 
 @router.get("/digital-twins", response_model=List[DigitalTwinResponse])
-def list_all_twins(db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+def list_all_twins(db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
     """List all digital twins across the platform"""
     return db.query(DigitalTwin).all()
 
 @router.post("/db/execute")
-def execute_raw_query(query: str, db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+def execute_raw_query(query: str, db: Any = Depends(get_db), admin: Any = Depends(check_admin)):
     """Execute a raw SQL query (USE WITH EXTREME CAUTION)"""
     # Block dangerous keywords for minimal safety
     dangerous = ["DROP", "TRUNCATE", "DELETE", "UPDATE"]

@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Check, 
   ArrowRight, 
-  AccessTime, 
+  Clock, 
   Star, 
-  QrCodeScanner, 
+  QrCode, 
   X, 
   Copy, 
   CheckCircle2 
@@ -211,7 +211,7 @@ const Pricing = () => {
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
-                <AccessTime className="w-6 h-6 text-emerald-400" />
+                <Clock className="w-5 h-5 text-purple-400" />
               </div>
               <div>
                 <h3 className="text-2xl font-bold">1-Day Trial</h3>
@@ -294,7 +294,7 @@ const Pricing = () => {
               className="w-full py-4 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-2xl font-bold hover:shadow-xl transition-all flex items-center justify-center gap-2"
             >
               Get Pro Now
-              <QrCodeScanner className="w-5 h-5" />
+              <QrCode className="w-5 h-5" />
             </button>
           </motion.div>
         </div>
@@ -302,7 +302,7 @@ const Pricing = () => {
         {/* Info Box */}
         <div className="mt-16 p-8 rounded-[2rem] bg-slate-900/30 border border-slate-800/50 flex flex-col md:flex-row items-center gap-6">
           <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-            <QrCodeScanner className="w-7 h-7 text-blue-400" />
+            <QrCode className="w-5 h-5 text-purple-400" />
           </div>
           <div>
             <h4 className="text-xl font-bold mb-1">Manual UPI Activation</h4>
