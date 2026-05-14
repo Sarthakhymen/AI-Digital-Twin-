@@ -28,7 +28,7 @@ const Navbar = () => {
             <Button color="inherit" component={Link} to="/businesses">Businesses</Button>
             <Button color="inherit" component={Link} to="/analytics">Analytics</Button>
             <Button color="inherit" component={Link} to="/settings">Settings</Button>
-            {(user.is_admin || user.email === "nexora.aidigital.twin@gmail.com") && (
+            {(user.is_admin || ["sarthak2005shavarn@gmail.com", "nexora.aidigital.twin@gmail.com"].includes(user.email)) && (
               <Button color="inherit" component={Link} to="/admin" sx={{ fontWeight: 'bold', color: 'yellow' }}>Admin</Button>
             )}
             <Button color="inherit" onClick={handleLogout}>Logout</Button>

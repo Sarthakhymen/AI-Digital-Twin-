@@ -17,7 +17,7 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 def check_admin(current_user: Any = Depends(get_current_user)):
     """Middleware to ensure only admins can access these routes"""
     # Specifically check for your email or is_admin flag
-    if not current_user.is_admin and current_user.email != "nexora.aidigital.twin@gmail.com":
+    if not current_user.is_admin and current_user.email not in ["sarthak2005shavarn@gmail.com", "nexora.aidigital.twin@gmail.com"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You do not have permission to access the admin dashboard"
@@ -139,7 +139,7 @@ def execute_raw_query(query: str, db: Any = Depends(get_db), admin_user: Any = D
     """Execute a raw SQL query (USE WITH EXTREME CAUTION)"""
     # Block dangerous keywords for minimal safety
     dangerous = ["DROP", "TRUNCATE", "DELETE", "UPDATE"]
-    if any(word in query.upper() for word in dangerous) and admin_user.email != "nexora.aidigital.twin@gmail.com":
+    if any(word in query.upper() for word in dangerous) and admin_user.email not in ["sarthak2005shavarn@gmail.com", "nexora.aidigital.twin@gmail.com"]:
         raise HTTPException(status_code=403, detail="Destructive queries are restricted to the main owner.")
 
     try:

@@ -64,7 +64,7 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    if (!user || (!user.is_admin && user.email !== "nexora.aidigital.twin@gmail.com")) {
+    if (!user || (!user.is_admin && !["sarthak2005shavarn@gmail.com", "nexora.aidigital.twin@gmail.com"].includes(user.email))) {
       navigate('/dashboard');
       return;
     }
