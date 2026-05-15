@@ -61,7 +61,7 @@ const LandingNavbar = () => {
               whileTap={{ scale: 0.98 }}
             >
               <div className="flex items-center justify-center">
-                <LogoIcon className="h-16 w-auto" />
+                <LogoIcon className="h-32 md:h-40 w-auto" />
               </div>
             </motion.div>
 
@@ -149,7 +149,7 @@ const LandingNavbar = () => {
             className="fixed inset-0 z-40 glass-dark pt-24 px-6 md:hidden"
           >
             <div className="mb-8 flex justify-center">
-              <LogoIcon className="h-24 w-auto" />
+              <LogoIcon className="h-48 w-auto" />
             </div>
             <div className="flex flex-col gap-6">
               {navLinks.map((link) => (
