@@ -16,7 +16,7 @@ const Navbar = () => {
     <AppBar position="static">
       <Toolbar>
         <Box component={Link} to="/" sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-          <img src="/logo.png" alt="Logo" style={{ height: '100px', marginRight: '10px' }} />
+          <img src="/logo.png" alt="Logo" style={{ height: '45px', marginRight: '10px' }} />
           <Typography variant="h6">
             AI Digital Twin
           </Typography>

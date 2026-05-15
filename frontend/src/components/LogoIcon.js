@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LogoIcon = ({ className = "h-12 w-auto" }) => (
+const LogoIcon = ({ className = "h-10 w-auto" }) => (
   <img 
     src="/logo.png" 
     alt="AI Digital Twin Logo" 
