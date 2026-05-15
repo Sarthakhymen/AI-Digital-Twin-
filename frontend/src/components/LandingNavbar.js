@@ -60,12 +60,9 @@ const LandingNavbar = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="flex items-center justify-center p-1.5 rounded-xl bg-slate-800/80 border border-slate-700/50 shadow-lg shadow-rose-500/10 backdrop-blur-md">
-                <LogoIcon className="w-6 h-6" />
+              <div className="flex items-center justify-center p-0 rounded-xl">
+                <LogoIcon className="h-10 w-auto" />
               </div>
-              <span className="text-xl font-bold text-white tracking-tight">
-                AI Twin
-              </span>
             </motion.div>
 
             {/* Desktop Navigation */}

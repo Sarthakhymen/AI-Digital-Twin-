@@ -15,9 +15,12 @@ const Navbar = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
-          AI Digital Twin Creator
-        </Typography>
+        <Box component={Link} to="/" sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+          <img src="/logo.png" alt="Logo" style={{ height: '40px', marginRight: '10px' }} />
+          <Typography variant="h6">
+            AI Digital Twin
+          </Typography>
+        </Box>
         {loading ? (
           <Box sx={{ width: 100, height: 40, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: 1 }} />
         ) : user ? (
