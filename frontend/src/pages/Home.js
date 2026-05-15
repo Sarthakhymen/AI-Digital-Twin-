@@ -80,20 +80,20 @@ const Hero = () => {
       
       {/* Left Top Card: User Query */}
       <motion.div 
-        className="absolute top-[25%] left-[8%] md:left-[12%] hidden lg:block floating-1"
+        className="absolute top-[20%] left-[4%] hidden lg:block floating-1"
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1, delay: 0.5 }}
       >
-        <div className="glass-card flex items-center gap-4 py-4 px-5">
-          <div className="w-10 h-10 rounded-full bg-slate-800 overflow-hidden flex-shrink-0">
+        <div className="glass-card flex items-center gap-3 py-3 px-4">
+          <div className="w-8 h-8 rounded-full bg-slate-800 overflow-hidden flex-shrink-0 border border-white/10">
             <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User" className="w-full h-full object-cover grayscale" />
           </div>
           <div>
-            <p className="text-sm font-medium text-white">How can I grow my business?</p>
-            <div className="flex items-center gap-1 mt-1">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]" />
-              <span className="text-[10px] text-slate-500 uppercase tracking-tighter">Verified Expert</span>
+            <p className="text-[12px] font-medium text-white/90">How can I scale my expertise?</p>
+            <div className="flex items-center gap-1 mt-0.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]" />
+              <span className="text-[9px] text-slate-500 uppercase tracking-tighter">Growth Strategist</span>
             </div>
           </div>
         </div>
@@ -101,28 +101,27 @@ const Hero = () => {
 
       {/* Bottom Left Card: Analytics */}
       <motion.div 
-        className="absolute bottom-[20%] left-[5%] md:left-[10%] hidden lg:block floating-2"
+        className="absolute bottom-[18%] left-[6%] hidden lg:block floating-2"
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1, delay: 0.8 }}
       >
-        <div className="glass-card min-w-[200px]">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="p-2 rounded-lg bg-rose-500/10">
-              <BarChart3 className="w-4 h-4 text-rose-500" />
+        <div className="glass-card min-w-[180px] py-4 px-5">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="p-1.5 rounded-lg bg-rose-500/10">
+              <BarChart3 className="w-3.5 h-3.5 text-rose-500" />
             </div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Conversations</span>
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Growth</span>
           </div>
-          <div className="flex items-end gap-3 mb-1">
-            <h4 className="text-3xl font-bold text-white tracking-tight">12,846</h4>
-            <span className="text-xs font-bold text-emerald-400 pb-1">+32.4%</span>
+          <div className="flex items-end gap-2 mb-1">
+            <h4 className="text-2xl font-bold text-white tracking-tight">12,846</h4>
+            <span className="text-[10px] font-bold text-emerald-400 pb-1">+32%</span>
           </div>
-          <p className="text-[10px] text-slate-500">vs last 30 days</p>
+          <p className="text-[9px] text-slate-500">Global Interactions</p>
           
-          {/* Subtle sparkline mockup */}
-          <div className="mt-4 h-8 flex items-end gap-1">
-            {[40, 60, 45, 70, 55, 90, 65, 80].map((h, i) => (
-              <div key={i} className="flex-1 bg-rose-500/20 rounded-t-sm" style={{ height: `${h}%` }} />
+          <div className="mt-3 h-6 flex items-end gap-1">
+            {[30, 50, 40, 60, 45, 80, 55, 70].map((h, i) => (
+              <div key={i} className="flex-1 bg-rose-500/20 rounded-t-[1px]" style={{ height: `${h}%` }} />
             ))}
           </div>
         </div>
@@ -130,26 +129,26 @@ const Hero = () => {
 
       {/* Right Top Card: AI Status */}
       <motion.div 
-        className="absolute top-[22%] right-[8%] md:right-[12%] hidden lg:block floating-3"
+        className="absolute top-[18%] right-[4%] hidden lg:block floating-3"
         initial={{ opacity: 0, x: 30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1, delay: 0.6 }}
       >
-        <div className="glass-card py-4 px-6 flex flex-col gap-3">
+        <div className="glass-card py-3 px-5 flex flex-col gap-2">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-rose-500 flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
+            <div className="w-7 h-7 rounded-lg bg-rose-500 flex items-center justify-center">
+              <Bot className="w-4 h-4 text-white" />
             </div>
-            <span className="text-sm font-medium text-white">AI Twin is replying...</span>
+            <span className="text-[12px] font-medium text-white/90">Twin is active</span>
           </div>
-          <div className="flex items-center justify-between gap-8">
-            <span className="text-[10px] text-slate-500">Just now</span>
+          <div className="flex items-center justify-between gap-6">
+            <span className="text-[9px] text-slate-500">Response time: 85ms</span>
             <div className="waveform">
-              {[...Array(12)].map((_, i) => (
+              {[...Array(10)].map((_, i) => (
                 <div 
                   key={i} 
                   className="waveform-bar" 
-                  style={{ animationDelay: `${i * 0.1}s`, height: `${Math.random() * 10 + 6}px` }} 
+                  style={{ animationDelay: `${i * 0.1}s`, height: `${Math.random() * 8 + 4}px` }} 
                 />
               ))}
             </div>
@@ -159,28 +158,28 @@ const Hero = () => {
 
       {/* Right Bottom Card: Omnichannel */}
       <motion.div 
-        className="absolute bottom-[25%] right-[5%] md:right-[10%] hidden lg:block floating-4"
+        className="absolute bottom-[22%] right-[6%] hidden lg:block floating-4"
         initial={{ opacity: 0, x: 30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1, delay: 0.9 }}
       >
-        <div className="glass-card min-w-[220px]">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">AI Twin Active</span>
+        <div className="glass-card min-w-[190px] py-4 px-5">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Sync Active</span>
           </div>
           <div className="flex gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#25D366]/10 flex items-center justify-center">
-              <MessageCircle className="w-4 h-4 text-[#25D366]" />
+            <div className="w-7 h-7 rounded-full bg-[#25D366]/10 flex items-center justify-center border border-[#25D366]/20">
+              <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
             </div>
-            <div className="w-8 h-8 rounded-full bg-sky-500/10 flex items-center justify-center">
-              <MessageSquare className="w-4 h-4 text-sky-400" />
+            <div className="w-7 h-7 rounded-full bg-sky-500/10 flex items-center justify-center border border-sky-500/20">
+              <MessageSquare className="w-3.5 h-3.5 text-sky-400" />
             </div>
-            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-              <Globe className="w-4 h-4 text-white" />
+            <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
+              <Globe className="w-3.5 h-3.5 text-white" />
             </div>
           </div>
-          <p className="mt-2 text-[0.7rem] text-white/40">24/7 across channels</p>
+          <p className="mt-2 text-[9px] text-white/30 uppercase tracking-tighter">Unified Presence</p>
         </div>
       </motion.div>
 
@@ -217,7 +216,7 @@ const Hero = () => {
           >
             <span className="gradient-text-hero">Your time is finite.</span>
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-rose-300 to-red-500 drop-shadow-[0_0_20px_rgba(255,30,86,0.3)]">Your impact shouldn't be.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-200 to-rose-400 drop-shadow-[0_0_10px_rgba(251,113,133,0.15)]">Your impact shouldn't be.</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -231,7 +230,7 @@ const Hero = () => {
           {/* CTAs */}
           <motion.div
             variants={fadeInUp}
-            className="flex flex-col sm:flex-row items-center gap-4 mt-4"
+            className="flex flex-col sm:flex-row items-center gap-4 mt-6"
           >
             <button
               onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
@@ -604,174 +603,8 @@ const TheMission = () => {
   );
 };
 
-// Pricing Section
-const Pricing = () => {
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState(null);
-  const [trialLoading, setTrialLoading] = useState(false);
-  const { user } = useAuth();
-  const navigate = useNavigate();
+// Pricing Section removed as per user request
 
-  const handleTrial = async () => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-    
-    setTrialLoading(true);
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/payments/trial`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.data.message.includes('successfully')) {
-        alert("Trial activated! You have 24 hours of premium access.");
-        navigate('/dashboard');
-      }
-    } catch (err) {
-      alert(err.response?.data?.detail || "Failed to start trial");
-    } finally {
-      setTrialLoading(false);
-    }
-  };
-
-  return (
-    <section id="pricing" className="relative py-32 bg-slate-900/20 overflow-hidden">
-      <PaymentModal 
-        isOpen={isPaymentOpen} 
-        onClose={() => setIsPaymentOpen(false)} 
-        plan={selectedPlan}
-        userEmail={user?.email}
-      />
-      
-      <div className="absolute inset-0 bg-gradient-to-b from-rose-500/[0.02] to-transparent" />
-      
-      <div className="relative max-w-7xl mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-20"
-        >
-          <span className="text-sm font-semibold text-rose-400 tracking-wider uppercase">Simple Pricing</span>
-          <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-white">
-            Start free, upgrade when
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-white to-rose-400 drop-shadow-[0_0_30px_rgba(244,63,94,0.2)]">you're ready.</span>
-          </h2>
-          <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
-            Experience the full power of your AI Twin before committing. Transparent pricing for creators and startups.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          {/* Free Trial Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="p-10 rounded-3xl border border-slate-700/50 bg-slate-800/30 backdrop-blur-sm relative overflow-hidden flex flex-col"
-          >
-            <h3 className="text-2xl font-bold text-white mb-2">Free Trial</h3>
-            <p className="text-slate-400 mb-6">Test the waters and see the magic.</p>
-            
-            <div className="mb-8">
-              <span className="text-5xl font-bold text-white">₹0</span>
-              <span className="text-slate-400 ml-2">/ for 1 day (24 hours)</span>
-            </div>
-
-            <ul className="space-y-4 mb-8 flex-1">
-              {[
-                "Full Access to all features",
-                "Voice & Text AI capabilities",
-                "Knowledge Base integration",
-                "Sub-100ms response time",
-                "No credit card required"
-              ].map((feature) => (
-                <li key={feature} className="flex items-center gap-3 text-slate-300">
-                  <Check className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-
-            <motion.button
-              onClick={handleTrial}
-              disabled={trialLoading}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-xl font-bold hover:bg-white/10 transition-all disabled:opacity-50"
-            >
-              {trialLoading ? "Starting..." : "Start 1-Day Trial"}
-            </motion.button>
-          </motion.div>
-
-          {/* Pro Subscription Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="p-10 rounded-3xl border border-rose-500/50 bg-slate-800/60 backdrop-blur-sm relative overflow-hidden flex flex-col"
-          >
-            {/* Background Glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 blur-[80px]" />
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-rose-500 to-red-600" />
-            
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-2xl font-bold text-white">Business Pro</h3>
-              <span className="px-3 py-1 text-xs font-semibold rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">Premium</span>
-            </div>
-            <p className="text-slate-400 mb-6">Unleash the full potential of your AI Twin.</p>
-            
-            <div className="mb-8">
-              <span className="text-5xl font-bold text-white">₹1</span>
-              <span className="text-slate-400 ml-2">/ month</span>
-            </div>
-
-            <ul className="space-y-4 mb-8 flex-1">
-              {[
-                "Unlimited AI interactions",
-                "WhatsApp & Web integration",
-                "Advanced Analytics Dashboard",
-                "Priority Support via WhatsApp",
-                "Manual Activation (12-24 Hrs)",
-                "Secure Payment via UPI"
-              ].map((feature) => (
-                <li key={feature} className="flex items-center gap-3 text-slate-300">
-                  <Check className="w-5 h-5 text-rose-400 flex-shrink-0" />
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="text-center mb-4">
-              <p className="text-xs text-rose-300/80 bg-rose-500/10 py-2 px-3 rounded-lg border border-rose-500/20">
-                Note: Pay via UPI and submit Transaction ID. Account activated within 12-24 hours.
-              </p>
-            </div>
-
-            <motion.button
-              onClick={() => {
-                if (!user) {
-                  navigate('/login');
-                  return;
-                }
-                setSelectedPlan({ name: 'Business Pro', price: '₹1' });
-                setIsPaymentOpen(true);
-              }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full py-4 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-xl font-bold shadow-xl shadow-rose-500/20 flex items-center justify-center gap-2 group"
-            >
-              Get Pro Now
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-};
 
 // CTA Section
 const CTA = () => {
@@ -994,7 +827,6 @@ const Home = () => {
         <Features />
         <HowItWorks />
         <TheMission />
-        <Pricing />
         <CTA />
       </main>
 

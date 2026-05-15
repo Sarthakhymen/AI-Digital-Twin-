@@ -51,9 +51,16 @@ from .dependencies import get_current_active_user
 def get_user_features(current_user: Any = Depends(get_current_active_user)):
     """Get resolved user features based on subscription plan and admin overrides."""
     try:
-        from .payments import PLAN_LIMITS
+        # Only allow paid features if status is active
+        status = current_user.subscription_status
         plan = current_user.subscription_plan or "free"
-        base_features = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"]).copy()
+        
+        if status != "active" and plan != "free":
+            # If payment is pending or expired, downgrade features to free
+            base_features = PLAN_LIMITS["free"].copy()
+            plan = "free" # Report as free for UI consistency
+        else:
+            base_features = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"]).copy()
     except ImportError:
         base_features = {}
         plan = current_user.subscription_plan or "free"
@@ -65,12 +72,13 @@ def get_user_features(current_user: Any = Depends(get_current_active_user)):
         "status": current_user.subscription_status,
         "max_twins": custom_features.get("max_twins", base_features.get("max_twins", 1)),
         "max_knowledge_files": custom_features.get("max_knowledge_files", base_features.get("max_knowledge_files", 5)),
-        "max_messages": custom_features.get("max_messages", base_features.get("max_messages", 100)),
+        "max_messages": -1 if custom_features.get("unlimited_messages") else custom_features.get("max_messages", base_features.get("max_messages", 100)),
         "advanced_analytics": custom_features.get("advanced_analytics", base_features.get("advanced_analytics", False)),
-        "voice_agent": custom_features.get("voice", base_features.get("voice", False)),
+        "voice_agent": custom_features.get("voice_agent", base_features.get("voice_agent", False)),
         "whatsapp": custom_features.get("whatsapp", base_features.get("whatsapp", False)),
         "api_access": custom_features.get("api_access", base_features.get("api_access", False))
     }
+
     
     return resolved_features
 

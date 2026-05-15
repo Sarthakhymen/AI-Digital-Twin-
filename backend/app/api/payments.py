@@ -274,8 +274,8 @@ PLAN_LIMITS = {
     },
     "standard": {
         "max_messages": 2000,
-        "features": ["website_embed", "whatsapp", "analytics"],
-        "whatsapp": True,
+        "features": ["website_embed", "analytics"],
+        "whatsapp": False,
         "voice_agent": False,
         "analytics": True,
         "knowledge_docs": 10,

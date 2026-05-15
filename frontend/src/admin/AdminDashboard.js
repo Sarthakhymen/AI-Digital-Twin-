@@ -98,12 +98,14 @@ const AdminDashboard = () => {
     try {
       await api.post(`/admin/users/${userId}/features`, {
         feature_name: featureName,
-        is_enabled: isEnabled
+        feature_status: isEnabled
       });
       // Update local state directly for faster UI response, or fetch data
       fetchData();
     } catch (err) {
-      alert("Failed to toggle feature: " + (err.response?.data?.detail || err.message));
+      const errorMsg = err.response?.data?.detail;
+      const displayMsg = typeof errorMsg === 'object' ? JSON.stringify(errorMsg) : (errorMsg || err.message);
+      alert("Failed to toggle feature: " + displayMsg);
     }
   };
 
@@ -389,7 +391,7 @@ const AdminDashboard = () => {
                   {[
                     { key: 'whatsapp', label: 'WhatsApp Bot Access' },
                     { key: 'voice', label: 'Voice Agent Access' },
-                    { key: 'analytics', label: 'Advanced Analytics' },
+                    { key: 'advanced_analytics', label: 'Advanced Analytics' },
                     { key: 'unlimited_messages', label: 'Unlimited Messages' }
                   ].map((feature) => {
                     const isEnabled = editingUserFeatures.custom_features?.[feature.key] === true;

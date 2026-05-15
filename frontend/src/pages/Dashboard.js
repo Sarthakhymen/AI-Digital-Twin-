@@ -8,7 +8,7 @@ import RecentActivity from '../components/RecentActivity';
 import ConversationChart from '../components/ConversationChart';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
-import { Alert, AlertTitle } from '@mui/material';
+import { Alert, AlertTitle, Chip } from '@mui/material';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -27,6 +27,61 @@ const Dashboard = () => {
   const activities = dashboardData?.recent_activity || [];
   const twins = dashboardData?.digital_twins || [];
   const trends = analyticsData?.conversation_trends || [];
+  
+  const getPlanBadge = () => {
+    if (!user) return null;
+    
+    const plan = user.subscription_plan || 'free';
+    const status = user.subscription_status || 'active';
+    
+    // Trial plan shows if plan is free AND status is active
+    // If they just signed up or are on trial, show 'Trial'
+    if (plan === 'free' && status === 'active') {
+      return (
+        <Chip 
+          label="Trial" 
+          size="small" 
+          variant="outlined"
+          sx={{ 
+            ml: 2, 
+            borderColor: 'rgba(255, 255, 255, 0.3)', 
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontWeight: 700,
+            fontSize: '0.7rem',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            height: '24px'
+          }} 
+        />
+      );
+    }
+    
+    // Standard/Pro only show after payment verification (active status)
+    if (status === 'active' && (plan === 'standard' || plan === 'business_pro')) {
+      const isPro = plan === 'business_pro';
+      return (
+        <Chip 
+          label={isPro ? 'Pro' : 'Standard'} 
+          size="small" 
+          sx={{ 
+            ml: 2, 
+            background: isPro ? 'linear-gradient(45deg, #ff4081, #ff80ab)' : 'linear-gradient(45deg, #1976d2, #42a5f5)',
+            color: 'white',
+            fontWeight: 700,
+            fontSize: '0.7rem',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            height: '24px',
+            border: 'none',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+          }} 
+        />
+      );
+    }
+    
+    return null;
+  };
+
 
   const canCreateTwin = !userFeatures || twins.length < userFeatures.max_twins;
 
@@ -75,7 +130,10 @@ const Dashboard = () => {
       )}
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Dashboard</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>Dashboard</Typography>
+          {getPlanBadge()}
+        </Box>
         <Button 
           variant="outlined" 
           startIcon={<IntegrationInstructions />}
