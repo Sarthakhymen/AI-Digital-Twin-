@@ -2,36 +2,24 @@
 Analytics API Routes
 """
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import Optional
 from datetime import datetime, timedelta
 from ..database import get_db
-from ..services import auth_service
 from ..models import DigitalTwin, Conversation, User, Business
+from .dependencies import RequirePlan
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
-security = HTTPBearer()
-
-def get_current_user_dependency(
-    credentials: HTTPBearer = Depends(security),
-    db: Session = Depends(get_db)
-) -> User:
-    token = credentials.credentials
-    return auth_service.get_current_user(db, token)
 
 @router.get("/conversations")
 def get_conversation_analytics(
     twin_id: Optional[int] = None,
     days: int = 30,
-    current_user: User = Depends(get_current_user_dependency),
+    current_user: User = Depends(RequirePlan(["business_pro"], feature_name="analytics")),
     db: Session = Depends(get_db)
 ):
     """Get conversation analytics slice"""
-    # Check subscription status
-    if current_user.subscription_status == "expired":
-        raise HTTPException(status_code=403, detail="Subscription expired. Please upgrade to Pro to view analytics.")
         
     start_date = datetime.utcnow() - timedelta(days=days)
     

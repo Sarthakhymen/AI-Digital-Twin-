@@ -1,8 +1,10 @@
 import os
 import uuid
 import base64
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from app.services.voice_service import voice_service
+from .dependencies import RequirePlan
+from ..models import User
 
 router = APIRouter()
 
@@ -12,7 +14,11 @@ if not os.path.exists(TEMP_DIR):
     os.makedirs(TEMP_DIR)
 
 @router.get("/token")
-async def get_token(participant_name: str, room_name: str):
+async def get_token(
+    participant_name: str, 
+    room_name: str,
+    current_user: User = Depends(RequirePlan(["business_pro"], feature_name="voice"))
+):
     """
     Generates a LiveKit access token for a user to join a voice room.
     """
@@ -22,7 +28,10 @@ async def get_token(participant_name: str, room_name: str):
     return {"token": token, "url": os.getenv("LIVEKIT_URL")}
 
 @router.post("/process-voice")
-async def process_voice(file: UploadFile = File(...)):
+async def process_voice(
+    file: UploadFile = File(...),
+    current_user: User = Depends(RequirePlan(["business_pro"], feature_name="voice"))
+):
     """
     Receives audio, transcribes it, gets AI response, and converts back to speech.
     Returns: { "transcript": "...", "ai_response": "...", "audio_base64": "..." }

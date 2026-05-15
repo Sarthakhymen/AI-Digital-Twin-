@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
-  const { user, loading, logout } = useAuth();
+  const { user, userFeatures, loading, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -26,7 +26,12 @@ const Navbar = () => {
             <Button color="inherit" component={Link} to="/dashboard">Dashboard</Button>
             <Button color="inherit" component={Link} to="/guide">Guide</Button>
             <Button color="inherit" component={Link} to="/businesses">Businesses</Button>
-            <Button color="inherit" component={Link} to="/analytics">Analytics</Button>
+            {userFeatures?.advanced_analytics && (
+              <Button color="inherit" component={Link} to="/analytics">Analytics</Button>
+            )}
+            {userFeatures?.voice_agent && (
+              <Button color="inherit" component={Link} to="/voice-agent">Voice Agent</Button>
+            )}
             <Button color="inherit" component={Link} to="/settings">Settings</Button>
             {(user.is_admin || ["sarthak2005shavarn@gmail.com", "nexora.aidigital.twin@gmail.com"].includes(user.email)) && (
               <Button color="inherit" component={Link} to="/admin" sx={{ fontWeight: 'bold', color: 'yellow' }}>Admin</Button>

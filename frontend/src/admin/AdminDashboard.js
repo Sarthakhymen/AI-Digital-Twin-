@@ -31,6 +31,7 @@ const AdminDashboard = () => {
   const [query, setQuery] = useState("");
   const [queryResult, setQueryResult] = useState(null);
   const [tables, setTables] = useState([]);
+  const [editingUserFeatures, setEditingUserFeatures] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -90,6 +91,19 @@ const AdminDashboard = () => {
       fetchData();
     } catch (err) {
       alert("Toggle admin failed: " + (err.response?.data?.detail || err.message));
+    }
+  };
+
+  const handleFeatureToggle = async (userId, featureName, isEnabled) => {
+    try {
+      await api.post(`/admin/users/${userId}/features`, {
+        feature_name: featureName,
+        is_enabled: isEnabled
+      });
+      // Update local state directly for faster UI response, or fetch data
+      fetchData();
+    } catch (err) {
+      alert("Failed to toggle feature: " + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -258,7 +272,11 @@ const AdminDashboard = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <AdminUsers users={users} onToggleAdmin={handleToggleAdmin} />
+                <AdminUsers 
+                  users={users} 
+                  onToggleAdmin={handleToggleAdmin} 
+                  onEditFeatures={(user) => setEditingUserFeatures(user)}
+                />
               </motion.div>
             )}
 
@@ -334,6 +352,82 @@ const AdminDashboard = () => {
           </AnimatePresence>
         </div>
       </main>
+
+      {/* User Features Modal */}
+      <AnimatePresence>
+        {editingUserFeatures && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+            >
+              <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+                <h3 className="text-xl font-bold text-white">Edit Features</h3>
+                <button 
+                  onClick={() => setEditingUserFeatures(null)}
+                  className="text-slate-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                <p className="text-sm text-slate-400">
+                  Modifying feature overrides for: <strong className="text-white">{editingUserFeatures.email}</strong>
+                </p>
+
+                <div className="space-y-4">
+                  {[
+                    { key: 'whatsapp', label: 'WhatsApp Bot Access' },
+                    { key: 'voice', label: 'Voice Agent Access' },
+                    { key: 'analytics', label: 'Advanced Analytics' },
+                    { key: 'unlimited_messages', label: 'Unlimited Messages' }
+                  ].map((feature) => {
+                    const isEnabled = editingUserFeatures.custom_features?.[feature.key] === true;
+                    
+                    return (
+                      <div key={feature.key} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
+                        <span className="text-slate-200 font-medium">{feature.label}</span>
+                        <button
+                          onClick={() => {
+                            const newValue = !isEnabled;
+                            handleFeatureToggle(editingUserFeatures.id, feature.key, newValue);
+                            setEditingUserFeatures({
+                              ...editingUserFeatures,
+                              custom_features: {
+                                ...(editingUserFeatures.custom_features || {}),
+                                [feature.key]: newValue
+                              }
+                            });
+                          }}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                            isEnabled ? 'bg-cyan-500' : 'bg-slate-600'
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              isEnabled ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

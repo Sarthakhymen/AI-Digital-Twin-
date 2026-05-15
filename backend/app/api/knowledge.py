@@ -11,14 +11,7 @@ from ..models import DigitalTwin, Business, KnowledgeDocument, KnowledgeChunk, U
 import io
 
 router = APIRouter(prefix="/knowledge", tags=["Knowledge Base"])
-security = HTTPBearer()
-
-def get_current_user_dependency(
-    credentials: HTTPBearer = Depends(security),
-    db: Session = Depends(get_db)
-) -> User:
-    token = credentials.credentials
-    return get_current_user(db, token)
+from .dependencies import RequirePlan, get_current_active_user
 
 
 def extract_text_from_pdf(file_bytes: bytes) -> str:
@@ -71,14 +64,10 @@ def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> list:
 async def upload_knowledge_document(
     twin_id: int,
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user_dependency),
+    current_user: User = Depends(RequirePlan(["standard", "business_pro"], feature_name="knowledge_upload")),
     db: Session = Depends(get_db)
 ):
     """Upload a PDF/TXT file to train a Digital Twin's knowledge base"""
-    # Check subscription status
-    if current_user.subscription_status == "expired":
-        raise HTTPException(status_code=403, detail="Subscription expired. Please upgrade to Pro to manage knowledge base.")
-    
     # 1. Verify twin ownership
     twin = db.query(DigitalTwin).join(Business).filter(
         DigitalTwin.id == twin_id,
@@ -155,7 +144,7 @@ async def upload_knowledge_document(
 @router.get("/{twin_id}/documents")
 def list_knowledge_documents(
     twin_id: int,
-    current_user: User = Depends(get_current_user_dependency),
+    current_user: User = Depends(RequirePlan(["standard", "business_pro"], feature_name="knowledge_upload")),
     db: Session = Depends(get_db)
 ):
     """List all knowledge documents for a Digital Twin"""
@@ -191,7 +180,7 @@ def list_knowledge_documents(
 def delete_knowledge_document(
     twin_id: int,
     doc_id: int,
-    current_user: User = Depends(get_current_user_dependency),
+    current_user: User = Depends(RequirePlan(["standard", "business_pro"], feature_name="knowledge_upload")),
     db: Session = Depends(get_db)
 ):
     """Delete a knowledge document and all its chunks"""

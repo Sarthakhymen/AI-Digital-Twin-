@@ -17,15 +17,39 @@ class IntegrationService:
         # 1.5 Check Plan Limits and increment message count
         owner = twin.business.owner if twin.business else None
         if owner:
-            from app.api.payments import PLAN_LIMITS
-            plan = owner.subscription_plan or "free"
-            limits = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])
+            import pytz
+            from datetime import timedelta
+            
+            # Trial / Subscription Expiry Check
+            if owner.subscription_plan == "free" and owner.trial_started_at:
+                now = datetime.now(pytz.utc)
+                # Ensure timezone awareness
+                trial_start = owner.trial_started_at
+                if trial_start.tzinfo is None:
+                    trial_start = trial_start.replace(tzinfo=pytz.utc)
+                trial_end = trial_start + timedelta(days=7)
+                if now > trial_end:
+                    owner.subscription_status = "expired"
+                    db.commit()
+                    
+            if owner.subscription_status == "expired":
+                return {
+                    "response": "This AI assistant is currently unavailable due to an expired subscription. Please contact the business owner.",
+                    "success": False
+                }
+
+            from app.api.auth import get_user_features
+            features = get_user_features(owner)
+            
+            # Use custom_features overrides first
+            max_messages = features.get("max_messages", 100)
+            has_whatsapp = features.get("whatsapp", False)
             
             # Check feature restrictions based on channel
-            if channel == "whatsapp" and not limits.get("whatsapp", False):
+            if channel == "whatsapp" and not has_whatsapp:
                 return {"response": "WhatsApp integration is not available on your current plan. Please upgrade to Standard or Business Pro.", "success": False}
                 
-            if limits["max_messages"] != -1 and owner.message_count >= limits["max_messages"]:
+            if max_messages != -1 and owner.message_count >= max_messages:
                 return {"response": "This AI assistant has reached its message limit. Please contact the business owner.", "success": False}
             
             owner.message_count += 1

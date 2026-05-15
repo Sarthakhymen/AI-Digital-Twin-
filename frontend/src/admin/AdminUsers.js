@@ -9,7 +9,7 @@ import {
   Calendar
 } from 'lucide-react';
 
-const AdminUsers = ({ users, onToggleAdmin }) => {
+const AdminUsers = ({ users, onToggleAdmin, onEditFeatures }) => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -89,32 +89,39 @@ const AdminUsers = ({ users, onToggleAdmin }) => {
                       {new Date(u.created_at).toLocaleDateString()}
                     </div>
                   </td>
-                  <td className="px-6 py-5 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button 
-                        onClick={() => onToggleAdmin(u.id)}
-                        className={`p-2 rounded-lg transition-all ${
-                          u.is_admin 
-                            ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20' 
-                            : 'bg-slate-800 text-slate-400 hover:bg-rose-500/10 hover:text-rose-500'
-                        }`}
-                        title={u.is_admin ? "Revoke Admin" : "Make Admin"}
-                      >
-                        {u.is_admin ? <ShieldAlert className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
-                      </button>
-                      <button className="p-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-lg transition-all">
-                        <MoreVertical className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    <td className="px-6 py-5 text-right">
+                      <div className="flex justify-end gap-2">
+                        <button 
+                          onClick={() => onEditFeatures && onEditFeatures(u)}
+                          className="p-2 bg-slate-800 text-slate-400 hover:bg-emerald-500/10 hover:text-emerald-500 rounded-lg transition-all"
+                          title="Edit Custom Features"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        </button>
+                        <button 
+                          onClick={() => onToggleAdmin(u.id)}
+                          className={`p-2 rounded-lg transition-all ${
+                            u.is_admin 
+                              ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20' 
+                              : 'bg-slate-800 text-slate-400 hover:bg-rose-500/10 hover:text-rose-500'
+                          }`}
+                          title={u.is_admin ? "Revoke Admin" : "Make Admin"}
+                        >
+                          {u.is_admin ? <ShieldAlert className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
+                        </button>
+                        <button className="p-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-lg transition-all">
+                          <MoreVertical className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-export default AdminUsers;
+    );
+  };
+  
+  export default AdminUsers;

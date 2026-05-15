@@ -31,7 +31,8 @@ def run_migrations():
                 ("subscription_expires_at", "TIMESTAMP WITH TIME ZONE"),
                 ("is_admin", "BOOLEAN DEFAULT FALSE"),
                 ("has_used_trial", "BOOLEAN DEFAULT FALSE"),
-                ("message_count", "INTEGER DEFAULT 0")
+                ("message_count", "INTEGER DEFAULT 0"),
+                ("custom_features", "JSON DEFAULT '{}'")
             ]
             
             for col_name, col_type in columns:

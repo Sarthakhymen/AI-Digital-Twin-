@@ -1,139 +1,120 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Box, Typography, Paper, IconButton, Alert, AlertTitle, Button } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, PhoneOff, Sparkles, Volume2 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { Room, RoomEvent, VideoPresets } from 'livekit-client';
 import axios from 'axios';
-import { Box, Typography, Paper, IconButton } from '@mui/material';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 const VoiceAgent = () => {
+    const { user, userFeatures } = useAuth();
+    const navigate = useNavigate();
     const [searchParams] = useState(new URLSearchParams(window.location.search));
     const isWidget = searchParams.get('widget') === 'true';
-    const [status, setStatus] = useState('idle'); // idle, connecting, active, speaking, error
+    const [status, setStatus] = useState('idle'); // idle, connecting, active, error
     const [aiResponse, setAiResponse] = useState('');
-    
-    const mediaRecorderRef = useRef(null);
-    const audioChunksRef = useRef([]);
-    const audioRef = useRef(new Audio());
-    
-    // Siri-like Orb Animation Variants
+    const roomRef = useRef(null);
+
+    const isLocked = !userFeatures?.voice_agent;
+    const isExpired = user?.subscription_status === 'expired';
+
     const orbVariants = {
         idle: {
             scale: [1, 1.05, 1],
-            opacity: 0.6,
-            transition: { duration: 3, repeat: Infinity, ease: "easeInOut" }
-        },
-        active: {
-            scale: [1, 1.2, 1.1, 1.3, 1],
-            opacity: 1,
-            boxShadow: "0 0 50px rgba(99, 102, 241, 0.8)",
-            transition: { duration: 0.6, repeat: Infinity, ease: "easeInOut" }
-        },
-        speaking: {
-            scale: [1, 1.5, 1.2, 1.6, 1],
-            opacity: 1,
-            background: 'radial-gradient(circle at 30% 30%, #818cf8, #4338ca)',
-            boxShadow: "0 0 80px rgba(129, 140, 248, 0.9)",
-            transition: { duration: 0.4, repeat: Infinity, ease: "easeInOut" }
+            rotate: [0, 5, -5, 0],
+            transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
         },
         connecting: {
+            scale: [1, 1.2, 1],
             rotate: 360,
-            scale: [1, 0.8, 1],
-            transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
+            transition: { duration: 2, repeat: Infinity, ease: "linear" }
+        },
+        active: {
+            scale: [1, 1.1, 0.9, 1.1, 1],
+            transition: { duration: 0.5, repeat: Infinity, ease: "easeInOut" }
         }
     };
 
     const startCall = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorderRef.current = new MediaRecorder(stream);
-            
-            mediaRecorderRef.current.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    audioChunksRef.current.push(event.data);
-                }
-            };
+        if ((isExpired || isLocked) && !isWidget) return;
 
-            mediaRecorderRef.current.onstop = async () => {
-                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-                await processAudio(audioBlob);
-                audioChunksRef.current = [];
-            };
-
-            setStatus('active');
-            setAiResponse("Connected! I'm listening...");
-            
-            // Start recording automatically
-            mediaRecorderRef.current.start();
-            
-            // Auto-stop recording after 4 seconds of silence or fixed duration for now
-            // In a real app, we'd use VAD (Voice Activity Detection)
-            setTimeout(() => {
-                if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-                    mediaRecorderRef.current.stop();
-                }
-            }, 5000);
-
-        } catch (err) {
-            console.error("Microphone Error:", err);
-            setStatus('error');
-            setAiResponse("Please allow microphone access to talk.");
-        }
-    };
-
-    const processAudio = async (blob) => {
         setStatus('connecting');
-        const formData = new FormData();
-        formData.append('file', blob, 'recording.wav');
-
         try {
-            // Remove /api/v1 from the end of API_URL if it exists to get the base domain
-            const baseApiUrl = API_URL.replace(/\/api\/v1\/?$/, '');
-            const { data } = await axios.post(`${baseApiUrl}/api/voice/process-voice`, formData);
-            setAiResponse(data.ai_response);
+            const tokenResponse = await axios.get(`${API_URL}/api/voice/token`, {
+                params: {
+                    participant_name: user?.full_name || 'Guest User',
+                    room_name: `room-${user?.id || 'guest'}`
+                },
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            const { token, url } = tokenResponse.data;
+            const room = new Room({
+                adaptiveStream: true,
+                dynacast: true,
+                videoCaptureDefaults: {
+                    resolution: VideoPresets.h720.resolution,
+                },
+            });
+
+            roomRef.current = room;
+
+            room.on(RoomEvent.ParticipantConnected, (participant) => {
+                console.log('Participant connected:', participant.identity);
+            });
+
+            room.on(RoomEvent.Disconnected, () => {
+                setStatus('idle');
+                roomRef.current = null;
+            });
+
+            room.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
+                // Potential visualization logic
+            });
+
+            await room.connect(url, token);
+            await room.localParticipant.setMicrophoneEnabled(true);
             
-            // Play AI Response
-            if (data.audio_base64) {
-                const audioSrc = `data:audio/mp3;base64,${data.audio_base64}`;
-                audioRef.current.src = audioSrc;
-                setStatus('speaking');
-                await audioRef.current.play();
-                
-                audioRef.current.onended = () => {
-                    setStatus('active');
-                    // Resume listening
-                    if (mediaRecorderRef.current) {
-                        mediaRecorderRef.current.start();
-                        setTimeout(() => {
-                            if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-                                mediaRecorderRef.current.stop();
-                            }
-                        }, 5000);
-                    }
-                };
-            }
-        } catch (err) {
-            console.error("Processing Error:", err);
             setStatus('active');
-            setAiResponse("Sorry, I couldn't hear that clearly. Can you repeat?");
+        } catch (error) {
+            console.error('Failed to start call:', error);
+            setStatus('idle');
+            alert('Could not connect to Voice AI. Please check your microphone permissions and try again.');
         }
     };
 
-    const endCall = () => {
-        if (mediaRecorderRef.current) {
-            if (mediaRecorderRef.current.state !== 'inactive') {
-                mediaRecorderRef.current.stop();
-            }
-            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-            mediaRecorderRef.current = null;
-        }
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.src = "";
+    const endCall = async () => {
+        if (roomRef.current) {
+            await roomRef.current.disconnect();
+            roomRef.current = null;
         }
         setStatus('idle');
-        setAiResponse('');
     };
+
+    useEffect(() => {
+        return () => {
+            if (roomRef.current) {
+                roomRef.current.disconnect();
+            }
+        };
+    }, []);
+
+    if (!isWidget && !user) {
+        return (
+            <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#0f172a', p: 4 }}>
+                <Paper sx={{ p: 4, textAlign: 'center', bgcolor: 'rgba(30, 41, 59, 0.7)', color: 'white' }}>
+                    <Typography variant="h5" gutterBottom>Login Required</Typography>
+                    <Typography sx={{ mb: 3 }}>Please login to use the Voice AI Twin.</Typography>
+                    <Button variant="contained" onClick={() => navigate('/login')}>Login Now</Button>
+                </Paper>
+            </Box>
+        );
+    }
 
     return (
         <Box sx={{ 
@@ -146,10 +127,33 @@ const VoiceAgent = () => {
             pt: 8,
             px: 2
         }}>
+            {(isExpired || isLocked) && !isWidget && (
+                <Box sx={{ maxWidth: '600px', width: '100%', mb: 4 }}>
+                    <Alert severity={isExpired ? "error" : "warning"} sx={{ borderRadius: '12px', bgcolor: 'rgba(25, 25, 25, 0.9)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <AlertTitle sx={{ color: isExpired ? '#ff4444' : '#ff9800', fontWeight: 'bold' }}>{isExpired ? "Subscription Expired" : "Feature Locked"}</AlertTitle>
+                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            {isExpired 
+                                ? "Your trial or subscription has expired. Please upgrade to Pro to continue using Voice AI." 
+                                : "Voice AI is a Pro feature. Upgrade your plan to unlock real-time human-like voice conversations."
+                            }
+                        </Typography>
+                        <Button 
+                            variant="contained" 
+                            color={isExpired ? "error" : "warning"} 
+                            size="small" 
+                            sx={{ mt: 2, textTransform: 'none', fontWeight: 'bold' }}
+                            onClick={() => navigate('/pricing')}
+                        >
+                            Upgrade Now
+                        </Button>
+                    </Alert>
+                </Box>
+            )}
+            
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                style={{ textAlign: 'center', marginBottom: '60px' }}
+                style={{ textAlign: 'center', marginBottom: '60px', filter: (isExpired || isLocked) && !isWidget ? 'blur(4px)' : 'none' }}
             >
                 <Typography variant="h3" fontWeight="800" sx={{ 
                     background: 'linear-gradient(90deg, #818cf8, #c084fc)',
@@ -162,25 +166,25 @@ const VoiceAgent = () => {
                 <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)' }}>
                     Real-time human-like conversation powered by Groq & LiveKit
                 </Typography>
-                
-                {isWidget && (
-                    <IconButton 
-                        onClick={() => window.close()} 
-                        sx={{ position: 'absolute', top: -40, right: 0, color: 'rgba(255,255,255,0.4)' }}
-                    >
-                        <PhoneOff size={20} />
-                    </IconButton>
-                )}
             </motion.div>
 
             {/* Siri-like Orb Container */}
-            <Box sx={{ position: 'relative', mb: 12, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Box sx={{ 
+                position: 'relative', 
+                mb: 12, 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center',
+                filter: (isExpired || isLocked) && !isWidget ? 'blur(8px) grayscale(1)' : 'none',
+                pointerEvents: (isExpired || isLocked) && !isWidget ? 'none' : 'auto'
+            }}>
                 <AnimatePresence>
                     {status !== 'idle' && (
                         <motion.div
                             initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 2, opacity: 0.2 }}
+                            animate={{ scale: 2.2, opacity: [0.1, 0.2, 0.1] }}
                             exit={{ scale: 0.8, opacity: 0 }}
+                            transition={{ duration: 2, repeat: Infinity }}
                             style={{
                                 position: 'absolute',
                                 width: '200px',
@@ -253,10 +257,10 @@ const VoiceAgent = () => {
                                 textAlign: 'center'
                             }}>
                                 <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                                    <Volume2 className="animate-bounce" color="#818cf8" />
+                                    <Volume2 className="animate-pulse" color="#818cf8" />
                                 </Box>
-                                <Typography variant="body1" sx={{ color: 'white', fontSize: '1.2rem', lineHeight: 1.6 }}>
-                                    {aiResponse || "I'm ready to talk. Say something!"}
+                                <Typography variant="body1" sx={{ color: 'white', fontSize: '1.1rem', lineHeight: 1.6 }}>
+                                    {aiResponse || "Listening for your voice..."}
                                 </Typography>
                             </Paper>
                         </motion.div>

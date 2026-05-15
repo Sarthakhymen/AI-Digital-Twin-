@@ -5,6 +5,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userFeatures, setUserFeatures] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,12 +17,24 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const fetchUser = async (token) => {
+  const fetchFeatures = async (token) => {
     try {
-      const response = await api.get('/auth/me', {
+      const response = await api.get('/auth/features', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setUser(response.data);
+      setUserFeatures(response.data);
+    } catch (err) {
+      console.error("Failed to fetch user features:", err);
+    }
+  };
+
+  const fetchUser = async (token) => {
+    try {
+      const [userRes] = await Promise.all([
+        api.get('/auth/me', { headers: { Authorization: `Bearer ${token}` } }),
+        fetchFeatures(token)
+      ]);
+      setUser(userRes.data);
     } catch (error) {
       localStorage.removeItem('token');
     } finally {
@@ -36,6 +49,7 @@ export const AuthProvider = ({ children }) => {
       if (response.data.access_token && response.data.user) {
         localStorage.setItem('token', response.data.access_token);
         setUser(response.data.user);
+        await fetchFeatures(response.data.access_token);
         return { success: true, user: response.data.user };
       } else {
         return { success: false, error: 'Invalid login response from server' };
@@ -54,15 +68,19 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
+    setUserFeatures(null);
   };
 
-  const setAuthData = (data) => {
+  const setAuthData = async (data) => {
     localStorage.setItem('token', data.access_token);
     setUser(data.user);
+    if (data.access_token) {
+      await fetchFeatures(data.access_token);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, setAuthData }}>
+    <AuthContext.Provider value={{ user, userFeatures, login, register, logout, loading, setAuthData }}>
       {children}
     </AuthContext.Provider>
   );

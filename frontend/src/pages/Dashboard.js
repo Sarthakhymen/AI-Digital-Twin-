@@ -12,7 +12,7 @@ import { Alert, AlertTitle } from '@mui/material';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, userFeatures } = useAuth();
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => api.get('/dashboard/').then(res => res.data),
@@ -27,6 +27,8 @@ const Dashboard = () => {
   const activities = dashboardData?.recent_activity || [];
   const twins = dashboardData?.digital_twins || [];
   const trends = analyticsData?.conversation_trends || [];
+
+  const canCreateTwin = !userFeatures || twins.length < userFeatures.max_twins;
 
   if (isLoading) return <Typography>Loading...</Typography>;
 
@@ -54,6 +56,24 @@ const Dashboard = () => {
           We've received your payment submission. Your Pro features will be unlocked within 12-24 hours after verification.
         </Alert>
       )}
+
+      {!canCreateTwin && user?.subscription_status !== 'expired' && (
+        <Alert severity="info" sx={{ mb: 3, borderRadius: '12px' }}>
+          <AlertTitle>Digital Twin Limit Reached</AlertTitle>
+          You have reached the limit of {userFeatures.max_twins} digital twins for your {userFeatures.plan} plan. 
+          Upgrade to a higher plan to create more.
+          <Button 
+            variant="contained" 
+            color="info" 
+            size="small" 
+            sx={{ ml: 2, textTransform: 'none' }}
+            onClick={() => navigate('/pricing')}
+          >
+            Upgrade Plan
+          </Button>
+        </Alert>
+      )}
+
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4">Dashboard</Typography>
         <Button 
@@ -77,15 +97,15 @@ const Dashboard = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Digital Twins"
-            value={stats.total_digital_twins || 0}
+            value={`${stats.total_digital_twins || 0} / ${userFeatures?.max_twins || '∞'}`}
             icon={<SmartToy />}
             color="#2e7d32"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
-            title="Weekly Conversations"
-            value={stats.weekly_conversations || 0}
+            title="Monthly Messages"
+            value={`${stats.total_messages || 0} / ${userFeatures?.max_messages || '∞'}`}
             icon={<Chat />}
             color="#ed6c02"
           />
@@ -108,7 +128,7 @@ const Dashboard = () => {
               variant="contained" 
               onClick={() => navigate('/create-twin')}
               size="small"
-              disabled={user?.subscription_status === 'expired'}
+              disabled={user?.subscription_status === 'expired' || !canCreateTwin}
             >
               Create Twin
             </Button>

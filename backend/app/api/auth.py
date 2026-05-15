@@ -45,6 +45,35 @@ def get_current_user(
     user = auth_service.get_current_user(db, token)
     return user
 
+from .dependencies import get_current_active_user
+
+@router.get("/features")
+def get_user_features(current_user: Any = Depends(get_current_active_user)):
+    """Get resolved user features based on subscription plan and admin overrides."""
+    try:
+        from .payments import PLAN_LIMITS
+        plan = current_user.subscription_plan or "free"
+        base_features = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"]).copy()
+    except ImportError:
+        base_features = {}
+        plan = current_user.subscription_plan or "free"
+        
+    custom_features = current_user.custom_features or {}
+    
+    resolved_features = {
+        "plan": plan,
+        "status": current_user.subscription_status,
+        "max_twins": custom_features.get("max_twins", base_features.get("max_twins", 1)),
+        "max_knowledge_files": custom_features.get("max_knowledge_files", base_features.get("max_knowledge_files", 5)),
+        "max_messages": custom_features.get("max_messages", base_features.get("max_messages", 100)),
+        "advanced_analytics": custom_features.get("advanced_analytics", base_features.get("advanced_analytics", False)),
+        "voice_agent": custom_features.get("voice", base_features.get("voice", False)),
+        "whatsapp": custom_features.get("whatsapp", base_features.get("whatsapp", False)),
+        "api_access": custom_features.get("api_access", base_features.get("api_access", False))
+    }
+    
+    return resolved_features
+
 @router.post("/refresh", response_model=Token)
 def refresh_token(
     credentials: HTTPAuthorizationCredentials = Depends(security),

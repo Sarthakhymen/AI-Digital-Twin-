@@ -84,6 +84,32 @@ def toggle_user_admin(user_id: int, db: Any = Depends(get_db), admin_user: Any =
     db.commit()
     return {"message": f"User admin status set to {user.is_admin}"}
 
+class FeatureToggleRequest(BaseModel):
+    feature_name: str
+    feature_status: bool | None
+
+@router.post("/users/{user_id}/features")
+def toggle_user_feature(user_id: int, request: FeatureToggleRequest, db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
+    """Toggle a specific feature for a user, overriding their base plan limits."""
+    from sqlalchemy.orm.attributes import flag_modified
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    custom_features = user.custom_features or {}
+    if request.feature_status is None:
+        if request.feature_name in custom_features:
+            del custom_features[request.feature_name]
+    else:
+        custom_features[request.feature_name] = request.feature_status
+        
+    user.custom_features = custom_features
+    flag_modified(user, "custom_features")
+    
+    db.commit()
+    return {"message": f"Feature '{request.feature_name}' updated successfully.", "custom_features": user.custom_features}
+
 @router.get("/payments")
 def list_payments(db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
     """List all manual payments"""

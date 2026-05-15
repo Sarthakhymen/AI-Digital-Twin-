@@ -12,27 +12,32 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 const Analytics = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [days, setDays] = useState(30);
-  const { user } = useAuth();
+  const { user, userFeatures } = useAuth();
   const navigate = useNavigate();
 
   const { data: conversationData } = useQuery({
     queryKey: ['analytics-conversations', days],
     queryFn: () => api.get(`/analytics/conversations?days=${days}`).then(res => res.data),
+    enabled: !!userFeatures?.advanced_analytics && user?.subscription_status !== 'expired'
   });
 
   const { data: performanceData } = useQuery({
     queryKey: ['analytics-performance'],
     queryFn: () => api.get('/analytics/performance').then(res => res.data),
+    enabled: !!userFeatures?.advanced_analytics && user?.subscription_status !== 'expired'
   });
 
   const { data: channelData } = useQuery({
     queryKey: ['analytics-channels', days],
     queryFn: () => api.get(`/analytics/channels?days=${days}`).then(res => res.data),
+    enabled: !!userFeatures?.advanced_analytics && user?.subscription_status !== 'expired'
   });
 
   const trends = conversationData?.trends || [];
   const channels = channelData?.channels || [];
   const twins = performanceData?.digital_twins || [];
+
+  const isLocked = !userFeatures?.advanced_analytics;
 
   return (
     <Box>
@@ -54,7 +59,23 @@ const Analytics = () => {
         </Alert>
       )}
 
-      {user?.subscription_status !== 'expired' && (
+      {isLocked && user?.subscription_status !== 'expired' && (
+        <Alert severity="warning" sx={{ mb: 3, borderRadius: '12px' }}>
+          <AlertTitle>Feature Locked</AlertTitle>
+          Advanced analytics is a Pro feature. Upgrade your plan to get detailed insights into your digital twins.
+          <Button 
+            variant="contained" 
+            color="warning" 
+            size="small" 
+            sx={{ ml: 2, textTransform: 'none' }}
+            onClick={() => navigate('/pricing')}
+          >
+            Upgrade Now
+          </Button>
+        </Alert>
+      )}
+
+      {user?.subscription_status !== 'expired' && !isLocked && (
         <>
       
       <FormControl sx={{ mb: 3, minWidth: 120 }}>
