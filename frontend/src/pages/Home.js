@@ -63,18 +63,7 @@ const Hero = () => {
         <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==')] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
       </div>
 
-      {/* Connection Lines (Subtle SVG) */}
-      <svg className="connection-lines" width="100%" height="100%" viewBox="0 0 1000 1000">
-        <defs>
-          <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="transparent" />
-            <stop offset="50%" stopColor="rgba(255, 30, 86, 0.1)" />
-            <stop offset="100%" stopColor="transparent" />
-          </linearGradient>
-        </defs>
-        <path d="M 200 300 Q 500 250 800 350" fill="transparent" stroke="url(#lineGrad)" strokeWidth="1" strokeDasharray="5,5" />
-        <path d="M 150 700 Q 500 750 850 650" fill="transparent" stroke="url(#lineGrad)" strokeWidth="1" strokeDasharray="5,5" />
-      </svg>
+
 
       {/* Floating UI Cards */}
       
