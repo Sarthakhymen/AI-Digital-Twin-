@@ -12,18 +12,11 @@ from ..services import auth_service
 from ..models import DigitalTwin, Conversation, User, Business
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
-security = HTTPBearer()
-
-def get_current_user_dependency(
-    credentials: HTTPBearer = Depends(security),
-    db: Session = Depends(get_db)
-) -> User:
-    token = credentials.credentials
-    return auth_service.get_current_user(db, token)
+from .dependencies import get_current_active_user
 
 @router.get("/")
 def get_dashboard_overview(
-    current_user: User = Depends(get_current_user_dependency),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get dashboard overview data"""
@@ -84,7 +77,7 @@ def get_dashboard_overview(
 
 @router.get("/analytics/overview")
 def get_analytics_overview(
-    current_user: User = Depends(get_current_user_dependency),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get analytics overview for charts"""

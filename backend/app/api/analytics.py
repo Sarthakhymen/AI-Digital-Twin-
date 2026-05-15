@@ -8,7 +8,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from ..database import get_db
 from ..models import DigitalTwin, Conversation, User, Business
-from .dependencies import RequirePlan
+from .dependencies import RequirePlan, get_current_active_user
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
@@ -59,7 +59,7 @@ def get_conversation_analytics(
 
 @router.get("/performance")
 def get_performance_analytics(
-    current_user: User = Depends(get_current_user_dependency),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get performance analytics for all digital twins"""
@@ -102,7 +102,7 @@ def get_performance_analytics(
 @router.get("/channels")
 def get_channel_analytics(
     days: int = 30,
-    current_user: User = Depends(get_current_user_dependency),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get conversation breakdown by channel slice"""
