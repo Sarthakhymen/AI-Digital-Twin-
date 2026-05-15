@@ -276,7 +276,6 @@ const Hero = () => {
             </motion.div>
           </motion.div>
         </motion.div>
-      </motion.div>
 
       {/* Mouse Scroll Indicator */}
       <motion.div 
