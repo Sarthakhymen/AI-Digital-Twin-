@@ -16,6 +16,7 @@ const DigitalTwinDetail = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const fileInputRef = useRef(null);
+  const voiceInputRef = useRef(null);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
@@ -63,6 +64,30 @@ const DigitalTwinDetail = () => {
     }
     // Reset file input
     if (fileInputRef.current) fileInputRef.current.value = '';
+    setTimeout(() => setUploadStatus(null), 3000);
+  };
+
+  const handleVoiceUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setUploadStatus('voice_uploading');
+    try {
+      await api.post(`/digital-twins/${id}/voice-samples`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setUploadStatus('voice_success');
+      setSnackbar({ open: true, message: 'Voice sample uploaded successfully!', severity: 'success' });
+      queryClient.invalidateQueries(['digital-twin', id]);
+    } catch (error) {
+      setUploadStatus('voice_error');
+      setSnackbar({ open: true, message: `❌ Upload failed: ${error.response?.data?.detail || error.message}`, severity: 'error' });
+    }
+    // Reset file input
+    if (voiceInputRef.current) voiceInputRef.current.value = '';
     setTimeout(() => setUploadStatus(null), 3000);
   };
 
@@ -147,10 +172,52 @@ const DigitalTwinDetail = () => {
               <Typography color="text.secondary">No communication style set</Typography>
             )}
 
-            <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>Voice Samples</Typography>
-            <Typography color="text.secondary">
-              {twin.voice_samples?.length ? `${twin.voice_samples.length} samples uploaded` : 'No voice samples'}
+            <Typography variant="h6" gutterBottom sx={{ mt: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              Voice Samples
+              <Box>
+                <input
+                  type="file"
+                  ref={voiceInputRef}
+                  onChange={(e) => handleVoiceUpload(e)}
+                  accept="audio/*"
+                  style={{ display: 'none' }}
+                />
+                <Button 
+                  size="small" 
+                  startIcon={<CloudUpload />} 
+                  onClick={() => voiceInputRef.current?.click()}
+                  disabled={uploadStatus === 'voice_uploading'}
+                >
+                  {uploadStatus === 'voice_uploading' ? 'Uploading...' : 'Upload'}
+                </Button>
+              </Box>
             </Typography>
+
+            {twin.voice_samples && twin.voice_samples.length > 0 ? (
+              <List dense sx={{ bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 2 }}>
+                {twin.voice_samples.map((sample, index) => (
+                  <ListItem 
+                    key={sample.id || index}
+                    secondaryAction={
+                      <IconButton edge="end" size="small" onClick={() => {
+                        const baseUrl = (process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api/v1').replace('/api/v1', '');
+                        const audio = new Audio(`${baseUrl}${sample.url}`);
+                        audio.play();
+                      }}>
+                        <PlayArrow fontSize="small" />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemText 
+                      primary={sample.filename} 
+                      secondary={`${(sample.size / 1024).toFixed(1)} KB • ${new Date(sample.uploaded_at).toLocaleDateString()}`}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography color="text.secondary">No voice samples uploaded</Typography>
+            )}
 
             <Divider sx={{ my: 3 }} />
             

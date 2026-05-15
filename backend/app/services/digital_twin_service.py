@@ -2,9 +2,13 @@
 Digital Twin Service
 Handles business logic for digital twin operations
 """
-from sqlalchemy.orm import Session
 from typing import Dict, Any
 import json
+import os
+import uuid
+from datetime import datetime
+from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 from ..models import DigitalTwin, Business
 from ..ai import training_service
 
@@ -35,17 +39,38 @@ class DigitalTwinService:
         if not digital_twin:
             return {"success": False, "error": "Digital twin not found"}
         
+        # Ensure directory exists
+        os.makedirs("uploads/voice_samples", exist_ok=True)
+        
+        # Generate unique filename
+        file_ext = os.path.splitext(file.filename)[1]
+        unique_filename = f"{uuid.uuid4()}{file_ext}"
+        file_path = os.path.join("uploads/voice_samples", unique_filename)
+        
+        # Read file content and save
+        content = file.file.read()
+        with open(file_path, "wb") as f:
+            f.write(content)
+        
         # Store voice sample metadata
         voice_samples = digital_twin.voice_samples or []
         sample_data = {
+            "id": str(uuid.uuid4()),
             "filename": file.filename,
+            "url": f"/uploads/voice_samples/{unique_filename}",
             "content_type": file.content_type,
-            "size": len(file.file.read()) if hasattr(file.file, 'read') else 0
+            "size": len(content),
+            "uploaded_at": str(datetime.utcnow())
         }
-        voice_samples.append(sample_data)
-        digital_twin.voice_samples = voice_samples
+        
+        # Update JSON field (need to handle list mutation for SQLAlchemy)
+        new_samples = list(voice_samples)
+        new_samples.append(sample_data)
+        digital_twin.voice_samples = new_samples
+        flag_modified(digital_twin, "voice_samples")
         
         db.commit()
+        db.refresh(digital_twin)
         
         return {
             "success": True,

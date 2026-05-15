@@ -52,28 +52,28 @@ const LandingNavbar = () => {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'glass py-3' : 'bg-transparent py-5'}`}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <motion.div
-              onClick={() => navigate('/')}
-              className="flex items-center gap-2 group cursor-pointer"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="flex items-center justify-center">
-                <LogoIcon className="h-12 md:h-14 w-auto" />
-              </div>
-            </motion.div>
+          <div className="flex items-center justify-between h-16">
+            {/* Logo - Left */}
+            <div className="flex-1 flex justify-start">
+              <motion.div
+                onClick={() => navigate('/')}
+                className="flex items-center gap-2 group cursor-pointer"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <LogoIcon className="h-10 w-auto" />
+              </motion.div>
+            </div>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
+            {/* Desktop Navigation - Center */}
+            <div className="hidden md:flex items-center justify-center gap-10 bg-white/5 border border-white/10 px-8 py-2.5 rounded-full backdrop-blur-xl">
               {navLinks.map((link) => (
                 <motion.button
                   key={link.name}
                   onClick={() => handleNavClick(link)}
-                  className={`text-sm transition-colors duration-200 ${
+                  className={`text-[13px] font-medium tracking-wide transition-all duration-300 ${
                     (location.pathname === link.href || (location.pathname === '/' && link.type === 'scroll'))
-                      ? 'text-white font-semibold' 
+                      ? 'text-white' 
                       : 'text-slate-400 hover:text-white'
                   }`}
                   whileHover={{ y: -1 }}
@@ -83,15 +83,15 @@ const LandingNavbar = () => {
               ))}
             </div>
 
-            {/* CTA Buttons */}
-            <div className="hidden md:flex items-center gap-4">
+            {/* CTA Buttons - Right */}
+            <div className="flex-1 hidden md:flex items-center justify-end gap-6">
               {loading ? (
-                <div className="h-10 w-24 bg-slate-800/50 animate-pulse rounded-lg" />
+                <div className="h-10 w-24 bg-white/5 animate-pulse rounded-full" />
               ) : user ? (
                 <>
                   <motion.button
                     onClick={() => navigate('/dashboard')}
-                    className="px-4 py-2 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-lg text-sm font-medium hover:from-rose-600 hover:to-red-700 transition-all shadow-lg shadow-rose-500/20"
+                    className="px-6 py-2.5 bg-white text-black rounded-full text-[13px] font-bold hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -99,7 +99,7 @@ const LandingNavbar = () => {
                   </motion.button>
                   <motion.button
                     onClick={() => { logout(); navigate('/'); }}
-                    className="text-sm text-slate-400 hover:text-white transition-colors"
+                    className="text-[13px] font-medium text-slate-400 hover:text-white transition-colors"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -110,7 +110,7 @@ const LandingNavbar = () => {
                 <>
                   <motion.button
                     onClick={() => navigate('/login')}
-                    className="text-sm text-slate-300 hover:text-white transition-colors"
+                    className="text-[13px] font-medium text-slate-400 hover:text-white transition-colors"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -118,7 +118,7 @@ const LandingNavbar = () => {
                   </motion.button>
                   <motion.button
                     onClick={() => navigate('/register')}
-                    className="px-4 py-2 bg-white text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors"
+                    className="px-6 py-2.5 bg-white/5 border border-white/10 text-white rounded-full text-[13px] font-bold hover:bg-white/10 transition-all"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
