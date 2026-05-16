@@ -175,44 +175,61 @@ async def create_checkout(
     if not product_id:
         raise HTTPException(status_code=400, detail="Invalid plan type or Product ID not set")
 
+    frontend_url = os.getenv("FRONTEND_URL", "https://ai-digital-twin-seven.vercel.app").rstrip("/")
+
     payload = {
-        "product_cart": [
-            {
-                "product_id": product_id,
-                "quantity": 1
-            }
-        ],
+        "product_id": product_id,
+        "quantity": 1,
+        "payment_link": True,
+        "return_url": f"{frontend_url}/dashboard?payment=success",
         "customer": {
             "email": current_user.email,
             "name": current_user.full_name or "Valued Customer"
         },
-        "billing_cycle": request.billing_cycle,
-        "return_url": os.getenv("FRONTEND_URL", "https://ai-digital-twin-seven.vercel.app").rstrip('/') + "/dashboard?payment=success",
-        "cancel_url": os.getenv("FRONTEND_URL", "https://ai-digital-twin-seven.vercel.app").rstrip('/') + "/pricing?payment=cancelled",
         "metadata": {
             "user_id": str(current_user.id),
             "plan_type": request.plan_type
         }
     }
 
-    async with httpx.AsyncClient() as client:
+    print(f"[Dodo] Creating subscription: user={current_user.email} product={product_id} base={DODO_BASE_URL}")
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
         try:
             response = await client.post(
-                f"{DODO_BASE_URL}/checkouts",
+                f"{DODO_BASE_URL}/subscriptions",
                 json=payload,
-                headers={"Authorization": f"Bearer {DODO_API_KEY}"}
+                headers={
+                    "Authorization": f"Bearer {DODO_API_KEY}",
+                    "Content-Type": "application/json"
+                }
             )
-            
-            if response.status_code != 201:
-                print(f"Dodo Error: {response.text}")
-                raise HTTPException(status_code=response.status_code, detail="Failed to create checkout session")
-            
+
+            print(f"[Dodo] Response: status={response.status_code} body={response.text[:500]}")
+
+            if response.status_code not in (200, 201):
+                err_detail = "Failed to create checkout"
+                try:
+                    err = response.json()
+                    err_detail = err.get("message") or err.get("error") or str(err)
+                except Exception:
+                    err_detail = response.text[:200]
+                raise HTTPException(status_code=response.status_code, detail=err_detail)
+
             data = response.json()
-            return {"checkout_url": data.get("checkout_url")}
-            
+            checkout_url = data.get("payment_link") or data.get("checkout_url") or data.get("url")
+
+            if not checkout_url:
+                print(f"[Dodo] No checkout URL in response: {data}")
+                raise HTTPException(status_code=502, detail="Payment gateway returned no URL")
+
+            return {"checkout_url": checkout_url}
+
+        except HTTPException:
+            raise
         except Exception as e:
-            print(f"Payment Exception: {str(e)}")
-            raise HTTPException(status_code=500, detail="Internal payment error")
+            print(f"[Dodo] Exception: {type(e).__name__}: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Payment error: {str(e)}")
 
 @router.post("/webhook")
 async def dodo_webhook(request: Request, db: Any = Depends(get_db)):
