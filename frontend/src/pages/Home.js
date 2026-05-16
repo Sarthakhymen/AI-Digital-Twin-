@@ -1,36 +1,28 @@
 import React, { useState } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  Play,
   ArrowRight,
+  ChevronRight,
   Zap,
   Shield,
-  Globe,
-  MessageSquare,
   BarChart3,
-  ChevronRight,
   Mic,
-  Bot,
   Layers,
-  CheckCircle2,
-  Check,
-  MessageCircle
+  Play,
+  Globe
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
 import LandingNavbar from '../components/LandingNavbar';
-import PaymentModal from '../components/PaymentModal';
 import LogoIcon from '../components/LogoIcon';
-import '../styles/Hero.css';
 
-// Animation variants
+// Premium animation variants
 const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
   }
 };
 
@@ -39,426 +31,254 @@ const staggerContainer = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.15,
       delayChildren: 0.2
     }
   }
 };
 
-// Hero Section
+// Premium Background Component
+const PremiumBackground = () => {
+  return (
+    <div className="fixed inset-0 pointer-events-none z-0">
+      {/* Dynamic base background */}
+      <div className="absolute inset-0 bg-slate-50 dark:bg-[#050505] transition-colors duration-500" />
+
+      {/* Subtle animated grain/noise texture */}
+      <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.02] mix-blend-overlay dark:mix-blend-normal bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9lzZSkiLz48L3N2Zz4=')] animate-pulse" />
+
+      {/* Soft radial ambient lighting */}
+      <div className="absolute top-0 left-1/4 w-[800px] h-[800px] bg-gradient-to-b from-indigo-500/10 dark:from-indigo-500/5 to-transparent rounded-full blur-[120px]" />
+      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-gradient-to-t from-rose-500/10 dark:from-rose-500/5 to-transparent rounded-full blur-[100px]" />
+
+      {/* Extremely subtle moving gradient mesh */}
+      <motion.div
+        className="absolute inset-0 opacity-[0.05] dark:opacity-[0.03]"
+        animate={{
+          backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+        style={{
+          background: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), radial-gradient(circle at 0% 0%, rgba(244, 63, 94, 0.1) 0%, transparent 50%)',
+          backgroundSize: '200% 200%'
+        }}
+      />
+    </div>
+  );
+};
+
+// AI Platform Central Visualization
+const AICoreVisualization = () => {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
+      className="relative w-64 h-64 mx-auto my-16 hidden lg:flex items-center justify-center"
+    >
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+        className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 dark:from-indigo-500/10 dark:to-purple-500/10 blur-xl"
+      />
+      <motion.div 
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        className="relative z-10 w-32 h-32 rounded-full bg-white dark:bg-black/50 backdrop-blur-xl flex items-center justify-center shadow-2xl shadow-indigo-500/20"
+      >
+        <BrainIcon className="w-12 h-12 text-indigo-600 dark:text-indigo-400" />
+      </motion.div>
+      {/* Orbital paths */}
+      <div className="absolute inset-0 rounded-full border border-slate-200 dark:border-white/5" />
+      <div className="absolute inset-4 rounded-full border border-slate-200 dark:border-white/5" />
+      {/* Floating particles */}
+      <motion.div 
+        animate={{ y: [-10, 10, -10], x: [-10, 10, -10] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-4 left-10 w-3 h-3 bg-blue-500 rounded-full"
+      />
+      <motion.div 
+        animate={{ y: [10, -10, 10], x: [10, -10, 10] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-4 right-10 w-2 h-2 bg-purple-500 rounded-full"
+      />
+    </motion.div>
+  );
+};
+
+const BrainIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
+    <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>
+  </svg>
+);
+
+// Premium Hero Section
 const Hero = () => {
   const { scrollY } = useScroll();
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const scale = useTransform(scrollY, [0, 400], [1, 0.95]);
   const navigate = useNavigate();
 
   return (
-    <section className="hero-container">
-      {/* Cinematic Lighting */}
-      <div className="hero-atmosphere">
-        <div className="glow-top-right" />
-        <div className="glow-bottom-left" />
-        <div className="glow-center" />
-        
-        {/* Subtle Dots Pattern */}
-        <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==')] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
-      </div>
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-20">
+      <PremiumBackground />
 
-
-
-      {/* Floating UI Cards */}
-      
-      {/* Left Top Card: User Query */}
-      <motion.div 
-        className="absolute top-[20%] left-[4%] hidden lg:block floating-1"
-        initial={{ opacity: 0, x: -30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1, delay: 0.5 }}
-      >
-        <div className="glass-card flex items-center gap-3 py-3 px-4">
-          <div className="w-8 h-8 rounded-full bg-slate-800 overflow-hidden flex-shrink-0 border border-white/10">
-            <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User" className="w-full h-full object-cover grayscale" />
-          </div>
-          <div>
-            <p className="text-[12px] font-medium text-white/90">How can I scale my expertise?</p>
-            <div className="flex items-center gap-1 mt-0.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]" />
-              <span className="text-[9px] text-slate-500 uppercase tracking-tighter">Growth Strategist</span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Bottom Left Card: Analytics */}
-      <motion.div 
-        className="absolute bottom-[18%] left-[6%] hidden lg:block floating-2"
-        initial={{ opacity: 0, x: -30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1, delay: 0.8 }}
-      >
-        <div className="glass-card min-w-[180px] py-4 px-5">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="p-1.5 rounded-lg bg-rose-500/10">
-              <BarChart3 className="w-3.5 h-3.5 text-rose-500" />
-            </div>
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Growth</span>
-          </div>
-          <div className="flex items-end gap-2 mb-1">
-            <h4 className="text-2xl font-bold text-white tracking-tight">12,846</h4>
-            <span className="text-[10px] font-bold text-emerald-400 pb-1">+32%</span>
-          </div>
-          <p className="text-[9px] text-slate-500">Global Interactions</p>
-          
-          <div className="mt-3 h-6 flex items-end gap-1">
-            {[30, 50, 40, 60, 45, 80, 55, 70].map((h, i) => (
-              <div key={i} className="flex-1 bg-rose-500/20 rounded-t-[1px]" style={{ height: `${h}%` }} />
-            ))}
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Right Top Card: AI Status */}
-      <motion.div 
-        className="absolute top-[18%] right-[4%] hidden lg:block floating-3"
-        initial={{ opacity: 0, x: 30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1, delay: 0.6 }}
-      >
-        <div className="glass-card py-3 px-5 flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-rose-500 flex items-center justify-center">
-              <Bot className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-[12px] font-medium text-white/90">Twin is active</span>
-          </div>
-          <div className="flex items-center justify-between gap-6">
-            <span className="text-[9px] text-slate-500">Response time: 85ms</span>
-            <div className="waveform">
-              {[...Array(10)].map((_, i) => (
-                <div 
-                  key={i} 
-                  className="waveform-bar" 
-                  style={{ animationDelay: `${i * 0.1}s`, height: `${Math.random() * 8 + 4}px` }} 
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Right Bottom Card: Omnichannel */}
-      <motion.div 
-        className="absolute bottom-[22%] right-[6%] hidden lg:block floating-4"
-        initial={{ opacity: 0, x: 30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1, delay: 0.9 }}
-      >
-        <div className="glass-card min-w-[190px] py-4 px-5">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Sync Active</span>
-          </div>
-          <div className="flex gap-2">
-            <div className="w-7 h-7 rounded-full bg-[#25D366]/10 flex items-center justify-center border border-[#25D366]/20">
-              <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
-            </div>
-            <div className="w-7 h-7 rounded-full bg-sky-500/10 flex items-center justify-center border border-sky-500/20">
-              <MessageSquare className="w-3.5 h-3.5 text-sky-400" />
-            </div>
-            <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
-              <Globe className="w-3.5 h-3.5 text-white" />
-            </div>
-          </div>
-          <p className="mt-2 text-[9px] text-white/30 uppercase tracking-tighter">Unified Presence</p>
-        </div>
-      </motion.div>
-
-      {/* Main Content */}
       <motion.div
-        style={{ opacity }}
-        className="relative z-10 max-w-5xl mx-auto px-6 text-center"
+        style={{ opacity, scale }}
+        className="relative z-10 w-full max-w-6xl mx-auto px-6 text-center"
       >
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: { 
-              opacity: 1,
-              transition: { staggerChildren: 0.2 }
-            }
-          }}
+          variants={staggerContainer}
           className="flex flex-col items-center"
         >
-          {/* Badge */}
+          {/* Premium Badge */}
           <motion.div variants={fadeInUp}>
-            <div className="badge-hero">
-              <div className="badge-dot" />
-              <span>Your clone is born</span>
-              <ChevronRight className="w-4 h-4 text-slate-600" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-200/50 dark:bg-white/5 backdrop-blur-sm mb-8">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-medium text-slate-800 dark:text-slate-300 tracking-wide">Next-Gen AI Technology</span>
+              <ChevronRight className="w-4 h-4 text-slate-500" />
             </div>
           </motion.div>
 
-          {/* Headline */}
+          {/* Premium Headline */}
           <motion.h1
             variants={fadeInUp}
-            className="hero-headline"
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-slate-900 dark:text-white tracking-tight leading-[1.1] mb-6"
           >
-            <span className="gradient-text-hero">Your time is finite.</span>
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-200 to-rose-400 drop-shadow-[0_0_10px_rgba(251,113,133,0.15)]">Your impact shouldn't be.</span>
+            <span className="block">Your intelligence,</span>
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+              amplified by AI.
+            </span>
           </motion.h1>
 
-          {/* Subheadline */}
+          {/* Premium Subheadline */}
           <motion.p
             variants={fadeInUp}
-            className="hero-subheadline"
+            className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-4 leading-relaxed font-light"
           >
-            Create a digital version of yourself that shares your expertise and connects with your audience 24/7. Reclaim your time without losing your personal touch.
+            Create an AI digital twin that captures your exact knowledge, voice, and reasoning logic.
+            Deploy an automated version of yourself that interacts with perfect accuracy, 24/7.
           </motion.p>
+          
+          <AICoreVisualization />
 
-          {/* CTAs */}
+          {/* Premium CTAs */}
           <motion.div
             variants={fadeInUp}
-            className="flex flex-col sm:flex-row items-center gap-4 mt-6"
+            className="flex flex-col sm:flex-row items-center gap-4 mt-8"
           >
-            <button
-              onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
-              className="btn-primary-hero group"
+            <motion.button
+              onClick={() => navigate('/register')}
+              className="group relative px-8 py-4 bg-slate-900 text-white dark:bg-white dark:text-black rounded-2xl font-semibold text-sm overflow-hidden"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              Start Free Trial
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button
+              <span className="relative z-10 flex items-center gap-2">
+                Initialize Your Twin
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
+              />
+            </motion.button>
+
+            <motion.button
               onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Demo Request"}
-              className="btn-secondary-hero"
+              className="group relative px-8 py-4 bg-slate-200/50 dark:bg-white/5 text-slate-900 dark:text-white rounded-2xl font-semibold text-sm backdrop-blur-sm overflow-hidden"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <Play className="w-4 h-4 fill-current" />
-              Watch Demo
-            </button>
-          </motion.div>
-
-          {/* Minimal Trust Info */}
-          <motion.div 
-            variants={fadeInUp}
-            className="mt-12 flex flex-col items-center gap-3"
-          >
-            <p className="text-[11px] text-slate-500 uppercase tracking-[0.2em] font-bold">Trusted by elite creators</p>
-            <div className="flex items-center gap-6 opacity-40 grayscale contrast-125">
-              <div className="h-4 w-20 bg-slate-600 rounded-full" />
-              <div className="h-4 w-16 bg-slate-600 rounded-full" />
-              <div className="h-4 w-24 bg-slate-600 rounded-full" />
-            </div>
-            </motion.div>
-
-            {/* Support Info */}
-            <motion.div
-              variants={fadeInUp}
-              className="mt-12 pt-8 border-t border-white/[0.03] flex flex-col items-center gap-2"
-            >
-              <p className="text-[11px] text-slate-500 uppercase tracking-widest font-medium">Prefer to talk directly? Reach out anytime:</p>
-              <div className="flex flex-wrap justify-center items-center gap-4 text-xs text-white/60">
-                <span className="hover:text-rose-400 cursor-pointer transition-colors">nexora.aidigital.twin@gmail.com</span>
-                <div className="w-1 h-1 rounded-full bg-white/20 hidden sm:block" />
-                <span className="hover:text-rose-400 cursor-pointer transition-colors">+91 9625410112</span>
-              </div>
-            </motion.div>
+              <span className="relative z-10 flex items-center gap-2">
+                <Play className="w-4 h-4" />
+                See AI in Action
+              </span>
+            </motion.button>
           </motion.div>
         </motion.div>
+      </motion.div>
 
-      {/* Mouse Scroll Indicator */}
-      <motion.div 
-        className="hero-scroll-indicator"
+      {/* Scroll Indicator */}
+      <motion.div
+        className="absolute bottom-8 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
       >
-        <div className="mouse">
-          <div className="wheel" />
-        </div>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="w-6 h-10 rounded-full border-2 border-slate-400 dark:border-slate-700 flex items-start justify-center p-2"
+        >
+          <div className="w-1 h-2 bg-slate-400 dark:bg-slate-500 rounded-full" />
+        </motion.div>
       </motion.div>
     </section>
   );
 };
 
-// Dashboard Preview Section
-const DashboardPreview = () => {
-  return (
-    <section className="relative py-20 overflow-hidden">
-      <div className="max-w-6xl mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="relative"
-        >
-          {/* Browser Frame */}
-          <div className="rounded-2xl overflow-hidden glass border border-slate-700/50 shadow-2xl shadow-rose-500/10">
-            {/* Browser Chrome */}
-            <div className="px-4 py-3 bg-slate-800/80 border-b border-slate-700/50 flex items-center gap-2">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-rose-500" />
-                <div className="w-3 h-3 rounded-full bg-amber-500" />
-                <div className="w-3 h-3 rounded-full bg-emerald-500" />
-              </div>
-              <div className="flex-1 flex justify-center">
-                <div className="px-4 py-1.5 bg-slate-900/80 rounded-lg text-xs text-slate-500">
-                  app.aidigitaltwin.com/dashboard
-                </div>
-              </div>
-            </div>
-
-            {/* Dashboard Content */}
-            <div className="p-8 bg-slate-900/50">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Stats Cards */}
-                {[
-                  { label: 'Knowledge Sources', value: 'Syncing', change: 'Connected', icon: Layers },
-                  { label: 'Response Quality', value: 'Learning', change: 'Adapting to your voice', icon: MessageSquare },
-                  { label: 'Availability', value: '24/7', change: 'Always active', icon: Shield }
-                ].map((stat, i) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className="p-6 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:border-rose-500/30 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center">
-                        <stat.icon className="w-5 h-5 text-rose-400" />
-                      </div>
-                    </div>
-                    <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
-                    <p className="text-sm text-slate-400">{stat.label}</p>
-                    <p className="text-xs text-emerald-400 mt-2">{stat.change}</p>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Activity Chart Placeholder */}
-              <div className="mt-6 p-6 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-sm font-semibold text-white">Conversation Volume</h3>
-                  <div className="flex gap-2">
-                    <span className="px-2 py-1 text-xs rounded bg-rose-500/20 text-rose-300">24h</span>
-                    <span className="px-2 py-1 text-xs rounded bg-slate-700 text-slate-400">7d</span>
-                    <span className="px-2 py-1 text-xs rounded bg-slate-700 text-slate-400">30d</span>
-                  </div>
-                </div>
-                <div className="h-32 flex items-end gap-2">
-                  {[40, 65, 45, 80, 55, 90, 70, 85, 60, 75, 95, 50].map((h, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ height: 0 }}
-                      whileInView={{ height: `${h}%` }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.05, duration: 0.5 }}
-                      className="flex-1 rounded-t bg-gradient-to-t from-slate-400 to-rose-500 opacity-80 hover:opacity-100 transition-opacity"
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Floating Elements */}
-          <motion.div
-            animate={{ y: [0, -15, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -right-8 top-20 p-4 rounded-xl glass border border-slate-700/50 shadow-xl"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-                <CheckCircle2 className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-white">Knowledge Synced</p>
-                <p className="text-xs text-slate-400">Just now</p>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            animate={{ y: [0, 15, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute -left-8 bottom-32 p-4 rounded-xl glass border border-slate-700/50 shadow-xl"
-          >
-            <div className="flex items-center gap-2">
-              <Mic className="w-4 h-4 text-rose-400" />
-              <span className="text-sm text-white">Voice Model Ready</span>
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
-// Features Grid Section
+// Premium Features Section
 const Features = () => {
   const features = [
     {
       icon: Mic,
-      title: 'Voice-First AI',
-      description: 'Natural-sounding voice synthesis that captures your tone, style, and personality. Support for 30+ languages.',
-      color: 'from-indigo-500 to-violet-500'
+      title: 'Neural Voice Cloning',
+      description: 'Capture your precise tone, cadence, and speaking style using advanced neural network synthesis.',
     },
     {
       icon: Zap,
-      title: 'Sub-100ms Response',
-      description: 'Powered by Groq LPU. Your AI thinks and responds faster than most humans can type.',
-      color: 'from-amber-500 to-orange-500'
+      title: 'Real-time Inference',
+      description: 'Ultra-low latency responses powered by optimized LLM infrastructure for natural conversations.',
     },
     {
       icon: Shield,
-      title: 'Enterprise Security',
-      description: 'SOC 2 Type II certified. End-to-end encryption. Your data never trains our models.',
-      color: 'from-emerald-500 to-teal-500'
+      title: 'Privacy-First Architecture',
+      description: 'Your knowledge base is encrypted and isolated. We never train public models on your personal data.',
     },
     {
       icon: Globe,
-      title: 'Omnichannel',
-      description: 'Deploy anywhere—your website, WhatsApp, Slack, phone calls, or embed in your app.',
-      color: 'from-rose-500 to-pink-500'
+      title: 'Omnichannel API',
+      description: 'Integrate your digital twin seamlessly across the web, mobile apps, or enterprise communication tools.',
     },
     {
       icon: BarChart3,
-      title: 'Real-time Analytics',
-      description: 'See every conversation, track sentiment, identify trends. Export insights to your CRM.',
-      color: 'from-cyan-500 to-blue-500'
+      title: 'Cognitive Analytics',
+      description: 'Gain deep insights into interactions, identifying patterns in what your audience is asking your twin.',
     },
     {
       icon: Layers,
-      title: 'Custom Knowledge',
-      description: 'Upload documents, connect APIs, sync your Notion. Your AI learns your business instantly.',
-      color: 'from-violet-500 to-purple-500'
+      title: 'Dynamic Knowledge Sync',
+      description: 'Connect live data sources. Your twin updates its understanding automatically as your information changes.',
     }
   ];
 
   return (
-    <section id="features" className="relative py-32">
+    <section id="features" className="relative py-32 bg-slate-50 dark:bg-[#050505]">
       <div className="max-w-7xl mx-auto px-6">
-        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <span className="text-sm font-semibold text-rose-400 tracking-wider uppercase">Features</span>
-          <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-white">
-            Scale your expertise,
-            <br />
-            <span className="gradient-text">not your stress</span>
+          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.2em]">Core AI Capabilities</span>
+          <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Advanced intelligence,
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+              zero compromise
+            </span>
           </h2>
-          <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
-            We built AI Twin to help experts be everywhere at once, giving you the freedom to focus on what truly matters.
+          <p className="mt-6 text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-light">
+            Engineered with state-of-the-art machine learning to provide an indistinguishable digital proxy of yourself.
           </p>
         </motion.div>
 
-        {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => (
             <motion.div
@@ -468,23 +288,17 @@ const Features = () => {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
               whileHover={{ y: -4 }}
-              className="group relative p-8 rounded-2xl bg-slate-800/30 border border-slate-700/50 hover:border-rose-500/30 transition-all duration-300"
+              className="group relative p-8 rounded-2xl bg-white dark:bg-white/5 shadow-xl shadow-slate-200/50 dark:shadow-none transition-all duration-300"
             >
-              {/* Icon */}
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                <feature.icon className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center mb-6 group-hover:bg-indigo-50 dark:group-hover:bg-white/10 transition-colors">
+                <feature.icon className="w-6 h-6 text-indigo-600 dark:text-white/70 group-hover:text-indigo-700 dark:group-hover:text-white transition-colors" />
               </div>
-
-              {/* Content */}
-              <h3 className="text-xl font-semibold text-white mb-3">
+              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3 tracking-tight">
                 {feature.title}
               </h3>
-              <p className="text-slate-400 leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed font-light">
                 {feature.description}
               </p>
-
-              {/* Hover Glow */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-rose-500/0 to-red-500/0 group-hover:from-rose-500/5 group-hover:to-red-500/5 transition-all duration-500" />
             </motion.div>
           ))}
         </div>
@@ -493,43 +307,38 @@ const Features = () => {
   );
 };
 
-// How It Works Section
+// Premium How It Works Section
 const HowItWorks = () => {
   const steps = [
     {
       number: '01',
-      title: 'Record your voice',
-      description: 'Speak for 10 minutes. Our AI captures your tone, cadence, and speaking style.'
+      title: 'Data Ingestion',
+      description: 'Securely upload your writings, speaking transcripts, and business logic into the neural network processing pipeline.'
     },
     {
       number: '02',
-      title: 'Add your knowledge',
-      description: 'Upload documents, connect your tools, or let us scrape your website.'
+      title: 'Model Fine-Tuning',
+      description: 'The AI analyzes your syntactic patterns, reasoning frameworks, and tone to generate a highly accurate cognitive replica.'
     },
     {
       number: '03',
-      title: 'Deploy anywhere',
-      description: 'Embed on your site, connect to WhatsApp, or route phone calls to your AI.'
+      title: 'Live Activation',
+      description: 'Your twin is deployed instantly, ready to process requests and output intelligent, context-aware responses.'
     }
   ];
 
   return (
-    <section className="relative py-32 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#050505] to-[#0a0a0a]" />
-
-      <div className="relative max-w-7xl mx-auto px-6">
+    <section className="relative py-32 overflow-hidden bg-slate-50 dark:bg-[#050505]">
+      <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <span className="text-sm font-semibold text-rose-400 tracking-wider uppercase">How It Works</span>
-          <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-white">
-            Create your twin in
-            <br />
-            <span className="gradient-text">under 5 minutes</span>
+          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.2em]">Architecture</span>
+          <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
+            How the engine works
           </h2>
         </motion.div>
 
@@ -543,15 +352,10 @@ const HowItWorks = () => {
               transition={{ delay: i * 0.2 }}
               className="relative"
             >
-              {/* Connector Line */}
-              {i < 2 && (
-                <div className="hidden lg:block absolute top-12 left-full w-full h-px bg-gradient-to-r from-rose-500/50 to-transparent" />
-              )}
-
-              <div className="p-8 rounded-2xl glass border border-slate-700/50">
-                <span className="text-5xl font-bold text-slate-700">{step.number}</span>
-                <h3 className="mt-6 text-2xl font-semibold text-white">{step.title}</h3>
-                <p className="mt-4 text-slate-400 leading-relaxed">{step.description}</p>
+              <div className="p-8 rounded-2xl bg-white dark:bg-white/5 shadow-xl shadow-slate-200/50 dark:shadow-none transition-all duration-300 h-full">
+                <span className="text-5xl font-bold text-indigo-600/10 dark:text-white/10">{step.number}</span>
+                <h3 className="mt-6 text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">{step.title}</h3>
+                <p className="mt-4 text-slate-600 dark:text-slate-400 leading-relaxed font-light">{step.description}</p>
               </div>
             </motion.div>
           ))}
@@ -561,75 +365,119 @@ const HowItWorks = () => {
   );
 };
 
-// The Mission Section
-const TheMission = () => {
+// Premium FAQ Section
+const FAQ = () => {
+  const [openIndex, setOpenIndex] = useState(null);
+
+  const faqs = [
+    {
+      question: "What underlying AI architecture powers the digital twin?",
+      answer: "We utilize highly optimized, fine-tuned Large Language Models combined with a robust Retrieval-Augmented Generation (RAG) system to ensure your twin answers strictly based on your provided knowledge."
+    },
+    {
+      question: "How long is the training process?",
+      answer: "Initial embedding and indexing of your uploaded documents take only a few minutes. Your twin is essentially ready for deployment immediately after data ingestion."
+    },
+    {
+      question: "Can I review what my digital twin says?",
+      answer: "Yes, you have full access to a centralized dashboard where you can monitor all incoming queries and the exact responses generated by your twin in real-time."
+    },
+    {
+      question: "Is it possible to integrate the twin into my custom app?",
+      answer: "Absolutely. We provide a comprehensive REST API that allows you to seamlessly integrate your digital twin into any software ecosystem, web platform, or mobile application."
+    }
+  ];
+
   return (
-    <section className="relative py-32">
-      <div className="max-w-4xl mx-auto px-6 text-center">
+    <section className="relative py-32 bg-slate-50 dark:bg-[#050505]">
+      <div className="max-w-3xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="p-12 rounded-3xl bg-slate-800/30 border border-slate-700/50 relative overflow-hidden"
+          className="text-center mb-16"
         >
-          {/* Background Glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-rose-500/10 blur-[80px]" />
-          
-          <span className="text-sm font-semibold text-rose-400 tracking-wider uppercase">Why we built this</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-bold text-white mb-8">
-            Technology should give you time back,<br />
-            <span className="gradient-text">not demand more of it.</span>
+          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.2em]">Knowledge Base</span>
+          <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Technical FAQs
           </h2>
-          <p className="text-lg text-slate-300 leading-relaxed mb-6">
-            As creators, experts, and founders, we know the pain of repeating the same advice and answering the same questions day in and day out. 
-          </p>
-          <p className="text-lg text-slate-300 leading-relaxed">
-            We built AI Twin not just to automate tasks, but to preserve your energy. Your expertise is valuable. Your time is priceless. Let's protect both.
-          </p>
         </motion.div>
+
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05 }}
+              className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden shadow-sm dark:shadow-none"
+            >
+              <button
+                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+              >
+                <span className="text-slate-900 dark:text-white font-medium">{faq.question}</span>
+                <motion.div
+                  animate={{ rotate: openIndex === index ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronRight className="w-5 h-5 text-slate-500" />
+                </motion.div>
+              </button>
+              <AnimatePresence>
+                {openIndex === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-5 text-slate-600 dark:text-slate-400 font-light leading-relaxed">
+                      {faq.answer}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
 };
 
-// Pricing Section removed as per user request
-
-
-// CTA Section
+// Premium CTA Section
 const CTA = () => {
+  const navigate = useNavigate();
 
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section className="relative py-32 overflow-hidden bg-slate-50 dark:bg-[#050505]">
       <div className="max-w-5xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="relative p-12 md:p-16 rounded-3xl overflow-hidden"
+          className="relative p-12 md:p-20 rounded-3xl bg-white dark:bg-white/5 overflow-hidden shadow-2xl shadow-slate-200/50 dark:shadow-none"
         >
-          {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-rose-600 via-red-600 to-slate-800" />
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-30" />
-
-          {/* Content */}
-          <div className="relative text-center">
+          <div className="relative text-center z-10">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-bold text-white mb-6"
+              className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight mb-6"
             >
-              Ready to scale yourself?
+              Initiate your AI deployment
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-lg text-white/80 max-w-2xl mx-auto mb-10"
+              className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10 font-light"
             >
-              Join elite creators and businesses using AI Digital Twins.
-              Custom architectures tailored to your specific needs.
+              Join the next generation of digital presence. Create an autonomous intelligence that operates exactly as you do.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -639,39 +487,43 @@ const CTA = () => {
               className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
               <motion.button
-                onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Enterprise Inquiry"}
-                className="px-8 py-4 bg-white text-rose-600 rounded-xl font-semibold hover:bg-slate-100 transition-colors"
+                onClick={() => navigate('/register')}
+                className="group relative px-8 py-4 bg-slate-900 text-white dark:bg-white dark:text-black rounded-2xl font-semibold text-sm overflow-hidden"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Contact for Sales
+                <span className="relative z-10 flex items-center gap-2">
+                  Launch Platform
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                />
               </motion.button>
               <motion.button
-                onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Demo Request"}
-                className="px-8 py-4 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-colors backdrop-blur-sm"
+                onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=System Integration Inquiry"}
+                className="px-8 py-4 bg-slate-100 text-slate-900 dark:bg-white/5 dark:text-white rounded-2xl font-semibold text-sm hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Request a Demo
+                Contact Engineering
               </motion.button>
             </motion.div>
-            
-            {/* Direct Contact Info */}
+
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="mt-8 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-white/90 font-medium"
+              className="mt-12 pt-8 flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-slate-500"
             >
-              <div className="flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">✉️</span>
-                <a href="mailto:nexora.aidigital.twin@gmail.com" className="hover:text-white transition-colors">nexora.aidigital.twin@gmail.com</a>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">📞</span>
-                <a href="tel:+919625410112" className="hover:text-white transition-colors">+91 9625410112</a>
-              </div>
+              <a href="mailto:nexora.aidigital.twin@gmail.com" className="hover:text-indigo-600 dark:hover:text-white transition-colors">
+                nexora.aidigital.twin@gmail.com
+              </a>
+              <span className="hidden md:block">•</span>
+              <a href="tel:+919625410112" className="hover:text-indigo-600 dark:hover:text-white transition-colors">
+                +91 9625410112
+              </a>
             </motion.div>
           </div>
         </motion.div>
@@ -680,73 +532,68 @@ const CTA = () => {
   );
 };
 
-// Footer Component
+// Premium Footer Component
 const Footer = () => {
   const navigate = useNavigate();
   const { user, loading, logout } = useAuth();
 
-  const accountLinks = loading 
-    ? [
-        { name: 'Loading...', action: () => {} }
-      ]
-    : user 
+  const accountLinks = loading
+    ? [{ name: 'Loading...', action: () => { } }]
+    : user
       ? [
-          { name: 'Dashboard', action: () => navigate('/dashboard') },
-          { name: 'Settings', action: () => navigate('/settings') },
-          { name: 'Logout', action: () => { logout(); navigate('/'); } }
-        ]
+        { name: 'Dashboard', action: () => navigate('/dashboard') },
+        { name: 'Settings', action: () => navigate('/settings') },
+        { name: 'Logout', action: () => { logout(); navigate('/'); } }
+      ]
       : [
-          { name: 'Sign In', action: () => navigate('/login') },
-          { name: 'Get Started', action: () => navigate('/register') }
-        ];
+        { name: 'Sign In', action: () => navigate('/login') },
+        { name: 'Get Started', action: () => navigate('/register') }
+      ];
 
   const links = {
-    Product: [
-      { name: 'Features', action: () => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }) },
-      { name: 'Pricing', action: () => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }) },
-      { name: 'Voice AI', action: () => {} }
+    Platform: [
+      { name: 'Architecture', action: () => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }) },
+      { name: 'Documentation', action: () => navigate('/guide') },
+      { name: 'Voice Synthesis', action: () => navigate('/voice-agent') }
     ],
-    Company: [
-      { name: 'About', action: () => {} },
+    Organization: [
+      { name: 'Research', action: () => { } },
       { name: 'Contact', action: () => window.location.href = "mailto:nexora.aidigital.twin@gmail.com" },
-      { name: 'Legal', action: () => navigate('/legal') }
+      { name: 'Legal terms', action: () => navigate('/legal') }
     ],
     Account: accountLinks
   };
 
   return (
-    <footer className="pt-24 pb-12 border-t border-slate-800 bg-dark-950 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-rose-600/5 rounded-full blur-[120px]" />
-      
+    <footer className="pt-24 pb-12 bg-slate-50 dark:bg-[#050505] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-12 mb-16">
           {/* Logo Column */}
           <div className="col-span-2">
             <div
               onClick={() => navigate('/')}
-              className="flex items-center gap-2 mb-4 cursor-pointer"
+              className="flex items-center gap-3 mb-6 cursor-pointer"
             >
-              <div className="flex items-center justify-center p-1.5 rounded-xl bg-slate-800/80 border border-slate-700/50 backdrop-blur-md">
-                <LogoIcon className="w-6 h-6" />
+              <div className="flex items-center justify-center p-2 rounded-xl bg-slate-200/50 dark:bg-white/5">
+                <LogoIcon className="w-7 h-7" />
               </div>
-              <span className="text-xl font-bold text-white">AI Twin</span>
+              <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">AI Digital Twin</span>
             </div>
-            <p className="text-sm text-slate-500 max-w-xs">
-              Build AI versions of yourself. Handle conversations, meetings, and tasks—24/7.
+            <p className="text-sm text-slate-600 dark:text-slate-500 max-w-xs font-light leading-relaxed">
+              Deploy your cognitive replica. Intelligent automation powered by advanced neural networks.
             </p>
           </div>
 
           {/* Link Columns */}
           {Object.entries(links).map(([category, items]) => (
             <div key={category}>
-              <h4 className="text-sm font-semibold text-white mb-4">{category}</h4>
-              <ul className="space-y-3">
+              <h4 className="text-xs font-semibold text-slate-900 dark:text-white mb-6 uppercase tracking-wider">{category}</h4>
+              <ul className="space-y-4">
                 {items.map((item) => (
                   <li key={item.name}>
                     <button
                       onClick={item.action}
-                      className="text-sm text-slate-500 hover:text-slate-300 transition-colors text-left"
+                      className="text-sm text-slate-600 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-white transition-colors text-left font-light"
                     >
                       {item.name}
                     </button>
@@ -756,17 +603,17 @@ const Footer = () => {
             </div>
           ))}
 
-          {/* Direct Contact Column */}
+          {/* Contact Column */}
           <div className="col-span-2 md:col-span-1">
-            <h4 className="text-sm font-semibold text-white mb-4">Contact Us</h4>
-            <ul className="space-y-3">
+            <h4 className="text-xs font-semibold text-slate-900 dark:text-white mb-6 uppercase tracking-wider">Network</h4>
+            <ul className="space-y-4">
               <li>
-                <a href="mailto:nexora.aidigital.twin@gmail.com" className="text-sm text-slate-500 hover:text-slate-300 transition-colors break-words">
+                <a href="mailto:nexora.aidigital.twin@gmail.com" className="text-sm text-slate-600 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-white transition-colors break-words font-light">
                   nexora.aidigital.twin@gmail.com
                 </a>
               </li>
               <li>
-                <a href="tel:+919625410112" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
+                <a href="tel:+919625410112" className="text-sm text-slate-600 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-white transition-colors font-light">
                   +91 9625410112
                 </a>
               </li>
@@ -775,24 +622,10 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-slate-600">
-            &copy; 2026 AI Digital Twin. All rights reserved.
+        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-slate-500 font-light">
+            &copy; {new Date().getFullYear()} AI Digital Twin Core. All systems active.
           </p>
-          <div className="flex items-center gap-6">
-            <button className="text-slate-500 hover:text-slate-300 transition-colors">
-              <span className="sr-only">Twitter</span>
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
-            </button>
-            <button className="text-slate-500 hover:text-slate-300 transition-colors">
-              <span className="sr-only">GitHub</span>
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" /></svg>
-            </button>
-            <button className="text-slate-500 hover:text-slate-300 transition-colors">
-              <span className="sr-only">LinkedIn</span>
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clipRule="evenodd" /></svg>
-            </button>
-          </div>
         </div>
       </div>
     </footer>
@@ -802,20 +635,16 @@ const Footer = () => {
 // Main Home Component
 const Home = () => {
   return (
-    <div className="relative min-h-screen bg-dark-950">
-      {/* Noise Overlay */}
-      <div className="noise-overlay" />
-
+    <div className="relative min-h-screen bg-slate-50 dark:bg-[#050505] font-sans selection:bg-indigo-500/30">
       {/* Navigation */}
       <LandingNavbar />
 
       {/* Main Content */}
       <main>
         <Hero />
-        <DashboardPreview />
         <Features />
         <HowItWorks />
-        <TheMission />
+        <FAQ />
         <CTA />
       </main>
 
