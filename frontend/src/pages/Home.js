@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -10,7 +10,8 @@ import {
   Mic,
   Layers,
   Play,
-  Globe
+  Globe,
+  Brain as BrainIcon
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LandingNavbar from '../components/LandingNavbar';

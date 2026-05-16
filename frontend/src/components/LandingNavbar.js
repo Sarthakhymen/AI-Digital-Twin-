@@ -279,15 +279,6 @@ const LandingNavbar = () => {
               </motion.div>
             </motion.div>
 
-            {/* Mobile AI Visualization */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mb-8 flex justify-center"
-            >
-              <AIAssistantVisualization />
-            </motion.div>
 
             <motion.div
               initial={{ opacity: 0 }}
