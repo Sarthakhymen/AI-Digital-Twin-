@@ -17,56 +17,184 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/Navbar';
 
+// --- Interactive Animations Components ---
+const SmartphoneFrame = ({ children, color }) => (
+  <Box sx={{
+    width: '100%',
+    maxWidth: 260,
+    height: 480,
+    margin: '0 auto',
+    bgcolor: '#0f172a',
+    borderRadius: '36px',
+    border: `8px solid #1e293b`,
+    position: 'relative',
+    overflow: 'hidden',
+    boxShadow: `0 0 40px ${color}44`,
+  }}>
+    <Box sx={{
+      position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+      width: '40%', height: 24, bgcolor: '#1e293b',
+      borderBottomLeftRadius: 16, borderBottomRightRadius: 16, zIndex: 10
+    }} />
+    <Box sx={{ p: 3, height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      {children}
+    </Box>
+  </Box>
+);
+
+const Step1Anim = () => (
+  <SmartphoneFrame color="#6366F1">
+    <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
+      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2 }} style={{ width: 60, height: 60, borderRadius: '50%', backgroundColor: '#6366F1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Login sx={{ color: 'white' }} />
+      </motion.div>
+      <Typography variant="body2" sx={{ color: 'white', fontWeight: 'bold' }}>Welcome Back</Typography>
+      <Box sx={{ width: '100%', mt: 2 }}>
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} style={{ height: 36, background: '#334155', borderRadius: 8, marginBottom: 12 }} />
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }} style={{ height: 36, background: '#334155', borderRadius: 8, marginBottom: 20 }} />
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.9 }} style={{ height: 40, background: '#6366F1', borderRadius: 20 }} />
+      </Box>
+    </Box>
+  </SmartphoneFrame>
+);
+
+const Step2Anim = () => (
+  <SmartphoneFrame color="#8B5CF6">
+    <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Typography variant="caption" sx={{ color: '#94A3B8' }}>Dashboard</Typography>
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <motion.div initial={{ height: 0 }} animate={{ height: 60 }} style={{ flex: 1, background: '#8B5CF6', borderRadius: 8 }} />
+        <motion.div initial={{ height: 0 }} animate={{ height: 40 }} transition={{ delay: 0.2 }} style={{ flex: 1, background: '#334155', borderRadius: 8 }} />
+        <motion.div initial={{ height: 0 }} animate={{ height: 80 }} transition={{ delay: 0.3 }} style={{ flex: 1, background: '#334155', borderRadius: 8 }} />
+      </Box>
+      <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }} style={{ height: 70, background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }} />
+      <motion.div initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.6 }} style={{ height: 70, background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }} />
+    </Box>
+  </SmartphoneFrame>
+);
+
+const Step3Anim = () => (
+  <SmartphoneFrame color="#EC4899">
+    <Box sx={{ mt: 6, display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
+      <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2 }} style={{ height: 90, background: '#1e293b', borderRadius: 16, border: '2px dashed #EC4899', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <BusinessCenter sx={{ color: '#EC4899', fontSize: 36 }} />
+      </motion.div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ height: 16, width: '60%', background: '#334155', borderRadius: 4, margin: '0 auto' }} />
+      <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1 }} style={{ marginTop: 'auto', height: 40, background: '#EC4899', borderRadius: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontWeight: 'bold', fontSize: 12 }}>+ ADD BUSINESS</motion.div>
+    </Box>
+  </SmartphoneFrame>
+);
+
+const Step4Anim = () => (
+  <SmartphoneFrame color="#F59E0B">
+    <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center' }}>
+      <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 8, ease: "linear" }} style={{ background: '#334155', p: 2, borderRadius: '50%', width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <SmartToy sx={{ color: '#F59E0B', fontSize: 50 }} />
+      </motion.div>
+      <Typography variant="body2" sx={{ color: 'white', fontWeight: 'bold' }}>Generating Twin...</Typography>
+      <Box sx={{ width: '100%', height: 6, background: '#334155', borderRadius: 3, overflow: 'hidden' }}>
+        <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 2, repeat: Infinity }} style={{ height: '100%', background: '#F59E0B' }} />
+      </Box>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }} style={{ width: '100%', height: 40, background: '#1e293b', borderRadius: 8, border: '1px solid #334155' }} />
+    </Box>
+  </SmartphoneFrame>
+);
+
+const Step5Anim = () => (
+  <SmartphoneFrame color="#10B981">
+    <Box sx={{ mt: 6, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+          <Bolt sx={{ color: '#10B981', fontSize: 60 }} />
+        </motion.div>
+      </Box>
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }} style={{ padding: 12, background: '#1e293b', borderRadius: 12 }}>
+         <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+            <Box style={{ width: 24, height: 24, background: '#10B981', borderRadius: 4 }} />
+            <Box style={{ height: 24, flex: 1, background: '#334155', borderRadius: 4 }} />
+         </Box>
+         <Box style={{ height: 8, width: '100%', background: '#334155', borderRadius: 2 }} />
+      </motion.div>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} style={{ marginTop: 8 }}>
+         <Box style={{ height: 40, width: '100%', background: '#10B981', borderRadius: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#020617', fontSize: 12, fontWeight: 'bold' }}>TRAINING COMPLETE</Box>
+      </motion.div>
+    </Box>
+  </SmartphoneFrame>
+);
+
+const Step6Anim = () => (
+  <SmartphoneFrame color="#3B82F6">
+    <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: 16, background: '#1e293b', borderRadius: 8, border: '1px solid #334155' }}>
+        <Typography variant="caption" sx={{ color: '#3B82F6', fontFamily: 'monospace', wordBreak: 'break-all' }}>&lt;script src="twin.js"&gt;&lt;/script&gt;</Typography>
+      </motion.div>
+      <motion.div 
+        animate={{ scale: [1, 0.95, 1], backgroundColor: ['#3B82F6', '#2563EB', '#3B82F6'] }} 
+        transition={{ repeat: Infinity, duration: 2 }}
+        style={{ height: 40, borderRadius: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontWeight: 'bold', fontSize: 12, cursor: 'pointer' }}
+      >
+        COPY SCRIPT
+      </motion.div>
+      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+        <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ repeat: Infinity, duration: 3 }}>
+          <Code sx={{ color: '#3B82F6', fontSize: 50, opacity: 0.5 }} />
+        </motion.div>
+      </Box>
+    </Box>
+  </SmartphoneFrame>
+);
+
+
 const steps = [
   {
     title: 'Login & Signup',
     description: 'Sabse pehle apna account create karein ya login karein. Aap Google account se bhi turant sign-in kar sakte hain.',
-    image: '/assets/guide/step1.png',
+    animation: <Step1Anim />,
     icon: <Login />,
     color: '#6366F1'
   },
   {
     title: 'Dashboard Access',
     description: 'Login ke baad aap seedhe Dashboard pe aayenge, jo aapka control center hai.',
-    image: '/assets/guide/step2.png',
+    animation: <Step2Anim />,
     icon: <DashboardIcon />,
     color: '#8B5CF6'
   },
   {
     title: 'Add Your Business',
     description: 'Business section mein jayein aur "+ ADD BUSINESS" button pe click karke apne business ki details fill karein.',
-    image: '/assets/guide/step3.png',
+    animation: <Step3Anim />,
     icon: <BusinessCenter />,
     color: '#EC4899'
   },
   {
     title: 'Create Digital Twin',
     description: 'Dashboard pe aakar "CREATE TWIN" button dabayein, apna business select karein aur required details bharein.',
-    image: '/assets/guide/step4.png',
+    animation: <Step4Anim />,
     icon: <SmartToy />,
     color: '#F59E0B'
   },
   {
     title: 'Activate & Train AI',
     description: 'Apne naye Digital Twin pe click karein, use "Activate" karein, aur page ke bottom mein training files (PDF/Docs) upload karein.',
-    image: '/assets/guide/step5.png',
+    animation: <Step5Anim />,
     icon: <Bolt />,
     color: '#10B981'
   },
   {
     title: 'Copy & Paste Script',
     description: 'Ab apna unique script tag copy karein aur apni website ki HTML file mein <body> tag ke andar paste kar dein.',
-    image: '/assets/guide/step6.png',
+    animation: <Step6Anim />,
     icon: <Code />,
     color: '#3B82F6'
   }
 ];
 
-const BillboardStep = ({ step, index, active }) => (
+const BillboardStep = ({ step, index }) => (
   <motion.div
-    initial={{ opacity: 0, x: 100 }}
+    initial={{ opacity: 0, x: 50 }}
     animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: -100 }}
+    exit={{ opacity: 0, x: -50 }}
     transition={{ duration: 0.5, ease: "easeOut" }}
     style={{ width: '100%' }}
   >
@@ -88,7 +216,7 @@ const BillboardStep = ({ step, index, active }) => (
       }} />
 
       <Grid container spacing={4} alignItems="center">
-        <Grid item xs={12} md={step.image ? 7 : 12}>
+        <Grid item xs={12} md={7}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
             <Box sx={{ 
               p: 1.5, borderRadius: '12px', bgcolor: `${step.color}22`, color: step.color,
@@ -117,26 +245,16 @@ const BillboardStep = ({ step, index, active }) => (
           </Box>
         </Grid>
         
-        {step.image && (
-          <Grid item xs={12} md={5}>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Box sx={{ 
-                p: 1, bgcolor: 'white', borderRadius: '16px', 
-                boxShadow: `0 10px 30px ${step.color}33`,
-                border: `4px solid ${step.color}`
-              }}>
-                <img 
-                  src={step.image} 
-                  alt={step.title} 
-                  style={{ width: '100%', borderRadius: '8px', display: 'block' }} 
-                />
-              </Box>
-            </motion.div>
-          </Grid>
-        )}
+        {/* Dynamic Animation Widget instead of Image */}
+        <Grid item xs={12} md={5}>
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            {step.animation}
+          </motion.div>
+        </Grid>
       </Grid>
     </Box>
   </motion.div>
@@ -188,22 +306,26 @@ const Guide = () => {
         </Box>
 
         {/* LED Progress Bar */}
-        <Box sx={{ mb: 6, display: 'flex', gap: 1, justifyContent: 'center' }}>
+        <Box sx={{ mb: 6, display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
           {steps.map((_, idx) => (
             <Box 
               key={idx}
+              onClick={() => setCurrentStep(idx)}
               sx={{ 
-                width: 40, height: 8, borderRadius: 4, 
-                bgcolor: idx <= currentStep ? steps[currentStep].color : 'rgba(255,255,255,0.1)',
-                boxShadow: idx <= currentStep ? `0 0 10px ${steps[currentStep].color}` : 'none',
-                transition: 'all 0.4s ease'
+                width: 40, height: 8, borderRadius: 4, cursor: 'pointer',
+                bgcolor: idx <= currentStep ? steps[idx].color : 'rgba(255,255,255,0.1)',
+                boxShadow: idx === currentStep ? `0 0 15px ${steps[idx].color}` : 'none',
+                transition: 'all 0.4s ease',
+                '&:hover': {
+                  filter: 'brightness(1.2)'
+                }
               }}
             />
           ))}
         </Box>
 
         {/* Billboard Container */}
-        <Box sx={{ minHeight: 450, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ minHeight: 550, display: 'flex', alignItems: 'center' }}>
           <AnimatePresence mode="wait">
             <BillboardStep 
               key={currentStep} 
