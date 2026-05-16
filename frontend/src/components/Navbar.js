@@ -176,23 +176,7 @@ const Navbar = () => {
                   transition={{ duration: 2, repeat: Infinity }}
                 />
               </motion.div>
-              <motion.div
-                className="flex flex-col"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <span className="text-xl font-bold bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
-                  AI Digital Twin
-                </span>
-                <motion.span
-                  className="text-[10px] text-indigo-400 font-medium tracking-wider"
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  POWERED BY AI
-                </motion.span>
-              </motion.div>
+
             </motion.div>
 
             {/* Desktop Navigation - Center with billboard style */}
@@ -249,12 +233,11 @@ const Navbar = () => {
               </div>
             </motion.div>
 
-            {/* Right section - AI Visualization + Logout */}
+            {/* Right section - Logout */}
             <motion.div
               variants={itemVariants}
               className="flex-1 hidden lg:flex items-center justify-end gap-4"
             >
-              <AIAssistantVisualization />
 
               {loading ? (
                 <motion.div
@@ -321,15 +304,7 @@ const Navbar = () => {
               </motion.div>
             </motion.div>
 
-            {/* Mobile AI Visualization */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mb-8 flex justify-center"
-            >
-              <AIAssistantVisualization />
-            </motion.div>
+
 
             <motion.div
               initial={{ opacity: 0 }}

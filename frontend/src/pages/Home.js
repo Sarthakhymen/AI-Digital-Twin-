@@ -72,118 +72,248 @@ const PremiumBackground = () => {
   );
 };
 
+// Multi-business conversation cycles
+const BUSINESS_CONVOS = [
+  {
+    business: '🍽️ Desi Dhaba',
+    color: '#F97316',
+    userMsg: "What's today's special thali?",
+    botReply: "Today's special is Dal Makhani Thali — ₹149. Includes roti, rice, salad & dessert! 😋",
+  },
+  {
+    business: '🛍️ Style Studio',
+    color: '#8B5CF6',
+    userMsg: 'Do you have kurtis in size M?',
+    botReply: "Yes! We have 12 kurtis in size M, starting ₹599. Want me to show the latest collection?",
+  },
+  {
+    business: '🏥 CarePoint Clinic',
+    color: '#10B981',
+    userMsg: 'Can I book an appointment for tomorrow?',
+    botReply: "Sure! Dr. Mehta is available at 10 AM & 4 PM tomorrow. Which slot works for you?",
+  },
+  {
+    business: '🚗 AutoFix Garage',
+    color: '#3B82F6',
+    userMsg: 'How much does a full service cost?',
+    botReply: "Full car service starts at ₹2,499. Includes oil change, filter, and 20-point check. Book now?",
+  },
+];
+
+const GREETING = { role: 'bot', content: "Hi! 👋 How can I help you today? Welcome to our AI assistant!" };
+
 const HeroSmartphoneVisualization = () => {
+  const [phase, setPhase] = useState('greeting'); // greeting | userMsg | typing | botReply | pause
+  const [convoIndex, setConvoIndex] = useState(0);
   const [messages, setMessages] = useState([]);
-  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     let mounted = true;
-    const runAnimation = async () => {
+
+    const run = async () => {
+      // Step 0: show greeting
+      if (!mounted) return;
+      setMessages([GREETING]);
+      setPhase('greeting');
+      await new Promise(r => setTimeout(r, 2200));
+
+      let idx = 0;
       while (mounted) {
-        setMessages([]);
-        setIsTyping(false);
-        await new Promise(r => setTimeout(r, 1000));
+        const convo = BUSINESS_CONVOS[idx % BUSINESS_CONVOS.length];
+
+        // Step 1: user message appears
         if (!mounted) break;
-        
-        setMessages([{ role: 'user', content: "What's the pricing of the butter naan?" }]);
-        setIsTyping(true);
-        
-        await new Promise(r => setTimeout(r, 1500));
+        setMessages([GREETING, { role: 'user', content: convo.userMsg }]);
+        setPhase('userMsg');
+        await new Promise(r => setTimeout(r, 1200));
+
+        // Step 2: typing indicator
         if (!mounted) break;
-        
-        setIsTyping(false);
+        setPhase('typing');
+        await new Promise(r => setTimeout(r, 1600));
+
+        // Step 3: bot reply appears
+        if (!mounted) break;
         setMessages([
-          { role: 'user', content: "What's the pricing of the butter naan?" },
-          { role: 'assistant', content: "Butter naan is ₹45. Would you like to order?" }
+          GREETING,
+          { role: 'user', content: convo.userMsg },
+          { role: 'bot', content: convo.botReply },
         ]);
-        
-        await new Promise(r => setTimeout(r, 4000));
+        setPhase('botReply');
+        await new Promise(r => setTimeout(r, 3200));
+
+        // Step 4: reset for next business
+        if (!mounted) break;
+        setMessages([]);
+        setPhase('pause');
+        await new Promise(r => setTimeout(r, 800));
+
+        idx++;
+        setConvoIndex(idx % BUSINESS_CONVOS.length);
+        // New greeting for next cycle
+        if (!mounted) break;
+        setMessages([GREETING]);
+        setPhase('greeting');
+        await new Promise(r => setTimeout(r, 1600));
       }
     };
-    runAnimation();
+
+    run();
     return () => { mounted = false; };
   }, []);
 
+  const currentConvo = BUSINESS_CONVOS[convoIndex];
+  const accentColor = currentConvo.color;
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, delay: 0.2 }}
-      className="relative w-[300px] h-[600px] mx-auto hidden lg:block"
-    >
-      {/* Smartphone Frame */}
-      <div className="absolute inset-0 bg-slate-900 dark:bg-black rounded-[3rem] border-[8px] border-slate-800 dark:border-slate-800 shadow-2xl overflow-hidden ring-1 ring-white/10">
-        {/* Top Notch */}
-        <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-20">
-          <div className="w-32 h-6 bg-slate-800 dark:bg-slate-800 rounded-b-2xl flex items-center justify-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-black/50"></div>
-            <div className="w-2 h-2 rounded-full bg-indigo-900/80"></div>
+    <div className="relative flex items-center justify-end lg:justify-center w-full hidden lg:flex">
+      {/* === Spiral Arrow + Label === */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 1.4 }}
+        className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-start gap-2 pointer-events-none"
+        style={{ transform: 'translateY(-60%)' }}
+      >
+        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl px-4 py-3 max-w-[170px]">
+          <p className="text-xs font-semibold text-slate-300 leading-relaxed">
+            ✦ Your AI clone will talk to your customers — exactly like this
+          </p>
+        </div>
+        {/* Spiral SVG arrow pointing right toward phone */}
+        <svg width="100" height="60" viewBox="0 0 100 60" fill="none" className="ml-6 opacity-60">
+          <path
+            d="M10 10 C10 10, 30 0, 50 15 C70 30, 80 10, 90 30"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            fill="none"
+            strokeDasharray="4 3"
+          />
+          {/* Arrowhead */}
+          <path d="M85 24 L90 30 L83 33" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        </svg>
+      </motion.div>
+
+      {/* === Phone === */}
+      <motion.div
+        initial={{ opacity: 0, y: 40, scale: 0.92 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className="relative w-[290px] h-[580px]"
+      >
+        {/* Glow behind phone */}
+        <motion.div
+          className="absolute inset-0 rounded-[3rem] blur-3xl -z-10"
+          style={{ background: accentColor }}
+          animate={{ opacity: [0.12, 0.22, 0.12] }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
+
+        {/* Phone body */}
+        <div className="absolute inset-0 bg-[#111] rounded-[3rem] border-[7px] border-[#2a2a2a] shadow-2xl overflow-hidden ring-1 ring-white/5">
+          {/* Notch */}
+          <div className="absolute top-0 inset-x-0 h-7 flex justify-center z-20">
+            <div className="w-28 h-7 bg-[#1a1a1a] rounded-b-2xl flex items-center justify-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#111]" />
+              <div className="w-2 h-2 rounded-full bg-indigo-900/80" />
+            </div>
+          </div>
+
+          {/* Screen */}
+          <div className="absolute inset-0 bg-[#0d0d0d] pt-10 pb-5 px-3 flex flex-col">
+            {/* Chat Header */}
+            <div className="flex items-center gap-3 px-2 py-3 border-b border-white/5">
+              <motion.div
+                className="w-9 h-9 rounded-full flex items-center justify-center text-lg flex-shrink-0"
+                style={{ background: `${accentColor}22`, border: `1.5px solid ${accentColor}55` }}
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                {currentConvo.business.split(' ')[0]}
+              </motion.div>
+              <div>
+                <p className="text-[11px] font-semibold text-white leading-none">{currentConvo.business.split(' ').slice(1).join(' ')}</p>
+                <p className="text-[9px] mt-0.5 font-medium" style={{ color: '#10B981' }}>● Online</p>
+              </div>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-hidden flex flex-col gap-2 justify-end py-3 px-1">
+              <AnimatePresence mode="popLayout">
+                {messages.map((msg, idx) => (
+                  <motion.div
+                    key={`${convoIndex}-${idx}`}
+                    initial={{ opacity: 0, y: 10, scale: 0.94 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.92, y: -5 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                    className={`max-w-[86%] text-[11px] font-medium leading-relaxed px-3 py-2 rounded-2xl ${
+                      msg.role === 'user'
+                        ? 'self-end text-white rounded-br-sm shadow'
+                        : 'self-start text-slate-200 bg-white/5 border border-white/8 rounded-bl-sm'
+                    }`}
+                    style={msg.role === 'user' ? { background: accentColor } : {}}
+                  >
+                    {msg.content}
+                  </motion.div>
+                ))}
+
+                {/* Typing dots */}
+                {phase === 'typing' && (
+                  <motion.div
+                    key="typing"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="self-start bg-white/5 border border-white/8 rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1.5 items-center"
+                  >
+                    {[0, 0.2, 0.4].map((delay, i) => (
+                      <motion.div
+                        key={i}
+                        className="w-1.5 h-1.5 rounded-full"
+                        style={{ background: accentColor }}
+                        animate={{ y: [0, -4, 0], opacity: [0.5, 1, 0.5] }}
+                        transition={{ repeat: Infinity, duration: 0.7, delay }}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Input bar */}
+            <div className="border-t border-white/5 pt-3 flex items-center gap-2 px-1">
+              <div className="flex-1 h-9 bg-white/4 rounded-full border border-white/8 flex items-center px-3">
+                <span className="text-[10px] text-slate-500">Type a message...</span>
+              </div>
+              <motion.div
+                className="w-9 h-9 rounded-full flex items-center justify-center text-white shadow flex-shrink-0"
+                style={{ background: accentColor }}
+                animate={{ scale: [1, 1.08, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 ml-0.5">
+                  <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+              </motion.div>
+            </div>
           </div>
         </div>
 
-        {/* Screen Content */}
-        <div className="absolute inset-0 bg-slate-50 dark:bg-[#0a0a0a] pt-12 pb-6 px-4 flex flex-col">
-          {/* Header */}
-          <div className="flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-white/10">
-            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
-              <BrainIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">AI Assistant</h3>
-              <p className="text-[10px] text-emerald-500 font-medium">Online</p>
-            </div>
-          </div>
-
-          {/* Chat Area */}
-          <div className="flex-1 overflow-hidden pt-4 flex flex-col gap-3 justify-end">
-            <AnimatePresence mode="popLayout">
-              {messages.map((msg, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className={`max-w-[85%] text-[13px] font-medium leading-relaxed px-4 py-2.5 rounded-2xl ${
-                    msg.role === 'user'
-                      ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white self-end rounded-br-sm shadow-sm'
-                      : 'bg-white dark:bg-white/5 text-slate-800 dark:text-slate-200 self-start rounded-bl-sm border border-slate-100 dark:border-white/10 shadow-sm'
-                  }`}
-                >
-                  {msg.content}
-                </motion.div>
-              ))}
-              {isTyping && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 text-slate-800 dark:text-slate-200 self-start rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1.5 items-center shadow-sm"
-                >
-                  <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-2 h-2 bg-indigo-400 rounded-full" />
-                  <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-2 h-2 bg-indigo-400 rounded-full" />
-                  <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-2 h-2 bg-indigo-400 rounded-full" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Input Area */}
-          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/10 flex items-center gap-2">
-            <div className="flex-1 h-10 bg-slate-100 dark:bg-white/5 rounded-full border border-slate-200 dark:border-white/10 flex items-center px-4">
-              <span className="text-xs text-slate-400">Type a message...</span>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white shadow-sm">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 ml-1">
-                <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Decorative Glow behind phone */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 blur-2xl -z-10 rounded-[3rem]" />
-    </motion.div>
+        {/* Business name pill floating at top */}
+        <motion.div
+          key={convoIndex}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ background: accentColor }}
+        >
+          {currentConvo.business}
+        </motion.div>
+      </motion.div>
+    </div>
   );
 };
 
