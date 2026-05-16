@@ -142,7 +142,7 @@ const Hero = () => {
           <motion.div variants={fadeInUp}>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-200/50 dark:bg-white/5 backdrop-blur-sm mb-8">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-medium text-slate-800 dark:text-slate-300 tracking-wide">Next-Gen AI Technology</span>
+              <span className="text-xs font-medium text-slate-800 dark:text-slate-300 tracking-wide">Your clone is ready</span>
               <ChevronRight className="w-4 h-4 text-slate-500" />
             </div>
           </motion.div>

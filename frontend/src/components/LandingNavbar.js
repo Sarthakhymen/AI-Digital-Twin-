@@ -5,71 +5,81 @@ import { Menu, X, Sparkles, Zap, MessageSquare, Brain, ArrowRight } from 'lucide
 import { useAuth } from '../contexts/AuthContext';
 import LogoIcon from './LogoIcon';
 
-// AI Assistant Visualization Component
 const AIAssistantVisualization = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const steps = [
-    { icon: MessageSquare, label: 'User Request', color: 'from-blue-400 to-cyan-400' },
-    { icon: Brain, label: 'AI Processing', color: 'from-purple-400 to-pink-400' },
-    { icon: Zap, label: 'Instant Answer', color: 'from-green-400 to-emerald-400' }
-  ];
+  const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentStep((prev) => (prev + 1) % steps.length);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [steps.length]);
+    let mounted = true;
+    const runAnimation = async () => {
+      while (mounted) {
+        setMessages([]);
+        setIsTyping(false);
+        await new Promise(r => setTimeout(r, 1000));
+        if (!mounted) break;
+        
+        setMessages([{ role: 'user', content: "What's the pricing of butter naan?" }]);
+        setIsTyping(true);
+        
+        await new Promise(r => setTimeout(r, 1500));
+        if (!mounted) break;
+        
+        setIsTyping(false);
+        setMessages([
+          { role: 'user', content: "What's the pricing of butter naan?" },
+          { role: 'assistant', content: "Butter naan is ₹45." }
+        ]);
+        
+        await new Promise(r => setTimeout(r, 4000));
+      }
+    };
+    runAnimation();
+    return () => { mounted = false; };
+  }, []);
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay: 0.3 }}
-      className="hidden lg:flex items-center gap-3 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/10 rounded-2xl px-5 py-3"
+      className="hidden xl:flex items-center justify-center bg-slate-900 dark:bg-white/10 backdrop-blur-xl border-[4px] border-slate-800 dark:border-white/20 rounded-[2rem] p-1 shadow-2xl relative w-72 h-[4.5rem] overflow-hidden mr-4"
     >
-      {steps.map((step, index) => (
-        <React.Fragment key={step.label}>
-          <motion.div
-            animate={{
-              scale: currentStep === index ? [1, 1.1, 1] : 1,
-              opacity: currentStep === index ? 1 : 0.5
-            }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center gap-2"
-          >
+      {/* Smartphone Notch Simulation (Landscape mode) */}
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-10 bg-slate-800 dark:bg-white/20 rounded-r-2xl z-10 flex items-center justify-center">
+        <div className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-black/50"></div>
+      </div>
+      
+      <div className="w-full h-full bg-slate-50 dark:bg-[#0a0a0a] rounded-[1.5rem] overflow-hidden flex flex-col p-2 gap-1.5 relative justify-center pl-6">
+        <AnimatePresence mode="popLayout">
+          {messages.map((msg, idx) => (
             <motion.div
-              animate={{
-                boxShadow: currentStep === index
-                  ? '0 0 20px rgba(99, 102, 241, 0.5)'
-                  : '0 0 0px rgba(99, 102, 241, 0)'
-              }}
-              className={`relative p-2 rounded-xl bg-gradient-to-br ${step.color}`}
+              key={idx}
+              initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className={`max-w-[85%] text-[11px] font-medium leading-tight px-3 py-1.5 rounded-2xl ${
+                msg.role === 'user'
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white self-end rounded-br-sm shadow-sm'
+                  : 'bg-white dark:bg-white/10 text-slate-800 dark:text-slate-200 self-start rounded-bl-sm border border-slate-100 dark:border-white/5 shadow-sm'
+              }`}
             >
-              <step.icon className="w-4 h-4 text-white" />
-              {currentStep === index && (
-                <motion.div
-                  className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent"
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                />
-              )}
+              {msg.content}
             </motion.div>
-            <span className="text-xs font-medium text-white/90">{step.label}</span>
-          </motion.div>
-          {index < steps.length - 1 && (
+          ))}
+          {isTyping && (
             <motion.div
-              animate={{
-                x: currentStep === index ? [0, 5, 0] : 0,
-                opacity: currentStep === index ? 1 : 0.3
-              }}
-              transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, x: -20, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white dark:bg-white/10 border border-slate-100 dark:border-white/5 text-slate-800 dark:text-slate-200 self-start rounded-2xl rounded-bl-sm px-3 py-1.5 flex gap-1 items-center h-[28px] shadow-sm"
             >
-              <ArrowRight className="w-4 h-4 text-white/40" />
+              <motion.div animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-1.5 h-1.5 bg-indigo-400 rounded-full" />
+              <motion.div animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-1.5 h-1.5 bg-indigo-400 rounded-full" />
+              <motion.div animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-1.5 h-1.5 bg-indigo-400 rounded-full" />
             </motion.div>
           )}
-        </React.Fragment>
-      ))}
+        </AnimatePresence>
+      </div>
     </motion.div>
   );
 };
@@ -189,23 +199,6 @@ const LandingNavbar = () => {
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
-              </motion.div>
-              <motion.div
-                className="flex flex-col"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <span className="text-xl font-bold bg-gradient-to-r from-slate-900 via-slate-900 to-slate-600 dark:from-white dark:via-white dark:to-white/70 bg-clip-text text-transparent">
-                  AI Digital Twin
-                </span>
-                <motion.span
-                  className="text-[10px] text-indigo-400 font-medium tracking-wider"
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  POWERED BY AI
-                </motion.span>
               </motion.div>
             </motion.div>
 
