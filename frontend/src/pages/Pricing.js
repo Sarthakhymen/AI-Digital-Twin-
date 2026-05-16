@@ -1,62 +1,83 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, Star, Zap, Shield, Rocket, Clock } from 'lucide-react';
+import { Check, Star, Zap, Shield, Rocket, Clock, Loader2, ExternalLink } from 'lucide-react';
 import LandingNavbar from '../components/LandingNavbar';
-import PaymentModal from '../components/PaymentModal';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Pricing = () => {
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState(null);
   const [trialLoading, setTrialLoading] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(null); // plan key being loaded
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // ── Free Trial ───────────────────────────────────────────
   const handleTrial = async () => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-    
+    if (!user) { navigate('/login'); return; }
     setTrialLoading(true);
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/payments/trial`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.data.message.includes('successfully')) {
-        alert("Trial activated! You have 7 days of free access with 50 AI messages.");
-        navigate('/dashboard');
-      }
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/payments/trial`,
+        {},
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
+      alert('Trial activated! You have 7 days of free access with 50 AI messages.');
+      navigate('/dashboard');
     } catch (err) {
-      alert(err.response?.data?.detail || "Failed to start trial");
+      alert(err.response?.data?.detail || 'Failed to start trial');
     } finally {
       setTrialLoading(false);
     }
   };
 
+  // ── Dodo Payments checkout ────────────────────────────────
+  const handleDodoCheckout = async (planKey) => {
+    if (!user) { navigate('/login'); return; }
+    setCheckoutLoading(planKey);
+    try {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_API_URL}/payments/create-checkout`,
+        { plan_type: planKey, billing_cycle: 'monthly' },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url; // redirect to Dodo checkout
+      } else {
+        alert('Could not create checkout session. Please try again.');
+      }
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Failed to initiate payment. Please try again.');
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
+
   const plans = [
     {
+      key: 'free',
       name: 'Free Trial',
       price: '₹0',
       period: 'for 7 days',
-      description: 'Test the waters and see the magic of AI Twins.',
+      description: 'Test the magic of AI Twins with zero commitment.',
       features: [
         '50 AI Interactions limit',
         'Website Integration (Embed)',
         'Knowledge Base (1 Document)',
         'Sub-100ms response time',
-        'No credit card required'
+        'No credit card required',
       ],
-      cta: 'Start 7-Day Trial',
-      action: handleTrial,
+      cta: trialLoading ? 'Activating...' : 'Start 7-Day Trial',
+      onAction: handleTrial,
       icon: Clock,
-      color: 'blue'
+      color: 'blue',
+      loading: trialLoading,
+      disabled: trialLoading,
     },
     {
+      key: 'starter',
       name: 'Standard',
-      price: '₹1299',
+      price: '₹1,299',
       period: 'per month',
       description: 'Essential AI features for growing businesses.',
       features: [
@@ -64,24 +85,20 @@ const Pricing = () => {
         'Web Chat Widget Integration',
         'Basic Analytics Dashboard',
         'Knowledge Base (10 Documents)',
-        'Up to 3 AI Twins'
+        'Up to 3 AI Twins',
       ],
-      cta: 'Get Standard',
-      action: () => {
-        if (!user) {
-          navigate('/login');
-          return;
-        }
-        setSelectedPlan({ name: 'Standard', price: '₹1299' });
-        setIsPaymentOpen(true);
-      },
+      cta: checkoutLoading === 'starter' ? 'Redirecting...' : 'Get Standard',
+      onAction: () => handleDodoCheckout('starter'),
       icon: Zap,
-      color: 'amber'
+      color: 'amber',
+      loading: checkoutLoading === 'starter',
+      disabled: checkoutLoading === 'starter',
+      badge: null,
     },
     {
+      key: 'pro',
       name: 'Business Pro',
-      upcoming: true,
-      price: '₹2999',
+      price: '₹2,999',
       period: 'per month',
       description: 'Unleash the full potential of your AI Twin.',
       features: [
@@ -90,26 +107,27 @@ const Pricing = () => {
         'Advanced Analytics Dashboard',
         'Priority Support via WhatsApp',
         'Knowledge Base (50 Documents)',
-        'Up to 10 AI Twins'
+        'Up to 10 AI Twins',
       ],
       cta: 'Coming Soon',
-      action: () => {
-        alert("Business Pro is launching soon! Stay tuned.");
-      },
+      onAction: () => {},
       icon: Star,
+      color: 'rose',
       popular: true,
-      color: 'rose'
-    }
+      upcoming: true,
+      disabled: true,
+    },
   ];
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-200 selection:bg-rose-500/30">
       <LandingNavbar />
-      
+
       {/* Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-rose-500/10 blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30%] h-[30%] rounded-full bg-amber-500/5 blur-[100px]" />
       </div>
 
       <main className="relative pt-32 pb-24 px-6">
@@ -119,48 +137,60 @@ const Pricing = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-sm font-bold text-rose-500 tracking-[0.2em] uppercase mb-4">Pricing Plans</h2>
+            <h2 className="text-sm font-bold text-rose-500 tracking-[0.2em] uppercase mb-4">
+              Pricing Plans
+            </h2>
             <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tight text-white">
-              Invest in your <span className="bg-gradient-to-r from-rose-400 to-red-600 bg-clip-text text-transparent">Digital Future.</span>
+              Invest in your{' '}
+              <span className="bg-gradient-to-r from-rose-400 to-red-600 bg-clip-text text-transparent">
+                Digital Future.
+              </span>
             </h1>
             <p className="text-slate-400 text-lg md:text-xl max-w-3xl mx-auto mb-16 leading-relaxed">
-              Whether you're just starting or scaling to thousands of customers, we have a plan that fits your growth trajectory.
+              Whether you're just starting or scaling to thousands of customers, we have a plan that fits your growth.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto items-stretch">
             {plans.map((plan, index) => (
               <motion.div
-                key={plan.name}
+                key={plan.key}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`relative p-8 md:p-12 rounded-[2.5rem] border transition-all duration-500 group flex flex-col ${
-                  plan.popular 
-                    ? 'bg-slate-900/80 border-rose-500/50 shadow-2xl shadow-rose-500/10' 
+                className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 flex flex-col ${
+                  plan.popular
+                    ? 'bg-slate-900/80 border-rose-500/40 shadow-2xl shadow-rose-500/10'
                     : 'bg-slate-900/40 border-slate-800 hover:border-slate-700'
                 }`}
               >
+                {/* Popular Badge */}
                 {plan.popular && (
-                  <div className="absolute top-0 right-10 -translate-y-1/2">
+                  <div className="absolute top-0 right-8 -translate-y-1/2">
                     <span className="bg-gradient-to-r from-rose-500 to-red-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg shadow-rose-500/20">
                       Most Popular
                     </span>
                   </div>
                 )}
 
-                <div className="mb-8 text-left">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${
-                    plan.color === 'rose' ? 'bg-rose-500/10' : plan.color === 'amber' ? 'bg-amber-500/10' : 'bg-blue-500/10'
+                {/* Plan Header */}
+                <div className="mb-6 text-left">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 ${
+                    plan.color === 'rose' ? 'bg-rose-500/10'
+                    : plan.color === 'amber' ? 'bg-amber-500/10'
+                    : 'bg-blue-500/10'
                   }`}>
-                    <plan.icon className={`w-7 h-7 ${
-                      plan.color === 'rose' ? 'text-rose-500' : plan.color === 'amber' ? 'text-amber-500' : 'text-blue-500'
+                    <plan.icon className={`w-6 h-6 ${
+                      plan.color === 'rose' ? 'text-rose-500'
+                      : plan.color === 'amber' ? 'text-amber-500'
+                      : 'text-blue-500'
                     }`} />
                   </div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-3xl font-bold text-white">{plan.name}</h3>
+
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
                     {plan.upcoming && (
-                      <span className="bg-rose-500/20 text-rose-400 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-rose-500/30">
+                      <span className="bg-rose-500/20 text-rose-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border border-rose-500/30">
                         Upcoming
                       </span>
                     )}
@@ -168,77 +198,107 @@ const Pricing = () => {
                   <p className="text-slate-400 text-sm leading-relaxed">{plan.description}</p>
                 </div>
 
-                <div className="mb-10 text-left">
+                {/* Price */}
+                <div className="mb-8 text-left">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-6xl font-black text-white">{plan.price}</span>
-                    <span className="text-slate-500 font-medium">{plan.period}</span>
+                    <span className="text-5xl font-black text-white">{plan.price}</span>
+                    <span className="text-slate-500 font-medium text-sm">{plan.period}</span>
                   </div>
                 </div>
 
-                <ul className="space-y-4 mb-12 flex-1 text-left">
+                {/* Features */}
+                <ul className="space-y-3 mb-10 flex-1 text-left">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-3 group/item">
-                      <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
-                        plan.color === 'rose' ? 'bg-rose-500/10 group-hover/item:bg-rose-500/20' : plan.color === 'amber' ? 'bg-amber-500/10 group-hover/item:bg-amber-500/20' : 'bg-blue-500/10 group-hover/item:bg-blue-500/20'
+                      <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${
+                        plan.color === 'rose' ? 'bg-rose-500/10'
+                        : plan.color === 'amber' ? 'bg-amber-500/10'
+                        : 'bg-blue-500/10'
                       }`}>
-                        <Check className={`w-3.5 h-3.5 ${
-                          plan.color === 'rose' ? 'text-rose-500' : plan.color === 'amber' ? 'text-amber-500' : 'text-blue-500'
+                        <Check className={`w-3 h-3 ${
+                          plan.color === 'rose' ? 'text-rose-500'
+                          : plan.color === 'amber' ? 'text-amber-500'
+                          : 'text-blue-500'
                         }`} />
                       </div>
-                      <span className="text-slate-300 group-hover/item:text-white transition-colors">{feature}</span>
+                      <span className="text-slate-300 text-sm group-hover/item:text-white transition-colors">
+                        {feature}
+                      </span>
                     </li>
                   ))}
                 </ul>
 
+                {/* CTA Button */}
                 <button
-                  onClick={plan.action}
-                  disabled={trialLoading && plan.name === 'Free Trial'}
-                  className={`w-full py-5 rounded-2xl font-bold text-lg transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 ${
-                    plan.popular
-                      ? 'bg-gradient-to-r from-rose-500 to-red-600 text-white shadow-xl shadow-rose-500/20 hover:from-rose-600 hover:to-red-700 hover:-translate-y-1'
-                      : 'bg-white text-slate-900 hover:bg-slate-100 hover:-translate-y-1'
+                  onClick={plan.onAction}
+                  disabled={plan.disabled}
+                  className={`w-full py-4 rounded-2xl font-bold text-base transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 ${
+                    plan.disabled && !plan.loading
+                      ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                    : plan.popular
+                      ? 'bg-gradient-to-r from-rose-500 to-red-600 text-white shadow-xl shadow-rose-500/20 hover:from-rose-600 hover:to-red-700 hover:-translate-y-0.5'
+                    : plan.color === 'amber'
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xl shadow-amber-500/20 hover:from-amber-600 hover:to-orange-600 hover:-translate-y-0.5'
+                      : 'bg-white text-slate-900 hover:bg-slate-100 hover:-translate-y-0.5'
                   }`}
                 >
-                  {plan.name === 'Free Trial' && trialLoading ? 'Activating...' : plan.cta}
-                  <Zap className={`w-5 h-5 ${plan.popular ? 'text-rose-200' : 'text-rose-500'}`} />
+                  {plan.loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {plan.cta}
+                    </>
+                  ) : (
+                    <>
+                      {plan.cta}
+                      {plan.key === 'starter' && !plan.loading && (
+                        <ExternalLink className="w-4 h-4 opacity-70" />
+                      )}
+                    </>
+                  )}
                 </button>
+
+                {/* Dodo Payments powered note */}
+                {plan.key === 'starter' && (
+                  <p className="text-center text-xs text-slate-600 mt-3">
+                    🔒 Secured by Dodo Payments
+                  </p>
+                )}
               </motion.div>
             ))}
           </div>
 
           {/* Guarantees */}
-          <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto border-t border-slate-800 pt-16">
-            <div className="text-center space-y-4">
+          <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto border-t border-slate-800 pt-16">
+            <div className="text-center space-y-3">
               <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center mx-auto border border-slate-800">
                 <Shield className="w-6 h-6 text-rose-500" />
               </div>
               <h4 className="font-bold text-white">Secure Payments</h4>
-              <p className="text-sm text-slate-400">Manual UPI verification for maximum security and zero hidden fees.</p>
+              <p className="text-sm text-slate-400">
+                All transactions are processed securely through Dodo Payments with bank-grade encryption.
+              </p>
             </div>
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-3">
               <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center mx-auto border border-slate-800">
                 <Rocket className="w-6 h-6 text-blue-500" />
               </div>
-              <h4 className="font-bold text-white">Instant Deployment</h4>
-              <p className="text-sm text-slate-400">Trial starts immediately. Premium activation in 12-24 hours after TXID submission.</p>
+              <h4 className="font-bold text-white">Instant Activation</h4>
+              <p className="text-sm text-slate-400">
+                Trial starts immediately. Standard plan activates instantly after payment.
+              </p>
             </div>
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-3">
               <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center mx-auto border border-slate-800">
                 <Zap className="w-6 h-6 text-amber-500" />
               </div>
-              <h4 className="font-bold text-white">Scale as you go</h4>
-              <p className="text-sm text-slate-400">Switch between plans or upgrade at any time to unlock more power.</p>
+              <h4 className="font-bold text-white">Scale as you grow</h4>
+              <p className="text-sm text-slate-400">
+                Switch or upgrade plans anytime to unlock more AI power for your business.
+              </p>
             </div>
           </div>
         </div>
       </main>
-
-      <PaymentModal 
-        isOpen={isPaymentOpen} 
-        onClose={() => setIsPaymentOpen(false)} 
-        plan={selectedPlan}
-        userEmail={user?.email}
-      />
     </div>
   );
 };
