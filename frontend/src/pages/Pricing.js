@@ -26,7 +26,7 @@ const Pricing = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.data.message.includes('successfully')) {
-        alert("Trial activated! You have 7 days of premium access with 50 free messages.");
+        alert("Trial activated! You have 7 days of free access with 50 AI messages.");
         navigate('/dashboard');
       }
     } catch (err) {
@@ -60,8 +60,8 @@ const Pricing = () => {
       period: 'per month',
       description: 'Essential AI features for growing businesses.',
       features: [
-        '2000 AI Interactions / month',
-        'WhatsApp & Web integration',
+        'Unlimited AI Interactions',
+        'Web Chat Widget Integration',
         'Basic Analytics Dashboard',
         'Knowledge Base (10 Documents)',
         'Up to 3 AI Twins'
@@ -80,25 +80,21 @@ const Pricing = () => {
     },
     {
       name: 'Business Pro',
+      upcoming: true,
       price: '₹2999',
       period: 'per month',
       description: 'Unleash the full potential of your AI Twin.',
       features: [
         'Unlimited AI interactions',
-        'WhatsApp, Web & Voice integration',
+        'WhatsApp & Web Chat integration',
         'Advanced Analytics Dashboard',
         'Priority Support via WhatsApp',
         'Knowledge Base (50 Documents)',
         'Up to 10 AI Twins'
       ],
-      cta: 'Get Pro Now',
+      cta: 'Coming Soon',
       action: () => {
-        if (!user) {
-          navigate('/login');
-          return;
-        }
-        setSelectedPlan({ name: 'Business Pro', price: '₹2999' });
-        setIsPaymentOpen(true);
+        alert("Business Pro is launching soon! Stay tuned.");
       },
       icon: Star,
       popular: true,
@@ -161,7 +157,14 @@ const Pricing = () => {
                       plan.color === 'rose' ? 'text-rose-500' : plan.color === 'amber' ? 'text-amber-500' : 'text-blue-500'
                     }`} />
                   </div>
-                  <h3 className="text-3xl font-bold text-white mb-2">{plan.name}</h3>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-3xl font-bold text-white">{plan.name}</h3>
+                    {plan.upcoming && (
+                      <span className="bg-rose-500/20 text-rose-400 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-rose-500/30">
+                        Upcoming
+                      </span>
+                    )}
+                  </div>
                   <p className="text-slate-400 text-sm leading-relaxed">{plan.description}</p>
                 </div>
 

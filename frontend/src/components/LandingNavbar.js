@@ -5,84 +5,7 @@ import { Menu, X, Sparkles, Zap, MessageSquare, Brain, ArrowRight } from 'lucide
 import { useAuth } from '../contexts/AuthContext';
 import LogoIcon from './LogoIcon';
 
-const AIAssistantVisualization = () => {
-  const [messages, setMessages] = useState([]);
-  const [isTyping, setIsTyping] = useState(false);
 
-  useEffect(() => {
-    let mounted = true;
-    const runAnimation = async () => {
-      while (mounted) {
-        setMessages([]);
-        setIsTyping(false);
-        await new Promise(r => setTimeout(r, 1000));
-        if (!mounted) break;
-        
-        setMessages([{ role: 'user', content: "What's the pricing of butter naan?" }]);
-        setIsTyping(true);
-        
-        await new Promise(r => setTimeout(r, 1500));
-        if (!mounted) break;
-        
-        setIsTyping(false);
-        setMessages([
-          { role: 'user', content: "What's the pricing of butter naan?" },
-          { role: 'assistant', content: "Butter naan is ₹45." }
-        ]);
-        
-        await new Promise(r => setTimeout(r, 4000));
-      }
-    };
-    runAnimation();
-    return () => { mounted = false; };
-  }, []);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
-      className="hidden xl:flex items-center justify-center bg-slate-900 dark:bg-white/10 backdrop-blur-xl border-[4px] border-slate-800 dark:border-white/20 rounded-[2rem] p-1 shadow-2xl relative w-72 h-[4.5rem] overflow-hidden mr-4"
-    >
-      {/* Smartphone Notch Simulation (Landscape mode) */}
-      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-10 bg-slate-800 dark:bg-white/20 rounded-r-2xl z-10 flex items-center justify-center">
-        <div className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-black/50"></div>
-      </div>
-      
-      <div className="w-full h-full bg-slate-50 dark:bg-[#0a0a0a] rounded-[1.5rem] overflow-hidden flex flex-col p-2 gap-1.5 relative justify-center pl-6">
-        <AnimatePresence mode="popLayout">
-          {messages.map((msg, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className={`max-w-[85%] text-[11px] font-medium leading-tight px-3 py-1.5 rounded-2xl ${
-                msg.role === 'user'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white self-end rounded-br-sm shadow-sm'
-                  : 'bg-white dark:bg-white/10 text-slate-800 dark:text-slate-200 self-start rounded-bl-sm border border-slate-100 dark:border-white/5 shadow-sm'
-              }`}
-            >
-              {msg.content}
-            </motion.div>
-          ))}
-          {isTyping && (
-            <motion.div
-              initial={{ opacity: 0, x: -20, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white dark:bg-white/10 border border-slate-100 dark:border-white/5 text-slate-800 dark:text-slate-200 self-start rounded-2xl rounded-bl-sm px-3 py-1.5 flex gap-1 items-center h-[28px] shadow-sm"
-            >
-              <motion.div animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-1.5 h-1.5 bg-indigo-400 rounded-full" />
-              <motion.div animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-1.5 h-1.5 bg-indigo-400 rounded-full" />
-              <motion.div animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-1.5 h-1.5 bg-indigo-400 rounded-full" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
-  );
-};
 
 const LandingNavbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -258,7 +181,6 @@ const LandingNavbar = () => {
               variants={itemVariants}
               className="flex-1 hidden lg:flex items-center justify-end gap-4"
             >
-              <AIAssistantVisualization />
 
               {loading ? (
                 <motion.div

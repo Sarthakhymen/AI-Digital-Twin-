@@ -273,7 +273,7 @@ PLAN_LIMITS = {
         "max_twins": 1
     },
     "standard": {
-        "max_messages": 2000,
+        "max_messages": -1, # Unlimited
         "features": ["website_embed", "analytics"],
         "whatsapp": False,
         "voice_agent": False,

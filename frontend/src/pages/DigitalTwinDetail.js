@@ -58,13 +58,18 @@ const DigitalTwinDetail = () => {
           <Button 
             variant="contained" 
             size="small"
-            onClick={() => navigate('/pricing')}
+            disabled
             sx={{ 
-              bgcolor: '#e11d48', '&:hover': { bgcolor: '#be123c' },
-              textTransform: 'none', fontWeight: 600, borderRadius: '8px'
+              bgcolor: '#475569',
+              color: '#cbd5e1',
+              textTransform: 'none', fontWeight: 600, borderRadius: '8px',
+              '&.Mui-disabled': {
+                bgcolor: '#334155',
+                color: '#94a3b8'
+              }
             }}
           >
-            Upgrade to Pro
+            Business Pro (Coming Soon)
           </Button>
         </Box>
       </Box>

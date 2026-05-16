@@ -51,6 +51,7 @@ from .dependencies import get_current_active_user
 def get_user_features(current_user: Any = Depends(get_current_active_user)):
     """Get resolved user features based on subscription plan and admin overrides."""
     try:
+        from .payments import PLAN_LIMITS
         # Only allow paid features if status is active
         status = current_user.subscription_status
         plan = current_user.subscription_plan or "free"

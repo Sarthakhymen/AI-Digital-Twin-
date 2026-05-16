@@ -71,51 +71,121 @@ const PremiumBackground = () => {
   );
 };
 
-// AI Platform Central Visualization
-const AICoreVisualization = () => {
+const HeroSmartphoneVisualization = () => {
+  const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    const runAnimation = async () => {
+      while (mounted) {
+        setMessages([]);
+        setIsTyping(false);
+        await new Promise(r => setTimeout(r, 1000));
+        if (!mounted) break;
+        
+        setMessages([{ role: 'user', content: "What's the pricing of the butter naan?" }]);
+        setIsTyping(true);
+        
+        await new Promise(r => setTimeout(r, 1500));
+        if (!mounted) break;
+        
+        setIsTyping(false);
+        setMessages([
+          { role: 'user', content: "What's the pricing of the butter naan?" },
+          { role: 'assistant', content: "Butter naan is ₹45. Would you like to order?" }
+        ]);
+        
+        await new Promise(r => setTimeout(r, 4000));
+      }
+    };
+    runAnimation();
+    return () => { mounted = false; };
+  }, []);
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 1.5, ease: "easeOut" }}
-      className="relative w-64 h-64 mx-auto my-16 hidden lg:flex items-center justify-center"
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, delay: 0.2 }}
+      className="relative w-[300px] h-[600px] mx-auto hidden lg:block"
     >
-      <motion.div 
-        animate={{ rotate: 360 }}
-        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-        className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 dark:from-indigo-500/10 dark:to-purple-500/10 blur-xl"
-      />
-      <motion.div 
-        animate={{ scale: [1, 1.05, 1] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        className="relative z-10 w-32 h-32 rounded-full bg-white dark:bg-black/50 backdrop-blur-xl flex items-center justify-center shadow-2xl shadow-indigo-500/20"
-      >
-        <BrainIcon className="w-12 h-12 text-indigo-600 dark:text-indigo-400" />
-      </motion.div>
-      {/* Orbital paths */}
-      <div className="absolute inset-0 rounded-full border border-slate-200 dark:border-white/5" />
-      <div className="absolute inset-4 rounded-full border border-slate-200 dark:border-white/5" />
-      {/* Floating particles */}
-      <motion.div 
-        animate={{ y: [-10, 10, -10], x: [-10, 10, -10] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-4 left-10 w-3 h-3 bg-blue-500 rounded-full"
-      />
-      <motion.div 
-        animate={{ y: [10, -10, 10], x: [10, -10, 10] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-4 right-10 w-2 h-2 bg-purple-500 rounded-full"
-      />
+      {/* Smartphone Frame */}
+      <div className="absolute inset-0 bg-slate-900 dark:bg-black rounded-[3rem] border-[8px] border-slate-800 dark:border-slate-800 shadow-2xl overflow-hidden ring-1 ring-white/10">
+        {/* Top Notch */}
+        <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-20">
+          <div className="w-32 h-6 bg-slate-800 dark:bg-slate-800 rounded-b-2xl flex items-center justify-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-black/50"></div>
+            <div className="w-2 h-2 rounded-full bg-indigo-900/80"></div>
+          </div>
+        </div>
+
+        {/* Screen Content */}
+        <div className="absolute inset-0 bg-slate-50 dark:bg-[#0a0a0a] pt-12 pb-6 px-4 flex flex-col">
+          {/* Header */}
+          <div className="flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-white/10">
+            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+              <BrainIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">AI Assistant</h3>
+              <p className="text-[10px] text-emerald-500 font-medium">Online</p>
+            </div>
+          </div>
+
+          {/* Chat Area */}
+          <div className="flex-1 overflow-hidden pt-4 flex flex-col gap-3 justify-end">
+            <AnimatePresence mode="popLayout">
+              {messages.map((msg, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className={`max-w-[85%] text-[13px] font-medium leading-relaxed px-4 py-2.5 rounded-2xl ${
+                    msg.role === 'user'
+                      ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white self-end rounded-br-sm shadow-sm'
+                      : 'bg-white dark:bg-white/5 text-slate-800 dark:text-slate-200 self-start rounded-bl-sm border border-slate-100 dark:border-white/10 shadow-sm'
+                  }`}
+                >
+                  {msg.content}
+                </motion.div>
+              ))}
+              {isTyping && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 text-slate-800 dark:text-slate-200 self-start rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1.5 items-center shadow-sm"
+                >
+                  <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-2 h-2 bg-indigo-400 rounded-full" />
+                  <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-2 h-2 bg-indigo-400 rounded-full" />
+                  <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-2 h-2 bg-indigo-400 rounded-full" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Input Area */}
+          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/10 flex items-center gap-2">
+            <div className="flex-1 h-10 bg-slate-100 dark:bg-white/5 rounded-full border border-slate-200 dark:border-white/10 flex items-center px-4">
+              <span className="text-xs text-slate-400">Type a message...</span>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white shadow-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 ml-1">
+                <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Decorative Glow behind phone */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 blur-2xl -z-10 rounded-[3rem]" />
     </motion.div>
   );
 };
 
-const BrainIcon = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
-    <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>
-  </svg>
-);
 
 // Premium Hero Section
 const Hero = () => {
@@ -130,78 +200,80 @@ const Hero = () => {
 
       <motion.div
         style={{ opacity, scale }}
-        className="relative z-10 w-full max-w-6xl mx-auto px-6 text-center"
+        className="relative z-10 w-full max-w-7xl mx-auto px-6"
       >
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-          className="flex flex-col items-center"
-        >
-          {/* Premium Badge */}
-          <motion.div variants={fadeInUp}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-200/50 dark:bg-white/5 backdrop-blur-sm mb-8">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-medium text-slate-800 dark:text-slate-300 tracking-wide">Your clone is ready</span>
-              <ChevronRight className="w-4 h-4 text-slate-500" />
-            </div>
-          </motion.div>
-
-          {/* Premium Headline */}
-          <motion.h1
-            variants={fadeInUp}
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-slate-900 dark:text-white tracking-tight leading-[1.1] mb-6"
-          >
-            <span className="block">Your intelligence,</span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
-              amplified by AI.
-            </span>
-          </motion.h1>
-
-          {/* Premium Subheadline */}
-          <motion.p
-            variants={fadeInUp}
-            className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-4 leading-relaxed font-light"
-          >
-            Create an AI digital twin that captures your exact knowledge, voice, and reasoning logic.
-            Deploy an automated version of yourself that interacts with perfect accuracy, 24/7.
-          </motion.p>
-          
-          <AICoreVisualization />
-
-          {/* Premium CTAs */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
-            variants={fadeInUp}
-            className="flex flex-col sm:flex-row items-center gap-4 mt-8"
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+            className="flex flex-col items-center lg:items-start text-center lg:text-left"
           >
-            <motion.button
-              onClick={() => navigate('/register')}
-              className="group relative px-8 py-4 bg-slate-900 text-white dark:bg-white dark:text-black rounded-2xl font-semibold text-sm overflow-hidden"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                Initialize Your Twin
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </span>
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
-              />
-            </motion.button>
+            {/* Premium Badge */}
+            <motion.div variants={fadeInUp}>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-200/50 dark:bg-white/5 backdrop-blur-sm mb-8">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-medium text-slate-800 dark:text-slate-300 tracking-wide">Your clone is ready</span>
+                <ChevronRight className="w-4 h-4 text-slate-500" />
+              </div>
+            </motion.div>
 
-            <motion.button
-              onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Demo Request"}
-              className="group relative px-8 py-4 bg-slate-200/50 dark:bg-white/5 text-slate-900 dark:text-white rounded-2xl font-semibold text-sm backdrop-blur-sm overflow-hidden"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            {/* Premium Headline */}
+            <motion.h1
+              variants={fadeInUp}
+              className="text-5xl sm:text-6xl md:text-7xl font-bold text-slate-900 dark:text-white tracking-tight leading-[1.1] mb-6"
             >
-              <span className="relative z-10 flex items-center gap-2">
-                <Play className="w-4 h-4" />
-                See AI in Action
+              <span className="block">Your intelligence,</span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+                amplified by AI.
               </span>
-            </motion.button>
+            </motion.h1>
+
+            {/* Premium Subheadline */}
+            <motion.p
+              variants={fadeInUp}
+              className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-xl mb-8 leading-relaxed font-light"
+            >
+              Create an AI digital twin that captures your exact knowledge, voice, and reasoning logic.
+              Deploy an automated version of yourself that interacts with perfect accuracy, 24/7.
+            </motion.p>
+            
+            {/* Premium CTAs */}
+            <motion.div
+              variants={fadeInUp}
+              className="flex flex-col sm:flex-row items-center gap-4"
+            >
+              <motion.button
+                onClick={() => navigate('/register')}
+                className="group relative px-8 py-4 bg-slate-900 text-white dark:bg-white dark:text-black rounded-2xl font-semibold text-sm overflow-hidden"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  Initialize Your Twin
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                />
+              </motion.button>
+
+              <motion.button
+                onClick={() => window.location.href = "mailto:nexora.aidigital.twin@gmail.com?subject=Demo Request"}
+                className="group relative px-8 py-4 bg-slate-200/50 dark:bg-white/5 text-slate-900 dark:text-white rounded-2xl font-semibold text-sm backdrop-blur-sm overflow-hidden"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <Play className="w-4 h-4" />
+                  See AI in Action
+                </span>
+              </motion.button>
+            </motion.div>
           </motion.div>
-        </motion.div>
+
+          <HeroSmartphoneVisualization />
+        </div>
       </motion.div>
 
       {/* Scroll Indicator */}
