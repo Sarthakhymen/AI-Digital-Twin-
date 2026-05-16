@@ -15,11 +15,14 @@ from typing import Optional, Any
 router = APIRouter(prefix="/payments", tags=["Payments"])
 
 DODO_API_KEY = os.getenv("DODO_PAYMENTS_API_KEY", "")
-# Determine base URL based on API key prefix (test_ or live_)
-if DODO_API_KEY and DODO_API_KEY.startswith("test_"):
-    DODO_BASE_URL = "https://test.dodopayments.com"
-else:
+# Allow explicit override via env, otherwise detect from key prefix
+if os.getenv("DODO_BASE_URL"):
+    DODO_BASE_URL = os.getenv("DODO_BASE_URL")
+elif DODO_API_KEY and DODO_API_KEY.startswith("live_"):
     DODO_BASE_URL = "https://live.dodopayments.com"
+else:
+    # Default to test for safety (covers test_ prefix and unknown prefixes)
+    DODO_BASE_URL = "https://test.dodopayments.com"
 
 # Email Notification Config
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "sarthak2005shavarn@gmail.com")
@@ -182,6 +185,13 @@ async def create_checkout(
         "quantity": 1,
         "payment_link": True,
         "return_url": f"{frontend_url}/dashboard?payment=success",
+        "billing": {
+            "country": "IN",
+            "city": "",
+            "state": "",
+            "street": "",
+            "zipcode": ""
+        },
         "customer": {
             "email": current_user.email,
             "name": current_user.full_name or "Valued Customer"
