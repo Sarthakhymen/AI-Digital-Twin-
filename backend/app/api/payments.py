@@ -181,17 +181,13 @@ async def create_checkout(
     frontend_url = os.getenv("FRONTEND_URL", "https://ai-digital-twin-seven.vercel.app").rstrip("/")
 
     payload = {
-        "product_id": product_id,
-        "quantity": 1,
-        "payment_link": True,
+        "product_cart": [
+            {
+                "product_id": product_id,
+                "quantity": 1
+            }
+        ],
         "return_url": f"{frontend_url}/dashboard?payment=success",
-        "billing": {
-            "country": "IN",
-            "city": "",
-            "state": "",
-            "street": "",
-            "zipcode": ""
-        },
         "customer": {
             "email": current_user.email,
             "name": current_user.full_name or "Valued Customer"
@@ -202,12 +198,12 @@ async def create_checkout(
         }
     }
 
-    print(f"[Dodo] Creating subscription: user={current_user.email} product={product_id} base={DODO_BASE_URL}")
+    print(f"[Dodo] Creating checkout session: user={current_user.email} product={product_id} base={DODO_BASE_URL}")
 
     async with httpx.AsyncClient(timeout=30.0) as client:
         try:
             response = await client.post(
-                f"{DODO_BASE_URL}/subscriptions",
+                f"{DODO_BASE_URL}/checkouts",
                 json=payload,
                 headers={
                     "Authorization": f"Bearer {DODO_API_KEY}",
