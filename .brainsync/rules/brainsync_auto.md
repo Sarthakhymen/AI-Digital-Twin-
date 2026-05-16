@@ -25,13 +25,6 @@
 ## Project Standards
 
 - convention in .gitignore
-- Git Commit: fix: Remove unused signIn variable from GoogleSignIn compone — confirmed 3x
-- Git Commit: Enhanced Home page with animations, GIF demos, and video mod — confirmed 3x
-- Version your API from day 1 (/api/v1/)
-- Use consistent response format across all endpoints
-- Implement soft delete for important data — don't hard delete without confirmation
-- Handle timezone correctly — store UTC, display in user's timezone
-- Make layouts responsive from the start — mobile-first approach
 
 ## Verified Best Practices
 
