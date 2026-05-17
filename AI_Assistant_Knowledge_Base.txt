@@ -1,0 +1,176 @@
+AI DIGITAL TWIN - ULTIMATE PLATFORM KNOWLEDGE BASE & ONBOARDING GUIDE
+
+This official document contains exhaustive, non-technical information regarding the AI Digital Twin platform. It is designed to train the platform's customer support AI assistant. It covers every detail a user might ask about, excluding behind-the-scenes backend code or technical developer terms.
+
+================================================================================
+SECTION 1: PLATFORM OVERVIEW & TARGET INDUSTRIES
+================================================================================
+
+What is the AI Digital Twin Platform?
+-------------------------------------
+AI Digital Twin is a premium, no-code SaaS platform designed to let business owners, service professionals, and creators build an intelligent, automated version of themselves or their customer service desk. 
+
+The digital twin learns the exact facts, voice tone, rules, and logic of a business and interacts with clients 24 hours a day, 7 days a week, with perfect accuracy. It handles queries, captures leads, coordinates appointments, and keeps customers satisfied instantly.
+
+Supported Industries & Real-World Use Cases
+-------------------------------------------
+Any business that handles customer inquiries, bookings, or sales queries can deploy a twin. Here are the primary industries supported:
+
+1. Food & Hospitality (e.g., Desi Dhaba, Cafes, Bakeries)
+   - Use Cases: Shared daily menus, special thalis, pricing, location coordinates, reservation bookings, delivery terms, and vegetarian/non-vegetarian option confirmation.
+   
+2. Retail & E-Commerce (e.g., Style Studio, Fashion Boutiques, General Stores)
+   - Use Cases: Checking size availability (e.g., "kurtis in size M"), showing current collections, updating customers on delivery fees, share refund/exchange policies, and assisting with color/design choices.
+   
+3. Healthcare & Wellness (e.g., CarePoint Clinic, Dental Studios, Therapy Centers)
+   - Use Cases: Checking doctor availability schedules (e.g., "Dr. Mehta is available tomorrow"), booking slots, sharing clinic timings, informing clients about pricing of standard consultations, and location help.
+   
+4. Automotive & Services (e.g., AutoFix Garage, Repair Shops, detailing centers)
+   - Use Cases: Sharing package pricing (e.g., "Full service costs INR 2,499"), detailing what is included in standard checks, scheduling car pickups, and booking repairs.
+   
+5. Real Estate & Agencies (e.g., Property Brokers, Consultancy Firms)
+   - Use Cases: Gathering lead contact details, listing available property types, pricing ranges, and scheduling viewing tours.
+
+
+================================================================================
+SECTION 2: THE "CREATE TWIN" FORM & ONBOARDING REQUIREMENTS
+================================================================================
+
+When a user visits the official website to create their digital twin, they must fill out a creation form. Here are the exact fields required from the user during setup:
+
+1. Twin name (Identity)
+   - What it is: The public-facing name of the twin (e.g., "CarePoint Frontdesk Bot", "Dhaba Assistant", "Amit's Personal AI").
+   
+2. Industry / Category
+   - What it is: Selecting the business niche from a dropdown (Restaurant, Medical Clinic, Fashion Boutique, Service Garage, Consulting, E-learning, Custom).
+   
+3. Core Knowledge Documents (The Brain)
+   - What it is: The absolute source of truth. The platform requires uploading PDFs, Word files (.docx), plain text (.txt), or typed text lists. 
+   - Content needed: The files must contain FAQs, price lists, address details, specific rules, and policies.
+   
+4. Tone & Behavior Style
+   - What it is: Choosing how the twin should talk. Options include:
+     * Professional & Formal: Best for medical clinics, legal offices, and B2B.
+     * Friendly & Casual: Best for retail boutiques, cafes, and personal twins.
+     * Empathetic & Warm: Best for therapy, counseling, and customer support.
+     
+5. Language Settings
+   - What it is: Instructing the twin on what language to speak (English, Hindi, or a natural combination of both—Hinglish).
+   
+6. Fallback Instructions
+   - What it is: What should the twin do when it faces a query it cannot answer from the uploaded files? Options include:
+     * Ask for the user's phone number and email to have a human team member contact them.
+     * Direct the customer to call the main business hotline directly.
+     * Provide a fallback email address for urgent queries.
+     
+7. Main Call-To-Action (CTA)
+   - What it is: The primary goal of the twin during a conversation (e.g., "Book an appointment", "Get a phone number", "Share pricing catalog").
+
+
+================================================================================
+SECTION 3: CHANNELS & DEPLOYMENT OPTIONS
+================================================================================
+
+Users can deploy their activated digital twin across multiple channels seamlessly:
+
+- WhatsApp Automated Responder:
+  Allows your twin to handle all your customer chats directly on your business WhatsApp. The assistant answers incoming queries immediately, taking the pressure off your support staff.
+  
+- Web Chat Widget:
+  A beautiful, premium floating bubble on your website. Users can copy a simple snippet code from the dashboard and paste it onto their web page to get a live assistant on their homepage instantly.
+  
+- Voice Agent (Neural Speaking):
+  For advanced plans, the twin can speak. Customers calling your business can talk to your twin, which responds using a custom, cloned voice matching your preferred style.
+  
+- Developer Custom Integration (REST API):
+  For businesses with existing mobile apps or private portal pages, a secure API key can be generated to fetch answers from the twin programmatically.
+
+
+================================================================================
+SECTION 4: BILLING, SECURITY, AND TRUST
+================================================================================
+
+Payment Processing
+------------------
+All subscriptions are paid securely using Razorpay Standard Checkout integration.
+- Supported methods: Credit Cards, Debit Cards, UPI (GPay, PhonePe, Paytm), Net Banking, and digital wallets.
+- Transactions are RBI-compliant, fully encrypted, and secure.
+
+Data Security & Privacy
+-----------------------
+- Your knowledge files are completely private.
+- Our platform maintains a strict isolation policy: no other user can access your data.
+- We never train public artificial intelligence models on your private documents.
+- Database connections and uploads are fully encrypted.
+
+
+================================================================================
+SECTION 5: COMPREHENSIVE USER FAQ LIST (All Possible Queries)
+================================================================================
+
+Creating & Customizing Twins
+----------------------------
+
+Q: What is the very first step to create my digital twin?
+A: You need to register an account, click the "Create Twin" button on your main dashboard, fill out the basic business fields (Name, Category, and Tone), and upload your knowledge document (like a PDF menu or price list).
+
+Q: Can I change my twin's response language to Hinglish?
+A: Yes! During creation, or later in the twin settings panel, you can set the language preference to a mix of Hindi and English (Hinglish) or stick to standard English or Hindi.
+
+Q: Can I name my twin whatever I want?
+A: Yes, you can name it after your business (e.g., "AutoFix Agent") or give it a personal name (e.g., "Sarah"). This name will appear at the top of the chat window for your customers.
+
+Q: What happens if a customer asks a question that is not in my uploaded documents?
+A: The twin will follow your custom "Fallback Instructions". Typically, it will politely ask the customer for their contact details (name and phone number) so your human team can call them back, or it will provide your official phone number.
+
+Q: How do I update my business hours or new prices?
+A: Go to your twin's details page, click on the "Knowledge Base" tab, upload the updated PDF or text list, and remove the older version. Your twin will immediately start using the new information.
+
+Integrations & Deployments
+--------------------------
+
+Q: How do I put the chatbot on my WordPress or Shopify website?
+A: In your dashboard, open your twin and go to the "Integrations" section. Click on "Web Widget" and copy the provided script code. Paste this code block into the header or footer section of your website editor, and the chat bubble will appear instantly.
+
+Q: Do I need a special phone to use the WhatsApp feature?
+A: No. Any phone with an active WhatsApp account can be linked. You will just need to pair it by scanning a QR code displayed in your dashboard.
+
+Q: Does my phone need to stay connected to the internet for WhatsApp automation to work?
+A: Once the initial QR code is paired, our cloud system handles the responses. Your twin will continue replying even if your personal phone goes offline or loses internet connection.
+
+Q: Can I test the AI twin before putting it on my WhatsApp or website?
+A: Yes, every twin has a built-in "Playground" in the dashboard. You can chat with it, ask it test questions, and refine its knowledge before publishing it to the public.
+
+Billing & Account Management
+----------------------------
+
+Q: How will I be billed for using the service?
+A: Subscriptions are managed on a monthly or yearly cycle. You can pay online via our Razorpay integration using UPI, cards, or bank transfer.
+
+Q: Can I cancel my subscription at any time?
+A: Yes. You can manage your subscription directly from the billing section in your profile settings. If you cancel, your twin will remain active until the end of your current billing period.
+
+Q: What is the difference between the Starter and Pro plans?
+A: The Starter plan allows web chat widget deployments with basic text twins. The Pro plan unlocks WhatsApp automated responses, advanced conversation analytics charts, and larger knowledge base upload limits.
+
+General Troubleshooting
+----------------------
+
+Q: My twin is giving outdated answers. How do I fix this?
+A: This happens if you have old, conflicting information in your files. Go to your Knowledge Base settings, delete the old files, and make sure the new files have clear, updated facts.
+
+Q: I paid for the Pro plan, but my account still says Starter. What should I do?
+A: Don't worry! Sometimes Razorpay transaction confirmations take a few seconds to update your session. Try logging out and logging back in. If it still doesn't update, contact us at nexora.aidigital.twin@gmail.com with your payment receipt.
+
+Q: The WhatsApp messages are not going through. How do I restart the connection?
+A: Go to the WhatsApp Integration page on your dashboard, click "Disconnect", and then scan the newly generated QR code to re-link your device.
+
+
+================================================================================
+SECTION 6: SERVICE DESK CONTACT DETAILS
+================================================================================
+
+If you cannot find an answer to your query or have an issue that needs a human engineer, please contact us directly:
+* Support Email: nexora.aidigital.twin@gmail.com
+* Direct Hotline / Phone: +91 9625410112
+* Support Hours: Monday to Sunday (9:00 AM - 9:00 PM IST)
