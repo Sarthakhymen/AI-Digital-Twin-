@@ -106,42 +106,70 @@ const VoiceAgent = () => {
 
     if (!isWidget && !user) {
         return (
-            <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#0f172a', p: 4 }}>
-                <Paper sx={{ p: 4, textAlign: 'center', bgcolor: 'rgba(30, 41, 59, 0.7)', color: 'white' }}>
-                    <Typography variant="h5" gutterBottom>Login Required</Typography>
-                    <Typography sx={{ mb: 3 }}>Please login to use the Voice AI Twin.</Typography>
-                    <Button variant="contained" onClick={() => navigate('/login')}>Login Now</Button>
-                </Paper>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 10, px: 4 }}>
+                <Box sx={{
+                    p: 4, textAlign: 'center',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.07)',
+                    borderRadius: '20px',
+                    backdropFilter: 'blur(10px)',
+                    maxWidth: 360
+                }}>
+                    <Typography variant="h5" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 700, color: '#fff', mb: 1.5 }}>Login Required</Typography>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.5)', mb: 3 }}>Please login to use the Voice AI Twin.</Typography>
+                    <Button
+                        variant="contained"
+                        onClick={() => navigate('/login')}
+                        sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', textTransform: 'none', borderRadius: '10px', fontFamily: '"Outfit", sans-serif' }}
+                    >
+                        Login Now
+                    </Button>
+                </Box>
             </Box>
         );
     }
 
     return (
-        <Box sx={{ 
-            minHeight: 'calc(100vh - 80px)', 
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
+        <Box sx={{
             color: 'white',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            pt: 8,
-            px: 2
+            pt: 4,
+            pb: 8,
         }}>
             {(isExpired || isLocked) && !isWidget && (
                 <Box sx={{ maxWidth: '600px', width: '100%', mb: 4 }}>
-                    <Alert severity={isExpired ? "error" : "warning"} sx={{ borderRadius: '12px', bgcolor: 'rgba(25, 25, 25, 0.9)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <AlertTitle sx={{ color: isExpired ? '#ff4444' : '#ff9800', fontWeight: 'bold' }}>{isExpired ? "Subscription Expired" : "Feature Locked"}</AlertTitle>
-                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                            {isExpired 
-                                ? "Your trial or subscription has expired. Please upgrade to Pro to continue using Voice AI." 
-                                : "Voice AI is a Pro feature. Upgrade your plan to unlock real-time human-like voice conversations."
+                    <Alert
+                        severity={isExpired ? 'error' : 'warning'}
+                        sx={{
+                            borderRadius: '14px',
+                            background: isExpired ? 'rgba(239,68,68,0.08)' : 'rgba(245,158,11,0.08)',
+                            border: `1px solid ${isExpired ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                            color: 'white',
+                            '& .MuiAlert-icon': { color: isExpired ? '#EF4444' : '#F59E0B' }
+                        }}
+                    >
+                        <AlertTitle sx={{ color: isExpired ? '#EF4444' : '#F59E0B', fontWeight: 700, fontFamily: '"Outfit", sans-serif' }}>
+                            {isExpired ? 'Subscription Expired' : 'Feature Locked'}
+                        </AlertTitle>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', mb: 1.5 }}>
+                            {isExpired
+                                ? 'Your trial or subscription has expired. Please upgrade to Pro to continue using Voice AI.'
+                                : 'Voice AI is a Pro feature. Upgrade your plan to unlock real-time human-like voice conversations.'
                             }
                         </Typography>
-                        <Button 
-                            variant="contained" 
-                            color={isExpired ? "error" : "warning"} 
-                            size="small" 
-                            sx={{ mt: 2, textTransform: 'none', fontWeight: 'bold' }}
+                        <Button
+                            variant="contained"
+                            size="small"
+                            sx={{
+                                background: isExpired ? '#EF4444' : '#F59E0B',
+                                textTransform: 'none',
+                                fontWeight: 700,
+                                fontFamily: '"Outfit", sans-serif',
+                                borderRadius: '8px',
+                                '&:hover': { filter: 'brightness(1.1)' }
+                            }}
                             onClick={() => navigate('/pricing')}
                         >
                             Upgrade Now
@@ -153,9 +181,10 @@ const VoiceAgent = () => {
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                style={{ textAlign: 'center', marginBottom: '60px', filter: (isExpired || isLocked) && !isWidget ? 'blur(4px)' : 'none' }}
+                style={{ textAlign: 'center', marginBottom: '52px', filter: (isExpired || isLocked) && !isWidget ? 'blur(4px)' : 'none' }}
             >
-                <Typography variant="h3" fontWeight="800" sx={{ 
+                <Typography variant="h3" fontWeight="800" sx={{
+                    fontFamily: '"Outfit", sans-serif',
                     background: 'linear-gradient(90deg, #818cf8, #c084fc)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
@@ -163,8 +192,8 @@ const VoiceAgent = () => {
                 }}>
                     Voice AI Twin
                 </Typography>
-                <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)' }}>
-                    Real-time human-like conversation powered by Groq & LiveKit
+                <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: '"Outfit", sans-serif' }}>
+                    Real-time human-like conversation powered by Groq &amp; LiveKit
                 </Typography>
             </motion.div>
 
@@ -248,21 +277,21 @@ const VoiceAgent = () => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 20 }}
                         >
-                            <Paper sx={{ 
-                                p: 4, 
-                                borderRadius: 5, 
-                                backgroundColor: 'rgba(30, 41, 59, 0.7)',
+                            <Box sx={{
+                                p: 4,
+                                borderRadius: '20px',
+                                background: 'rgba(255,255,255,0.04)',
                                 backdropFilter: 'blur(20px)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                border: '1px solid rgba(255,255,255,0.08)',
                                 textAlign: 'center'
                             }}>
                                 <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                                    <Volume2 className="animate-pulse" color="#818cf8" />
+                                    <Volume2 color="#818cf8" />
                                 </Box>
-                                <Typography variant="body1" sx={{ color: 'white', fontSize: '1.1rem', lineHeight: 1.6 }}>
-                                    {aiResponse || "Listening for your voice..."}
+                                <Typography variant="body1" sx={{ color: 'white', fontSize: '1.1rem', lineHeight: 1.6, fontFamily: '"Outfit", sans-serif' }}>
+                                    {aiResponse || 'Listening for your voice...'}
                                 </Typography>
-                            </Paper>
+                            </Box>
                         </motion.div>
                     )}
                 </AnimatePresence>

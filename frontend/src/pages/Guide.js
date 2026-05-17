@@ -15,7 +15,6 @@ import {
   Info
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from '../components/Navbar';
 
 // --- Smartphone Frame ---
 const SmartphoneFrame = ({ children, color }) => (
@@ -351,36 +350,33 @@ const Guide = () => {
   const prevStep = () => { if (currentStep > 0) setCurrentStep(currentStep - 1); };
 
   return (
-    <Box sx={{
-      bgcolor: '#020617',
-      minHeight: '100vh',
-      color: 'white',
-      backgroundImage: 'linear-gradient(to bottom, #020617, #0F172A)',
-      pb: 10
-    }}>
-      <Navbar />
+    <Box sx={{ color: 'white', pb: 6 }}>
 
-      <Container maxWidth="lg" sx={{ pt: 15 }}>
-        {/* Header */}
-        <Box sx={{ textAlign: 'center', mb: 8 }}>
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-            <Typography variant="h2" sx={{
-              fontWeight: 900, mb: 2, letterSpacing: -1.5,
+      {/* Page Header */}
+      <Box sx={{ mb: 6 }}>
+        <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}>
+          <Typography
+            variant="h4"
+            sx={{
+              fontFamily: '"Outfit", sans-serif',
+              fontWeight: 800,
+              mb: 1,
               background: 'linear-gradient(to right, #6366F1, #EC4899, #F59E0B)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              filter: 'drop-shadow(0 0 15px rgba(99, 102, 241, 0.3))',
-              fontSize: { xs: 32, md: 48 }
-            }}>
-              STEP-BY-STEP GUIDE
-            </Typography>
-            <Typography variant="h6" sx={{ color: '#94A3B8', maxWidth: 560, mx: 'auto', fontSize: { xs: 14, md: 17 } }}>
-              Follow these steps to integrate your AI Digital Twin into your website in under 5 minutes.
-            </Typography>
-          </motion.div>
-        </Box>
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-0.5px',
+            }}
+          >
+            Step-by-Step Guide
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.5)', maxWidth: 480, fontFamily: '"Outfit", sans-serif' }}>
+            Integrate your AI Digital Twin into your website in under 5 minutes.
+          </Typography>
+        </motion.div>
+      </Box>
 
-        {/* LED Progress Bar */}
-        <Box sx={{ mb: 6, display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
+      {/* LED Progress Bar */}
+      <Box sx={{ mb: 5, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           {steps.map((s, idx) => (
             <Box
               key={idx}
@@ -396,15 +392,15 @@ const Guide = () => {
           ))}
         </Box>
 
-        {/* Billboard */}
-        <Box sx={{ minHeight: 520, display: 'flex', alignItems: 'center' }}>
+      {/* Billboard */}
+      <Box sx={{ minHeight: 520, display: 'flex', alignItems: 'center' }}>
           <AnimatePresence mode="wait">
             <BillboardStep key={currentStep} step={steps[currentStep]} index={currentStep} />
           </AnimatePresence>
-        </Box>
+      </Box>
 
-        {/* Controls */}
-        <Box sx={{ mt: 6, display: 'flex', justifyContent: 'center', gap: 3 }}>
+      {/* Controls */}
+      <Box sx={{ mt: 5, display: 'flex', gap: 3 }}>
           <Button
             startIcon={<ArrowBack />}
             onClick={prevStep}
@@ -432,39 +428,41 @@ const Guide = () => {
           >
             {currentStep === steps.length - 1 ? 'Start Launching 🚀' : 'Next Step'}
           </Button>
-        </Box>
+      </Box>
 
-        {/* Script Preview — last step */}
-        {currentStep === 5 && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            style={{ marginTop: '60px' }}
-          >
-            <Box sx={{
-              p: 4, borderRadius: '32px', bgcolor: 'black',
-              border: '1px solid #10B981', boxShadow: '0 0 40px rgba(16, 185, 129, 0.1)'
+      {/* Script Preview — last step */}
+      {currentStep === 5 && (
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ marginTop: '48px' }}
+        >
+          <Box sx={{
+            p: 4, borderRadius: '20px',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 0 40px rgba(16, 185, 129, 0.06)'
+          }}>
+            <Typography variant="h6" sx={{ color: '#10B981', fontWeight: 700, mb: 3, fontFamily: '"Outfit", sans-serif' }}>
+              📋 Example Script Integration
+            </Typography>
+            <Paper sx={{
+              p: 3, bgcolor: '#0F172A', fontFamily: 'monospace', color: '#CBD5E1',
+              borderRadius: '14px', overflowX: 'auto', border: '1px solid rgba(255,255,255,0.05)'
             }}>
-              <Typography variant="h5" sx={{ color: '#10B981', fontWeight: 900, mb: 3, fontSize: { xs: 16, md: 20 } }}>
-                📋 Example Script Integration
-              </Typography>
-              <Paper sx={{
-                p: 3, bgcolor: '#0F172A', fontFamily: 'monospace', color: '#CBD5E1',
-                borderRadius: '16px', overflowX: 'auto', border: '1px solid rgba(255,255,255,0.05)'
-              }}>
-                <code style={{ color: '#F472B6' }}>&lt;!DOCTYPE html&gt;</code><br />
-                <code>&lt;html&gt;</code><br />
-                <code>&nbsp;&nbsp;&lt;body&gt;</code><br />
-                <code>&nbsp;&nbsp;&nbsp;&nbsp;&lt;h1&gt;Welcome to My Site&lt;/h1&gt;</code><br />
-                <code style={{ color: '#10B981' }}>&nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- Paste your Digital Twin script below --&gt;</code><br />
-                <code style={{ color: '#F59E0B' }}>&nbsp;&nbsp;&nbsp;&nbsp;&lt;script src="https://api.digitaltwin.ai/widget.js" data-id="YOUR_ID"&gt;&lt;/script&gt;</code><br />
-                <code>&nbsp;&nbsp;&lt;/body&gt;</code><br />
-                <code>&lt;/html&gt;</code>
-              </Paper>
-            </Box>
-          </motion.div>
-        )}
-      </Container>
+              <code style={{ color: '#F472B6' }}>&lt;!DOCTYPE html&gt;</code><br />
+              <code>&lt;html&gt;</code><br />
+              <code>&nbsp;&nbsp;&lt;body&gt;</code><br />
+              <code>&nbsp;&nbsp;&nbsp;&nbsp;&lt;h1&gt;Welcome to My Site&lt;/h1&gt;</code><br />
+              <code style={{ color: '#10B981' }}>&nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- Paste your Digital Twin script below --&gt;</code><br />
+              <code style={{ color: '#F59E0B' }}>&nbsp;&nbsp;&nbsp;&nbsp;&lt;script src="https://api.digitaltwin.ai/widget.js" data-id="YOUR_ID"&gt;&lt;/script&gt;</code><br />
+              <code>&nbsp;&nbsp;&lt;/body&gt;</code><br />
+              <code>&lt;/html&gt;</code>
+            </Paper>
+          </Box>
+        </motion.div>
+      )}
     </Box>
   );
 };

@@ -162,74 +162,123 @@ const DigitalTwinDetail = () => {
     }
   };
 
-  if (isLoading) return <Typography>Loading...</Typography>;
-  if (!twin) return <Typography>Digital twin not found</Typography>;
+  if (isLoading) return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200, color: 'rgba(255,255,255,0.6)' }}>
+      <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif' }}>Loading twin...</Typography>
+    </Box>
+  );
+  if (!twin) return <Typography sx={{ color: 'rgba(255,255,255,0.6)', p: 4 }}>Digital twin not found</Typography>;
 
   return (
-    <Box>
-      <Button startIcon={<ArrowBack />} onClick={() => navigate('/')} sx={{ mb: 2 }}>
+    <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
+      <Button
+        startIcon={<ArrowBack />}
+        onClick={() => navigate('/')}
+        sx={{ mb: 3, color: 'rgba(255,255,255,0.7)', textTransform: 'none', '&:hover': { color: '#fff', bgcolor: 'rgba(255,255,255,0.05)' } }}
+      >
         Back to Dashboard
       </Button>
-      
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Box>
-            <Typography variant="h4">{twin.name}</Typography>
-            <Chip label={twin.status} color={getStatusColor(twin.status)} sx={{ mt: 1 }} />
-          </Box>
-          <Box>
-            <Button startIcon={<Edit />} sx={{ mr: 1 }}>Edit</Button>
-            {(twin.status === 'trained' || twin.status === 'training') && (
-              <Button variant="contained" startIcon={<PlayArrow />} onClick={() => activateMutation.mutate()}>
-                Activate
+
+      {/* Main Twin Info Card */}
+      <Card sx={{
+        background: 'rgba(255,255,255,0.03)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255,255,255,0.05)',
+        borderRadius: '16px',
+        color: '#fff',
+        mb: 4,
+      }}>
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+            <Box>
+              <Typography variant="h4" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 700, color: '#fff' }}>{twin.name}</Typography>
+              <Chip
+                label={twin.status}
+                size="small"
+                sx={{
+                  mt: 1,
+                  bgcolor: twin.status === 'active' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                  color: twin.status === 'active' ? '#34D399' : '#FBBF24',
+                  border: `1px solid ${twin.status === 'active' ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                  fontFamily: '"Outfit", sans-serif',
+                  fontWeight: 600,
+                }}
+              />
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                startIcon={<Edit />}
+                sx={{ color: 'rgba(255,255,255,0.6)', textTransform: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', px: 2 }}
+              >
+                Edit
               </Button>
-            )}
-            {twin.status === 'active' && (
-              <Button variant="outlined" startIcon={<Pause />}>Pause</Button>
-            )}
+              {(twin.status === 'trained' || twin.status === 'training') && (
+                <Button
+                  variant="contained"
+                  startIcon={<PlayArrow />}
+                  onClick={() => activateMutation.mutate()}
+                  sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', textTransform: 'none', borderRadius: '10px', '&:hover': { background: 'linear-gradient(135deg, #5046e5, #7c3aed)' } }}
+                >
+                  Activate
+                </Button>
+              )}
+              {twin.status === 'active' && (
+                <Button
+                  variant="outlined"
+                  startIcon={<Pause />}
+                  sx={{ color: '#FBBF24', borderColor: 'rgba(245,158,11,0.4)', textTransform: 'none', borderRadius: '10px' }}
+                >
+                  Pause
+                </Button>
+              )}
+            </Box>
           </Box>
-        </Box>
 
-        <Divider sx={{ my: 3 }} />
+          <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.06)' }} />
 
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <Typography variant="h6" gutterBottom>Description</Typography>
-            <Typography color="text.secondary">{twin.description || 'No description provided'}</Typography>
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 600, mb: 2 }}>Description</Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.7)' }}>{twin.description || 'No description provided'}</Typography>
 
-            <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>Personality Profile</Typography>
-            {twin.personality_profile ? (
-              <List dense>
-                {Object.entries(twin.personality_profile).map(([key, value]) => (
-                  <ListItem key={key}>
-                    <ListItemText primary={key} secondary={JSON.stringify(value)} />
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <Typography color="text.secondary">No personality profile configured</Typography>
-            )}
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <Typography variant="h6" gutterBottom>Communication Style</Typography>
-            {twin.communication_style ? (
-              <Card variant="outlined">
-                <CardContent>
-                  {Object.entries(twin.communication_style).map(([key, value]) => (
-                    <Box key={key} sx={{ mb: 1 }}>
-                      <Typography variant="subtitle2" color="primary">{key}</Typography>
-                      <Typography variant="body2">{value}</Typography>
-                    </Box>
+              <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 600, mt: 3, mb: 2 }}>Personality Profile</Typography>
+              {twin.personality_profile ? (
+                <List dense>
+                  {Object.entries(twin.personality_profile).map(([key, value]) => (
+                    <ListItem key={key} sx={{ px: 0 }}>
+                      <ListItemText
+                        primary={<Typography sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>{key}</Typography>}
+                        secondary={<Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>{JSON.stringify(value)}</Typography>}
+                      />
+                    </ListItem>
                   ))}
-                </CardContent>
-              </Card>
-            ) : (
-              <Typography color="text.secondary">No communication style set</Typography>
-            )}
+                </List>
+              ) : (
+                <Typography sx={{ color: 'rgba(255,255,255,0.5)' }}>No personality profile configured</Typography>
+              )}
+            </Grid>
 
-            <Typography variant="h6" gutterBottom sx={{ mt: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              Voice Samples
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 600, mb: 2 }}>Communication Style</Typography>
+              {twin.communication_style ? (
+                <Card sx={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', color: '#fff' }}>
+                  <CardContent>
+                    {Object.entries(twin.communication_style).map(([key, value]) => (
+                      <Box key={key} sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" sx={{ color: '#8B5CF6', textTransform: 'capitalize', mb: 0.5 }}>{key}</Typography>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', textTransform: 'capitalize' }}>{value}</Typography>
+                        <Divider sx={{ mt: 1.5, borderColor: 'rgba(255,255,255,0.05)' }} />
+                      </Box>
+                    ))}
+                  </CardContent>
+                </Card>
+              ) : (
+                <Typography sx={{ color: 'rgba(255,255,255,0.5)' }}>No communication style set</Typography>
+              )}
+
+
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 3, mb: 1.5 }}>
+              <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 600 }}>Voice Samples</Typography>
               <Box>
                 <input
                   type="file"
@@ -238,42 +287,51 @@ const DigitalTwinDetail = () => {
                   accept="audio/*"
                   style={{ display: 'none' }}
                 />
-                <Button 
-                  size="small" 
-                  startIcon={<CloudUpload />} 
+                <Button
+                  size="small"
+                  startIcon={<CloudUpload />}
                   onClick={() => voiceInputRef.current?.click()}
                   disabled={uploadStatus === 'voice_uploading'}
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '8px',
+                    textTransform: 'none',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.2)' },
+                    '&.Mui-disabled': { color: 'rgba(255,255,255,0.3)' }
+                  }}
                 >
                   {uploadStatus === 'voice_uploading' ? 'Uploading...' : 'Upload'}
                 </Button>
               </Box>
-            </Typography>
+            </Box>
 
-            {twin.voice_samples && twin.voice_samples.length > 0 ? (
-              <List dense sx={{ bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 2 }}>
-                {twin.voice_samples.map((sample, index) => (
-                  <ListItem 
-                    key={sample.id || index}
-                    secondaryAction={
-                      <IconButton edge="end" size="small" onClick={() => {
-                        const baseUrl = (process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api/v1').replace('/api/v1', '');
-                        const audio = new Audio(`${baseUrl}${sample.url}`);
-                        audio.play();
-                      }}>
-                        <PlayArrow fontSize="small" />
-                      </IconButton>
-                    }
-                  >
-                    <ListItemText 
-                      primary={sample.filename} 
-                      secondary={`${(sample.size / 1024).toFixed(1)} KB • ${new Date(sample.uploaded_at).toLocaleDateString()}`}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <Typography color="text.secondary">No voice samples uploaded</Typography>
-            )}
+
+              {twin.voice_samples && twin.voice_samples.length > 0 ? (
+                <List dense sx={{ bgcolor: 'rgba(255,255,255,0.02)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  {twin.voice_samples.map((sample, index) => (
+                    <ListItem
+                      key={sample.id || index}
+                      secondaryAction={
+                        <IconButton edge="end" size="small" sx={{ color: 'rgba(255,255,255,0.6)', '&:hover': { color: '#6366F1' } }} onClick={() => {
+                          const baseUrl = (process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api/v1').replace('/api/v1', '');
+                          const audio = new Audio(`${baseUrl}${sample.url}`);
+                          audio.play();
+                        }}>
+                          <PlayArrow fontSize="small" />
+                        </IconButton>
+                      }
+                    >
+                      <ListItemText
+                        primary={<Typography sx={{ color: '#fff', fontSize: '0.875rem' }}>{sample.filename}</Typography>}
+                        secondary={<Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)' }}>{`${(sample.size / 1024).toFixed(1)} KB • ${new Date(sample.uploaded_at).toLocaleDateString()}`}</Typography>}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Typography sx={{ color: 'rgba(255,255,255,0.5)' }}>No voice samples uploaded</Typography>
+              )}
 
             <Divider sx={{ my: 3 }} />
             
@@ -411,98 +469,115 @@ const DigitalTwinDetail = () => {
 
           </Grid>
         </Grid>
-      </Paper>
+        </CardContent>
+      </Card>
 
 
       {/* ========== KNOWLEDGE BASE SECTION ========== */}
-      <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>📚 Knowledge Base</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Upload PDFs or text files to train your Digital Twin with business-specific knowledge.
-            </Typography>
-          </Box>
-          <Box>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-              accept=".pdf,.txt"
-              style={{ display: 'none' }}
-            />
-            <Button
-              variant="contained"
-              startIcon={<CloudUpload />}
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploadStatus === 'uploading'}
-              sx={{ 
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                '&:hover': { background: 'linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%)' }
-              }}
-            >
-              {uploadStatus === 'uploading' ? 'Uploading...' : 'Upload Document'}
-            </Button>
-          </Box>
-        </Box>
-
-        {uploadStatus === 'uploading' && (
-          <Box sx={{ mb: 2 }}>
-            <LinearProgress sx={{ borderRadius: 2 }} />
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              Processing your document... Extracting text and creating knowledge chunks...
-            </Typography>
-          </Box>
-        )}
-
-        {docsLoading ? (
-          <LinearProgress />
-        ) : documents.length === 0 ? (
-          <Alert severity="info" sx={{ borderRadius: 2 }}>
-            No documents uploaded yet. Upload a PDF or TXT file to give your AI Twin specific business knowledge!
-          </Alert>
-        ) : (
-          <Box>
-            {documents.map((doc) => (
-              <Paper
-                key={doc.id}
-                variant="outlined"
+      <Card sx={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', color: '#fff', mt: 4 }}>
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+            <Box>
+              <Typography variant="h5" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 700, mb: 0.5 }}>📚 Knowledge Base</Typography>
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                Upload PDFs or text files to train your Digital Twin with business-specific knowledge.
+              </Typography>
+            </Box>
+            <Box>
+              <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".pdf,.txt" style={{ display: 'none' }} />
+              <Button
+                variant="contained"
+                startIcon={<CloudUpload />}
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadStatus === 'uploading'}
                 sx={{
-                  p: 2, mb: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  borderRadius: 2, '&:hover': { bgcolor: '#f5f5f5' }
+                  background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                  textTransform: 'none',
+                  borderRadius: '10px',
+                  fontFamily: '"Outfit", sans-serif',
+                  '&:hover': { background: 'linear-gradient(135deg, #5046e5, #7c3aed)' },
+                  '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.3)' }
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Description color="primary" />
-                  <Box>
-                    <Typography variant="subtitle2">{doc.filename}</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {formatFileSize(doc.file_size)} • {doc.chunk_count} chunks • 
-                      <Chip 
-                        label={doc.status} 
-                        size="small" 
-                        color={doc.status === 'ready' ? 'success' : 'warning'} 
-                        sx={{ ml: 1, height: 20, fontSize: '11px' }} 
-                      />
-                    </Typography>
-                  </Box>
-                </Box>
-                <IconButton 
-                  color="error" 
-                  size="small" 
-                  onClick={() => deleteMutation.mutate(doc.id)}
-                  title="Delete document"
-                >
-                  <Delete />
-                </IconButton>
-              </Paper>
-            ))}
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-              💡 Tip: The more detailed your documents, the better your AI Twin can answer customer questions!
-            </Typography>
+                {uploadStatus === 'uploading' ? 'Uploading...' : 'Upload Document'}
+              </Button>
+            </Box>
           </Box>
-        )}
-      </Paper>
+
+          {uploadStatus === 'uploading' && (
+            <Box sx={{ mb: 3 }}>
+              <LinearProgress sx={{ borderRadius: 2, bgcolor: 'rgba(255,255,255,0.1)', '& .MuiLinearProgress-bar': { background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' } }} />
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', mt: 1 }}>
+                Processing your document... Extracting text and creating knowledge chunks...
+              </Typography>
+            </Box>
+          )}
+
+          {docsLoading ? (
+            <LinearProgress sx={{ borderRadius: 2, bgcolor: 'rgba(255,255,255,0.1)', '& .MuiLinearProgress-bar': { background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' } }} />
+          ) : documents.length === 0 ? (
+            <Alert
+              severity="info"
+              sx={{
+                borderRadius: '12px',
+                background: 'rgba(99,102,241,0.08)',
+                border: '1px solid rgba(99,102,241,0.2)',
+                color: 'rgba(255,255,255,0.8)',
+                '& .MuiAlert-icon': { color: '#8B5CF6' }
+              }}
+            >
+              No documents uploaded yet. Upload a PDF or TXT file to give your AI Twin specific business knowledge!
+            </Alert>
+          ) : (
+            <Box>
+              {documents.map((doc) => (
+                <Box
+                  key={doc.id}
+                  sx={{
+                    p: 2, mb: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    transition: 'all 0.2s ease',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.1)' }
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ p: 1, borderRadius: '8px', bgcolor: 'rgba(99,102,241,0.1)', color: '#8B5CF6' }}>
+                      <Description sx={{ fontSize: 20 }} />
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ color: '#fff' }}>{doc.filename}</Typography>
+                      <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                        {formatFileSize(doc.file_size)} • {doc.chunk_count} chunks •{' '}
+                        <Chip
+                          label={doc.status}
+                          size="small"
+                          sx={{
+                            ml: 0.5, height: 18, fontSize: '10px',
+                            bgcolor: doc.status === 'ready' ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
+                            color: doc.status === 'ready' ? '#34D399' : '#FBBF24',
+                          }}
+                        />
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <IconButton
+                    size="small"
+                    onClick={() => deleteMutation.mutate(doc.id)}
+                    title="Delete document"
+                    sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#EF4444', bgcolor: 'rgba(239,68,68,0.1)' } }}
+                  >
+                    <Delete sx={{ fontSize: 20 }} />
+                  </IconButton>
+                </Box>
+              ))}
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)', mt: 2 }}>
+                💡 Tip: The more detailed your documents, the better your AI Twin can answer customer questions!
+              </Typography>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
 
       <Snackbar
         open={snackbar.open}

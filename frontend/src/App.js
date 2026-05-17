@@ -19,6 +19,8 @@ import Pricing from './pages/Pricing';
 import Guide from './pages/Guide';
 import AdminDashboard from './admin/AdminDashboard';
 
+import DashboardLayout from './components/DashboardLayout';
+
 function App() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -35,25 +37,23 @@ function App() {
         <Route path="/api-reference" element={<Docs />} />
         <Route path="/guides" element={<Docs />} />
         <Route path="/support" element={<Docs />} />
-        <Route path="/voice-agent" element={<VoiceAgent />} />
         <Route path="/pricing" element={<Pricing />} />
-        <Route path="/guide" element={<Guide />} />
 
+        {/* Authenticated Routes with Dashboard Layout */}
         <Route path="/*" element={
-          <>
-            <Navbar />
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-              <Routes>
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/businesses" element={<ProtectedRoute><Businesses /></ProtectedRoute>} />
-                <Route path="/create-twin" element={<ProtectedRoute><CreateTwin /></ProtectedRoute>} />
-                <Route path="/twins/:id" element={<ProtectedRoute><DigitalTwinDetail /></ProtectedRoute>} />
-                <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-              </Routes>
-            </Box>
-          </>
+          <DashboardLayout>
+            <Routes>
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/businesses" element={<ProtectedRoute><Businesses /></ProtectedRoute>} />
+              <Route path="/create-twin" element={<ProtectedRoute><CreateTwin /></ProtectedRoute>} />
+              <Route path="/twins/:id" element={<ProtectedRoute><DigitalTwinDetail /></ProtectedRoute>} />
+              <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/guide" element={<ProtectedRoute><Guide /></ProtectedRoute>} />
+              <Route path="/voice-agent" element={<ProtectedRoute><VoiceAgent /></ProtectedRoute>} />
+            </Routes>
+          </DashboardLayout>
         } />
       </Routes>
     </Box>
