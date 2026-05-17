@@ -11,8 +11,15 @@ from ..models import User, ManualPayment
 from ..api.auth import get_current_user
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Any
+import razorpay
+import hmac
+import hashlib
 
 router = APIRouter(prefix="/payments", tags=["Payments"])
+
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
+RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET", "")
 
 DODO_API_KEY = os.getenv("DODO_PAYMENTS_API_KEY", "")
 # Allow explicit override via env, otherwise detect from key prefix
@@ -149,6 +156,180 @@ async def submit_manual_payment(
     background_tasks.add_task(send_email_notification, payment.email, payment.transaction_id)
     
     return {"message": "Payment details submitted successfully. We will verify and activate your account soon."}
+
+
+# Razorpay Request Models
+class RazorpayOrderRequest(BaseModel):
+    plan_type: str
+
+class RazorpayVerifyRequest(BaseModel):
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+    plan_type: str
+
+# Razorpay pricing mapping in Paisa (₹1 = 100 Paisa)
+RAZORPAY_PRICES = {
+    "standard": 129900,      # ₹1,299
+    "business_pro": 299900   # ₹2,999
+}
+
+@router.post("/razorpay/create-order")
+async def create_razorpay_order(
+    request: RazorpayOrderRequest,
+    current_user: Any = Depends(get_current_user),
+    db: Any = Depends(get_db)
+):
+    """Create a Razorpay order"""
+    if not RAZORPAY_KEY_ID or not RAZORPAY_KEY_SECRET:
+        raise HTTPException(status_code=500, detail="Razorpay API keys not configured")
+
+    plan_type = request.plan_type.lower()
+    amount_paisa = RAZORPAY_PRICES.get(plan_type)
+    
+    if not amount_paisa:
+        raise HTTPException(status_code=400, detail=f"Invalid plan type: {request.plan_type}")
+
+    try:
+        client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+        
+        # Unique receipt id
+        receipt_id = f"rcpt_{current_user.id}_{int(datetime.utcnow().timestamp())}"
+        
+        order_payload = {
+            "amount": amount_paisa,
+            "currency": "INR",
+            "receipt": receipt_id,
+            "notes": {
+                "user_id": str(current_user.id),
+                "plan_type": plan_type,
+                "email": current_user.email
+            }
+        }
+        
+        order = client.order.create(data=order_payload)
+        
+        return {
+            "order_id": order.get("id"),
+            "amount": order.get("amount"),
+            "currency": order.get("currency"),
+            "key_id": RAZORPAY_KEY_ID,
+            "user": {
+                "name": current_user.full_name or "Valued Customer",
+                "email": current_user.email,
+                "phone": current_user.phone or ""
+            }
+        }
+    except Exception as e:
+        print(f"[Razorpay] Order creation exception: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to initiate transaction: {str(e)}")
+
+@router.post("/razorpay/verify")
+async def verify_razorpay_payment(
+    request: RazorpayVerifyRequest,
+    db: Any = Depends(get_db)
+):
+    """Verify Razorpay payment signature and activate plan"""
+    if not RAZORPAY_KEY_ID or not RAZORPAY_KEY_SECRET:
+        raise HTTPException(status_code=500, detail="Razorpay API keys not configured")
+
+    try:
+        client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+        
+        # Verify payment signature
+        client.utility.verify_payment_signature({
+            "razorpay_order_id": request.razorpay_order_id,
+            "razorpay_payment_id": request.razorpay_payment_id,
+            "razorpay_signature": request.razorpay_signature
+        })
+        
+        # Securely retrieve order details to find user ID and plan type
+        order_details = client.order.fetch(request.razorpay_order_id)
+        notes = order_details.get("notes", {})
+        user_id = notes.get("user_id")
+        plan_type = notes.get("plan_type") or request.plan_type.lower()
+        
+        if not user_id:
+            raise HTTPException(status_code=400, detail="User metadata not found in order")
+            
+        user = db.query(User).filter(User.id == int(user_id)).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+            
+        # Upgrade subscription plan
+        user.subscription_plan = plan_type
+        user.subscription_status = "active"
+        
+        from datetime import datetime, timedelta
+        user.subscription_expires_at = datetime.utcnow() + timedelta(days=30)
+        
+        db.commit()
+        
+        return {"status": "success", "message": f"Subscription activated successfully for {plan_type} plan."}
+        
+    except razorpay.errors.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Payment verification failed: Invalid signature")
+    except Exception as e:
+        print(f"[Razorpay] Verification exception: {e}")
+        raise HTTPException(status_code=500, detail=f"Payment verification error: {str(e)}")
+
+@router.post("/razorpay-webhook")
+async def razorpay_webhook_endpoint(
+    request: Request,
+    x_razorpay_signature: str = Header(None, alias="X-Razorpay-Signature"),
+    db: Any = Depends(get_db)
+):
+    """Handle Razorpay Webhook Events"""
+    body = await request.body()
+    body_str = body.decode("utf-8")
+    
+    if not x_razorpay_signature:
+        raise HTTPException(status_code=400, detail="Missing signature header")
+        
+    # Verify signature
+    if RAZORPAY_WEBHOOK_SECRET:
+        try:
+            client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+            client.utility.verify_webhook_signature(
+                body_str,
+                x_razorpay_signature,
+                RAZORPAY_WEBHOOK_SECRET
+            )
+        except Exception as e:
+            print(f"[Razorpay Webhook] Signature verification failed: {e}")
+            raise HTTPException(status_code=400, detail="Invalid webhook signature")
+            
+    payload = await request.json()
+    event = payload.get("event")
+    
+    if event in ("order.paid", "payment.captured"):
+        payment_entity = payload.get("payload", {}).get("payment", {}).get("entity", {})
+        order_id = payment_entity.get("order_id")
+        
+        if order_id:
+            try:
+                # Fetch order details to get metadata securely
+                client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+                order_details = client.order.fetch(order_id)
+                notes = order_details.get("notes", {})
+                user_id = notes.get("user_id")
+                plan_type = notes.get("plan_type", "standard")
+                
+                if user_id:
+                    user = db.query(User).filter(User.id == int(user_id)).first()
+                    if user and user.subscription_plan != plan_type:
+                        user.subscription_plan = plan_type
+                        user.subscription_status = "active"
+                        
+                        from datetime import datetime, timedelta
+                        user.subscription_expires_at = datetime.utcnow() + timedelta(days=30)
+                        
+                        db.commit()
+                        print(f"✅ Webhook payment captured: Upgraded user {user_id} to {plan_type}")
+            except Exception as e:
+                print(f"[Razorpay Webhook] Error processing event: {e}")
+                
+    return {"status": "success"}
 
 
 

@@ -7,8 +7,24 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import PaymentModal from '../components/PaymentModal';
 
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 const Pricing = () => {
   const [trialLoading, setTrialLoading] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(null); // 'standard', 'pro', or null
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const { user } = useAuth();
@@ -30,6 +46,78 @@ const Pricing = () => {
       alert(err.response?.data?.detail || 'Failed to start trial');
     } finally {
       setTrialLoading(false);
+    }
+  };
+
+  // ── Razorpay Checkout ────────────────────────────────────
+  const handleRazorpayCheckout = async (planKey) => {
+    if (!user) { navigate('/login'); return; }
+    setCheckoutLoading(planKey);
+    try {
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        alert('Failed to load Razorpay SDK. Please check your internet connection or use manual payment.');
+        setCheckoutLoading(null);
+        return;
+      }
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/payments/razorpay/create-order`,
+        { plan_type: planKey },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
+
+      const { order_id, amount, currency, key_id, user: userDetails } = response.data;
+
+      const options = {
+        key: key_id,
+        amount: amount,
+        currency: currency,
+        name: 'AI Digital Twin',
+        description: `Upgrade to ${planKey === 'standard' ? 'Standard' : 'Business Pro'} Plan`,
+        image: 'https://cdn-icons-png.flaticon.com/512/8625/8625345.png',
+        order_id: order_id,
+        handler: async (response) => {
+          try {
+            const verifyRes = await axios.post(
+              `${process.env.REACT_APP_API_URL}/payments/razorpay/verify`,
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                plan_type: planKey
+              },
+              { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+            );
+
+            if (verifyRes.data.status === 'success') {
+              alert(`Success! Your account is now upgraded to ${planKey === 'standard' ? 'Standard' : 'Business Pro'}.`);
+              navigate('/dashboard');
+            } else {
+              alert('Payment verification pending. We will notify you once active.');
+            }
+          } catch (verifyErr) {
+            console.error(verifyErr);
+            alert(verifyErr.response?.data?.detail || 'Payment verification failed');
+          }
+        },
+        prefill: {
+          name: userDetails.name,
+          email: userDetails.email,
+          contact: userDetails.phone
+        },
+        theme: {
+          color: '#e11d48'
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.detail || 'Failed to initiate Razorpay checkout');
+    } finally {
+      setCheckoutLoading(null);
     }
   };
 
@@ -58,10 +146,10 @@ const Pricing = () => {
       icon: Clock,
       color: 'blue',
       loading: trialLoading,
-      disabled: trialLoading,
+      disabled: trialLoading || checkoutLoading !== null,
     },
     {
-      key: 'starter',
+      key: 'standard',
       name: 'Standard',
       price: '₹1,299',
       period: 'per month',
@@ -73,16 +161,17 @@ const Pricing = () => {
         'Knowledge Base (10 Documents)',
         'Up to 3 AI Twins',
       ],
-      cta: 'Get Standard',
-      onAction: () => handleManualCheckout({ name: 'Standard', price: '₹1,299' }),
+      cta: checkoutLoading === 'standard' ? 'Processing...' : 'Get Standard',
+      onAction: () => handleRazorpayCheckout('standard'),
       icon: Zap,
       color: 'amber',
-      loading: false,
-      disabled: false,
+      loading: checkoutLoading === 'standard',
+      disabled: trialLoading || checkoutLoading !== null,
       badge: null,
+      allowManual: true,
     },
     {
-      key: 'pro',
+      key: 'business_pro',
       name: 'Business Pro',
       price: '₹2,999',
       period: 'per month',
@@ -95,13 +184,15 @@ const Pricing = () => {
         'Knowledge Base (50 Documents)',
         'Up to 10 AI Twins',
       ],
-      cta: 'Coming Soon',
-      onAction: () => {},
+      cta: checkoutLoading === 'business_pro' ? 'Processing...' : 'Upgrade to Pro',
+      onAction: () => handleRazorpayCheckout('business_pro'),
       icon: Star,
       color: 'rose',
       popular: true,
-      upcoming: true,
-      disabled: true,
+      upcoming: false,
+      disabled: trialLoading || checkoutLoading !== null,
+      loading: checkoutLoading === 'business_pro',
+      allowManual: true,
     },
   ];
 
@@ -239,6 +330,18 @@ const Pricing = () => {
                     </>
                   )}
                 </button>
+
+                {/* Manual Payment Fallback */}
+                {plan.allowManual && (
+                  <button
+                    onClick={() => handleManualCheckout({ name: plan.name, price: plan.price })}
+                    disabled={plan.disabled}
+                    className="mt-3 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1 mx-auto"
+                  >
+                    <span>Or pay manually (UPI / Bank Transfer)</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </button>
+                )}
               </motion.div>
             ))}
           </div>
