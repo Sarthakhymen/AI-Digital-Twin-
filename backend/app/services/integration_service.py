@@ -27,7 +27,7 @@ class IntegrationService:
                 trial_start = owner.trial_started_at
                 if trial_start.tzinfo is None:
                     trial_start = trial_start.replace(tzinfo=pytz.utc)
-                trial_end = trial_start + timedelta(days=7)
+                trial_end = trial_start + timedelta(days=3)
                 if now > trial_end:
                     owner.subscription_status = "expired"
                     db.commit()

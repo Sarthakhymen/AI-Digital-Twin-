@@ -458,12 +458,12 @@ async def start_trial(
     current_user.trial_started_at = datetime.utcnow()
     current_user.subscription_plan = "free"
     current_user.subscription_status = "active"
-    current_user.subscription_expires_at = datetime.utcnow() + timedelta(days=7)
+    current_user.subscription_expires_at = datetime.utcnow() + timedelta(days=3)
     current_user.has_used_trial = True
     current_user.message_count = 0  # Reset message count
     
     db.commit()
-    return {"message": "Free trial started successfully! You get 50 AI messages and website embedding for 7 days."}
+    return {"message": "Free trial started successfully! You get 50 AI messages and website embedding for 3 days."}
 
 # ============ Plan Limits Config ============
 PLAN_LIMITS = {
@@ -471,6 +471,7 @@ PLAN_LIMITS = {
         "max_messages": 50,
         "features": ["website_embed"],
         "whatsapp": False,
+        "whatsapp_basic": False,
         "voice_agent": False,
         "analytics": False,
         "knowledge_docs": 1,
@@ -478,8 +479,9 @@ PLAN_LIMITS = {
     },
     "standard": {
         "max_messages": -1, # Unlimited
-        "features": ["website_embed", "analytics"],
-        "whatsapp": False,
+        "features": ["website_embed", "analytics", "whatsapp_basic"],
+        "whatsapp": True,        # Basic WhatsApp — customer chat interaction only
+        "whatsapp_basic": True,  # Flag: basic mode (no meeting/booking actions)
         "voice_agent": False,
         "analytics": True,
         "knowledge_docs": 10,
@@ -487,10 +489,13 @@ PLAN_LIMITS = {
     },
     "business_pro": {
         "max_messages": -1,  # Unlimited
-        "features": ["website_embed", "whatsapp", "voice_agent", "analytics", "priority_support"],
+        "features": ["website_embed", "whatsapp", "whatsapp_advanced", "voice_agent", "analytics", "priority_support"],
         "whatsapp": True,
+        "whatsapp_basic": True,
+        "whatsapp_advanced": True,  # Full WhatsApp: meeting scheduling, table booking, etc.
         "voice_agent": True,
         "analytics": True,
+        "advanced_analytics": True,
         "knowledge_docs": 50,
         "max_twins": 10
     }

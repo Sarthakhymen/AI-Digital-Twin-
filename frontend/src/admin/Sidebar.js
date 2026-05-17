@@ -19,6 +19,7 @@ const Sidebar = ({ activeTab, setTab }) => {
     { id: 3, label: 'Digital Twins', icon: Bot },
     { id: 4, label: 'System Health', icon: Activity },
     { id: 5, label: 'DB Console', icon: Terminal },
+    { id: 6, label: 'Pro Waitlist', icon: Users },
   ];
 
   return (

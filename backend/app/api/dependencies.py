@@ -30,9 +30,9 @@ def check_subscription_status(user: User):
     """Check if the user's subscription is valid and not expired."""
     # Free trial expiry check
     if user.subscription_plan == "free" and user.trial_started_at:
-        # Check if 7 days have passed
+        # Check if 3 days have passed
         now = datetime.now(pytz.utc)
-        trial_end = user.trial_started_at + timedelta(days=7)
+        trial_end = user.trial_started_at + timedelta(days=3)
         if now > trial_end:
             user.subscription_status = "expired"
             raise HTTPException(

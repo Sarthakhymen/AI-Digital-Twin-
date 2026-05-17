@@ -18,7 +18,7 @@ const Sidebar = () => {
     { name: 'Businesses', href: '/businesses', icon: Building2 },
     { name: 'Create Twin', href: '/create-twin', icon: PlusCircle },
     ...(userFeatures?.advanced_analytics ? [{ name: 'Analytics', href: '/analytics', icon: BarChart3 }] : []),
-    { name: 'Knowledge Base', href: '/guide', icon: BookOpen },
+    { name: 'Setup Guide', href: '/guide', icon: BookOpen },
     ...(userFeatures?.voice_agent ? [{ name: 'Voice Agent', href: '/voice-agent', icon: Mic }] : []),
     { name: 'Settings', href: '/settings', icon: Settings },
     ...(user?.is_admin || ["sarthak2005shavarn@gmail.com", "nexora.aidigital.twin@gmail.com"].includes(user?.email) ? [{ name: 'Admin', href: '/admin', icon: Shield, special: true }] : [])

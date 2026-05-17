@@ -77,6 +77,8 @@ def get_user_features(current_user: Any = Depends(get_current_active_user)):
         "advanced_analytics": custom_features.get("advanced_analytics", base_features.get("advanced_analytics", False)),
         "voice_agent": custom_features.get("voice_agent", base_features.get("voice_agent", False)),
         "whatsapp": custom_features.get("whatsapp", base_features.get("whatsapp", False)),
+        "whatsapp_basic": custom_features.get("whatsapp_basic", base_features.get("whatsapp_basic", False)),
+        "whatsapp_advanced": custom_features.get("whatsapp_advanced", base_features.get("whatsapp_advanced", False)),
         "api_access": custom_features.get("api_access", base_features.get("api_access", False))
     }
 

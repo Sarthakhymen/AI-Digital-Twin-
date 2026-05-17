@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from typing import List, Dict, Any
@@ -6,7 +6,7 @@ import platform
 from datetime import datetime
 
 from ..database import get_db, engine
-from ..models import User, ManualPayment, DigitalTwin, Business
+from ..models import User, ManualPayment, DigitalTwin, Business, ProWaitlist
 from .auth import get_current_user
 from ..schemas import UserResponse, DigitalTwinResponse
 from pydantic import BaseModel, EmailStr
@@ -190,4 +190,72 @@ def list_tables(db: Any = Depends(get_db), admin_user: Any = Depends(check_admin
         return [row[0] for row in result if not row[0].startswith('sqlite_')]
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+# ============ Business Pro Waitlist ============
+
+class WaitlistJoinRequest(BaseModel):
+    full_name: str
+    email: EmailStr
+    phone: str = ""
+    business_name: str = ""
+    message: str = ""
+
+@router.post("/waitlist/join")
+async def join_pro_waitlist(
+    request: WaitlistJoinRequest,
+    db: Any = Depends(get_db)
+):
+    """Public endpoint: Join the Business Pro waitlist queue"""
+    # Check if already in waitlist
+    existing = db.query(ProWaitlist).filter(ProWaitlist.email == request.email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="You're already on the waitlist! We'll reach out soon.")
+    
+    entry = ProWaitlist(
+        full_name=request.full_name,
+        email=request.email,
+        phone=request.phone,
+        business_name=request.business_name,
+        message=request.message,
+        status="waiting"
+    )
+    db.add(entry)
+    db.commit()
+    db.refresh(entry)
+    
+    return {"message": "You've been added to the Business Pro waitlist! We'll notify you when it launches."}
+
+@router.get("/waitlist")
+def list_waitlist(db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
+    """Admin: List all waitlist entries"""
+    entries = db.query(ProWaitlist).order_by(ProWaitlist.created_at.desc()).all()
+    return [
+        {
+            "id": e.id,
+            "full_name": e.full_name,
+            "email": e.email,
+            "phone": e.phone,
+            "business_name": e.business_name,
+            "message": e.message,
+            "status": e.status,
+            "created_at": e.created_at.isoformat() if e.created_at else None
+        }
+        for e in entries
+    ]
+
+class WaitlistStatusUpdate(BaseModel):
+    status: str  # 'waiting', 'contacted', 'converted'
+
+@router.put("/waitlist/{entry_id}")
+def update_waitlist_status(entry_id: int, update: WaitlistStatusUpdate, db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
+    """Admin: Update waitlist entry status"""
+    entry = db.query(ProWaitlist).filter(ProWaitlist.id == entry_id).first()
+    if not entry:
+        raise HTTPException(status_code=404, detail="Waitlist entry not found")
+    
+    entry.status = update.status
+    db.commit()
+    return {"message": f"Waitlist entry updated to '{update.status}'."}
+
 

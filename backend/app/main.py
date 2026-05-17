@@ -105,6 +105,35 @@ def run_migrations():
                     """))
                 except Exception:
                     pass
+
+            # Create pro_waitlist table
+            if "sqlite" in str(engine.url):
+                conn.execute(text("""
+                    CREATE TABLE IF NOT EXISTS pro_waitlist (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        full_name VARCHAR(255) NOT NULL,
+                        email VARCHAR(255) NOT NULL UNIQUE,
+                        phone VARCHAR(50),
+                        business_name VARCHAR(255),
+                        message TEXT,
+                        status VARCHAR(50) DEFAULT 'waiting',
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    );
+                """))
+            else:
+                conn.execute(text("""
+                    CREATE TABLE IF NOT EXISTS pro_waitlist (
+                        id SERIAL PRIMARY KEY,
+                        full_name VARCHAR(255) NOT NULL,
+                        email VARCHAR(255) NOT NULL UNIQUE,
+                        phone VARCHAR(50),
+                        business_name VARCHAR(255),
+                        message TEXT,
+                        status VARCHAR(50) DEFAULT 'waiting',
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    );
+                """))
+
     except Exception as e:
         print(f"Migration error: {e}")
 

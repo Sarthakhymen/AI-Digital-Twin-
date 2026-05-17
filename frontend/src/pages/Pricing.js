@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Check, Star, Zap, Shield, Rocket, Clock, Loader2, ExternalLink } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Check, Star, Zap, Shield, Rocket, Clock, Loader2, ExternalLink, X, Sparkles, ArrowRight, Users } from 'lucide-react';
 import LandingNavbar from '../components/LandingNavbar';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -27,6 +27,10 @@ const Pricing = () => {
   const [checkoutLoading, setCheckoutLoading] = useState(null); // 'standard', 'pro', or null
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [showWaitlistModal, setShowWaitlistModal] = useState(false);
+  const [waitlistForm, setWaitlistForm] = useState({ full_name: '', email: '', phone: '', business_name: '', message: '' });
+  const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [waitlistSuccess, setWaitlistSuccess] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -40,7 +44,7 @@ const Pricing = () => {
         {},
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
-      alert('Trial activated! You have 7 days of free access with 50 AI messages.');
+      alert('Trial activated! You have 3 days of free access with 50 AI messages.');
       navigate('/dashboard');
     } catch (err) {
       alert(err.response?.data?.detail || 'Failed to start trial');
@@ -127,12 +131,33 @@ const Pricing = () => {
     setIsModalOpen(true);
   };
 
+  // ── Join Waitlist ────────────────────────────────────────
+  const handleWaitlistSubmit = async (e) => {
+    e.preventDefault();
+    if (!waitlistForm.full_name || !waitlistForm.email) {
+      alert('Please fill in your name and email.');
+      return;
+    }
+    setWaitlistLoading(true);
+    try {
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/admin/waitlist/join`,
+        waitlistForm
+      );
+      setWaitlistSuccess(true);
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Failed to join waitlist');
+    } finally {
+      setWaitlistLoading(false);
+    }
+  };
+
   const plans = [
     {
       key: 'free',
       name: 'Free Trial',
       price: '₹0',
-      period: 'for 7 days',
+      period: 'for 3 days',
       description: 'Test the magic of AI Twins with zero commitment.',
       features: [
         '50 AI Interactions limit',
@@ -141,7 +166,7 @@ const Pricing = () => {
         'Sub-100ms response time',
         'No credit card required',
       ],
-      cta: trialLoading ? 'Activating...' : 'Start 7-Day Trial',
+      cta: trialLoading ? 'Activating...' : 'Start 3-Day Trial',
       onAction: handleTrial,
       icon: Clock,
       color: 'blue',
@@ -157,6 +182,7 @@ const Pricing = () => {
       features: [
         'Unlimited AI Interactions',
         'Web Chat Widget Integration',
+        'WhatsApp Integration (Basic)',
         'Basic Analytics Dashboard',
         'Knowledge Base (10 Documents)',
         'Up to 3 AI Twins',
@@ -177,22 +203,23 @@ const Pricing = () => {
       period: 'per month',
       description: 'Unleash the full potential of your AI Twin.',
       features: [
-        'Unlimited AI interactions',
-        'WhatsApp & Web Chat integration',
+        'Everything in Standard',
+        'WhatsApp Advanced (Meetings, Bookings)',
+        'AI Voice Agent Integration',
         'Advanced Analytics Dashboard',
         'Priority Support via WhatsApp',
         'Knowledge Base (50 Documents)',
         'Up to 10 AI Twins',
       ],
-      cta: checkoutLoading === 'business_pro' ? 'Processing...' : 'Upgrade to Pro',
-      onAction: () => handleRazorpayCheckout('business_pro'),
+      cta: 'Coming Soon',
+      onAction: () => setShowWaitlistModal(true),
       icon: Star,
       color: 'rose',
       popular: true,
-      upcoming: false,
-      disabled: trialLoading || checkoutLoading !== null,
-      loading: checkoutLoading === 'business_pro',
-      allowManual: true,
+      comingSoon: true,
+      disabled: false,
+      loading: false,
+      allowManual: false,
     },
   ];
 
@@ -245,7 +272,7 @@ const Pricing = () => {
                 {plan.popular && (
                   <div className="absolute top-0 right-8 -translate-y-1/2">
                     <span className="bg-gradient-to-r from-rose-500 to-red-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg shadow-rose-500/20">
-                      Most Popular
+                      Coming Soon
                     </span>
                   </div>
                 )}
@@ -266,9 +293,9 @@ const Pricing = () => {
 
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
-                    {plan.upcoming && (
+                    {plan.comingSoon && (
                       <span className="bg-rose-500/20 text-rose-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border border-rose-500/30">
-                        Upcoming
+                        Soon
                       </span>
                     )}
                   </div>
@@ -278,7 +305,7 @@ const Pricing = () => {
                 {/* Price */}
                 <div className="mb-8 text-left">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-black text-white">{plan.price}</span>
+                    <span className={`text-5xl font-black ${plan.comingSoon ? 'text-slate-500' : 'text-white'}`}>{plan.price}</span>
                     <span className="text-slate-500 font-medium text-sm">{plan.period}</span>
                   </div>
                 </div>
@@ -308,12 +335,12 @@ const Pricing = () => {
                 {/* CTA Button */}
                 <button
                   onClick={plan.onAction}
-                  disabled={plan.disabled}
+                  disabled={plan.disabled && !plan.comingSoon}
                   className={`w-full py-4 rounded-2xl font-bold text-base transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 ${
-                    plan.disabled && !plan.loading
+                    plan.comingSoon
+                      ? 'bg-gradient-to-r from-rose-500/80 to-red-600/80 text-white shadow-xl shadow-rose-500/20 hover:from-rose-500 hover:to-red-600 hover:-translate-y-0.5 cursor-pointer'
+                    : plan.disabled && !plan.loading
                       ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                    : plan.popular
-                      ? 'bg-gradient-to-r from-rose-500 to-red-600 text-white shadow-xl shadow-rose-500/20 hover:from-rose-600 hover:to-red-700 hover:-translate-y-0.5'
                     : plan.color === 'amber'
                       ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xl shadow-amber-500/20 hover:from-amber-600 hover:to-orange-600 hover:-translate-y-0.5'
                       : 'bg-white text-slate-900 hover:bg-slate-100 hover:-translate-y-0.5'
@@ -323,6 +350,11 @@ const Pricing = () => {
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
                       {plan.cta}
+                    </>
+                  ) : plan.comingSoon ? (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      Join the Queue
                     </>
                   ) : (
                     <>
@@ -385,6 +417,157 @@ const Pricing = () => {
         plan={selectedPlan}
         userEmail={user?.email}
       />
+
+      {/* ── Business Pro Waitlist Modal ── */}
+      <AnimatePresence>
+        {showWaitlistModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4"
+            onClick={() => { setShowWaitlistModal(false); setWaitlistSuccess(false); }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="bg-slate-900 border border-slate-700/50 rounded-[2rem] w-full max-w-lg overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="relative p-8 pb-6 border-b border-slate-800">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 via-purple-500 to-rose-500" />
+                <button
+                  onClick={() => { setShowWaitlistModal(false); setWaitlistSuccess(false); }}
+                  className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-500/20 to-purple-500/20 border border-rose-500/30 flex items-center justify-center">
+                    <Sparkles className="w-7 h-7 text-rose-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black text-white">Join the Queue</h2>
+                    <p className="text-sm text-slate-400 mt-0.5">Be first in line for Business Pro</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-8">
+                {waitlistSuccess ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center py-6"
+                  >
+                    <div className="w-20 h-20 rounded-full bg-emerald-500/10 border-2 border-emerald-500/30 flex items-center justify-center mx-auto mb-6">
+                      <Check className="w-10 h-10 text-emerald-400" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2">You're on the list! 🎉</h3>
+                    <p className="text-slate-400 text-sm leading-relaxed max-w-sm mx-auto">
+                      We'll notify you as soon as Business Pro launches. Get ready for AI-powered meetings, bookings, and advanced WhatsApp automation.
+                    </p>
+                    <button
+                      onClick={() => { setShowWaitlistModal(false); setWaitlistSuccess(false); }}
+                      className="mt-8 px-8 py-3 bg-white text-slate-900 rounded-xl font-bold hover:bg-slate-100 transition-all"
+                    >
+                      Got it!
+                    </button>
+                  </motion.div>
+                ) : (
+                  <form onSubmit={handleWaitlistSubmit} className="space-y-4">
+                    <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+                      Business Pro includes <span className="text-white font-semibold">AI meeting scheduling, table bookings, voice agent</span>, and advanced WhatsApp automation. Drop your details and we'll reach out when it's ready.
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Full Name *</label>
+                        <input
+                          type="text"
+                          required
+                          value={waitlistForm.full_name}
+                          onChange={(e) => setWaitlistForm({ ...waitlistForm, full_name: e.target.value })}
+                          className="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all placeholder:text-slate-500"
+                          placeholder="Your name"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Email *</label>
+                        <input
+                          type="email"
+                          required
+                          value={waitlistForm.email}
+                          onChange={(e) => setWaitlistForm({ ...waitlistForm, email: e.target.value })}
+                          className="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all placeholder:text-slate-500"
+                          placeholder="you@company.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Phone</label>
+                        <input
+                          type="tel"
+                          value={waitlistForm.phone}
+                          onChange={(e) => setWaitlistForm({ ...waitlistForm, phone: e.target.value })}
+                          className="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all placeholder:text-slate-500"
+                          placeholder="+91 9876543210"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Business Name</label>
+                        <input
+                          type="text"
+                          value={waitlistForm.business_name}
+                          onChange={(e) => setWaitlistForm({ ...waitlistForm, business_name: e.target.value })}
+                          className="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all placeholder:text-slate-500"
+                          placeholder="Your business"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">What are you looking for?</label>
+                      <textarea
+                        value={waitlistForm.message}
+                        onChange={(e) => setWaitlistForm({ ...waitlistForm, message: e.target.value })}
+                        rows={3}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none placeholder:text-slate-500"
+                        placeholder="Tell us about your use case (optional)"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={waitlistLoading}
+                      className="w-full py-4 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-xl font-bold text-base hover:from-rose-600 hover:to-red-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-500/20 disabled:opacity-60"
+                    >
+                      {waitlistLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Joining...
+                        </>
+                      ) : (
+                        <>
+                          <Users className="w-4 h-4" />
+                          Join the Queue
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

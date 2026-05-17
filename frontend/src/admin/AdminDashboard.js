@@ -20,6 +20,7 @@ import AdminUsers from './AdminUsers';
 import AdminPayments from './AdminPayments';
 import AdminSystem from './AdminSystem';
 import AdminDatabase from './AdminDatabase';
+import AdminWaitlist from './AdminWaitlist';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -32,22 +33,25 @@ const AdminDashboard = () => {
   const [queryResult, setQueryResult] = useState(null);
   const [tables, setTables] = useState([]);
   const [editingUserFeatures, setEditingUserFeatures] = useState(null);
+  const [waitlist, setWaitlist] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [statusRes, usersRes, paymentsRes, twinsRes] = await Promise.all([
+      const [statusRes, usersRes, paymentsRes, twinsRes, waitlistRes] = await Promise.all([
         api.get('/admin/status'),
         api.get('/admin/users'),
         api.get('/admin/payments'),
-        api.get('/admin/digital-twins')
+        api.get('/admin/digital-twins'),
+        api.get('/admin/waitlist').catch(() => ({ data: [] }))
       ]);
       setStatus(statusRes.data);
       setUsers(usersRes.data);
       setPayments(paymentsRes.data);
       setTwins(twinsRes.data);
+      setWaitlist(waitlistRes.data);
     } catch (err) {
       console.error(err.response?.data?.detail || "Failed to fetch admin data");
     } finally {
@@ -118,6 +122,15 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleWaitlistStatusUpdate = async (entryId, newStatus) => {
+    try {
+      await api.put(`/admin/waitlist/${entryId}`, { status: newStatus });
+      setWaitlist(prev => prev.map(e => e.id === entryId ? { ...e, status: newStatus } : e));
+    } catch (err) {
+      alert('Failed to update waitlist status: ' + (err.response?.data?.detail || err.message));
+    }
+  };
+
   // Calculate stats
   const totalRevenue = payments
     .filter(p => p.status === 'verified')
@@ -145,7 +158,7 @@ const AdminDashboard = () => {
         <header className="sticky top-0 z-10 px-8 py-6 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/50 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-bold text-white">
-              {['Overview', 'User Management', 'Payments', 'Digital Twins', 'System Health', 'Database'][activeTab]}
+              {['Overview', 'User Management', 'Payments', 'Digital Twins', 'System Health', 'Database', 'Pro Waitlist'][activeTab]}
             </h1>
             <div className="h-6 w-px bg-slate-800" />
             <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
@@ -348,6 +361,20 @@ const AdminDashboard = () => {
                   onRunQuery={runQuery} 
                   result={queryResult} 
                   tables={tables}
+                />
+              </motion.div>
+            )}
+            {activeTab === 6 && (
+              <motion.div 
+                key="waitlist"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+              >
+                <AdminWaitlist 
+                  waitlist={waitlist} 
+                  onStatusUpdate={handleWaitlistStatusUpdate}
+                  loading={loading}
                 />
               </motion.div>
             )}
