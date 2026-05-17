@@ -151,7 +151,7 @@ const Pricing = () => {
     {
       key: 'standard',
       name: 'Standard',
-      price: '₹1,299',
+      price: '₹1', // Testing price
       period: 'per month',
       description: 'Essential AI features for growing businesses.',
       features: [
