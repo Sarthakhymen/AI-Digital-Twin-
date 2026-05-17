@@ -48,13 +48,13 @@ const PremiumBackground = () => {
       {/* Subtle animated grain/noise texture */}
       <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.02] mix-blend-overlay dark:mix-blend-normal bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9lzZSkiLz48L3N2Zz4=')] animate-pulse" />
 
-      {/* Soft radial ambient lighting */}
-      <div className="absolute top-0 left-1/4 w-[800px] h-[800px] bg-gradient-to-b from-indigo-500/10 dark:from-indigo-500/5 to-transparent rounded-full blur-[120px]" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-gradient-to-t from-rose-500/10 dark:from-rose-500/5 to-transparent rounded-full blur-[100px]" />
+      {/* Soft radial ambient lighting - Neutrals */}
+      <div className="absolute top-0 left-1/4 w-[800px] h-[800px] bg-slate-200/20 dark:bg-white/5 rounded-full blur-[120px]" />
+      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-slate-200/20 dark:bg-white/5 rounded-full blur-[100px]" />
 
       {/* Extremely subtle moving gradient mesh */}
       <motion.div
-        className="absolute inset-0 opacity-[0.05] dark:opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02]"
         animate={{
           backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
         }}
@@ -64,7 +64,7 @@ const PremiumBackground = () => {
           ease: "linear"
         }}
         style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), radial-gradient(circle at 0% 0%, rgba(244, 63, 94, 0.1) 0%, transparent 50%)',
+          background: 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 50%)',
           backgroundSize: '200% 200%'
         }}
       />
@@ -206,7 +206,7 @@ const HeroSmartphoneVisualization = () => {
         <motion.div
           className="absolute inset-0 rounded-[3rem] blur-3xl -z-10"
           style={{ background: accentColor }}
-          animate={{ opacity: [0.12, 0.22, 0.12] }}
+          animate={{ opacity: [0.05, 0.1, 0.05] }}
           transition={{ duration: 3, repeat: Infinity }}
         />
 
@@ -355,7 +355,7 @@ const Hero = () => {
               className="text-5xl sm:text-6xl md:text-7xl font-bold text-slate-900 dark:text-white tracking-tight leading-[1.1] mb-6"
             >
               <span className="block">Your intelligence,</span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+              <span className="block text-slate-600 dark:text-slate-300">
                 amplified by AI.
               </span>
             </motion.h1>
@@ -385,7 +385,7 @@ const Hero = () => {
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute inset-0 bg-white/20 dark:bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity"
                 />
               </motion.button>
 
@@ -470,10 +470,10 @@ const Features = () => {
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.2em]">Core AI Capabilities</span>
+          <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em]">Core AI Capabilities</span>
           <h2 className="mt-4 text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
             Advanced intelligence,
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+            <span className="block text-slate-600 dark:text-slate-400">
               zero compromise
             </span>
           </h2>
@@ -700,7 +700,7 @@ const CTA = () => {
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute inset-0 bg-white/20 dark:bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity"
                 />
               </motion.button>
               <motion.button

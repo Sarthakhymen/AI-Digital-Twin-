@@ -27,13 +27,11 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } }
 };
 
-// Premium Glassmorphism Mixins
+// Premium Clean Mixins
 const getGlassyStyles = (theme) => ({
-  background: theme.palette.mode === 'dark' ? 'rgba(20, 20, 25, 0.4)' : 'rgba(255, 255, 255, 0.6)',
-  backdropFilter: 'blur(24px)',
-  WebkitBackdropFilter: 'blur(24px)',
-  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.5)'}`,
-  boxShadow: theme.palette.mode === 'dark' ? '0 8px 32px 0 rgba(0, 0, 0, 0.3)' : '0 8px 32px 0 rgba(31, 38, 135, 0.05)',
+  background: theme.palette.mode === 'dark' ? '#0a0a0f' : '#ffffff',
+  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
+  boxShadow: theme.palette.mode === 'dark' ? '0 4px 24px -4px rgba(0, 0, 0, 0.3)' : '0 4px 24px -4px rgba(0, 0, 0, 0.05)',
 });
 
 const Dashboard = () => {
@@ -208,9 +206,8 @@ const Dashboard = () => {
                 fontWeight: 800, 
                 fontSize: { xs: '1.75rem', md: '2.25rem' }, 
                 letterSpacing: '-0.03em',
-                background: theme.palette.mode === 'dark' ? 'linear-gradient(to right, #ffffff, #a1a1aa)' : 'linear-gradient(to right, #18181b, #71717a)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                color: 'text.primary',
+                fontFamily: '"Outfit", sans-serif'
               }}>
                 {getGreeting()}{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}
               </Typography>
@@ -256,13 +253,11 @@ const Dashboard = () => {
                 textTransform: 'none',
                 fontWeight: 700,
                 fontSize: '0.9rem',
-                background: 'linear-gradient(135deg, #0070F3 0%, #7928CA 100%)',
-                color: 'white',
+                background: theme.palette.mode === 'dark' ? '#ffffff' : '#0a0a0f',
+                color: theme.palette.mode === 'dark' ? '#0a0a0f' : '#ffffff',
                 px: 3,
-                boxShadow: '0 4px 14px 0 rgba(121, 40, 202, 0.39)',
                 '&:hover': { 
-                  background: 'linear-gradient(135deg, #0058c6 0%, #6020a0 100%)',
-                  boxShadow: '0 6px 20px 0 rgba(121, 40, 202, 0.5)',
+                  background: theme.palette.mode === 'dark' ? '#e2e8f0' : '#1e293b',
                   transform: 'translateY(-2px)'
                 },
                 '&.Mui-disabled': { background: 'action.disabledBackground', boxShadow: 'none' },
@@ -282,10 +277,22 @@ const Dashboard = () => {
             <StatCard title="Businesses" value={stats.total_businesses || 0} icon={<Business />} color="#0070F3" />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Digital Twins" value={`${stats.total_digital_twins || 0} / ${userFeatures?.max_twins || '∞'}`} icon={<SmartToy />} color="#10B981" />
+            <StatCard 
+              title="Digital Twins" 
+              value={stats.total_digital_twins || 0} 
+              limit={userFeatures?.max_twins === -1 ? '∞' : userFeatures?.max_twins} 
+              icon={<SmartToy />} 
+              color="#10B981" 
+            />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Messages" value={`${stats.total_messages || 0} / ${userFeatures?.max_messages || '∞'}`} icon={<Chat />} color="#F59E0B" />
+            <StatCard 
+              title="Messages" 
+              value={stats.total_messages || 0} 
+              limit={userFeatures?.max_messages === -1 ? '∞' : userFeatures?.max_messages} 
+              icon={<Chat />} 
+              color="#F59E0B" 
+            />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <StatCard title="Satisfaction" value={`${stats.average_satisfaction || 0}%`} icon={<TrendingUp />} color="#7928CA" />
@@ -308,8 +315,8 @@ const Dashboard = () => {
                 position: 'relative',
               }}
             >
-              {/* Subtle top gradient line */}
-              <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, #0070F3, #7928CA, #FF0080)', opacity: 0.8 }} />
+              {/* Subtle top line */}
+              <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: '#0070F3', opacity: 0.8 }} />
               
               <Box sx={{ px: 3, py: 2.5, borderBottom: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>
@@ -341,12 +348,11 @@ const Dashboard = () => {
                           sx={{
                             cursor: 'pointer',
                             borderRadius: '16px',
-                            background: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.8)',
+                            background: theme.palette.mode === 'dark' ? '#0f111a' : '#ffffff',
                             border: '1px solid',
                             borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
                             '&:hover': { 
-                              borderColor: '#7928CA',
-                              boxShadow: '0 8px 24px -4px rgba(121, 40, 202, 0.15)'
+                              borderColor: 'rgba(255,255,255,0.12)',
                             },
                             transition: 'all 0.3s ease',
                           }}

@@ -4,13 +4,11 @@ import {
 } from 'recharts';
 import { Paper, Typography, Box, useTheme } from '@mui/material';
 
-// Premium Glassmorphism Mixins
+// Premium Clean Mixins
 const getGlassyStyles = (theme) => ({
-  background: theme.palette.mode === 'dark' ? 'rgba(20, 20, 25, 0.4)' : 'rgba(255, 255, 255, 0.6)',
-  backdropFilter: 'blur(24px)',
-  WebkitBackdropFilter: 'blur(24px)',
-  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.5)'}`,
-  boxShadow: theme.palette.mode === 'dark' ? '0 8px 32px 0 rgba(0, 0, 0, 0.3)' : '0 8px 32px 0 rgba(31, 38, 135, 0.05)',
+  background: theme.palette.mode === 'dark' ? '#0a0a0f' : '#ffffff',
+  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
+  boxShadow: theme.palette.mode === 'dark' ? '0 4px 24px -4px rgba(0, 0, 0, 0.3)' : '0 4px 24px -4px rgba(0, 0, 0, 0.05)',
 });
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -21,18 +19,18 @@ const CustomTooltip = ({ active, payload, label }) => {
       sx={{
         background: theme.palette.mode === 'dark' ? 'rgba(30, 30, 35, 0.8)' : 'rgba(255, 255, 255, 0.9)',
         backdropFilter: 'blur(12px)',
-        border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+        border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
         borderRadius: '12px',
         px: 2.5,
         py: 1.5,
-        boxShadow: theme.palette.mode === 'dark' ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 32px rgba(0,0,0,0.1)',
+        boxShadow: theme.palette.mode === 'dark' ? '0 4px 24px -4px rgba(0,0,0,0.5)' : '0 4px 24px -4px rgba(0,0,0,0.1)',
       }}
     >
       <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
         {label}
       </Typography>
       <Typography variant="body1" sx={{ fontWeight: 800, color: 'text.primary', mt: 0.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Box sx={{ width: 8, height: 8, borderRadius: '50%', background: '#0070F3', boxShadow: '0 0 10px rgba(0, 112, 243, 0.5)' }} />
+        <Box sx={{ width: 8, height: 8, borderRadius: '50%', background: '#0070F3' }} />
         {payload[0].value} conversations
       </Typography>
     </Box>
@@ -58,7 +56,7 @@ const ConversationChart = ({ data }) => {
           Conversation Trends
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ width: 12, height: 4, borderRadius: 2, background: 'linear-gradient(90deg, #0070F3, #00C6FF)', boxShadow: '0 0 10px rgba(0, 112, 243, 0.4)' }} />
+          <Box sx={{ width: 12, height: 4, borderRadius: 2, background: '#0070F3' }} />
           <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600 }}>
             Messages
           </Typography>
@@ -94,11 +92,11 @@ const ConversationChart = ({ data }) => {
           <Area
             type="monotone"
             dataKey="conversations"
-            stroke="url(#strokeGradient)"
-            strokeWidth={3}
+            stroke="#0070F3"
+            strokeWidth={2.5}
             fill="url(#colorConv)"
             dot={false}
-            activeDot={{ r: 6, fill: '#0070F3', stroke: theme.palette.mode === 'dark' ? '#1E1E24' : '#FFFFFF', strokeWidth: 3, boxShadow: '0 0 10px rgba(0, 112, 243, 0.5)' }}
+            activeDot={{ r: 5, fill: '#0070F3', stroke: theme.palette.mode === 'dark' ? '#0a0a0f' : '#FFFFFF', strokeWidth: 2 }}
             animationDuration={1500}
             animationEasing="ease-out"
           />

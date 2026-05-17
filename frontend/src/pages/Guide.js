@@ -23,12 +23,12 @@ const SmartphoneFrame = ({ children, color }) => (
     maxWidth: 240,
     height: 440,
     margin: '0 auto',
-    bgcolor: '#0f172a',
+    bgcolor: '#0a0a0f',
     borderRadius: '32px',
     border: `7px solid #1e293b`,
     position: 'relative',
     overflow: 'hidden',
-    boxShadow: `0 0 40px ${color}44`,
+    boxShadow: '0 10px 30px -10px rgba(0,0,0,0.5)',
     display: 'flex',
     flexDirection: 'column',
   }}>
@@ -39,8 +39,9 @@ const SmartphoneFrame = ({ children, color }) => (
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'flex-start',
-      bgcolor: '#0f172a',
+      bgcolor: '#0a0a0f',
       pt: 0.5,
+      zIndex: 10,
     }}>
       <Box sx={{
         width: '38%', height: 18, bgcolor: '#1e293b',
@@ -53,7 +54,7 @@ const SmartphoneFrame = ({ children, color }) => (
     </Box>
 
     {/* Screen Content */}
-    <Box sx={{ flex: 1, overflow: 'hidden', px: 2, pb: 2, pt: 1, display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ flex: 1, overflow: 'hidden', px: 2, pb: 2, pt: 1, display: 'flex', flexDirection: 'column', bgcolor: '#050505' }}>
       {children}
     </Box>
   </Box>
@@ -70,19 +71,19 @@ const Step1Anim = () => (
       >
         <Login sx={{ color: 'white', fontSize: 26 }} />
       </motion.div>
-      <Typography variant="body2" sx={{ color: 'white', fontWeight: 700, fontSize: 13 }}>Welcome Back</Typography>
+      <Typography variant="body2" sx={{ color: 'white', fontWeight: 600, fontSize: 13, fontFamily: 'Inter' }}>Welcome Back</Typography>
       <Box sx={{ width: '100%', mt: 1 }}>
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
-          style={{ height: 32, background: '#334155', borderRadius: 8, marginBottom: 10 }} />
+          style={{ height: 32, background: '#1a1a1a', border: '1px solid #333', borderRadius: 4, marginBottom: 10 }} />
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}
-          style={{ height: 32, background: '#334155', borderRadius: 8, marginBottom: 14 }} />
+          style={{ height: 32, background: '#1a1a1a', border: '1px solid #333', borderRadius: 4, marginBottom: 14 }} />
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.9 }}
-          style={{ height: 36, background: '#6366F1', borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Typography sx={{ color: 'white', fontSize: 11, fontWeight: 700 }}>Sign In</Typography>
+          style={{ height: 36, background: '#ffffff', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Typography sx={{ color: '#000000', fontSize: 12, fontWeight: 600, fontFamily: 'Inter' }}>Sign In</Typography>
         </motion.div>
       </Box>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}>
-        <Typography sx={{ color: '#94A3B8', fontSize: 10 }}>Or continue with Google</Typography>
+        <Typography sx={{ color: '#888', fontSize: 10, fontFamily: 'Inter' }}>Or continue with Google</Typography>
       </motion.div>
     </Box>
   </SmartphoneFrame>
@@ -92,23 +93,23 @@ const Step1Anim = () => (
 const Step2Anim = () => (
   <SmartphoneFrame color="#8B5CF6">
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, pt: 1 }}>
-      <Typography variant="caption" sx={{ color: '#94A3B8', fontSize: 10, fontWeight: 600 }}>DASHBOARD</Typography>
+      <Typography variant="caption" sx={{ color: '#888', fontSize: 10, fontWeight: 600, fontFamily: 'Inter' }}>DASHBOARD</Typography>
       {/* Mini stat cards */}
       <Box sx={{ display: 'flex', gap: 1 }}>
-        {[['#8B5CF6', 60], ['#334155', 40], ['#334155', 75]].map(([bg, h], i) => (
+        {[['#ffffff', 60], ['#1a1a1a', 40], ['#1a1a1a', 75]].map(([bg, h], i) => (
           <motion.div key={i} initial={{ height: 0 }} animate={{ height: h }} transition={{ delay: i * 0.15, duration: 0.5 }}
-            style={{ flex: 1, background: bg, borderRadius: 6 }} />
+            style={{ flex: 1, background: bg, borderRadius: 4, border: bg === '#ffffff' ? 'none' : '1px solid #333' }} />
         ))}
       </Box>
       <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.5 }}
-        style={{ height: 60, background: '#1e293b', borderRadius: 10, border: '1px solid #334155', padding: '8px 10px' }}>
-        <Box sx={{ height: 8, width: '50%', bgcolor: '#334155', borderRadius: 2, mb: 1 }} />
-        <Box sx={{ height: 8, width: '80%', bgcolor: '#8B5CF666', borderRadius: 2 }} />
+        style={{ height: 60, background: '#0a0a0f', borderRadius: 6, border: '1px solid #222', padding: '8px 10px' }}>
+        <Box sx={{ height: 6, width: '50%', bgcolor: '#333', borderRadius: 2, mb: 1 }} />
+        <Box sx={{ height: 6, width: '80%', bgcolor: '#ffffff', borderRadius: 2 }} />
       </motion.div>
       <motion.div initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.7 }}
-        style={{ height: 60, background: '#1e293b', borderRadius: 10, border: '1px solid #334155', padding: '8px 10px' }}>
-        <Box sx={{ height: 8, width: '60%', bgcolor: '#334155', borderRadius: 2, mb: 1 }} />
-        <Box sx={{ height: 8, width: '40%', bgcolor: '#8B5CF666', borderRadius: 2 }} />
+        style={{ height: 60, background: '#0a0a0f', borderRadius: 6, border: '1px solid #222', padding: '8px 10px' }}>
+        <Box sx={{ height: 6, width: '60%', bgcolor: '#333', borderRadius: 2, mb: 1 }} />
+        <Box sx={{ height: 6, width: '40%', bgcolor: '#ffffff', borderRadius: 2 }} />
       </motion.div>
     </Box>
   </SmartphoneFrame>
@@ -118,21 +119,21 @@ const Step2Anim = () => (
 const Step3Anim = () => (
   <SmartphoneFrame color="#EC4899">
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1, height: '100%' }}>
-      <Typography sx={{ color: '#94A3B8', fontSize: 10, fontWeight: 600 }}>BUSINESSES</Typography>
+      <Typography sx={{ color: '#888', fontSize: 10, fontWeight: 600, fontFamily: 'Inter' }}>BUSINESSES</Typography>
       <motion.div
-        animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 2 }}
-        style={{ height: 80, background: '#1e293b', borderRadius: 14, border: '2px dashed #EC4899', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        animate={{ y: [0, -2, 0] }} transition={{ repeat: Infinity, duration: 2 }}
+        style={{ height: 80, background: '#0a0a0f', borderRadius: 6, border: '1px dashed #444', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
       >
-        <BusinessCenter sx={{ color: '#EC4899', fontSize: 32 }} />
+        <BusinessCenter sx={{ color: '#fff', fontSize: 24 }} />
       </motion.div>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-        style={{ height: 14, width: '55%', background: '#334155', borderRadius: 4, alignSelf: 'center' }} />
+        style={{ height: 12, width: '55%', background: '#222', borderRadius: 2, alignSelf: 'center' }} />
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
-        style={{ height: 14, width: '35%', background: '#334155', borderRadius: 4, alignSelf: 'center' }} />
+        style={{ height: 12, width: '35%', background: '#222', borderRadius: 2, alignSelf: 'center' }} />
       <Box sx={{ flex: 1 }} />
       <motion.div
-        initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1 }}
-        style={{ height: 36, background: '#EC4899', borderRadius: 18, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontWeight: 700, fontSize: 11 }}
+        initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1 }}
+        style={{ height: 36, background: '#ffffff', borderRadius: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#000', fontWeight: 600, fontSize: 11, fontFamily: 'Inter' }}
       >
         + ADD BUSINESS
       </motion.div>
@@ -145,22 +146,22 @@ const Step4Anim = () => (
   <SmartphoneFrame color="#F59E0B">
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2, alignItems: 'center' }}>
       <motion.div
-        animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 6, ease: 'linear' }}
-        style={{ width: 68, height: 68, background: '#1e293b', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F59E0B44' }}
+        animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
+        style={{ width: 56, height: 56, background: '#0a0a0f', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #333' }}
       >
-        <SmartToy sx={{ color: '#F59E0B', fontSize: 36 }} />
+        <SmartToy sx={{ color: '#fff', fontSize: 24 }} />
       </motion.div>
-      <Typography sx={{ color: 'white', fontWeight: 700, fontSize: 12 }}>Generating Twin...</Typography>
+      <Typography sx={{ color: 'white', fontWeight: 600, fontSize: 12, fontFamily: 'Inter' }}>Generating Twin</Typography>
       {/* Progress bar */}
-      <Box sx={{ width: '100%', height: 6, background: '#334155', borderRadius: 3, overflow: 'hidden' }}>
+      <Box sx={{ width: '100%', height: 4, background: '#1a1a1a', borderRadius: 2, overflow: 'hidden' }}>
         <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 2, repeat: Infinity }}
-          style={{ height: '100%', background: '#F59E0B', borderRadius: 3 }} />
+          style={{ height: '100%', background: '#ffffff', borderRadius: 2 }} />
       </Box>
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
-        style={{ width: '100%', height: 36, background: '#1e293b', borderRadius: 8, border: '1px solid #334155' }} />
+        style={{ width: '100%', height: 36, background: '#0a0a0f', borderRadius: 4, border: '1px solid #222' }} />
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }}
-        style={{ width: '100%', height: 36, background: '#F59E0B', borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography sx={{ color: '#000', fontSize: 11, fontWeight: 700 }}>CREATE TWIN</Typography>
+        style={{ width: '100%', height: 36, background: '#ffffff', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography sx={{ color: '#000', fontSize: 11, fontWeight: 600, fontFamily: 'Inter' }}>CREATE TWIN</Typography>
       </motion.div>
     </Box>
   </SmartphoneFrame>
@@ -170,23 +171,23 @@ const Step4Anim = () => (
 const Step5Anim = () => (
   <SmartphoneFrame color="#10B981">
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
-      <Typography sx={{ color: '#94A3B8', fontSize: 10, fontWeight: 600 }}>TRAINING</Typography>
+      <Typography sx={{ color: '#888', fontSize: 10, fontWeight: 600, fontFamily: 'Inter' }}>TRAINING</Typography>
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 1.4 }}>
-          <Bolt sx={{ color: '#10B981', fontSize: 48 }} />
+        <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 1.4 }}>
+          <Bolt sx={{ color: '#fff', fontSize: 32 }} />
         </motion.div>
       </Box>
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}
-        style={{ padding: 10, background: '#1e293b', borderRadius: 10, border: '1px solid #334155' }}>
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}
+        style={{ padding: 10, background: '#0a0a0f', borderRadius: 6, border: '1px solid #222' }}>
         <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-          <Box sx={{ width: 20, height: 20, background: '#10B981', borderRadius: 4, flexShrink: 0 }} />
-          <Box sx={{ height: 20, flex: 1, background: '#334155', borderRadius: 4 }} />
+          <Box sx={{ width: 16, height: 16, background: '#ffffff', borderRadius: 2, flexShrink: 0 }} />
+          <Box sx={{ height: 16, flex: 1, background: '#222', borderRadius: 2 }} />
         </Box>
-        <Box sx={{ height: 8, width: '100%', background: '#334155', borderRadius: 2 }} />
+        <Box sx={{ height: 6, width: '100%', background: '#222', borderRadius: 1 }} />
       </motion.div>
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
-        style={{ height: 36, background: '#10B981', borderRadius: 18, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Typography sx={{ color: '#020617', fontSize: 11, fontWeight: 700 }}>TRAINING COMPLETE ✓</Typography>
+        style={{ height: 36, background: '#ffffff', borderRadius: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Typography sx={{ color: '#000', fontSize: 11, fontWeight: 600, fontFamily: 'Inter' }}>TRAINING COMPLETE</Typography>
       </motion.div>
     </Box>
   </SmartphoneFrame>
@@ -197,23 +198,23 @@ const Step6Anim = () => (
   <SmartphoneFrame color="#3B82F6">
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-        style={{ padding: 12, background: '#1e293b', borderRadius: 8, border: '1px solid #334155' }}>
-        <Typography sx={{ color: '#3B82F6', fontFamily: 'monospace', fontSize: 9, wordBreak: 'break-all', lineHeight: 1.6 }}>
+        style={{ padding: 12, background: '#0a0a0f', borderRadius: 6, border: '1px solid #222' }}>
+        <Typography sx={{ color: '#aaa', fontFamily: 'monospace', fontSize: 9, wordBreak: 'break-all', lineHeight: 1.6 }}>
           {'<script src="twin.js"'}
           <br />{'  data-id="YOUR_ID">'}
           <br />{'</script>'}
         </Typography>
       </motion.div>
       <motion.div
-        animate={{ scale: [1, 0.96, 1], backgroundColor: ['#3B82F6', '#2563EB', '#3B82F6'] }}
+        animate={{ scale: [1, 0.98, 1], backgroundColor: ['#ffffff', '#e5e5e5', '#ffffff'] }}
         transition={{ repeat: Infinity, duration: 2 }}
-        style={{ height: 36, borderRadius: 18, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontWeight: 700, fontSize: 11, cursor: 'pointer' }}
+        style={{ height: 36, borderRadius: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#000', fontWeight: 600, fontSize: 11, cursor: 'pointer', fontFamily: 'Inter' }}
       >
         COPY SCRIPT
       </motion.div>
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
         <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ repeat: Infinity, duration: 3 }}>
-          <Code sx={{ color: '#3B82F6', fontSize: 44, opacity: 0.5 }} />
+          <Code sx={{ color: '#fff', fontSize: 32, opacity: 0.5 }} />
         </motion.div>
       </Box>
     </Box>
@@ -225,103 +226,94 @@ const steps = [
     title: 'Login & Sign Up',
     description: 'Start by creating a new account or logging into your existing one. You can also sign in instantly using your Google account.',
     animation: <Step1Anim />,
-    icon: <Login />,
-    color: '#6366F1',
+    icon: <Login fontSize="small" />,
+    color: '#ffffff',
     tip: 'Use Google login to get started in under 10 seconds.'
   },
   {
     title: 'Dashboard Access',
     description: 'After logging in, you will land on your Dashboard — your central control hub. From here, you can manage all your Digital Twins and businesses.',
     animation: <Step2Anim />,
-    icon: <DashboardIcon />,
-    color: '#8B5CF6',
+    icon: <DashboardIcon fontSize="small" />,
+    color: '#ffffff',
     tip: 'Your dashboard shows live stats for all active twins.'
   },
   {
     title: 'Add Your Business',
     description: 'Navigate to the Businesses section and click the "+ ADD BUSINESS" button to fill in your business details like name, type, and description.',
     animation: <Step3Anim />,
-    icon: <BusinessCenter />,
-    color: '#EC4899',
+    icon: <BusinessCenter fontSize="small" />,
+    color: '#ffffff',
     tip: 'You can add multiple businesses under one account.'
   },
   {
     title: 'Create a Digital Twin',
     description: 'From the Dashboard, click "CREATE TWIN", select your business, and fill in the required details to set up your AI-powered assistant.',
     animation: <Step4Anim />,
-    icon: <SmartToy />,
-    color: '#F59E0B',
+    icon: <SmartToy fontSize="small" />,
+    color: '#ffffff',
     tip: 'Each twin is linked to one specific business.'
   },
   {
     title: 'Activate & Train Your AI',
     description: 'Click on your new Digital Twin, hit "Activate", then scroll down to upload training files (PDF or DOCX). Your AI learns everything from these documents.',
     animation: <Step5Anim />,
-    icon: <Bolt />,
-    color: '#10B981',
+    icon: <Bolt fontSize="small" />,
+    color: '#ffffff',
     tip: 'Upload FAQs, product catalogs, or service menus for best results.'
   },
   {
     title: 'Copy & Paste the Script',
     description: 'Copy your unique script tag from the Twin settings page and paste it inside the <body> tag of your website HTML. That\'s it — your AI is live!',
     animation: <Step6Anim />,
-    icon: <Code />,
-    color: '#3B82F6',
+    icon: <Code fontSize="small" />,
+    color: '#ffffff',
     tip: 'Copy the code from your Twin settings page.'
   }
 ];
 
 const BillboardStep = ({ step, index }) => (
   <motion.div
-    initial={{ opacity: 0, x: 50 }}
+    initial={{ opacity: 0, x: 20 }}
     animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: -50 }}
-    transition={{ duration: 0.5, ease: 'easeOut' }}
+    exit={{ opacity: 0, x: -20 }}
+    transition={{ duration: 0.4, ease: 'easeOut' }}
     style={{ width: '100%' }}
   >
     <Box sx={{
-      p: { xs: 3, md: 4 },
-      borderRadius: '24px',
-      bgcolor: 'rgba(15, 23, 42, 0.8)',
-      border: `2px solid ${step.color}`,
-      boxShadow: `0 0 20px ${step.color}44`,
+      p: { xs: 3, md: 5 },
+      borderRadius: 4,
+      bgcolor: '#0a0a0f',
+      border: `1px solid rgba(255,255,255,0.05)`,
       position: 'relative',
       overflow: 'hidden'
     }}>
-      {/* LED Grid Overlay */}
-      <Box sx={{
-        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.04) 1px, transparent 0)',
-        backgroundSize: '12px 12px',
-        pointerEvents: 'none'
-      }} />
-
-      <Grid container spacing={4} alignItems="center">
+      <Grid container spacing={5} alignItems="center">
         {/* Text Side */}
         <Grid item xs={12} md={7}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
             <Box sx={{
-              p: 1.5, borderRadius: '12px', bgcolor: `${step.color}22`, color: step.color,
-              display: 'flex', border: `1px solid ${step.color}44`, flexShrink: 0
+              p: 1, borderRadius: 2, bgcolor: '#1a1a1a', color: step.color,
+              display: 'flex', border: '1px solid rgba(255,255,255,0.1)', flexShrink: 0
             }}>
               {step.icon}
             </Box>
-            <Typography variant="h4" sx={{ fontWeight: 900, color: 'white', textShadow: `0 0 10px ${step.color}`, fontSize: { xs: 20, md: 26 } }}>
+            <Typography variant="h4" sx={{ fontWeight: 600, color: 'white', fontSize: { xs: 20, md: 24 }, fontFamily: 'Outfit, sans-serif' }}>
               {index + 1}. {step.title}
             </Typography>
           </Box>
 
-          <Typography variant="h6" sx={{ color: '#CBD5E1', lineHeight: 1.7, mb: 4, fontSize: { xs: 14, md: 17 } }}>
+          <Typography variant="h6" sx={{ color: '#aaa', lineHeight: 1.6, mb: 4, fontSize: { xs: 14, md: 16 }, fontFamily: 'Inter' }}>
             {step.description}
           </Typography>
 
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
             <Paper sx={{
-              p: 2, bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '12px', display: 'flex', alignItems: 'flex-start', gap: 1.5, maxWidth: 360
+              p: 2, bgcolor: '#111', border: '1px solid rgba(255,255,255,0.05)',
+              borderRadius: 2, display: 'flex', alignItems: 'flex-start', gap: 1.5, maxWidth: 400
             }}>
-              <Info sx={{ color: step.color, mt: 0.2, flexShrink: 0 }} />
-              <Typography variant="body2" sx={{ color: '#94A3B8', fontSize: 13 }}>
+              <Info sx={{ color: '#888', mt: 0.2, flexShrink: 0, fontSize: 18 }} />
+              <Typography variant="body2" sx={{ color: '#888', fontSize: 13, fontFamily: 'Inter' }}>
                 {step.tip}
               </Typography>
             </Paper>
@@ -331,9 +323,9 @@ const BillboardStep = ({ step, index }) => (
         {/* Animation Side */}
         <Grid item xs={12} md={5}>
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
+            initial={{ scale: 0.98, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
           >
             {step.animation}
           </motion.div>
@@ -354,39 +346,35 @@ const Guide = () => {
 
       {/* Page Header */}
       <Box sx={{ mb: 6 }}>
-        <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
           <Typography
             variant="h4"
             sx={{
               fontFamily: '"Outfit", sans-serif',
-              fontWeight: 800,
-              mb: 1,
-              background: 'linear-gradient(to right, #6366F1, #EC4899, #F59E0B)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              letterSpacing: '-0.5px',
+              fontWeight: 600,
+              mb: 1.5,
+              color: '#ffffff'
             }}
           >
             Step-by-Step Guide
           </Typography>
-          <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.5)', maxWidth: 480, fontFamily: '"Outfit", sans-serif' }}>
-            Integrate your AI Digital Twin into your website in under 5 minutes.
+          <Typography variant="body1" sx={{ color: '#888', maxWidth: 500, fontFamily: '"Inter", sans-serif' }}>
+            Integrate your AI Digital Twin into your website in under 5 minutes. Follow these simple instructions to get started.
           </Typography>
         </motion.div>
       </Box>
 
-      {/* LED Progress Bar */}
+      {/* Progress Indicators */}
       <Box sx={{ mb: 5, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           {steps.map((s, idx) => (
             <Box
               key={idx}
               onClick={() => setCurrentStep(idx)}
               sx={{
-                width: 36, height: 7, borderRadius: 4, cursor: 'pointer',
-                bgcolor: idx <= currentStep ? steps[idx].color : 'rgba(255,255,255,0.1)',
-                boxShadow: idx === currentStep ? `0 0 14px ${steps[idx].color}` : 'none',
-                transition: 'all 0.4s ease',
-                '&:hover': { filter: 'brightness(1.3)' }
+                width: 48, height: 4, borderRadius: 2, cursor: 'pointer',
+                bgcolor: idx <= currentStep ? '#ffffff' : 'rgba(255,255,255,0.1)',
+                transition: 'all 0.3s ease',
+                '&:hover': { bgcolor: idx <= currentStep ? '#ffffff' : 'rgba(255,255,255,0.2)' }
               }}
             />
           ))}
@@ -400,17 +388,17 @@ const Guide = () => {
       </Box>
 
       {/* Controls */}
-      <Box sx={{ mt: 5, display: 'flex', gap: 3 }}>
+      <Box sx={{ mt: 5, display: 'flex', gap: 2 }}>
           <Button
             startIcon={<ArrowBack />}
             onClick={prevStep}
             disabled={currentStep === 0}
             variant="outlined"
             sx={{
-              color: 'white', borderColor: 'rgba(255,255,255,0.2)', px: 4, py: 1.5,
-              borderRadius: '100px', textTransform: 'none', fontWeight: 700,
-              '&:hover': { bgcolor: 'rgba(255,255,255,0.05)', borderColor: 'white' },
-              '&.Mui-disabled': { color: 'rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.1)' }
+              color: '#fff', borderColor: 'rgba(255,255,255,0.1)', px: 4, py: 1.2,
+              borderRadius: 2, textTransform: 'none', fontWeight: 500, fontFamily: 'Inter',
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.3)' },
+              '&.Mui-disabled': { color: 'rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.05)' }
             }}
           >
             Back
@@ -420,43 +408,40 @@ const Guide = () => {
             onClick={nextStep}
             variant="contained"
             sx={{
-              bgcolor: steps[currentStep].color, px: 6, py: 1.5,
-              borderRadius: '100px', textTransform: 'none', fontWeight: 800,
-              boxShadow: `0 0 20px ${steps[currentStep].color}88`,
-              '&:hover': { bgcolor: steps[currentStep].color, filter: 'brightness(1.1)' }
+              bgcolor: '#ffffff', color: '#000000', px: 5, py: 1.2,
+              borderRadius: 2, textTransform: 'none', fontWeight: 600, fontFamily: 'Inter',
+              '&:hover': { bgcolor: '#e5e5e5' }
             }}
           >
-            {currentStep === steps.length - 1 ? 'Start Launching 🚀' : 'Next Step'}
+            {currentStep === steps.length - 1 ? 'Start Launching' : 'Next Step'}
           </Button>
       </Box>
 
       {/* Script Preview — last step */}
       {currentStep === 5 && (
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           style={{ marginTop: '48px' }}
         >
           <Box sx={{
-            p: 4, borderRadius: '20px',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 0 40px rgba(16, 185, 129, 0.06)'
+            p: 4, borderRadius: 4,
+            background: '#0a0a0f',
+            border: '1px solid rgba(255,255,255,0.05)'
           }}>
-            <Typography variant="h6" sx={{ color: '#10B981', fontWeight: 700, mb: 3, fontFamily: '"Outfit", sans-serif' }}>
-              📋 Example Script Integration
+            <Typography variant="h6" sx={{ color: '#fff', fontWeight: 600, mb: 3, fontFamily: '"Outfit", sans-serif' }}>
+              Example Script Integration
             </Typography>
             <Paper sx={{
-              p: 3, bgcolor: '#0F172A', fontFamily: 'monospace', color: '#CBD5E1',
-              borderRadius: '14px', overflowX: 'auto', border: '1px solid rgba(255,255,255,0.05)'
+              p: 3, bgcolor: '#050505', fontFamily: 'monospace', color: '#aaa',
+              borderRadius: 2, overflowX: 'auto', border: '1px solid rgba(255,255,255,0.05)'
             }}>
-              <code style={{ color: '#F472B6' }}>&lt;!DOCTYPE html&gt;</code><br />
+              <code style={{ color: '#888' }}>&lt;!DOCTYPE html&gt;</code><br />
               <code>&lt;html&gt;</code><br />
               <code>&nbsp;&nbsp;&lt;body&gt;</code><br />
               <code>&nbsp;&nbsp;&nbsp;&nbsp;&lt;h1&gt;Welcome to My Site&lt;/h1&gt;</code><br />
-              <code style={{ color: '#10B981' }}>&nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- Paste your Digital Twin script below --&gt;</code><br />
-              <code style={{ color: '#F59E0B' }}>&nbsp;&nbsp;&nbsp;&nbsp;&lt;script src="https://api.digitaltwin.ai/widget.js" data-id="YOUR_ID"&gt;&lt;/script&gt;</code><br />
+              <code style={{ color: '#555' }}>&nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- Paste your Digital Twin script below --&gt;</code><br />
+              <code style={{ color: '#fff' }}>&nbsp;&nbsp;&nbsp;&nbsp;&lt;script src="https://api.digitaltwin.ai/widget.js" data-id="YOUR_ID"&gt;&lt;/script&gt;</code><br />
               <code>&nbsp;&nbsp;&lt;/body&gt;</code><br />
               <code>&lt;/html&gt;</code>
             </Paper>

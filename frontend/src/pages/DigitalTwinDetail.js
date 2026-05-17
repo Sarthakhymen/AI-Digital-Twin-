@@ -181,9 +181,9 @@ const DigitalTwinDetail = () => {
 
       {/* Main Twin Info Card */}
       <Card sx={{
-        background: 'rgba(255,255,255,0.03)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255,255,255,0.05)',
+        background: '#0a0a0f',
+        border: '1px solid rgba(255,255,255,0.06)',
+        boxShadow: '0 4px 24px -4px rgba(0, 0, 0, 0.3)',
         borderRadius: '16px',
         color: '#fff',
         mb: 4,
@@ -217,7 +217,7 @@ const DigitalTwinDetail = () => {
                   variant="contained"
                   startIcon={<PlayArrow />}
                   onClick={() => activateMutation.mutate()}
-                  sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', textTransform: 'none', borderRadius: '10px', '&:hover': { background: 'linear-gradient(135deg, #5046e5, #7c3aed)' } }}
+                  sx={{ background: '#ffffff', color: '#0a0a0f', textTransform: 'none', borderRadius: '10px', '&:hover': { background: '#e2e8f0' }, fontWeight: 600 }}
                 >
                   Activate
                 </Button>
@@ -261,7 +261,7 @@ const DigitalTwinDetail = () => {
             <Grid item xs={12} md={6}>
               <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 600, mb: 2 }}>Communication Style</Typography>
               {twin.communication_style ? (
-                <Card sx={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', color: '#fff' }}>
+                <Card sx={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', color: '#fff', boxShadow: 'none' }}>
                   <CardContent>
                     {Object.entries(twin.communication_style).map(([key, value]) => (
                       <Box key={key} sx={{ mb: 2 }}>
@@ -474,7 +474,7 @@ const DigitalTwinDetail = () => {
 
 
       {/* ========== KNOWLEDGE BASE SECTION ========== */}
-      <Card sx={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', color: '#fff', mt: 4 }}>
+      <Card sx={{ background: '#0a0a0f', border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 4px 24px -4px rgba(0, 0, 0, 0.3)', borderRadius: '16px', color: '#fff', mt: 4 }}>
         <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
             <Box>
@@ -491,11 +491,13 @@ const DigitalTwinDetail = () => {
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploadStatus === 'uploading'}
                 sx={{
-                  background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                  background: '#ffffff',
+                  color: '#0a0a0f',
                   textTransform: 'none',
                   borderRadius: '10px',
                   fontFamily: '"Outfit", sans-serif',
-                  '&:hover': { background: 'linear-gradient(135deg, #5046e5, #7c3aed)' },
+                  fontWeight: 600,
+                  '&:hover': { background: '#e2e8f0' },
                   '&.Mui-disabled': { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.3)' }
                 }}
               >
