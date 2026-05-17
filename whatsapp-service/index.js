@@ -12,6 +12,8 @@ const QRCode = require('qrcode');
 const axios = require('axios');
 const pino = require('pino');
 const path = require('path');
+const { usePostgresAuthState } = require('./usePostgresAuthState');
+require('dotenv').config({ path: '../backend/.env' }); // try loading backend env if missing
 require('dotenv').config();
 
 const app = express();
@@ -39,8 +41,10 @@ async function startSession(userId) {
         sessions.delete(userId);
     }
 
-    const sessionDir = path.join(__dirname, 'auth', userId);
-    const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+    // Use Postgres instead of ephemeral local files
+    // const sessionDir = path.join(__dirname, 'auth', userId);
+    // const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+    const { state, saveCreds } = await usePostgresAuthState(userId);
     const { version } = await fetchLatestBaileysVersion();
 
     sessionStatus.set(userId, 'connecting');
