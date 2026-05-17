@@ -5,10 +5,12 @@ import LandingNavbar from '../components/LandingNavbar';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import PaymentModal from '../components/PaymentModal';
 
 const Pricing = () => {
   const [trialLoading, setTrialLoading] = useState(false);
-  const [checkoutLoading, setCheckoutLoading] = useState(null); // plan key being loaded
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -31,26 +33,10 @@ const Pricing = () => {
     }
   };
 
-  // ── Dodo Payments checkout ────────────────────────────────
-  const handleDodoCheckout = async (planKey) => {
+  const handleManualCheckout = (plan) => {
     if (!user) { navigate('/login'); return; }
-    setCheckoutLoading(planKey);
-    try {
-      const { data } = await axios.post(
-        `${process.env.REACT_APP_API_URL}/payments/create-checkout`,
-        { plan_type: planKey, billing_cycle: 'monthly' },
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-      );
-      if (data.checkout_url) {
-        window.location.href = data.checkout_url; // redirect to Dodo checkout
-      } else {
-        alert('Could not create checkout session. Please try again.');
-      }
-    } catch (err) {
-      alert(err.response?.data?.detail || 'Failed to initiate payment. Please try again.');
-    } finally {
-      setCheckoutLoading(null);
-    }
+    setSelectedPlan(plan);
+    setIsModalOpen(true);
   };
 
   const plans = [
@@ -87,12 +73,12 @@ const Pricing = () => {
         'Knowledge Base (10 Documents)',
         'Up to 3 AI Twins',
       ],
-      cta: checkoutLoading === 'starter' ? 'Redirecting...' : 'Get Standard',
-      onAction: () => handleDodoCheckout('starter'),
+      cta: 'Get Standard',
+      onAction: () => handleManualCheckout({ name: 'Standard', price: '₹1,299' }),
       icon: Zap,
       color: 'amber',
-      loading: checkoutLoading === 'starter',
-      disabled: checkoutLoading === 'starter',
+      loading: false,
+      disabled: false,
       badge: null,
     },
     {
@@ -250,19 +236,9 @@ const Pricing = () => {
                   ) : (
                     <>
                       {plan.cta}
-                      {plan.key === 'starter' && !plan.loading && (
-                        <ExternalLink className="w-4 h-4 opacity-70" />
-                      )}
                     </>
                   )}
                 </button>
-
-                {/* Dodo Payments powered note */}
-                {plan.key === 'starter' && (
-                  <p className="text-center text-xs text-slate-600 mt-3">
-                    🔒 Secured by Dodo Payments
-                  </p>
-                )}
               </motion.div>
             ))}
           </div>
@@ -275,7 +251,7 @@ const Pricing = () => {
               </div>
               <h4 className="font-bold text-white">Secure Payments</h4>
               <p className="text-sm text-slate-400">
-                All transactions are processed securely through Dodo Payments with bank-grade encryption.
+                All transactions are processed securely with bank-grade encryption.
               </p>
             </div>
             <div className="text-center space-y-3">
@@ -284,7 +260,7 @@ const Pricing = () => {
               </div>
               <h4 className="font-bold text-white">Instant Activation</h4>
               <p className="text-sm text-slate-400">
-                Trial starts immediately. Standard plan activates instantly after payment.
+                Trial starts immediately. Standard plan activates after verification.
               </p>
             </div>
             <div className="text-center space-y-3">
@@ -299,6 +275,13 @@ const Pricing = () => {
           </div>
         </div>
       </main>
+
+      <PaymentModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        plan={selectedPlan}
+        userEmail={user?.email}
+      />
     </div>
   );
 };
