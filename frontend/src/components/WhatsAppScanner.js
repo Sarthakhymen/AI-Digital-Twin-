@@ -28,6 +28,8 @@ const WhatsAppScanner = ({ twinId }) => {
     // Clear any existing polling
     if (pollingRef.current) clearInterval(pollingRef.current);
 
+    let attempts = 0;
+    
     // Poll every 2 seconds for QR code / status updates
     pollingRef.current = setInterval(async () => {
       try {
@@ -37,6 +39,7 @@ const WhatsAppScanner = ({ twinId }) => {
         if (data.status === 'qr' && data.qr) {
           setQr(data.qr);
           setStatus('qr');
+          attempts = 0;
         } else if (data.status === 'ready') {
           setQr(null);
           setStatus('ready');
@@ -47,7 +50,12 @@ const WhatsAppScanner = ({ twinId }) => {
         }
       } catch (err) {
         console.error('Polling error:', err.message);
-        // Don't immediately show error - bridge might be waking up
+        attempts++;
+        // If it fails for more than 40 seconds (20 attempts), show error
+        if (attempts > 20) {
+          setStatus('error');
+          if (pollingRef.current) clearInterval(pollingRef.current);
+        }
       }
     }, 2000);
   };
@@ -57,12 +65,17 @@ const WhatsAppScanner = ({ twinId }) => {
     
     setStatus('connecting');
     const uid = String(userId);
-    // Fire-and-forget: don't wait for POST to complete
-    axios.post(`${BRIDGE_URL}/connect`, { userId: uid }).catch(err => {
+    
+    try {
+      // Wait for the connect request to succeed before polling
+      await axios.post(`${BRIDGE_URL}/connect`, { userId: uid });
+      startPolling(uid);
+    } catch (err) {
       console.error('Connect error:', err.message);
-    });
-    // Start polling immediately for QR code
-    startPolling(uid);
+      // If the POST fails (e.g. 502 from Render waking up), we can still try to poll just in case it woke up and processed it,
+      // but it's safer to just show the error and ask them to retry.
+      setStatus('error');
+    }
   };
 
   const handleDisconnect = async () => {

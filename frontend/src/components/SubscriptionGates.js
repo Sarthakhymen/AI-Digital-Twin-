@@ -28,7 +28,7 @@ const SubscriptionGates = ({ user, userFeatures }) => {
       id: 'free',
       title: 'Free Trial',
       icon: Clock,
-      color: '#3B82F6', // Blue
+      color: '#0945a5ff', // Blue
       isActive: true, // Free trial features are always available as a baseline
       statusLabel: isTrial ? 'Current Plan' : 'Included',
       features: [
