@@ -79,7 +79,10 @@ def get_user_features(current_user: Any = Depends(get_current_active_user)):
         "whatsapp": custom_features.get("whatsapp", base_features.get("whatsapp", False)),
         "whatsapp_basic": custom_features.get("whatsapp_basic", base_features.get("whatsapp_basic", False)),
         "whatsapp_advanced": custom_features.get("whatsapp_advanced", base_features.get("whatsapp_advanced", False)),
-        "api_access": custom_features.get("api_access", base_features.get("api_access", False))
+        "api_access": custom_features.get("api_access", base_features.get("api_access", False)),
+        "custom_colors": custom_features.get("custom_colors", base_features.get("custom_colors", False)),
+        "lead_generation": custom_features.get("lead_generation", base_features.get("lead_generation", False)),
+        "url_scraping": custom_features.get("url_scraping", base_features.get("url_scraping", False))
     }
 
     

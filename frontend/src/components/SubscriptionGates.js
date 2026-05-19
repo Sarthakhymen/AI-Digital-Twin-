@@ -32,10 +32,9 @@ const SubscriptionGates = ({ user, userFeatures }) => {
       isActive: true, // Free trial features are always available as a baseline
       statusLabel: isTrial ? 'Current Plan' : 'Included',
       features: [
-        { name: 'Up to 50 AI Interactions', active: true },
-        { name: '1 Digital Twin', active: true },
-        { name: 'Web Widget Integration', active: true },
-        { name: 'Basic Knowledge Base', active: true },
+        { name: 'Web Chat Widget (Watermarked)', active: true },
+        { name: 'Max 50 messages/month', active: true },
+        { name: 'PDF Uploads only', active: true },
       ]
     },
     {
@@ -46,10 +45,10 @@ const SubscriptionGates = ({ user, userFeatures }) => {
       isActive: isStandard,
       statusLabel: isStandard ? (isPro ? 'Included' : 'Current Plan') : 'Locked',
       features: [
-        { name: 'Unlimited AI Interactions', active: isStandard },
-        { name: 'Up to 3 Digital Twins', active: isStandard },
-        { name: 'WhatsApp Integration (Basic)', active: isStandard },
-        { name: 'Advanced Knowledge Base', active: isStandard },
+        { name: 'Unlimited Web Chat', active: isStandard },
+        { name: 'Custom Colors (No Watermark)', active: isStandard },
+        { name: 'Lead Generation Form', active: isStandard },
+        { name: 'URL Scraping (Auto-KB)', active: isStandard },
       ]
     },
     {
@@ -60,10 +59,10 @@ const SubscriptionGates = ({ user, userFeatures }) => {
       isActive: isPro,
       statusLabel: isPro ? 'Current Plan' : 'Locked',
       features: [
-        { name: 'Up to 10 Digital Twins', active: isPro },
-        { name: 'WhatsApp Integration (Advanced)', active: isPro },
-        { name: 'AI Voice Agent', active: isPro },
-        { name: 'Priority Support', active: isPro },
+        { name: 'WhatsApp Integration', active: isPro },
+        { name: 'Voice Agent Widget', active: isPro },
+        { name: 'Analytics Dashboard', active: isPro },
+        { name: 'Human Handoff', active: isPro },
       ]
     }
   ];

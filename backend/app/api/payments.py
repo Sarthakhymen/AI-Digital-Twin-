@@ -170,8 +170,8 @@ class RazorpayVerifyRequest(BaseModel):
 
 # Razorpay pricing mapping in Paisa (₹1 = 100 Paisa)
 RAZORPAY_PRICES = {
-    "standard": 100,      # ₹1 (TESTING)
-    "business_pro": 299900   # ₹2,999
+    "standard": 249900,      # ₹2,499 (Approx $29)
+    "business_pro": 659900   # ₹6,599 (Approx $79)
 }
 
 @router.post("/razorpay/create-order")
@@ -474,28 +474,37 @@ PLAN_LIMITS = {
         "whatsapp_basic": False,
         "voice_agent": False,
         "analytics": False,
+        "custom_colors": False,
+        "lead_generation": False,
+        "url_scraping": False,
         "knowledge_docs": 1,
         "max_twins": 1
     },
     "standard": {
         "max_messages": -1, # Unlimited
-        "features": ["website_embed", "analytics", "whatsapp_basic"],
-        "whatsapp": True,        # Basic WhatsApp — customer chat interaction only
-        "whatsapp_basic": True,  # Flag: basic mode (no meeting/booking actions)
+        "features": ["website_embed", "custom_colors", "lead_generation", "url_scraping"],
+        "whatsapp": False,        # Moved to Pro
+        "whatsapp_basic": False,  # Moved to Pro
         "voice_agent": False,
-        "analytics": True,
+        "analytics": False,
+        "custom_colors": True,
+        "lead_generation": True,
+        "url_scraping": True,
         "knowledge_docs": 10,
         "max_twins": 3
     },
     "business_pro": {
         "max_messages": -1,  # Unlimited
-        "features": ["website_embed", "whatsapp", "whatsapp_advanced", "voice_agent", "analytics", "priority_support"],
+        "features": ["website_embed", "custom_colors", "lead_generation", "url_scraping", "whatsapp", "whatsapp_advanced", "voice_agent", "analytics", "priority_support"],
         "whatsapp": True,
         "whatsapp_basic": True,
         "whatsapp_advanced": True,  # Full WhatsApp: meeting scheduling, table booking, etc.
         "voice_agent": True,
         "analytics": True,
         "advanced_analytics": True,
+        "custom_colors": True,
+        "lead_generation": True,
+        "url_scraping": True,
         "knowledge_docs": 50,
         "max_twins": 10
     }
