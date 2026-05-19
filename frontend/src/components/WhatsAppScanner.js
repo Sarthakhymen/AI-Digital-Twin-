@@ -33,26 +33,30 @@ const WhatsAppScanner = ({ twinId }) => {
     // Poll every 2 seconds for QR code / status updates
     pollingRef.current = setInterval(async () => {
       try {
-        const res = await axios.get(`${BRIDGE_URL}/qr/${uid}`);
+        const res = await axios.get(`${BRIDGE_URL}/qr/${uid}`, { timeout: 10000 });
         const data = res.data;
 
         if (data.status === 'qr' && data.qr) {
           setQr(data.qr);
           setStatus('qr');
-          attempts = 0;
+          attempts = 0; // Reset attempts on success
         } else if (data.status === 'ready') {
           setQr(null);
           setStatus('ready');
-          // Stop polling once connected
           if (pollingRef.current) clearInterval(pollingRef.current);
-        } else if (data.status === 'connecting') {
+        } else if (data.status === 'connecting' || data.status === 'idle') {
+          // 'idle' means server auto-restarted the session (Render recovery)
           setStatus('connecting');
+          attempts++;
+          if (attempts > 45) { // 90 seconds timeout
+             setStatus('error');
+             if (pollingRef.current) clearInterval(pollingRef.current);
+          }
         }
       } catch (err) {
         console.error('Polling error:', err.message);
         attempts++;
-        // If it fails for more than 40 seconds (20 attempts), show error
-        if (attempts > 20) {
+        if (attempts > 30) { // 60 seconds
           setStatus('error');
           if (pollingRef.current) clearInterval(pollingRef.current);
         }
@@ -74,7 +78,7 @@ const WhatsAppScanner = ({ twinId }) => {
       console.error('Connect error:', err.message);
       // If the POST fails (e.g. 502 from Render waking up), we can still try to poll just in case it woke up and processed it,
       // but it's safer to just show the error and ask them to retry.
-      setStatus('error');
+      startPolling(uid); // Keep polling anyway, because render might be waking up!
     }
   };
 
@@ -93,7 +97,10 @@ const WhatsAppScanner = ({ twinId }) => {
         return (
           <Box sx={{ textAlign: 'center', py: 2 }}>
             <CircularProgress size={24} sx={{ mb: 1 }} />
-            <Typography variant="body2">Connecting to WhatsApp service...</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>Connecting to WhatsApp service...</Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+              Waking up secure bridge. This may take up to 60 seconds if the service is asleep. Please wait.
+            </Typography>
           </Box>
         );
       case 'qr':
