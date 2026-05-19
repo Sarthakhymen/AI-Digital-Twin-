@@ -71,6 +71,7 @@ class DigitalTwin(Base):
     business = relationship("Business", back_populates="digital_twins")
     conversations = relationship("Conversation", back_populates="digital_twin", cascade="all, delete-orphan")
     knowledge_documents = relationship("KnowledgeDocument", back_populates="digital_twin", cascade="all, delete-orphan")
+    leads = relationship("LeadCapture", back_populates="digital_twin", cascade="all, delete-orphan")
 
 class Conversation(Base):
     __tablename__ = "conversations"
@@ -142,4 +143,20 @@ class ProWaitlist(Base):
     message = Column(Text)
     status = Column(String(50), default="waiting")  # waiting, contacted, converted
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class LeadCapture(Base):
+    """Stores leads (emails) captured from the embedded chat widget"""
+    __tablename__ = "lead_captures"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    digital_twin_id = Column(Integer, ForeignKey("digital_twins.id"), nullable=False)
+    name = Column(String(255))
+    email = Column(String(255), nullable=False)
+    phone = Column(String(50))
+    message = Column(Text)  # Optional initial message from widget
+    source = Column(String(100), default="web_widget")  # web_widget, whatsapp, etc.
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    digital_twin = relationship("DigitalTwin", back_populates="leads")
 

@@ -337,6 +337,10 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
     `;
     document.head.appendChild(style);
 
+    const leadGenEnabled = scriptTag ? (scriptTag.getAttribute('data-lead-gen') === 'true') : false;
+    const leadFormShown = false;
+    let leadCaptured = sessionStorage.getItem(`dt_lead_${twinId}`) === '1';
+
     // Inject HTML
     const container = document.createElement('div');
     container.id = 'dt-widget-container';
@@ -359,6 +363,15 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
                 <button class="dt-quick-btn" data-msg="Tell me about your business">🏢 About Us</button>
                 <button class="dt-quick-btn" data-msg="What services do you offer?">🛠️ Services</button>
                 <button class="dt-quick-btn" data-msg="How can I contact you?">📞 Contact</button>
+            </div>
+            <div id="dt-lead-form" style="display:none; padding:14px 18px; background:#f9fafb; border-top:1px solid #f3f4f6;">
+                <p style="margin:0 0 10px; font-size:13px; color:#374151; font-weight:600;">📧 Get personalized help — leave your details:</p>
+                <input type="text" id="dt-lead-name" placeholder="Your name" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;" />
+                <input type="email" id="dt-lead-email" placeholder="Your email *" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;" />
+                <div style="display:flex;gap:8px;">
+                    <button id="dt-lead-submit" style="flex:1;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;padding:9px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">Submit</button>
+                    <button id="dt-lead-skip" style="background:#f3f4f6;color:#6b7280;border:none;padding:9px 14px;border-radius:8px;font-size:13px;cursor:pointer;">Skip</button>
+                </div>
             </div>
             <div class="dt-branding">Powered by <a href="#" target="_blank">Sahayak AI</a></div>
             <div id="dt-chat-input-container">
@@ -474,6 +487,15 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
         micBtn.style.display = 'none';
     }}
 
+    let messageCount = 0;
+    const leadFormEl = document.getElementById('dt-lead-form');
+    
+    const showLeadForm = () => {{
+        if (!leadGenEnabled || leadCaptured) return;
+        leadFormEl.style.display = 'block';
+        leadFormEl.scrollIntoView({{ behavior: 'smooth' }});
+    }};
+    
     const sendMessage = async (text) => {{
         const msg = text || input.value.trim();
         if (!msg) return;
@@ -498,6 +520,11 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             
             if (response.ok && data.response) {{
                 addMessage(data.response, 'twin');
+                messageCount++;
+                // Show lead form after 2nd exchange if lead gen is enabled
+                if (messageCount >= 2 && !leadCaptured) {{
+                    setTimeout(showLeadForm, 800);
+                }}
             }} else {{
                 addMessage('Something went wrong. Please try again.', 'twin');
             }}
@@ -517,8 +544,43 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
     document.querySelectorAll('.dt-quick-btn').forEach(btn => {{
         btn.addEventListener('click', () => sendMessage(btn.getAttribute('data-msg')));
     }});
+    
+    // Lead form — submit
+    const leadSubmitBtn = document.getElementById('dt-lead-submit');
+    const leadSkipBtn = document.getElementById('dt-lead-skip');
+    if (leadSubmitBtn) {{
+        leadSubmitBtn.addEventListener('click', async () => {{
+            const email = document.getElementById('dt-lead-email').value.trim();
+            const name = document.getElementById('dt-lead-name').value.trim();
+            if (!email || !email.includes('@')) {{
+                document.getElementById('dt-lead-email').style.borderColor = '#ef4444';
+                return;
+            }}
+            leadSubmitBtn.textContent = 'Saving...';
+            leadSubmitBtn.disabled = true;
+            try {{
+                await fetch(`${{apiUrl}}/knowledge/${{twinId}}/leads`, {{
+                    method: 'POST',
+                    headers: {{ 'Content-Type': 'application/json' }},
+                    body: JSON.stringify({{ name, email }})
+                }});
+            }} catch(e) {{}}
+            sessionStorage.setItem(`dt_lead_${{twinId}}`, '1');
+            leadCaptured = true;
+            leadFormEl.style.display = 'none';
+            addMessage(`Thanks ${{name || ''}}! 🙌 We've saved your email and will follow up soon.`, 'twin');
+        }});
+    }}
+    if (leadSkipBtn) {{
+        leadSkipBtn.addEventListener('click', () => {{
+            sessionStorage.setItem(`dt_lead_${{twinId}}`, '1');
+            leadCaptured = true;
+            leadFormEl.style.display = 'none';
+        }});
+    }}
 }})();
     """, media_type="application/javascript")
+
 
 @router.get("/test-voice")
 def test_voice_route():

@@ -4,9 +4,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Box, Typography, Paper, Grid, Chip, Button, Card, CardContent,
   List, ListItem, ListItemText, Divider, LinearProgress, Alert,
-  IconButton, Snackbar, ToggleButton, ToggleButtonGroup
+  IconButton, Snackbar, ToggleButton, ToggleButtonGroup, TextField,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip
 } from '@mui/material';
-import { ArrowBack, PlayArrow, Pause, Edit, CloudUpload, Delete, Description, ContentCopy, Code, Public, FormatAlignLeft, FormatAlignRight } from '@mui/icons-material';
+import { ArrowBack, PlayArrow, Pause, Edit, CloudUpload, Delete, Description, ContentCopy, Code, Public, FormatAlignLeft, FormatAlignRight, Language, Email, Star } from '@mui/icons-material';
 import api from '../services/api';
 import WhatsAppScanner from '../components/WhatsAppScanner';
 import { useAuth } from '../contexts/AuthContext';
@@ -21,6 +22,9 @@ const DigitalTwinDetail = () => {
   const fileInputRef = useRef(null);
   const voiceInputRef = useRef(null);
   const [uploadStatus, setUploadStatus] = useState(null);
+  const [scrapeUrl, setScrapeUrl] = useState('');
+  const [scrapeStatus, setScrapeStatus] = useState(null); // null | 'scraping' | 'done' | 'error'
+  const [scrapeError, setScrapeError] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [widgetPosition, setWidgetPosition] = useState('right');
 
@@ -99,6 +103,30 @@ const DigitalTwinDetail = () => {
       setSnackbar({ open: true, message: 'Document deleted!', severity: 'success' });
     },
   });
+
+  const { data: leads = [] } = useQuery({
+    queryKey: ['leads', id],
+    queryFn: () => api.get(`/knowledge/${id}/leads`).then(res => res.data),
+    enabled: !!(userFeatures && userFeatures.lead_generation),
+    retry: false,
+  });
+
+  const handleScrapeUrl = async () => {
+    if (!scrapeUrl.trim()) return;
+    setScrapeStatus('scraping');
+    setScrapeError('');
+    try {
+      await api.post(`/knowledge/${id}/scrape-url`, { url: scrapeUrl.trim() });
+      queryClient.invalidateQueries(['knowledge-docs', id]);
+      setScrapeStatus('done');
+      setScrapeUrl('');
+      setSnackbar({ open: true, message: '✅ URL scraped & indexed successfully!', severity: 'success' });
+    } catch (err) {
+      const msg = err.response?.data?.detail || 'Failed to scrape URL. Please try again.';
+      setScrapeStatus('error');
+      setScrapeError(msg);
+    }
+  };
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -415,22 +443,121 @@ const DigitalTwinDetail = () => {
                 </Typography>
               </Box>
 
-              <FeatureLock feature="custom_colors" title="Standard Features">
+              <FeatureLock feature="url_scraping" title="Standard Features">
                 <Box sx={{ mt: 1 }}>
-                  <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Star color="warning" sx={{ fontSize: 18 }} /> Premium Web Chat Capabilities
+
+                  {/* URL Scraping Section */}
+                  <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 700 }}>
+                    <Language sx={{ fontSize: 18, color: '#f59e0b' }} /> URL Scraping — Auto-train from your website
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Your Standard plan unlocks powerful web chat features:
+                    Paste any webpage URL and we'll scrape its content and add it to your AI Twin's knowledge base. Free, instant, no APIs needed.
                   </Typography>
-                  <List dense sx={{ color: 'text.secondary' }}>
-                    <ListItem><ListItemText primary="🎨 Custom Widget Colors (No Watermark) - Coming Soon" /></ListItem>
-                    <ListItem><ListItemText primary="📧 Lead Generation Form (Email Capture) - Coming Soon" /></ListItem>
-                    <ListItem><ListItemText primary="🌐 URL Scraping for Knowledge Base - Coming Soon" /></ListItem>
-                  </List>
+                  <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+                    <TextField
+                      size="small"
+                      fullWidth
+                      placeholder="https://your-website.com/about"
+                      value={scrapeUrl}
+                      onChange={(e) => { setScrapeUrl(e.target.value); setScrapeStatus(null); }}
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleScrapeUrl(); }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          bgcolor: 'rgba(255,255,255,0.04)',
+                          color: '#fff',
+                          '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                          '&:hover fieldset': { borderColor: 'rgba(245,158,11,0.5)' },
+                          '&.Mui-focused fieldset': { borderColor: '#f59e0b' },
+                        },
+                        '& input::placeholder': { color: 'rgba(255,255,255,0.3)' },
+                      }}
+                      InputProps={{
+                        startAdornment: <Language sx={{ color: 'rgba(255,255,255,0.3)', mr: 1, fontSize: 18 }} />
+                      }}
+                    />
+                    <Button
+                      variant="contained"
+                      onClick={handleScrapeUrl}
+                      disabled={scrapeStatus === 'scraping' || !scrapeUrl.trim()}
+                      sx={{
+                        bgcolor: '#f59e0b', color: '#020617', fontWeight: 700,
+                        '&:hover': { bgcolor: '#d97706' }, whiteSpace: 'nowrap',
+                        '&:disabled': { bgcolor: 'rgba(245,158,11,0.3)', color: 'rgba(0,0,0,0.5)' }
+                      }}
+                    >
+                      {scrapeStatus === 'scraping' ? 'Scraping...' : '🌐 Scrape'}
+                    </Button>
+                  </Box>
+                  {scrapeStatus === 'error' && (
+                    <Alert severity="error" sx={{ mb: 2, bgcolor: 'rgba(239,68,68,0.1)', color: '#fca5a5', '& .MuiAlert-icon': { color: '#ef4444' } }}>
+                      {scrapeError}
+                    </Alert>
+                  )}
+                  {scrapeStatus === 'scraping' && (
+                    <LinearProgress sx={{ mb: 2, bgcolor: 'rgba(245,158,11,0.1)', '& .MuiLinearProgress-bar': { bgcolor: '#f59e0b' } }} />
+                  )}
+
+                  <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.06)' }} />
+
+                  {/* Lead Captures Section */}
+                  <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 700 }}>
+                    <Email sx={{ fontSize: 18, color: '#f59e0b' }} /> Lead Captures
+                    <Chip label={`${leads.length} leads`} size="small" sx={{ bgcolor: 'rgba(245,158,11,0.15)', color: '#f59e0b', fontWeight: 700, ml: 1 }} />
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Emails collected from your embedded chat widget. Add <code style={{ color: '#f59e0b' }}>data-lead-gen="true"</code> to your widget script to enable collection.
+                  </Typography>
+
+                  {/* Updated snippet with lead gen */}
+                  <Paper variant="outlined" sx={{ p: 1.5, bgcolor: '#1e1e1e', borderRadius: 2, border: 'none', mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                      <Typography variant="caption" sx={{ color: '#6b7280', fontFamily: 'monospace' }}>Widget with Lead Gen enabled:</Typography>
+                      <IconButton size="small" sx={{ color: '#aaa' }} onClick={() => {
+                        const s = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-lead-gen="true"></script>`;
+                        navigator.clipboard.writeText(s);
+                        setSnackbar({ open: true, message: 'Lead gen snippet copied!', severity: 'success' });
+                      }}><ContentCopy fontSize="small" /></IconButton>
+                    </Box>
+                    <code style={{ fontSize: '11px', color: '#d4d4d4', wordBreak: 'break-all', fontFamily: '"Fira Code", monospace' }}>
+                      {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-lead-gen="true"></script>`}
+                    </code>
+                  </Paper>
+
+                  {leads.length === 0 ? (
+                    <Box sx={{ textAlign: 'center', py: 3, color: 'rgba(255,255,255,0.3)' }}>
+                      <Email sx={{ fontSize: 40, mb: 1, opacity: 0.3 }} />
+                      <Typography variant="body2">No leads captured yet. Embed your widget with <code>data-lead-gen="true"</code> to start collecting.</Typography>
+                    </Box>
+                  ) : (
+                    <TableContainer component={Paper} sx={{ bgcolor: 'rgba(255,255,255,0.03)', borderRadius: 2, border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <Table size="small">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700 }}>Name</TableCell>
+                            <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700 }}>Email</TableCell>
+                            <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700 }}>Phone</TableCell>
+                            <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700 }}>Captured</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {leads.map((lead) => (
+                            <TableRow key={lead.id} sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' } }}>
+                              <TableCell sx={{ color: '#fff', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{lead.name || '—'}</TableCell>
+                              <TableCell sx={{ color: '#f59e0b', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{lead.email}</TableCell>
+                              <TableCell sx={{ color: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{lead.phone || '—'}</TableCell>
+                              <TableCell sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                                {lead.created_at ? new Date(lead.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  )}
                 </Box>
               </FeatureLock>
             </Box>
+
 
             {/* Container 3: Business Pro Plan */}
             <Box sx={{ mt: 4, p: 3, borderRadius: 3, bgcolor: 'rgba(225, 29, 72, 0.04)', border: '1px solid rgba(225, 29, 72, 0.2)', position: 'relative' }}>

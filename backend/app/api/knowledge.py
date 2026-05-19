@@ -1,13 +1,15 @@
 """
 Knowledge Base API Routes — Upload PDFs/Text to train Digital Twins
+Also supports URL Scraping (Standard+ plan) and Lead management
 """
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
+from pydantic import BaseModel
 from ..database import get_db
 from ..services.auth_service import get_current_user
-from ..models import DigitalTwin, Business, KnowledgeDocument, KnowledgeChunk, User
+from ..models import DigitalTwin, Business, KnowledgeDocument, KnowledgeChunk, LeadCapture, User
 import io
 
 router = APIRouter(prefix="/knowledge", tags=["Knowledge Base"])
@@ -205,3 +207,180 @@ def delete_knowledge_document(
     db.commit()
     
     return {"message": f"Document '{doc.filename}' deleted successfully"}
+
+
+# ============ URL SCRAPING (Standard+ Plan) ============
+
+class UrlScrapeRequest(BaseModel):
+    url: str
+
+def scrape_url_text(url: str) -> str:
+    """
+    Free web scraper using requests + BeautifulSoup.
+    No paid API needed.
+    """
+    import requests
+    from bs4 import BeautifulSoup
+    
+    headers = {"User-Agent": "Mozilla/5.0 (compatible; AI-Digital-Twin-Bot/1.0; +https://sahayak.ai)"}
+    resp = requests.get(url, headers=headers, timeout=15)
+    resp.raise_for_status()
+    
+    soup = BeautifulSoup(resp.text, "lxml")
+    
+    # Strip noisy tags
+    for tag in soup(["script", "style", "nav", "footer", "header", "aside", "noscript", "iframe", "form"]):
+        tag.decompose()
+    
+    # Prefer semantic content areas
+    main = soup.find("main") or soup.find("article") or soup.find("section") or soup.find("body")
+    text = main.get_text(separator="\n", strip=True) if main else soup.get_text(separator="\n", strip=True)
+    
+    # Collapse whitespace
+    lines = [l.strip() for l in text.splitlines() if len(l.strip()) > 3]
+    return "\n".join(lines)
+
+
+@router.post("/{twin_id}/scrape-url")
+async def scrape_url_to_knowledge(
+    twin_id: int,
+    body: UrlScrapeRequest,
+    current_user: User = Depends(RequirePlan(["standard", "business_pro"], feature_name="url_scraping")),
+    db: Session = Depends(get_db)
+):
+    """
+    Scrape a URL and index its content into the Digital Twin's knowledge base.
+    Standard plan feature — 100% free, powered by BeautifulSoup.
+    """
+    # 1. Verify ownership
+    twin = db.query(DigitalTwin).join(Business).filter(
+        DigitalTwin.id == twin_id,
+        Business.owner_id == current_user.id
+    ).first()
+    if not twin:
+        raise HTTPException(status_code=404, detail="Digital twin not found")
+    
+    url = body.url.strip()
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
+    
+    # 2. Scrape
+    try:
+        text = scrape_url_text(url)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to scrape URL: {str(e)}")
+    
+    if not text or len(text) < 50:
+        raise HTTPException(status_code=400, detail="Not enough readable content found at this URL.")
+    
+    # 3. Limit size
+    text = text[:25000]  # ~25k chars per scrape
+    
+    # 4. Create doc record
+    from urllib.parse import urlparse
+    parsed = urlparse(url)
+    filename = f"[Web] {parsed.netloc}{parsed.path}"[:120]
+    
+    doc = KnowledgeDocument(
+        digital_twin_id=twin_id,
+        filename=filename,
+        file_type="url",
+        file_size=len(text.encode()),
+        status="processing"
+    )
+    db.add(doc)
+    db.commit()
+    db.refresh(doc)
+    
+    # 5. Chunk & store
+    chunks = chunk_text(text)
+    for i, chunk_content in enumerate(chunks):
+        chunk = KnowledgeChunk(
+            document_id=doc.id,
+            digital_twin_id=twin_id,
+            content=chunk_content,
+            chunk_index=i
+        )
+        db.add(chunk)
+    
+    doc.chunk_count = len(chunks)
+    doc.status = "ready"
+    db.commit()
+    
+    return {
+        "message": f"Successfully scraped and indexed '{url}'",
+        "document_id": doc.id,
+        "chunks_created": len(chunks),
+        "text_length": len(text),
+        "url": url
+    }
+
+
+# ============ LEAD CAPTURES (Standard+ Plan) ============
+
+class LeadCaptureCreate(BaseModel):
+    name: Optional[str] = None
+    email: str
+    phone: Optional[str] = None
+    message: Optional[str] = None
+
+
+@router.post("/{twin_id}/leads")
+def capture_lead_public(
+    twin_id: int,
+    body: LeadCaptureCreate,
+    db: Session = Depends(get_db)
+):
+    """
+    Public endpoint — called by the embedded chat widget when visitor submits email.
+    No auth required (runs on customer's external website).
+    """
+    twin = db.query(DigitalTwin).filter(DigitalTwin.id == twin_id).first()
+    if not twin:
+        raise HTTPException(status_code=404, detail="Twin not found")
+    
+    lead = LeadCapture(
+        digital_twin_id=twin_id,
+        name=body.name,
+        email=body.email,
+        phone=body.phone,
+        message=body.message,
+        source="web_widget"
+    )
+    db.add(lead)
+    db.commit()
+    db.refresh(lead)
+    
+    return {"message": "Thanks! We'll be in touch soon.", "lead_id": lead.id}
+
+
+@router.get("/{twin_id}/leads")
+def list_leads(
+    twin_id: int,
+    current_user: User = Depends(RequirePlan(["standard", "business_pro"], feature_name="lead_generation")),
+    db: Session = Depends(get_db)
+):
+    """View all captured leads for a Digital Twin — Standard plan feature"""
+    twin = db.query(DigitalTwin).join(Business).filter(
+        DigitalTwin.id == twin_id,
+        Business.owner_id == current_user.id
+    ).first()
+    if not twin:
+        raise HTTPException(status_code=404, detail="Digital twin not found")
+    
+    leads = db.query(LeadCapture).filter(
+        LeadCapture.digital_twin_id == twin_id
+    ).order_by(LeadCapture.created_at.desc()).all()
+    
+    return [
+        {
+            "id": l.id,
+            "name": l.name,
+            "email": l.email,
+            "phone": l.phone,
+            "message": l.message,
+            "source": l.source,
+            "created_at": l.created_at.isoformat() if l.created_at else None
+        }
+        for l in leads
+    ]
