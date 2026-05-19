@@ -1,7 +1,11 @@
-const { initAuthCreds, BufferJSON, proto } = require('@whiskeysockets/baileys');
-const { Pool } = require('pg');
-require('dotenv').config({ path: '../backend/.env' }); // Try to load from backend or use env vars
+import { initAuthCreds, BufferJSON, proto } from '@whiskeysockets/baileys';
+import pg from 'pg';
+import dotenv from 'dotenv';
 
+dotenv.config({ path: '../backend/.env' });
+dotenv.config();
+
+const { Pool } = pg;
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -17,7 +21,7 @@ const initDb = async () => {
     `);
 };
 
-const usePostgresAuthState = async (userId) => {
+export const usePostgresAuthState = async (userId) => {
     await initDb();
 
     const writeData = async (data, id) => {
@@ -84,5 +88,3 @@ const usePostgresAuthState = async (userId) => {
         }
     };
 };
-
-module.exports = { usePostgresAuthState };

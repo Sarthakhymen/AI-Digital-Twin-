@@ -1,38 +1,38 @@
-const { 
-    default: makeWASocket, 
-    useMultiFileAuthState, 
+import makeWASocket, {
     DisconnectReason,
     fetchLatestBaileysVersion,
-    makeCacheableSignalKeyStore
-} = require('@whiskeysockets/baileys');
-const { Boom } = require('@hapi/boom');
-const express = require('express');
-const cors = require('cors');
-const QRCode = require('qrcode');
-const axios = require('axios');
-const pino = require('pino');
-const path = require('path');
-const { usePostgresAuthState } = require('./usePostgresAuthState');
-require('dotenv').config({ path: '../backend/.env' }); // try loading backend env if missing
-require('dotenv').config();
+    makeCacheableSignalKeyStore,
+    useMultiFileAuthState
+} from '@whiskeysockets/baileys';
+import { Boom } from '@hapi/boom';
+import express from 'express';
+import cors from 'cors';
+import QRCode from 'qrcode';
+import axios from 'axios';
+import pino from 'pino';
+import { usePostgresAuthState } from './usePostgresAuthState.js';
+import dotenv from 'dotenv';
+import pg from 'pg';
 
+dotenv.config({ path: '../backend/.env' });
+dotenv.config();
+
+const { Pool } = pg;
 const app = express();
 const PORT = process.env.PORT || 7860;
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
-
-// Groups ko ignore karo - sirf personal/individual chats pe reply karo
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 // In-memory storage for sessions and QR codes
 const sessions = new Map();
-const qrCodes = new Map();      // userId -> qrDataURL
-const sessionStatus = new Map(); // userId -> 'connecting' | 'qr' | 'ready' | 'error'
+const qrCodes = new Map();
+const sessionStatus = new Map();
 
 // Health check endpoint
 app.get('/', (req, res) => {
-    res.json({ status: 'WhatsApp Bridge is running', uptime: process.uptime() });
+    res.json({ status: 'WhatsApp Bridge is running (Baileys v7)', uptime: process.uptime() });
 });
 
 async function startSession(userId) {
@@ -43,9 +43,6 @@ async function startSession(userId) {
         sessions.delete(userId);
     }
 
-    // Use Postgres instead of ephemeral local files
-    // const sessionDir = path.join(__dirname, 'auth', userId);
-    // const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
     const { state, saveCreds } = await usePostgresAuthState(userId);
     const { version } = await fetchLatestBaileysVersion();
 
@@ -58,7 +55,7 @@ async function startSession(userId) {
             creds: state.creds,
             keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })),
         },
-        browser: ['Chrome (Linux)', 'Chrome', '120.0.0'], // Required: canonical browser label
+        browser: ['Chrome (Linux)', 'Chrome', '120.0.0'],
         printQRInTerminal: false,
         generateHighQualityLinkPreview: false,
         syncFullHistory: false,
@@ -108,7 +105,7 @@ async function startSession(userId) {
 
             if (!text) continue;
 
-            // Group messages ko IGNORE karo (group JID @g.us se end hota hai)
+            // Group messages ko IGNORE karo
             if (sender.endsWith('@g.us')) {
                 console.log(`[Group] Ignoring group message from: ${sender}`);
                 continue;
@@ -117,7 +114,6 @@ async function startSession(userId) {
             console.log(`[Message] From ${sender}: ${text}`);
                 
             try {
-                // Send to backend AI bridge
                 const response = await axios.post(`${BACKEND_URL}/api/v1/whatsapp/bridge`, {
                     user_id: userId,
                     sender: sender,
@@ -136,27 +132,22 @@ async function startSession(userId) {
     return sock;
 }
 
-// ============ REST API Endpoints (No WebSocket needed!) ============
+// ============ REST API Endpoints ============
 
-// Start a new WhatsApp session
 app.post('/connect', (req, res) => {
     const { userId } = req.body;
     if (!userId) return res.status(400).json({ error: 'userId required' });
     
     console.log(`[API] Connect request for user: ${userId}`);
-    // Fire-and-forget: don't await, respond immediately
     startSession(userId).catch(err => console.error('[Session Error]', err.message));
     res.json({ status: 'initializing', message: 'Session started. Poll /qr/:userId for QR code.' });
 });
 
-// Get QR code for a user (Frontend polls this every 2 seconds)
-// Auto-restart session if idle (handles Render restarts where in-memory sessions are wiped)
 app.get('/qr/:userId', async (req, res) => {
     const { userId } = req.params;
     let currentStatus = sessionStatus.get(userId) || 'idle';
     const qr = qrCodes.get(userId) || null;
 
-    // If idle and not already starting, auto-restart session (Render restart recovery)
     if (currentStatus === 'idle' && !sessions.has(userId)) {
         console.log(`[Auto-Recovery] Restarting session for user: ${userId}`);
         sessionStatus.set(userId, 'connecting');
@@ -164,22 +155,15 @@ app.get('/qr/:userId', async (req, res) => {
         startSession(userId).catch(err => console.error('[Auto-Recovery Error]', err.message));
     }
 
-    res.json({ 
-        status: currentStatus, 
-        qr: qr,
-        userId: userId
-    });
+    res.json({ status: currentStatus, qr: qr, userId: userId });
 });
 
-// Get connection status
 app.get('/status/:userId', (req, res) => {
     const { userId } = req.params;
     const currentStatus = sessionStatus.get(userId) || 'idle';
-    const isConnected = currentStatus === 'ready';
-    res.json({ connected: isConnected, status: currentStatus });
+    res.json({ connected: currentStatus === 'ready', status: currentStatus });
 });
 
-// Disconnect a session
 app.post('/disconnect', (req, res) => {
     const { userId } = req.body;
     if (sessions.has(userId)) {
@@ -191,12 +175,10 @@ app.post('/disconnect', (req, res) => {
     res.json({ status: 'disconnected' });
 });
 
-// Clear session data from DB (fixes "Couldn't link device" from corrupt creds)
 app.post('/clear-session', async (req, res) => {
     const { userId } = req.body;
     if (!userId) return res.status(400).json({ error: 'userId required' });
     
-    // Disconnect active session first
     if (sessions.has(userId)) {
         try { sessions.get(userId).end(); } catch(e) {}
         sessions.delete(userId);
@@ -204,9 +186,7 @@ app.post('/clear-session', async (req, res) => {
     qrCodes.delete(userId);
     sessionStatus.set(userId, 'idle');
     
-    // Clear from database
     try {
-        const { Pool } = require('pg');
         const pool = new Pool({
             connectionString: process.env.DATABASE_URL,
             ssl: { rejectUnauthorized: false }
