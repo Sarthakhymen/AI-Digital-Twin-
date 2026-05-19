@@ -374,7 +374,7 @@ const DigitalTwinDetail = () => {
                     size="small" 
                     sx={{ color: '#aaa', '&:hover': { color: '#fff' } }}
                     onClick={() => {
-                      const snippet = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js"></script>`;
+                      const snippet = `<script src="${window.location.origin}/widget.js" data-twin-id="${id}"></script>`;
                       navigator.clipboard.writeText(snippet);
                       setSnackbar({ open: true, message: 'Chat snippet copied!', severity: 'success' });
                     }}
@@ -383,7 +383,7 @@ const DigitalTwinDetail = () => {
                   </IconButton>
                 </Box>
                 <code style={{ wordBreak: 'break-all' }}>
-                  {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js"></script>`}
+                  {`<script src="${window.location.origin}/widget.js" data-twin-id="${id}"></script>`}
                 </code>
               </Paper>
             </Box>

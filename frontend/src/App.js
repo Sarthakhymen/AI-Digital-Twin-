@@ -17,6 +17,7 @@ import Docs from './pages/Docs';
 import VoiceAgent from './pages/VoiceAgent';
 import Pricing from './pages/Pricing';
 import Guide from './pages/Guide';
+import EmbedChat from './pages/EmbedChat';
 import AdminDashboard from './admin/AdminDashboard';
 
 import DashboardLayout from './components/DashboardLayout';
@@ -38,6 +39,9 @@ function App() {
         <Route path="/guides" element={<Docs />} />
         <Route path="/support" element={<Docs />} />
         <Route path="/pricing" element={<Pricing />} />
+        
+        {/* Public Embed Route (No Layout) */}
+        <Route path="/embed/:twinId" element={<EmbedChat />} />
 
         {/* Authenticated Routes with Dashboard Layout */}
         <Route path="/*" element={

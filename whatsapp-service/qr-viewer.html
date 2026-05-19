@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WhatsApp QR Scanner</title>
+    <style>
+        body { background: #111; color: white; font-family: Arial; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; flex-direction: column; }
+        #qr { width: 300px; height: 300px; background: white; border-radius: 12px; padding: 10px; }
+        #status { margin-top: 20px; font-size: 18px; }
+        .connected { color: #25D366; font-size: 24px; font-weight: bold; }
+        button { padding: 12px 24px; font-size: 16px; background: #25D366; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 10px; }
+        button:hover { background: #128C7E; }
+    </style>
+</head>
+<body>
+    <h2>📱 WhatsApp QR Scanner</h2>
+    <button onclick="startConnect()">🔗 Connect & Get QR</button>
+    <img id="qr" style="display:none" />
+    <div id="status">Click "Connect" to start</div>
+    <p style="color:#888; font-size:14px;">WhatsApp → Settings → Linked Devices → Link a Device → Scan QR</p>
+    <script>
+        const BRIDGE = 'https://whatsapp-bridge-4w1c.onrender.com';
+        
+        async function startConnect() {
+            document.getElementById('status').textContent = '⏳ Clearing old session...';
+            await fetch(BRIDGE + '/clear-session', { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{"userId":"1"}' });
+            
+            document.getElementById('status').textContent = '⏳ Starting connection...';
+            await fetch(BRIDGE + '/connect', { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{"userId":"1"}' });
+            
+            document.getElementById('status').textContent = '⏳ Waiting for QR code...';
+            setTimeout(poll, 5000);
+        }
+
+        async function poll() {
+            try {
+                const res = await fetch(BRIDGE + '/qr/1');
+                const data = await res.json();
+                if (data.status === 'qr' && data.qr) {
+                    document.getElementById('qr').src = data.qr;
+                    document.getElementById('qr').style.display = 'block';
+                    document.getElementById('status').textContent = '⬆️ SCAN NOW! You have 20 seconds';
+                } else if (data.status === 'ready') {
+                    document.getElementById('qr').style.display = 'none';
+                    document.getElementById('status').innerHTML = '<span class="connected">✅ WhatsApp Connected!</span>';
+                    return;
+                } else {
+                    document.getElementById('status').textContent = 'Status: ' + data.status + '... waiting for QR';
+                }
+            } catch(e) {
+                document.getElementById('status').textContent = 'Waiting for bridge to wake up... ' + e.message;
+            }
+            setTimeout(poll, 4000);
+        }
+    </script>
+</body>
+</html>
