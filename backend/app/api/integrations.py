@@ -70,6 +70,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
     const scriptTag = document.currentScript;
     const scriptUrl = scriptTag ? scriptTag.src : '';
     const apiUrl = scriptUrl.split('/integrations/')[0];
+    const position = scriptTag ? (scriptTag.getAttribute('data-position') || 'right') : 'right';
 
     // Inject CSS
     const style = document.createElement('style');
@@ -77,7 +78,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
         #dt-widget-container {{
             position: fixed;
             bottom: 20px;
-            right: 20px;
+            ${{position === 'left' ? 'left: 20px;' : 'right: 20px;'}}
             z-index: 999999;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }}
@@ -95,6 +96,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: none;
             outline: none;
+            ${{position === 'left' ? 'margin-right: auto;' : 'margin-left: auto;'}}
         }}
         #dt-chat-button:hover {{
             transform: scale(1.1) rotate(5deg);
@@ -104,7 +106,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             display: none;
             position: absolute;
             bottom: 80px;
-            right: 0;
+            ${{position === 'left' ? 'left: 0;' : 'right: 0;'}}
             width: 380px;
             height: 580px;
             background: white;
@@ -113,7 +115,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             flex-direction: column;
             overflow: hidden;
             border: 1px solid rgba(0,0,0,0.05);
-            transform-origin: bottom right;
+            transform-origin: ${{position === 'left' ? 'bottom left' : 'bottom right'}};
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
             opacity: 0;
         }}
