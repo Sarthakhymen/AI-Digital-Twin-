@@ -132,8 +132,125 @@ async function startSession(userId) {
     return sock;
 }
 
+// ============ Pairing Code Session (more reliable than QR on slow servers) ============
+const pairingCodes = new Map(); // userId -> pairingCode
+
+async function startPairingSession(userId, phoneNumber) {
+    // Prevent duplicate sessions
+    if (sessions.has(userId)) {
+        const existingSock = sessions.get(userId);
+        try { existingSock.end(); } catch(e) {}
+        sessions.delete(userId);
+    }
+
+    const { state, saveCreds } = await usePostgresAuthState(userId);
+    const { version } = await fetchLatestBaileysVersion();
+
+    sessionStatus.set(userId, 'connecting');
+
+    const sock = makeWASocket({
+        version,
+        logger: pino({ level: 'silent' }),
+        auth: {
+            creds: state.creds,
+            keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })),
+        },
+        browser: ['Chrome (Linux)', 'Chrome', '120.0.0'],
+        printQRInTerminal: false,
+        generateHighQualityLinkPreview: false,
+        syncFullHistory: false,
+    });
+
+    sessions.set(userId, sock);
+
+    // Request pairing code after socket is ready (wait for connection attempt)
+    setTimeout(async () => {
+        try {
+            if (!sock.authState.creds.registered) {
+                const code = await sock.requestPairingCode(phoneNumber);
+                console.log(`[Pairing] Code for ${userId}: ${code}`);
+                pairingCodes.set(userId, code);
+                sessionStatus.set(userId, 'pairing');
+            }
+        } catch (err) {
+            console.error('[Pairing Error]', err.message);
+        }
+    }, 3000);
+
+    sock.ev.on('connection.update', async (update) => {
+        const { connection, lastDisconnect, qr } = update;
+
+        if (connection === 'close') {
+            const statusCode = (lastDisconnect?.error)?.output?.statusCode;
+            const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+            console.log(`[Session] Closed for ${userId}. Code: ${statusCode}. Reconnecting: ${shouldReconnect}`);
+            if (shouldReconnect) {
+                sessionStatus.set(userId, 'connecting');
+                setTimeout(() => startPairingSession(userId, phoneNumber), 3000);
+            } else {
+                sessions.delete(userId);
+                pairingCodes.delete(userId);
+                sessionStatus.set(userId, 'idle');
+            }
+        } else if (connection === 'open') {
+            console.log(`[Session] Connected for ${userId} via pairing code`);
+            pairingCodes.delete(userId);
+            sessionStatus.set(userId, 'ready');
+        }
+    });
+
+    sock.ev.on('creds.update', saveCreds);
+
+    // Message handler (same as QR session)
+    sock.ev.on('messages.upsert', async ({ messages, type }) => {
+        if (type !== 'notify') return;
+        for (const msg of messages) {
+            if (!msg.message || msg.key.fromMe) continue;
+            const sender = msg.key.remoteJid;
+            const text = msg.message.conversation || msg.message.extendedTextMessage?.text;
+            if (!text) continue;
+            if (sender.endsWith('@g.us')) continue; // skip groups
+            console.log(`[Message] From ${sender}: ${text}`);
+            try {
+                const response = await axios.post(`${BACKEND_URL}/api/v1/whatsapp/bridge`, {
+                    user_id: userId, sender, text
+                });
+                if (response.data?.reply) {
+                    await sock.sendMessage(sender, { text: response.data.reply });
+                }
+            } catch (error) {
+                console.error('[Backend Error]', error.message);
+            }
+        }
+    });
+
+    return sock;
+}
+
 // ============ REST API Endpoints ============
 
+// Pairing code method (RECOMMENDED - more reliable)
+app.post('/pair', async (req, res) => {
+    const { userId, phoneNumber } = req.body;
+    if (!userId || !phoneNumber) return res.status(400).json({ error: 'userId and phoneNumber required' });
+    
+    // Clean phone number: remove +, spaces, dashes
+    const cleanPhone = phoneNumber.replace(/[\s\-\+]/g, '');
+    console.log(`[API] Pairing request for user: ${userId}, phone: ${cleanPhone}`);
+    
+    startPairingSession(userId, cleanPhone).catch(err => console.error('[Pairing Session Error]', err.message));
+    res.json({ status: 'pairing', message: 'Pairing initiated. Poll /pair-status/:userId for code.' });
+});
+
+// Get pairing code status
+app.get('/pair-status/:userId', (req, res) => {
+    const { userId } = req.params;
+    const currentStatus = sessionStatus.get(userId) || 'idle';
+    const code = pairingCodes.get(userId) || null;
+    res.json({ status: currentStatus, code, userId });
+});
+
+// QR method (original)
 app.post('/connect', (req, res) => {
     const { userId } = req.body;
     if (!userId) return res.status(400).json({ error: 'userId required' });

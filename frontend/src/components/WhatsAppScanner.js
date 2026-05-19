@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, Paper, CircularProgress, Button, Alert } from '@mui/material';
-import { WhatsApp, CheckCircle, Sync, ErrorOutline } from '@mui/icons-material';
+import { Box, Typography, Paper, CircularProgress, Button, Alert, TextField, Tabs, Tab } from '@mui/material';
+import { WhatsApp, CheckCircle, Sync, ErrorOutline, PhoneAndroid, QrCode2 } from '@mui/icons-material';
 import api from '../services/api';
 import axios from 'axios';
 
@@ -8,29 +8,96 @@ const BRIDGE_URL = process.env.REACT_APP_WHATSAPP_BRIDGE_URL || process.env.REAC
 
 const WhatsAppScanner = ({ twinId }) => {
   const [qr, setQr] = useState(null);
-  const [qrVisible, setQrVisible] = useState(true); // for fade animation
+  const [qrVisible, setQrVisible] = useState(true);
   const [status, setStatus] = useState('idle');
   const [userId, setUserId] = useState(null);
+  const [tab, setTab] = useState(0); // 0 = pairing code, 1 = QR
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [pairingCode, setPairingCode] = useState(null);
   const pollingRef = useRef(null);
-  const lastQrRef = useRef(null); // track last QR to avoid unnecessary re-renders
+  const lastQrRef = useRef(null);
 
   useEffect(() => {
-    // Get current user ID
     api.get('/auth/me').then(res => {
       setUserId(res.data.id);
     }).catch(err => console.error("Auth error", err));
 
-    // Cleanup polling on unmount
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
   }, []);
 
+  // ============ PAIRING CODE METHOD ============
+  const handlePairConnect = async () => {
+    if (!userId || !phoneNumber.trim()) return;
+    
+    setStatus('connecting');
+    setPairingCode(null);
+    const uid = String(userId);
+    const cleanPhone = phoneNumber.replace(/[\s\-\+]/g, '');
+    
+    try {
+      // Clear old sessions first
+      await axios.post(`${BRIDGE_URL}/clear-session`, { userId: uid }).catch(() => {});
+      
+      // Start pairing
+      await axios.post(`${BRIDGE_URL}/pair`, { userId: uid, phoneNumber: cleanPhone });
+      
+      // Poll for pairing code
+      startPairingPoll(uid);
+    } catch (err) {
+      console.error('Pair connect error:', err.message);
+      startPairingPoll(uid);
+    }
+  };
+
+  const startPairingPoll = (uid) => {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    let attempts = 0;
+
+    const doPoll = async () => {
+      try {
+        const res = await axios.get(`${BRIDGE_URL}/pair-status/${uid}`, { timeout: 10000 });
+        const data = res.data;
+
+        if (data.status === 'pairing' && data.code) {
+          // Format code: XXXX-XXXX
+          const formatted = data.code.length === 8 
+            ? `${data.code.slice(0,4)}-${data.code.slice(4)}` 
+            : data.code;
+          setPairingCode(formatted);
+          setStatus('pairing');
+          attempts = 0;
+        } else if (data.status === 'ready') {
+          setPairingCode(null);
+          setStatus('ready');
+          if (pollingRef.current) clearInterval(pollingRef.current);
+        } else if (data.status === 'connecting') {
+          setStatus('connecting');
+          attempts++;
+          if (attempts > 40) {
+            setStatus('error');
+            if (pollingRef.current) clearInterval(pollingRef.current);
+          }
+        }
+      } catch (err) {
+        attempts++;
+        if (attempts > 30) {
+          setStatus('error');
+          if (pollingRef.current) clearInterval(pollingRef.current);
+        }
+      }
+    };
+
+    pollingRef.current = setInterval(doPoll, 3000);
+    doPoll();
+  };
+
+  // ============ QR CODE METHOD ============
   const startPolling = (uid) => {
     if (pollingRef.current) clearInterval(pollingRef.current);
-
     let attempts = 0;
-    let qrPauseTimeout = null; // pause timer when QR is shown
+    let qrPauseTimeout = null;
 
     const doPoll = async () => {
       try {
@@ -38,7 +105,6 @@ const WhatsAppScanner = ({ twinId }) => {
         const data = res.data;
 
         if (data.status === 'qr' && data.qr) {
-          // Only update if QR actually changed
           if (data.qr !== lastQrRef.current) {
             lastQrRef.current = data.qr;
             setQrVisible(false);
@@ -49,15 +115,11 @@ const WhatsAppScanner = ({ twinId }) => {
           }
           setStatus('qr');
           attempts = 0;
-
-          // ✅ PAUSE POLLING for 18 seconds — user ko scan karne ka time do!
           if (pollingRef.current) clearInterval(pollingRef.current);
           if (qrPauseTimeout) clearTimeout(qrPauseTimeout);
           qrPauseTimeout = setTimeout(() => {
-            // 18 sec baad resume — check karo connected hua ya naya QR chahiye
             pollingRef.current = setInterval(doPoll, 5000);
           }, 18000);
-
         } else if (data.status === 'ready') {
           setQr(null);
           setStatus('ready');
@@ -72,7 +134,6 @@ const WhatsAppScanner = ({ twinId }) => {
           }
         }
       } catch (err) {
-        console.error('Polling error:', err.message);
         attempts++;
         if (attempts > 30) {
           setStatus('error');
@@ -81,26 +142,19 @@ const WhatsAppScanner = ({ twinId }) => {
       }
     };
 
-    // Start polling every 5 seconds until QR is received
     pollingRef.current = setInterval(doPoll, 5000);
-    doPoll(); // immediate first call
+    doPoll();
   };
 
   const handleConnect = async () => {
     if (!userId) return;
-    
     setStatus('connecting');
     const uid = String(userId);
-    
     try {
-      // Wait for the connect request to succeed before polling
       await axios.post(`${BRIDGE_URL}/connect`, { userId: uid });
       startPolling(uid);
     } catch (err) {
-      console.error('Connect error:', err.message);
-      // If the POST fails (e.g. 502 from Render waking up), we can still try to poll just in case it woke up and processed it,
-      // but it's safer to just show the error and ask them to retry.
-      startPolling(uid); // Keep polling anyway, because render might be waking up!
+      startPolling(uid);
     }
   };
 
@@ -111,6 +165,7 @@ const WhatsAppScanner = ({ twinId }) => {
     } catch(e) {}
     setStatus('idle');
     setQr(null);
+    setPairingCode(null);
   };
 
   const getStatusDisplay = () => {
@@ -121,10 +176,43 @@ const WhatsAppScanner = ({ twinId }) => {
             <CircularProgress size={24} sx={{ mb: 1 }} />
             <Typography variant="body2" sx={{ fontWeight: 600 }}>Connecting to WhatsApp service...</Typography>
             <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-              Waking up secure bridge. This may take up to 60 seconds if the service is asleep. Please wait.
+              Waking up secure bridge. This may take up to 60 seconds. Please wait.
             </Typography>
           </Box>
         );
+
+      case 'pairing':
+        return (
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="body2" color="primary" gutterBottom sx={{ fontWeight: 600 }}>
+              Enter this code in WhatsApp
+            </Typography>
+            <Box sx={{
+              py: 2, px: 4, my: 2, mx: 'auto',
+              bgcolor: '#1a1a2e', borderRadius: 3,
+              border: '2px solid #25D366',
+              display: 'inline-block',
+              boxShadow: '0 0 20px rgba(37,211,102,0.15)'
+            }}>
+              <Typography variant="h3" sx={{
+                fontFamily: '"Roboto Mono", monospace',
+                fontWeight: 700,
+                color: '#25D366',
+                letterSpacing: 6,
+                fontSize: { xs: '2rem', sm: '2.5rem' }
+              }}>
+                {pairingCode}
+              </Typography>
+            </Box>
+            <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 1 }}>
+              WhatsApp → Settings → Linked Devices → Link a Device → Link with phone number instead
+            </Typography>
+            <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 0.5, fontWeight: 600 }}>
+              Enter the code shown above when prompted
+            </Typography>
+          </Box>
+        );
+
       case 'qr':
         return (
           <Box sx={{ textAlign: 'center' }}>
@@ -146,6 +234,7 @@ const WhatsAppScanner = ({ twinId }) => {
             </Typography>
           </Box>
         );
+
       case 'ready':
         return (
           <Box sx={{ textAlign: 'center', py: 2 }}>
@@ -157,9 +246,7 @@ const WhatsAppScanner = ({ twinId }) => {
               Your AI Digital Twin is now live on WhatsApp.
             </Typography>
             <Button 
-              size="small" 
-              variant="outlined" 
-              color="error" 
+              size="small" variant="outlined" color="error" 
               sx={{ mt: 2, borderRadius: 10 }}
               onClick={handleDisconnect}
             >
@@ -167,6 +254,7 @@ const WhatsAppScanner = ({ twinId }) => {
             </Button>
           </Box>
         );
+
       case 'error':
         return (
           <Box sx={{ textAlign: 'center', py: 2 }}>
@@ -174,30 +262,65 @@ const WhatsAppScanner = ({ twinId }) => {
               Bridge service is waking up or offline. Please try again.
             </Alert>
             <Button 
-              variant="contained" 
-              startIcon={<Sync />}
-              onClick={handleConnect}
+              variant="contained" startIcon={<Sync />}
+              onClick={tab === 0 ? handlePairConnect : handleConnect}
               sx={{ bgcolor: '#25D366', '&:hover': { bgcolor: '#128C7E' } }}
             >
               Retry Connection
             </Button>
           </Box>
         );
+
       default:
         return (
           <Box sx={{ textAlign: 'center', py: 2 }}>
-            <WhatsApp sx={{ fontSize: 40, color: '#25D366', mb: 1, opacity: 0.5 }} />
-            <Typography variant="body2" color="text.secondary">
-              Initialize connection to generate QR code.
-            </Typography>
-            <Button 
-              variant="contained" 
-              startIcon={<Sync />}
-              onClick={handleConnect}
-              sx={{ mt: 1, bgcolor: '#25D366', '&:hover': { bgcolor: '#128C7E' } }}
-            >
-              Connect WhatsApp
-            </Button>
+            {tab === 0 ? (
+              // Pairing Code Tab
+              <Box>
+                <PhoneAndroid sx={{ fontSize: 40, color: '#25D366', mb: 1, opacity: 0.7 }} />
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Enter your WhatsApp phone number with country code
+                </Typography>
+                <TextField
+                  size="small"
+                  placeholder="e.g. 919876543210"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  sx={{ 
+                    mb: 2, width: '100%', maxWidth: 280,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 2,
+                      bgcolor: 'rgba(255,255,255,0.05)'
+                    }
+                  }}
+                  helperText="Country code + number (no + or spaces)"
+                />
+                <br />
+                <Button 
+                  variant="contained" startIcon={<PhoneAndroid />}
+                  onClick={handlePairConnect}
+                  disabled={!phoneNumber.trim()}
+                  sx={{ bgcolor: '#25D366', '&:hover': { bgcolor: '#128C7E' }, borderRadius: 2 }}
+                >
+                  Get Pairing Code
+                </Button>
+              </Box>
+            ) : (
+              // QR Code Tab
+              <Box>
+                <WhatsApp sx={{ fontSize: 40, color: '#25D366', mb: 1, opacity: 0.5 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Initialize connection to generate QR code.
+                </Typography>
+                <Button 
+                  variant="contained" startIcon={<Sync />}
+                  onClick={handleConnect}
+                  sx={{ mt: 1, bgcolor: '#25D366', '&:hover': { bgcolor: '#128C7E' } }}
+                >
+                  Connect via QR
+                </Button>
+              </Box>
+            )}
           </Box>
         );
     }
@@ -219,6 +342,20 @@ const WhatsAppScanner = ({ twinId }) => {
           alignItems: 'center'
         }}
       >
+        {/* Tab Switcher - only show when idle */}
+        {(status === 'idle') && (
+          <Tabs 
+            value={tab} 
+            onChange={(_, v) => setTab(v)}
+            sx={{ 
+              mb: 2, minHeight: 36,
+              '& .MuiTab-root': { minHeight: 36, py: 0.5, fontSize: '0.8rem' }
+            }}
+          >
+            <Tab icon={<PhoneAndroid sx={{ fontSize: 16 }} />} iconPosition="start" label="Pairing Code" />
+            <Tab icon={<QrCode2 sx={{ fontSize: 16 }} />} iconPosition="start" label="QR Scan" />
+          </Tabs>
+        )}
         {getStatusDisplay()}
       </Paper>
     </Box>
