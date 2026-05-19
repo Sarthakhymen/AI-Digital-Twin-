@@ -58,7 +58,10 @@ async function startSession(userId) {
             creds: state.creds,
             keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })),
         },
+        browser: ['Chrome (Linux)', 'Chrome', '120.0.0'], // Required: canonical browser label
         printQRInTerminal: false,
+        generateHighQualityLinkPreview: false,
+        syncFullHistory: false,
     });
 
     sessions.set(userId, sock);
@@ -186,6 +189,36 @@ app.post('/disconnect', (req, res) => {
         sessionStatus.set(userId, 'idle');
     }
     res.json({ status: 'disconnected' });
+});
+
+// Clear session data from DB (fixes "Couldn't link device" from corrupt creds)
+app.post('/clear-session', async (req, res) => {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ error: 'userId required' });
+    
+    // Disconnect active session first
+    if (sessions.has(userId)) {
+        try { sessions.get(userId).end(); } catch(e) {}
+        sessions.delete(userId);
+    }
+    qrCodes.delete(userId);
+    sessionStatus.set(userId, 'idle');
+    
+    // Clear from database
+    try {
+        const { Pool } = require('pg');
+        const pool = new Pool({
+            connectionString: process.env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false }
+        });
+        await pool.query('DELETE FROM whatsapp_auth WHERE id LIKE $1', [`${userId}-%`]);
+        await pool.end();
+        console.log(`[Clear] Wiped session data for user: ${userId}`);
+        res.json({ status: 'cleared', message: 'Session data cleared. You can now reconnect for a fresh QR.' });
+    } catch (err) {
+        console.error('[Clear Error]', err.message);
+        res.json({ status: 'cleared_memory', message: 'Cleared in-memory. DB clear may have failed.' });
+    }
 });
 
 app.listen(PORT, '0.0.0.0', () => {
