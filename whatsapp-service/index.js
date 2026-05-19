@@ -20,6 +20,8 @@ const app = express();
 const PORT = process.env.PORT || 7860;
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
 
+// Groups ko ignore karo - sirf personal/individual chats pe reply karo
+
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
@@ -101,23 +103,29 @@ async function startSession(userId) {
             const sender = msg.key.remoteJid;
             const text = msg.message.conversation || msg.message.extendedTextMessage?.text;
 
-            if (text) {
-                console.log(`[Message] From ${sender}: ${text}`);
-                
-                try {
-                    // Send to backend AI bridge
-                    const response = await axios.post(`${BACKEND_URL}/api/v1/whatsapp/bridge`, {
-                        user_id: userId,
-                        sender: sender,
-                        text: text
-                    });
+            if (!text) continue;
 
-                    if (response.data && response.data.reply) {
-                        await sock.sendMessage(sender, { text: response.data.reply });
-                    }
-                } catch (error) {
-                    console.error('[Backend Error]', error.message);
+            // Group messages ko IGNORE karo (group JID @g.us se end hota hai)
+            if (sender.endsWith('@g.us')) {
+                console.log(`[Group] Ignoring group message from: ${sender}`);
+                continue;
+            }
+
+            console.log(`[Message] From ${sender}: ${text}`);
+                
+            try {
+                // Send to backend AI bridge
+                const response = await axios.post(`${BACKEND_URL}/api/v1/whatsapp/bridge`, {
+                    user_id: userId,
+                    sender: sender,
+                    text: text
+                });
+
+                if (response.data && response.data.reply) {
+                    await sock.sendMessage(sender, { text: response.data.reply });
                 }
+            } catch (error) {
+                console.error('[Backend Error]', error.message);
             }
         }
     });
