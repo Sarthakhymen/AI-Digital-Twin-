@@ -27,51 +27,63 @@ const WhatsAppScanner = ({ twinId }) => {
   }, []);
 
   const startPolling = (uid) => {
-    // Clear any existing polling
     if (pollingRef.current) clearInterval(pollingRef.current);
 
     let attempts = 0;
-    
-    // Poll every 5 seconds (QR changes every ~20s, no need for 2s)
-    pollingRef.current = setInterval(async () => {
+    let qrPauseTimeout = null; // pause timer when QR is shown
+
+    const doPoll = async () => {
       try {
         const res = await axios.get(`${BRIDGE_URL}/qr/${uid}`, { timeout: 10000 });
         const data = res.data;
 
         if (data.status === 'qr' && data.qr) {
-          // Only update QR if it actually changed (avoid brr brr flash)
+          // Only update if QR actually changed
           if (data.qr !== lastQrRef.current) {
             lastQrRef.current = data.qr;
-            setQrVisible(false); // fade out
+            setQrVisible(false);
             setTimeout(() => {
               setQr(data.qr);
-              setQrVisible(true); // fade in
+              setQrVisible(true);
             }, 200);
           }
           setStatus('qr');
           attempts = 0;
+
+          // ✅ PAUSE POLLING for 18 seconds — user ko scan karne ka time do!
+          if (pollingRef.current) clearInterval(pollingRef.current);
+          if (qrPauseTimeout) clearTimeout(qrPauseTimeout);
+          qrPauseTimeout = setTimeout(() => {
+            // 18 sec baad resume — check karo connected hua ya naya QR chahiye
+            pollingRef.current = setInterval(doPoll, 5000);
+          }, 18000);
+
         } else if (data.status === 'ready') {
           setQr(null);
           setStatus('ready');
           if (pollingRef.current) clearInterval(pollingRef.current);
+          if (qrPauseTimeout) clearTimeout(qrPauseTimeout);
         } else if (data.status === 'connecting' || data.status === 'idle') {
-          // 'idle' means server auto-restarted the session (Render recovery)
           setStatus('connecting');
           attempts++;
-          if (attempts > 45) { // 90 seconds timeout
-             setStatus('error');
-             if (pollingRef.current) clearInterval(pollingRef.current);
+          if (attempts > 45) {
+            setStatus('error');
+            if (pollingRef.current) clearInterval(pollingRef.current);
           }
         }
       } catch (err) {
         console.error('Polling error:', err.message);
         attempts++;
-        if (attempts > 30) { // 60 seconds
+        if (attempts > 30) {
           setStatus('error');
           if (pollingRef.current) clearInterval(pollingRef.current);
         }
       }
-    }, 2000);
+    };
+
+    // Start polling every 5 seconds until QR is received
+    pollingRef.current = setInterval(doPoll, 5000);
+    doPoll(); // immediate first call
   };
 
   const handleConnect = async () => {
