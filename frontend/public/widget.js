@@ -24,6 +24,8 @@
         return;
     }
 
+    const position = currentScript.getAttribute('data-position') || 'right'; // 'left' or 'right'
+
     // You can host this domain in an env variable or hardcode for production
     const BASE_URL = 'https://www.ai-digitaltwin.tech'; 
     // Fallback to localhost if developing locally (can be configured via a data attribute too)
@@ -34,7 +36,11 @@
     container.id = 'ai-twin-widget-container';
     container.style.position = 'fixed';
     container.style.bottom = '20px';
-    container.style.right = '20px';
+    if (position === 'left') {
+        container.style.left = '20px';
+    } else {
+        container.style.right = '20px';
+    }
     container.style.zIndex = '999999';
     container.style.fontFamily = 'system-ui, -apple-system, sans-serif';
 
@@ -72,7 +78,11 @@
     button.style.display = 'flex';
     button.style.justifyContent = 'center';
     button.style.alignItems = 'center';
-    button.style.marginLeft = 'auto';
+    if (position === 'left') {
+        button.style.marginRight = 'auto';
+    } else {
+        button.style.marginLeft = 'auto';
+    }
     button.style.transition = 'transform 0.2s ease, background-color 0.2s ease';
 
     button.onmouseover = () => button.style.transform = 'scale(1.05)';

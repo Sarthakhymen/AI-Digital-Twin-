@@ -4,9 +4,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Box, Typography, Paper, Grid, Chip, Button, Card, CardContent,
   List, ListItem, ListItemText, Divider, LinearProgress, Alert,
-  IconButton, Snackbar
+  IconButton, Snackbar, ToggleButton, ToggleButtonGroup
 } from '@mui/material';
-import { ArrowBack, PlayArrow, Pause, Edit, CloudUpload, Delete, Description, ContentCopy, Code, Public } from '@mui/icons-material';
+import { ArrowBack, PlayArrow, Pause, Edit, CloudUpload, Delete, Description, ContentCopy, Code, Public, FormatAlignLeft, FormatAlignRight } from '@mui/icons-material';
 import api from '../services/api';
 import WhatsAppScanner from '../components/WhatsAppScanner';
 import { useAuth } from '../contexts/AuthContext';
@@ -22,6 +22,7 @@ const DigitalTwinDetail = () => {
   const voiceInputRef = useRef(null);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [widgetPosition, setWidgetPosition] = useState('right');
 
   // Feature gating helper
   const FeatureLock = ({ feature, children, title }) => {
@@ -354,6 +355,24 @@ const DigitalTwinDetail = () => {
                 Add this premium chat widget to your website. Simply copy and paste this script tag into your website's <code>&lt;head&gt;</code> section.
               </Typography>
               
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', mb: 1, display: 'block' }}>Widget Position</Typography>
+                <ToggleButtonGroup
+                  value={widgetPosition}
+                  exclusive
+                  onChange={(e, newPos) => { if (newPos) setWidgetPosition(newPos); }}
+                  size="small"
+                  sx={{
+                    bgcolor: 'rgba(255,255,255,0.05)',
+                    '& .MuiToggleButton-root': { color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.1)' },
+                    '& .Mui-selected': { bgcolor: 'rgba(59, 130, 246, 0.2) !important', color: '#3b82f6 !important' }
+                  }}
+                >
+                  <ToggleButton value="left"><FormatAlignLeft sx={{ mr: 1, fontSize: 18 }}/> Left</ToggleButton>
+                  <ToggleButton value="right"><FormatAlignRight sx={{ mr: 1, fontSize: 18 }}/> Right</ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+              
               <Paper 
                 variant="outlined" 
                 sx={{ 
@@ -374,7 +393,7 @@ const DigitalTwinDetail = () => {
                     size="small" 
                     sx={{ color: '#aaa', '&:hover': { color: '#fff' } }}
                     onClick={() => {
-                      const snippet = `<script src="${window.location.origin}/widget.js" data-twin-id="${id}"></script>`;
+                      const snippet = `<script src="${window.location.origin}/widget.js" data-twin-id="${id}" data-position="${widgetPosition}"></script>`;
                       navigator.clipboard.writeText(snippet);
                       setSnackbar({ open: true, message: 'Chat snippet copied!', severity: 'success' });
                     }}
@@ -383,7 +402,7 @@ const DigitalTwinDetail = () => {
                   </IconButton>
                 </Box>
                 <code style={{ wordBreak: 'break-all' }}>
-                  {`<script src="${window.location.origin}/widget.js" data-twin-id="${id}"></script>`}
+                  {`<script src="${window.location.origin}/widget.js" data-twin-id="${id}" data-position="${widgetPosition}"></script>`}
                 </code>
               </Paper>
             </Box>
