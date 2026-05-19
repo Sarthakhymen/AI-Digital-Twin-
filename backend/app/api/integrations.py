@@ -339,7 +339,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
 
     const leadGenEnabled = scriptTag ? (scriptTag.getAttribute('data-lead-gen') === 'true') : false;
     const leadFormShown = false;
-    let leadCaptured = sessionStorage.getItem(`dt_lead_${twinId}`) === '1';
+    let leadCaptured = sessionStorage.getItem(`dt_lead_${{twinId}}`) === '1';
 
     // Inject HTML
     const container = document.createElement('div');
