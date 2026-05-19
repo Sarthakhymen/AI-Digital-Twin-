@@ -139,10 +139,19 @@ app.post('/connect', (req, res) => {
 });
 
 // Get QR code for a user (Frontend polls this every 2 seconds)
-app.get('/qr/:userId', (req, res) => {
+// Auto-restart session if idle (handles Render restarts where in-memory sessions are wiped)
+app.get('/qr/:userId', async (req, res) => {
     const { userId } = req.params;
-    const currentStatus = sessionStatus.get(userId) || 'idle';
+    let currentStatus = sessionStatus.get(userId) || 'idle';
     const qr = qrCodes.get(userId) || null;
+
+    // If idle and not already starting, auto-restart session (Render restart recovery)
+    if (currentStatus === 'idle' && !sessions.has(userId)) {
+        console.log(`[Auto-Recovery] Restarting session for user: ${userId}`);
+        sessionStatus.set(userId, 'connecting');
+        currentStatus = 'connecting';
+        startSession(userId).catch(err => console.error('[Auto-Recovery Error]', err.message));
+    }
 
     res.json({ 
         status: currentStatus, 
