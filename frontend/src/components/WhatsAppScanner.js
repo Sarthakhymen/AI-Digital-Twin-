@@ -8,9 +8,11 @@ const BRIDGE_URL = process.env.REACT_APP_WHATSAPP_BRIDGE_URL || process.env.REAC
 
 const WhatsAppScanner = ({ twinId }) => {
   const [qr, setQr] = useState(null);
-  const [status, setStatus] = useState('idle'); // idle, connecting, qr, ready, error
+  const [qrVisible, setQrVisible] = useState(true); // for fade animation
+  const [status, setStatus] = useState('idle');
   const [userId, setUserId] = useState(null);
   const pollingRef = useRef(null);
+  const lastQrRef = useRef(null); // track last QR to avoid unnecessary re-renders
 
   useEffect(() => {
     // Get current user ID
@@ -30,16 +32,24 @@ const WhatsAppScanner = ({ twinId }) => {
 
     let attempts = 0;
     
-    // Poll every 2 seconds for QR code / status updates
+    // Poll every 5 seconds (QR changes every ~20s, no need for 2s)
     pollingRef.current = setInterval(async () => {
       try {
         const res = await axios.get(`${BRIDGE_URL}/qr/${uid}`, { timeout: 10000 });
         const data = res.data;
 
         if (data.status === 'qr' && data.qr) {
-          setQr(data.qr);
+          // Only update QR if it actually changed (avoid brr brr flash)
+          if (data.qr !== lastQrRef.current) {
+            lastQrRef.current = data.qr;
+            setQrVisible(false); // fade out
+            setTimeout(() => {
+              setQr(data.qr);
+              setQrVisible(true); // fade in
+            }, 200);
+          }
           setStatus('qr');
-          attempts = 0; // Reset attempts on success
+          attempts = 0;
         } else if (data.status === 'ready') {
           setQr(null);
           setStatus('ready');
@@ -113,7 +123,11 @@ const WhatsAppScanner = ({ twinId }) => {
               component="img" 
               src={qr} 
               alt="WhatsApp QR Code" 
-              sx={{ width: 200, height: 200, p: 1, bgcolor: 'white', borderRadius: 2, boxShadow: 1, mb: 1 }} 
+              sx={{ 
+                width: 200, height: 200, p: 1, bgcolor: 'white', borderRadius: 2, boxShadow: 1, mb: 1,
+                opacity: qrVisible ? 1 : 0,
+                transition: 'opacity 0.2s ease-in-out'
+              }} 
             />
             <Typography variant="caption" display="block" color="text.secondary">
               Open WhatsApp &gt; Linked Devices &gt; Link a Device

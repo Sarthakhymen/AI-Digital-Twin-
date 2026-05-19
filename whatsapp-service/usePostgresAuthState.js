@@ -1,4 +1,4 @@
-const { initAuthCreds, BufferJSON } = require('@whiskeysockets/baileys');
+const { initAuthCreds, BufferJSON, proto } = require('@whiskeysockets/baileys');
 const { Pool } = require('pg');
 require('dotenv').config({ path: '../backend/.env' }); // Try to load from backend or use env vars
 
@@ -55,7 +55,7 @@ const usePostgresAuthState = async (userId) => {
                         ids.map(async (id) => {
                             let value = await readData(`${type}-${id}`);
                             if (type === 'app-state-sync-key' && value) {
-                                value = baileys.proto.Message.AppStateSyncKeyData.fromObject(value);
+                                value = proto.Message.AppStateSyncKeyData.fromObject(value);
                             }
                             data[id] = value;
                         })
