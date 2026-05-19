@@ -29,6 +29,8 @@ app.use(express.json());
 const sessions = new Map();
 const qrCodes = new Map();
 const sessionStatus = new Map();
+const retryCount = new Map(); // track reconnection attempts per user
+const MAX_RETRIES = 5;
 
 // Health check endpoint
 app.get('/', (req, res) => {
@@ -50,15 +52,16 @@ async function startSession(userId) {
 
     const sock = makeWASocket({
         version,
-        logger: pino({ level: 'silent' }),
+        logger: pino({ level: 'warn' }),
         auth: {
             creds: state.creds,
-            keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })),
+            keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'warn' })),
         },
         browser: ['Chrome (Linux)', 'Chrome', '120.0.0'],
         printQRInTerminal: false,
         generateHighQualityLinkPreview: false,
         syncFullHistory: false,
+        markOnlineOnConnect: false,
     });
 
     sessions.set(userId, sock);
@@ -71,24 +74,36 @@ async function startSession(userId) {
             const qrDataURL = await QRCode.toDataURL(qr);
             qrCodes.set(userId, qrDataURL);
             sessionStatus.set(userId, 'qr');
+            retryCount.set(userId, 0); // reset retries on new QR
         }
 
         if (connection === 'close') {
-            const statusCode = (lastDisconnect?.error)?.output?.statusCode;
+            const error = lastDisconnect?.error;
+            const statusCode = error?.output?.statusCode;
+            const errorMsg = error?.message || error?.output?.payload?.message || 'unknown';
             const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
-            console.log(`[Session] Closed for ${userId}. Code: ${statusCode}. Reconnecting: ${shouldReconnect}`);
-            if (shouldReconnect) {
+            const currentRetries = (retryCount.get(userId) || 0) + 1;
+            retryCount.set(userId, currentRetries);
+
+            console.log(`[Session] Closed for ${userId}. Code: ${statusCode}. Error: ${errorMsg}. Retry: ${currentRetries}/${MAX_RETRIES}`);
+
+            if (shouldReconnect && currentRetries <= MAX_RETRIES) {
                 sessionStatus.set(userId, 'connecting');
-                setTimeout(() => startSession(userId), 3000);
+                const delay = Math.min(currentRetries * 5000, 30000); // 5s, 10s, 15s... max 30s
+                console.log(`[Session] Reconnecting in ${delay/1000}s...`);
+                setTimeout(() => startSession(userId), delay);
             } else {
+                console.log(`[Session] Stopped reconnecting for ${userId}. LoggedOut: ${!shouldReconnect}, MaxRetries: ${currentRetries > MAX_RETRIES}`);
                 sessions.delete(userId);
                 qrCodes.delete(userId);
                 sessionStatus.set(userId, 'idle');
+                retryCount.set(userId, 0);
             }
         } else if (connection === 'open') {
-            console.log(`[Session] Connected for ${userId}`);
+            console.log(`[Session] ✅ Connected for ${userId}`);
             qrCodes.delete(userId);
             sessionStatus.set(userId, 'ready');
+            retryCount.set(userId, 0); // reset retries on successful connection
         }
     });
 
@@ -262,16 +277,9 @@ app.post('/connect', (req, res) => {
 
 app.get('/qr/:userId', async (req, res) => {
     const { userId } = req.params;
-    let currentStatus = sessionStatus.get(userId) || 'idle';
+    const currentStatus = sessionStatus.get(userId) || 'idle';
     const qr = qrCodes.get(userId) || null;
-
-    if (currentStatus === 'idle' && !sessions.has(userId)) {
-        console.log(`[Auto-Recovery] Restarting session for user: ${userId}`);
-        sessionStatus.set(userId, 'connecting');
-        currentStatus = 'connecting';
-        startSession(userId).catch(err => console.error('[Auto-Recovery Error]', err.message));
-    }
-
+    // No auto-recovery here — only /connect starts sessions (prevents conflict)
     res.json({ status: currentStatus, qr: qr, userId: userId });
 });
 
