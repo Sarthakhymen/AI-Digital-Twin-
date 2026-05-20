@@ -1034,20 +1034,20 @@ const Features = () => {
   // Define content for each page
   // Page 0: Cover / Table of Contents
   const renderPage0 = () => (
-    <div className="flex flex-col h-full justify-between py-2 px-1">
+    <div className="flex flex-col h-full justify-between py-1 px-1">
       <div>
-        <div className="flex items-center gap-2 text-indigo-400 mb-6">
-          <BookOpen className="w-5 h-5 animate-pulse" />
-          <span className="text-[10px] font-bold tracking-wider uppercase">System Spec Manual</span>
+        <div className="flex items-center gap-2 text-indigo-400 mb-3">
+          <BookOpen className="w-4 h-4 animate-pulse" />
+          <span className="text-[9px] font-bold tracking-wider uppercase">System Spec Manual</span>
         </div>
-        <h3 className="text-2xl font-black text-white tracking-tight leading-tight mb-3">
+        <h3 className="text-xl font-black text-white tracking-tight leading-tight mb-1.5">
           Cognitive AI Twin Blueprint
         </h3>
-        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-8">
-          Welcome to the technical capability manual. Turn pages to inspect each engine, simulator, and route guard.
+        <p className="text-[11px] text-slate-400 leading-relaxed font-medium mb-4">
+          Welcome to the technical capability manual. Click chapters below or flip pages to inspect each engine, simulator, and route guard.
         </p>
         
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-2">
           {[
             { ch: 'Ch 1', title: 'Voice Synthesizer', spread: 0 },
             { ch: 'Ch 2', title: 'Knowledge Vectorizer', spread: 1 },
@@ -1059,16 +1059,16 @@ const Features = () => {
             <button
               key={idx}
               onClick={() => turnToSpread(item.spread)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/10 transition-all text-left text-xs font-semibold text-slate-300 hover:text-indigo-300"
+              className="flex flex-col justify-between p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/10 transition-all text-left h-16 group"
             >
-              <span>{item.ch}: {item.title}</span>
-              <ChevronRight className="w-3.5 h-3.5" />
+              <span className="text-[9px] text-indigo-400 font-bold tracking-wider uppercase group-hover:text-indigo-300 transition-colors">{item.ch}</span>
+              <span className="text-[11px] font-bold text-white/90 leading-tight group-hover:text-white transition-colors">{item.title}</span>
             </button>
           ))}
         </div>
       </div>
       
-      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+      <div className="border-t border-white/5 pt-3 flex items-center justify-between text-[9px] text-slate-500 font-mono mt-4">
         <span>ANTIGRAVITY SYSTEMS</span>
         <span>PAGE 01</span>
       </div>
@@ -1545,12 +1545,12 @@ const Features = () => {
                 <div className="book-spine-line" />
                 
                 {/* Left Underlay Page (Static) */}
-                <div className="book-page-half book-page-left p-10 bg-slate-900/95">
+                <div className="book-page-half book-page-left py-6 px-8 bg-slate-900/95">
                   {getSpreadLeftContent(displaySpreadIndex)}
                 </div>
 
                 {/* Right Underlay Page (Static) */}
-                <div className="book-page-half book-page-right p-10 bg-slate-900/95">
+                <div className="book-page-half book-page-right py-6 px-8 bg-slate-900/95">
                   {getSpreadRightContent(displaySpreadIndex)}
                 </div>
 
@@ -1563,12 +1563,12 @@ const Features = () => {
                     transition={{ duration: 0.5, ease: 'easeInOut' }}
                   >
                     {/* Front side of flipping sheet */}
-                    <div className="book-flipping-side book-flipping-side-front p-10 bg-slate-900/95 text-white">
+                    <div className="book-flipping-side book-flipping-side-front py-6 px-8 bg-slate-900/95 text-white">
                       {getFlippingFrontContent()}
                     </div>
                     
                     {/* Back side of flipping sheet */}
-                    <div className="book-flipping-side book-flipping-side-back p-10 bg-slate-900/95 text-white">
+                    <div className="book-flipping-side book-flipping-side-back py-6 px-8 bg-slate-900/95 text-white">
                       {getFlippingBackContent()}
                     </div>
                   </motion.div>

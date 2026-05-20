@@ -261,7 +261,7 @@ body {
 
 .book-container {
   width: 960px;
-  height: 600px;
+  height: 620px;
   position: relative;
   transform-style: preserve-3d;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
