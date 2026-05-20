@@ -176,3 +176,81 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Premium Gradient Borders & Glassmorphism */
+.gradient-border-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.015) !important;
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: none !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gradient-border-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 24px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01) 50%, rgba(255,255,255,0.08));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.gradient-border-card:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.gradient-border-card:hover::before {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(217, 70, 239, 0.1) 50%, rgba(6, 182, 212, 0.3));
+}
+
+/* Mixed Gradient Themes for Features Cards */
+.feature-card-cyan::before {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(255, 255, 255, 0.01) 60%, rgba(6, 182, 212, 0.08)) !important;
+}
+.feature-card-cyan:hover::before {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.5), rgba(6, 182, 212, 0.1) 50%, rgba(6, 182, 212, 0.6)) !important;
+}
+
+.feature-card-indigo::before {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(255, 255, 255, 0.01) 60%, rgba(99, 102, 241, 0.08)) !important;
+}
+.feature-card-indigo:hover::before {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.5), rgba(99, 102, 241, 0.1) 50%, rgba(99, 102, 241, 0.6)) !important;
+}
+
+.feature-card-purple::before {
+  background: linear-gradient(135deg, rgba(217, 70, 239, 0.2), rgba(255, 255, 255, 0.01) 60%, rgba(217, 70, 239, 0.08)) !important;
+}
+.feature-card-purple:hover::before {
+  background: linear-gradient(135deg, rgba(217, 70, 239, 0.5), rgba(217, 70, 239, 0.1) 50%, rgba(217, 70, 239, 0.6)) !important;
+}
+
+.feature-card-amber::before {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(255, 255, 255, 0.01) 60%, rgba(245, 158, 11, 0.08)) !important;
+}
+.feature-card-amber:hover::before {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.5), rgba(245, 158, 11, 0.1) 50%, rgba(245, 158, 11, 0.6)) !important;
+}
+
+.feature-card-rose::before {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(255, 255, 255, 0.01) 60%, rgba(244, 63, 94, 0.08)) !important;
+}
+.feature-card-rose:hover::before {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.5), rgba(244, 63, 94, 0.1) 50%, rgba(244, 63, 94, 0.6)) !important;
+}
+
+.feature-card-emerald::before {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(255, 255, 255, 0.01) 60%, rgba(16, 185, 129, 0.08)) !important;
+}
+.feature-card-emerald:hover::before {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(16, 185, 129, 0.1) 50%, rgba(16, 185, 129, 0.6)) !important;
+}
+

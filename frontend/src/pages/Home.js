@@ -232,18 +232,18 @@ const HeroSmartphoneVisualization = () => {
   return (
     <div className="relative flex items-center justify-center w-full lg:max-w-md mx-auto pb-16 md:pb-0">
       {/* Dynamic Spiral Arrow Callout (Visible on md and larger) */}
-      <div className="hidden md:flex absolute -left-36 lg:-left-44 top-1/4 flex-col items-center z-20 max-w-[180px] text-center pointer-events-none select-none">
-        <div className="font-handwriting text-[23px] text-slate-200 leading-tight transform -rotate-6 filter drop-shadow-[0_2px_10px_rgba(99,102,241,0.2)]">
+      <div className="hidden md:flex absolute -left-[11rem] lg:-left-[13rem] top-[28%] flex-col items-end z-20 max-w-[200px] text-right pointer-events-none select-none">
+        <div className="font-handwriting text-[23px] text-slate-100 leading-tight transform -rotate-3 filter drop-shadow-[0_2px_10px_rgba(244,63,94,0.2)]">
           Your twin is exactly talking like this with your
-          <div className="h-9 overflow-hidden mt-0.5 flex justify-center items-center">
+          <div className="h-9 overflow-hidden mt-0.5 flex justify-end items-center">
             <AnimatePresence mode="wait">
               <motion.span
                 key={nameIndex}
-                initial={{ y: 20, opacity: 0 }}
+                initial={{ y: 15, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -20, opacity: 0 }}
+                exit={{ y: -15, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="block text-indigo-400 font-extrabold tracking-wider text-[21px] uppercase font-sans"
+                className="block text-pink-400 font-extrabold tracking-wider text-[21px] uppercase font-sans"
               >
                 {TARGET_NAMES[nameIndex]}
               </motion.span>
@@ -251,18 +251,18 @@ const HeroSmartphoneVisualization = () => {
           </div>
         </div>
         
-        {/* Curved hand-drawn style spiral SVG arrow pointing to screen */}
-        <div className="mt-1 transform translate-x-12 rotate-[12deg] text-indigo-400/80 filter drop-shadow-[0_2px_6px_rgba(99,102,241,0.15)]">
-          <svg viewBox="0 0 100 80" className="w-20 h-16 animate-pulse" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Curved swooping arrow pointing to screen */}
+        <div className="mt-1 mr-4 transform translate-x-4 text-pink-400 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]">
+          <svg viewBox="0 0 100 50" className="w-24 h-12 overflow-visible" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path 
-              d="M10,15 C40,-5 75,5 85,25 C95,45 85,65 65,70 C45,75 35,60 45,45 C55,30 75,35 85,55" 
+              d="M 10 5 C 35 28, 55 32, 80 12" 
               stroke="currentColor" 
               strokeWidth="2.5" 
               strokeLinecap="round" 
               strokeDasharray="4 3"
             />
             <path 
-              d="M75,55 L85,55 L85,45" 
+              d="M 68 8 L 82 12 L 76 25" 
               stroke="currentColor" 
               strokeWidth="2.5" 
               strokeLinecap="round" 
@@ -964,37 +964,67 @@ const Features = () => {
       icon: Mic,
       title: 'Voice Cloning Synthesizer',
       description: 'Clone your acoustic voice signature from a 10s audio record. Power voice bot dials with natural tone.',
-      plan: 'Business Pro'
+      plan: 'Business Pro',
+      colorClass: 'feature-card-rose',
+      textColor: 'text-rose-400',
+      textGlow: 'group-hover:text-rose-400',
+      glowBg: 'bg-rose-500/5 group-hover:bg-rose-500/10',
+      iconBg: 'group-hover:bg-rose-500/15',
     },
     {
       icon: Database,
       title: 'Multi-Format Knowledge Ingestion',
       description: 'Upload PDF files, TXT records, or scrape full site URLs. Indexes data into an isolated vector database.',
-      plan: 'Standard'
+      plan: 'Standard',
+      colorClass: 'feature-card-cyan',
+      textColor: 'text-cyan-400',
+      textGlow: 'group-hover:text-cyan-400',
+      glowBg: 'bg-cyan-500/5 group-hover:bg-cyan-500/10',
+      iconBg: 'group-hover:bg-cyan-500/15',
     },
     {
       icon: Scan,
       title: 'WhatsApp Automation Gateway',
       description: 'Link your WhatsApp using simple QR scanners. Let your twin manage client chats 24/7 on autopilot.',
-      plan: 'Business Pro'
+      plan: 'Business Pro',
+      colorClass: 'feature-card-emerald',
+      textColor: 'text-emerald-400',
+      textGlow: 'group-hover:text-emerald-400',
+      glowBg: 'bg-emerald-500/5 group-hover:bg-emerald-500/10',
+      iconBg: 'group-hover:bg-emerald-500/15',
     },
     {
       icon: Smartphone,
       title: 'Lightweight Web Widget',
       description: 'Embed a clean, customized chat widget onto client websites with a single line of script. Remove watermarks.',
-      plan: 'Standard'
+      plan: 'Standard',
+      colorClass: 'feature-card-purple',
+      textColor: 'text-purple-400',
+      textGlow: 'group-hover:text-purple-400',
+      glowBg: 'bg-purple-500/5 group-hover:bg-purple-500/10',
+      iconBg: 'group-hover:bg-purple-500/15',
     },
     {
       icon: BarChart3,
       title: 'Detailed Analytical Reporting',
       description: 'Track conversation logs, message count limits, query volumes, and analytics tables.',
-      plan: 'Standard'
+      plan: 'Standard',
+      colorClass: 'feature-card-amber',
+      textColor: 'text-amber-400',
+      textGlow: 'group-hover:text-amber-400',
+      glowBg: 'bg-amber-500/5 group-hover:bg-amber-500/10',
+      iconBg: 'group-hover:bg-amber-500/15',
     },
     {
       icon: Shield,
       title: 'Strict Route Gating Guard',
       description: 'Robust backend authentication policy gates. Standard users are strictly blocked from Business Pro APIs.',
-      plan: 'System-wide'
+      plan: 'System-wide',
+      colorClass: 'feature-card-indigo',
+      textColor: 'text-indigo-400',
+      textGlow: 'group-hover:text-indigo-400',
+      glowBg: 'bg-indigo-500/5 group-hover:bg-indigo-500/10',
+      iconBg: 'group-hover:bg-indigo-500/15',
     }
   ];
 
@@ -1025,17 +1055,17 @@ const Features = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
                 whileHover={{ y: -5 }}
-                className="group relative p-8 rounded-2xl bg-white/[0.01] border border-white/5 hover:border-indigo-500/20 hover:bg-white/[0.02] shadow-2xl transition-all duration-300 overflow-hidden"
+                className={`group relative p-8 rounded-2xl gradient-border-card ${feature.colorClass} shadow-2xl transition-all duration-300 overflow-hidden`}
               >
                 {/* Visual card corner glow effect */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-all pointer-events-none" />
+                <div className={`absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl transition-all pointer-events-none ${feature.glowBg}`} />
 
-                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-6 group-hover:bg-indigo-500/15 group-hover:text-indigo-400 transition-colors">
-                  <Icon className="w-5 h-5 text-slate-400 group-hover:text-indigo-400 transition-colors" />
+                <div className={`w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-6 transition-colors ${feature.iconBg}`}>
+                  <Icon className={`w-5 h-5 text-slate-400 ${feature.textGlow} transition-colors`} />
                 </div>
 
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-lg font-bold text-white tracking-tight group-hover:text-indigo-300 transition-colors">
+                  <h3 className={`text-lg font-bold text-white tracking-tight ${feature.textGlow} transition-colors`}>
                     {feature.title}
                   </h3>
                   <span className={`text-[8px] font-mono font-bold px-2 py-0.5 rounded border ${
@@ -1114,11 +1144,21 @@ const HowItWorks = () => {
               transition={{ delay: i * 0.15 }}
               className="relative"
             >
-              <div className="p-8 rounded-2xl bg-white/[0.01] border border-white/5 hover:border-indigo-500/10 shadow-xl hover:bg-white/[0.02] transition-all duration-300 h-full flex flex-col justify-between overflow-hidden">
+              <div className={`p-8 rounded-2xl gradient-border-card h-full flex flex-col justify-between overflow-hidden ${
+                i === 0 ? 'feature-card-cyan' : i === 1 ? 'feature-card-purple' : 'feature-card-emerald'
+              }`}>
                 <div>
                   <div className="flex justify-between items-center">
-                    <span className="text-4xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent opacity-80 font-mono">{step.step}</span>
-                    <span className="text-[8px] font-mono font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded uppercase">{step.badge}</span>
+                    <span className={`text-4xl font-black bg-gradient-to-r ${
+                      i === 0 ? 'from-cyan-400 to-indigo-500' : i === 1 ? 'from-purple-400 to-pink-500' : 'from-emerald-400 to-teal-500'
+                    } bg-clip-text text-transparent opacity-90 font-mono`}>{step.step}</span>
+                    <span className={`text-[8px] font-mono font-bold border px-2 py-0.5 rounded uppercase ${
+                      i === 0 
+                        ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400' 
+                        : i === 1 
+                          ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' 
+                          : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                    }`}>{step.badge}</span>
                   </div>
                   
                   <h3 className="mt-6 text-xl font-bold text-white tracking-tight">{step.title}</h3>
