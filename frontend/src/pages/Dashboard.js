@@ -60,9 +60,9 @@ const Dashboard = () => {
     const plan = user.subscription_plan || 'free';
     const status = user.subscription_status || 'active';
 
-    if (plan === 'free' && status === 'active') {
+    if ((plan === 'free' || plan === 'starter') && status === 'active') {
       return { 
-        label: 'Trial', 
+        label: 'FREE TRIAL', 
         variant: 'outlined', 
         sx: { 
           borderColor: 'rgba(148,163,184,0.4)', 
@@ -74,8 +74,8 @@ const Dashboard = () => {
         } 
       };
     }
-    if (status === 'active' && (plan === 'standard' || plan === 'business_pro')) {
-      const isPro = plan === 'business_pro';
+    if (status === 'active' && (plan === 'standard' || plan === 'business_pro' || plan === 'pro')) {
+      const isPro = plan === 'business_pro' || plan === 'pro';
       return {
         label: isPro ? 'PRO' : 'STANDARD',
         icon: isPro ? <AutoAwesome sx={{ fontSize: '14px !important', color: '#fff !important' }} /> : undefined,

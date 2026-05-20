@@ -24,8 +24,12 @@ const Sidebar = () => {
     ...(user?.is_admin || ["sarthak2005shavarn@gmail.com", "nexora.aidigital.twin@gmail.com"].includes(user?.email) ? [{ name: 'Admin', href: '/admin', icon: Shield, special: true }] : [])
   ];
 
-  const planName = user?.subscription_plan === 'free' ? 'Free Trial' : user?.subscription_plan === 'standard' ? 'Standard' : 'Business Pro';
-  const isFree = user?.subscription_plan === 'free' || !user?.subscription_plan;
+  const planName = (user?.subscription_plan === 'free' || user?.subscription_plan === 'starter') 
+    ? 'Free Trial' 
+    : user?.subscription_plan === 'standard' 
+      ? 'Standard' 
+      : 'Business Pro';
+  const isFree = user?.subscription_plan === 'free' || user?.subscription_plan === 'starter' || !user?.subscription_plan;
 
   return (
     <div className="w-[260px] h-screen fixed left-0 top-0 bg-[#0A0D14] border-r border-white/5 flex flex-col text-slate-300 font-sans z-50">

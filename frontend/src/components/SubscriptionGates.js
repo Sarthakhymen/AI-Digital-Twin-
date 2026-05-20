@@ -19,9 +19,9 @@ const SubscriptionGates = ({ user, userFeatures }) => {
   const theme = useTheme();
   
   const currentPlan = user?.subscription_plan || 'free';
-  const isTrial = currentPlan === 'free';
-  const isStandard = currentPlan === 'standard' || currentPlan === 'business_pro';
-  const isPro = currentPlan === 'business_pro';
+  const isTrial = currentPlan === 'free' || currentPlan === 'starter';
+  const isStandard = currentPlan === 'standard' || currentPlan === 'business_pro' || currentPlan === 'pro';
+  const isPro = currentPlan === 'business_pro' || currentPlan === 'pro';
 
   const gates = [
     {

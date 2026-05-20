@@ -34,6 +34,24 @@ const Pricing = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const getPlanStatus = (planKey) => {
+    if (!user) return { isCurrent: false };
+    const currentPlan = user.subscription_plan;
+    if (planKey === 'free') {
+      const isFreeActive = currentPlan === 'free' || currentPlan === 'starter' || !currentPlan;
+      return { isCurrent: isFreeActive };
+    }
+    if (planKey === 'standard') {
+      const isStandardActive = currentPlan === 'standard';
+      return { isCurrent: isStandardActive };
+    }
+    if (planKey === 'business_pro') {
+      const isProActive = currentPlan === 'business_pro' || currentPlan === 'pro';
+      return { isCurrent: isProActive };
+    }
+    return { isCurrent: false };
+  };
+
   // ── Free Trial ───────────────────────────────────────────
   const handleTrial = async () => {
     if (!user) { navigate('/login'); return; }
@@ -166,12 +184,12 @@ const Pricing = () => {
         'Sub-100ms response time',
         'No credit card required',
       ],
-      cta: trialLoading ? 'Activating...' : 'Start 7-Day Trial',
-      onAction: handleTrial,
+      cta: trialLoading ? 'Activating...' : (getPlanStatus('free').isCurrent ? 'Your Current Plan' : 'Start 7-Day Trial'),
+      onAction: getPlanStatus('free').isCurrent ? null : handleTrial,
       icon: Clock,
       color: 'blue',
       loading: trialLoading,
-      disabled: trialLoading || checkoutLoading !== null,
+      disabled: trialLoading || checkoutLoading !== null || getPlanStatus('free').isCurrent,
     },
     {
       key: 'standard',
@@ -185,14 +203,14 @@ const Pricing = () => {
         'Lead Generation Form (Email capture)',
         'URL Scraping (Auto-Knowledge Base)',
       ],
-      cta: checkoutLoading === 'standard' ? 'Processing...' : 'Get Standard',
-      onAction: () => handleRazorpayCheckout('standard'),
+      cta: checkoutLoading === 'standard' ? 'Processing...' : (getPlanStatus('standard').isCurrent ? 'Your Current Plan' : 'Get Standard'),
+      onAction: getPlanStatus('standard').isCurrent ? null : () => handleRazorpayCheckout('standard'),
       icon: Zap,
       color: 'amber',
       loading: checkoutLoading === 'standard',
-      disabled: trialLoading || checkoutLoading !== null,
+      disabled: trialLoading || checkoutLoading !== null || getPlanStatus('standard').isCurrent,
       badge: null,
-      allowManual: true,
+      allowManual: !getPlanStatus('standard').isCurrent,
     },
     {
       key: 'business_pro',
@@ -207,13 +225,13 @@ const Pricing = () => {
         'Everything in Standard',
         'Priority Support',
       ],
-      cta: 'Coming Soon',
-      onAction: () => setShowWaitlistModal(true),
+      cta: getPlanStatus('business_pro').isCurrent ? 'Your Current Plan' : 'Coming Soon',
+      onAction: getPlanStatus('business_pro').isCurrent ? null : () => setShowWaitlistModal(true),
       icon: Star,
       color: 'rose',
       popular: true,
-      comingSoon: true,
-      disabled: false,
+      comingSoon: !getPlanStatus('business_pro').isCurrent,
+      disabled: getPlanStatus('business_pro').isCurrent,
       loading: false,
       allowManual: false,
     },
@@ -259,13 +277,24 @@ const Pricing = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 flex flex-col ${
-                  plan.popular
-                    ? 'bg-slate-900/80 border-rose-500/40 shadow-2xl shadow-rose-500/10'
-                    : 'bg-slate-900/40 border-slate-800 hover:border-slate-700'
+                  getPlanStatus(plan.key).isCurrent
+                    ? 'bg-slate-900/80 border-emerald-500/50 shadow-2xl shadow-emerald-500/10'
+                    : plan.popular
+                      ? 'bg-slate-900/80 border-rose-500/40 shadow-2xl shadow-rose-500/10'
+                      : 'bg-slate-900/40 border-slate-800 hover:border-slate-700'
                 }`}
               >
+                {/* Current Plan Badge */}
+                {getPlanStatus(plan.key).isCurrent && (
+                  <div className="absolute top-0 right-8 -translate-y-1/2">
+                    <span className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg shadow-emerald-500/20">
+                      Current Plan
+                    </span>
+                  </div>
+                )}
+
                 {/* Popular Badge */}
-                {plan.popular && (
+                {plan.popular && !getPlanStatus(plan.key).isCurrent && (
                   <div className="absolute top-0 right-8 -translate-y-1/2">
                     <span className="bg-gradient-to-r from-rose-500 to-red-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg shadow-rose-500/20">
                       Coming Soon
