@@ -1090,12 +1090,19 @@ const UserGuideMindmap = () => {
   const [ingestProgress, setIngestProgress] = useState(0);
   const [isIngesting, setIsIngesting] = useState(false);
 
-  // RAG query state variables
   const [ragQuery, setRagQuery] = useState("");
   const [ragPhase, setRagPhase] = useState("idle"); // idle | vectorizing | searching | retrieving | synthesizing | done
   const [ragOutput, setRagOutput] = useState("");
   const [ragSource, setRagSource] = useState("");
   const [ragConfidence, setRagConfidence] = useState("");
+
+  // Simulated Lead Generation states for sandbox guide
+  const [simulatedLeads, setSimulatedLeads] = useState([]);
+  const [showLeadWidget, setShowLeadWidget] = useState(false);
+  const [leadFormName, setLeadFormName] = useState("");
+  const [leadFormEmail, setLeadFormEmail] = useState("");
+  const [leadFormPhone, setLeadFormPhone] = useState("");
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
 
   const steps = [
     {
@@ -1887,41 +1894,191 @@ const UserGuideMindmap = () => {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -15 }}
-                    className="max-w-md mx-auto w-full bg-slate-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative font-sans"
+                    className="max-w-md mx-auto w-full flex flex-col gap-4 font-sans"
                   >
-                    {/* Browser Address Bar */}
-                    <div className="flex items-center gap-2 bg-slate-950 px-4 py-2 border-b border-white/5 text-[10px] font-mono text-slate-500">
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 rounded-full bg-white/20" />
-                        <div className="w-2 h-2 rounded-full bg-white/20" />
+                    {/* Simulated Live Webpage & Floating Widget */}
+                    <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative">
+                      {/* Browser Address Bar */}
+                      <div className="flex items-center gap-2 bg-slate-950 px-4 py-2 border-b border-white/5 text-[10px] font-mono text-slate-500">
+                        <div className="flex gap-1">
+                          <div className="w-2 h-2 rounded-full bg-white/20" />
+                          <div className="w-2 h-2 rounded-full bg-white/20" />
+                        </div>
+                        <div className="bg-slate-900 px-3 py-0.5 rounded w-full max-w-[200px] text-slate-400 text-center truncate">
+                          https://www.{workspaceWebsite || 'amitcoffeeshop.com'}
+                        </div>
                       </div>
-                      <div className="bg-slate-900 px-3 py-0.5 rounded w-full max-w-[200px] text-slate-400 text-center truncate">
-                        https://www.{workspaceWebsite || 'amitcoffeeshop.com'}
+
+                      {/* Simulated Coffee Shop Webpage Content */}
+                      <div className="p-6 h-[240px] bg-slate-950/20 flex flex-col justify-between relative overflow-hidden">
+                        <div className="space-y-2">
+                          <span className="text-[9px] font-bold text-rose-500 uppercase tracking-widest">{workspaceName || "Amit's Coffee Shop"}</span>
+                          <h4 className="text-lg font-black text-white leading-tight">Fresh Roasted Artisan Beans</h4>
+                          <p className="text-[10px] text-slate-400 max-w-[80%]">Crafted with precision, serving premium espressos, gourmet teas, and warm delivery daily.</p>
+                        </div>
+
+                        {/* If widget is closed, show floating button & prompt bubble */}
+                        {!showLeadWidget && (
+                          <div className="absolute bottom-4 right-4 flex flex-col items-end space-y-2">
+                            <div className="bg-slate-900/95 border border-white/10 rounded-xl p-3 shadow-2xl max-w-[220px] text-[9px] space-y-1.5 backdrop-blur-sm">
+                              <div className="flex items-center gap-1.5 border-b border-white/5 pb-1">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                                <span className="font-bold text-white">{twinName} (Online)</span>
+                              </div>
+                              <p className="text-slate-300">"Hi! Click my chat bubble below to test the Lead Generation Form!"</p>
+                            </div>
+                            
+                            <button
+                              onClick={() => setShowLeadWidget(true)}
+                              className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(99,102,241,0.4)] animate-bounce cursor-pointer hover:scale-110 transition-transform"
+                            >
+                              <MessageCircle className="w-5 h-5 text-white" />
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Simulated Chat Widget Window overlay */}
+                        {showLeadWidget && (
+                          <div className="absolute inset-x-4 bottom-4 top-4 bg-slate-900 border border-white/15 rounded-xl shadow-2xl flex flex-col justify-between overflow-hidden">
+                            {/* Widget Header */}
+                            <div className="bg-slate-950 px-4 py-2 border-b border-white/10 flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <span className="text-[10px] font-bold text-white">{twinName} Assistant</span>
+                              </div>
+                              <button 
+                                onClick={() => setShowLeadWidget(false)}
+                                className="text-slate-400 hover:text-white text-[10px] font-bold"
+                              >
+                                Close
+                              </button>
+                            </div>
+
+                            {/* Chat Area */}
+                            <div className="flex-grow p-4 overflow-y-auto space-y-3 flex flex-col justify-center">
+                              {!leadSubmitted ? (
+                                /* Lead Form */
+                                <div className="space-y-2.5">
+                                  <div className="text-center">
+                                    <h5 className="text-[10px] font-extrabold text-white uppercase tracking-wider">Start Consultation</h5>
+                                    <p className="text-[9px] text-slate-400">Introduce yourself to start chatting with {twinName}!</p>
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    <input 
+                                      type="text" 
+                                      placeholder="Full Name" 
+                                      value={leadFormName}
+                                      onChange={(e) => setLeadFormName(e.target.value)}
+                                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-[9px] text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                                    />
+                                    <input 
+                                      type="email" 
+                                      placeholder="Email Address" 
+                                      value={leadFormEmail}
+                                      onChange={(e) => setLeadFormEmail(e.target.value)}
+                                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-[9px] text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                                    />
+                                    <input 
+                                      type="text" 
+                                      placeholder="Phone Number (Optional)" 
+                                      value={leadFormPhone}
+                                      onChange={(e) => setLeadFormPhone(e.target.value)}
+                                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-[9px] text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                                    />
+                                  </div>
+                                  <button
+                                    onClick={() => {
+                                      if (!leadFormName || !leadFormEmail) {
+                                        alert("Please enter both Name and Email!");
+                                        return;
+                                      }
+                                      const newLead = {
+                                        id: Date.now(),
+                                        name: leadFormName,
+                                        email: leadFormEmail,
+                                        phone: leadFormPhone || "—",
+                                        created_at: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+                                      };
+                                      setSimulatedLeads([newLead, ...simulatedLeads]);
+                                      setLeadSubmitted(true);
+                                    }}
+                                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-[9px] py-1.5 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all"
+                                  >
+                                    Submit Details & Chat
+                                  </button>
+                                </div>
+                              ) : (
+                                /* Chat Session unlocked! */
+                                <div className="space-y-3 flex-grow flex flex-col justify-end">
+                                  <div className="bg-slate-955 border border-white/5 rounded-lg p-2 text-[9px] text-slate-350 self-end max-w-[85%]">
+                                    Hi! My name is {leadFormName} ({leadFormEmail}).
+                                  </div>
+                                  <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-2 text-[9px] text-slate-200 self-start max-w-[85%]">
+                                    👋 Welcome, {leadFormName}! Thank you for introducing yourself. I am ready to answer your questions.
+                                  </div>
+                                  <div className="flex items-center gap-1.5 justify-center py-1 text-[8px] font-mono text-emerald-400 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                                    <Check className="w-3 h-3 text-emerald-400" />
+                                    <span>LEAD SAVED TO DASHBOARD DATABASE</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Chat Input footer if submitted */}
+                            {leadSubmitted && (
+                              <div className="bg-slate-950 p-2 border-t border-white/10 flex items-center justify-between gap-2">
+                                <span className="text-[8px] text-slate-400 font-mono">Form captured successfully!</span>
+                                <button
+                                  onClick={() => {
+                                    setLeadSubmitted(false);
+                                    setLeadFormName("");
+                                    setLeadFormEmail("");
+                                    setLeadFormPhone("");
+                                  }}
+                                  className="text-[8px] text-indigo-400 hover:text-indigo-300 font-bold underline"
+                                >
+                                  Reset Form
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {/* Simulated Coffee Shop Webpage */}
-                    <div className="p-6 h-[220px] bg-slate-955 flex flex-col justify-between relative">
-                      <div className="space-y-2">
-                        <span className="text-[9px] font-bold text-rose-500 uppercase tracking-widest">{workspaceName || "Amit's Coffee Shop"}</span>
-                        <h4 className="text-lg font-black text-white leading-tight">Fresh Roasted Artisan Beans</h4>
-                        <p className="text-[10px] text-slate-400 max-w-[80%]">Crafted with precision, serving premium espressos, gourmet teas, and warm delivery daily.</p>
+                    {/* Simulated Dashboard Leads Database View */}
+                    <div className="bg-slate-950 border border-white/10 rounded-2xl p-4 flex flex-col gap-2.5">
+                      <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-3.5 h-3.5 text-amber-500" />
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider">📁 Dashboard leads Database</span>
+                        </div>
+                        <span className="text-[8px] bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded font-mono font-extrabold uppercase">Saved Live</span>
                       </div>
 
-                      {/* Mock floating widget button */}
-                      <div className="absolute bottom-4 right-4 flex flex-col items-end space-y-2">
-                        <div className="bg-slate-900 border border-white/10 rounded-xl p-3 shadow-2xl max-w-[220px] text-[9px] space-y-1.5">
-                          <div className="flex items-center gap-1.5 border-b border-white/5 pb-1">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                            <span className="font-bold text-white">{twinName} (Online)</span>
-                          </div>
-                          <p className="text-slate-350">"Hi! I am the automated virtual twin of Amit. Ask me about coffee prices or shop hours!"</p>
+                      {simulatedLeads.length === 0 ? (
+                        <div className="py-6 flex flex-col items-center justify-center text-center border border-dashed border-white/5 rounded-xl bg-slate-900/20">
+                          <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center mb-1 text-slate-500 text-xs font-bold animate-pulse">!</div>
+                          <p className="text-[9px] text-slate-500 font-medium">Database is empty.</p>
+                          <p className="text-[8px] text-slate-600 max-w-[80%] mt-0.5">Submit the widget's Lead Gen Form above to watch this database populate in real-time!</p>
                         </div>
-                        
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-rose-500 to-violet-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(244,63,94,0.4)] animate-bounce cursor-pointer">
-                          <MessageCircle className="w-5 h-5 text-white" />
+                      ) : (
+                        <div className="max-h-[110px] overflow-y-auto space-y-1.5">
+                          {simulatedLeads.map((lead) => (
+                            <div key={lead.id} className="flex items-center justify-between bg-slate-900 border border-white/5 rounded-xl p-2 text-[9px] font-mono hover:border-indigo-500/20 transition-all">
+                              <div className="space-y-0.5">
+                                <p className="font-bold text-white leading-none">{lead.name}</p>
+                                <p className="text-[8px] text-slate-400 leading-none">{lead.email}</p>
+                              </div>
+                              <div className="text-right space-y-0.5">
+                                <p className="text-slate-350 leading-none">{lead.phone}</p>
+                                <p className="text-[7px] text-slate-500 leading-none">{lead.created_at}</p>
+                              </div>
+                              <span className="text-[7px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 py-0.2 rounded font-bold">SAVED</span>
+                            </div>
+                          ))}
                         </div>
-                      </div>
+                      )}
                     </div>
                   </motion.div>
                 )}

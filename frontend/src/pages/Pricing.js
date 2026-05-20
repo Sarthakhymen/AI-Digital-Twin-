@@ -196,11 +196,11 @@ const Pricing = () => {
       name: 'Standard',
       price: '₹1299',
       period: 'per month',
-      description: 'Essential AI features for growing businesses.',
+      description: 'Essential AI features for growing businesses. Captured leads are saved in Dashboard.',
       features: [
         'Unlimited Web Chat Widget',
         'Custom Colors & Styling (No watermark)',
-        'Lead Generation Form (Email & Phone capture)',
+        'Lead Gen Form (Captures name/email/phone; saves to Dashboard -> Leads)',
         'URL Scraping (Auto-Knowledge Base)',
         'Priority API Response speed',
       ],
