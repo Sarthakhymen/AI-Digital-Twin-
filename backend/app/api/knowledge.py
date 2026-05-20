@@ -217,14 +217,27 @@ class UrlScrapeRequest(BaseModel):
 def scrape_url_text(url: str) -> str:
     """
     Free web scraper using requests + BeautifulSoup.
-    No paid API needed.
+    If no text is returned (e.g. JS-heavy SPA), falls back to Jina Reader API.
     """
     import requests
     from bs4 import BeautifulSoup
     
     headers = {"User-Agent": "Mozilla/5.0 (compatible; AI-Digital-Twin-Bot/1.0; +https://sahayak.ai)"}
-    resp = requests.get(url, headers=headers, timeout=15)
-    resp.raise_for_status()
+    try:
+        resp = requests.get(url, headers=headers, timeout=15)
+        resp.raise_for_status()
+    except requests.exceptions.Timeout:
+        raise ValueError("The website took too long to respond. Connection timed out.")
+    except requests.exceptions.ConnectionError as e:
+        err_msg = str(e)
+        if "NameResolutionError" in err_msg or "Failed to resolve" in err_msg or "Errno -2" in err_msg or "gaierror" in err_msg:
+            raise ValueError("Could not find or resolve this website. Please check the spelling of the URL.")
+        raise ValueError("Could not connect to the website. Please make sure the URL is active, public, and spelled correctly.")
+    except requests.exceptions.HTTPError as e:
+        status_code = e.response.status_code if e.response is not None else "HTTP"
+        raise ValueError(f"The website returned an error (HTTP {status_code}). Please verify the URL.")
+    except Exception as e:
+        raise ValueError(f"Connection failed: {str(e)}")
     
     soup = BeautifulSoup(resp.text, "lxml")
     
@@ -238,7 +251,22 @@ def scrape_url_text(url: str) -> str:
     
     # Collapse whitespace
     lines = [l.strip() for l in text.splitlines() if len(l.strip()) > 3]
-    return "\n".join(lines)
+    final_text = "\n".join(lines)
+    
+    # Fallback to Jina Reader if BS4 scraped too little content (suggests JS-rendered SPA)
+    if len(final_text.strip()) < 150:
+        try:
+            jina_url = f"https://r.jina.ai/{url}"
+            jina_resp = requests.get(jina_url, headers=headers, timeout=20)
+            if jina_resp.status_code == 200:
+                jina_lines = [l.strip() for l in jina_resp.text.splitlines() if len(l.strip()) > 3]
+                jina_text = "\n".join(jina_lines)
+                if len(jina_text.strip()) >= 50:
+                    return jina_text
+        except Exception:
+            pass
+            
+    return final_text
 
 
 @router.post("/{twin_id}/scrape-url")
@@ -260,13 +288,32 @@ async def scrape_url_to_knowledge(
     if not twin:
         raise HTTPException(status_code=404, detail="Digital twin not found")
     
+    # Clean accidental bullet point character at the start (e.g. "- digitaltwin.tech" or "-digitaltwin.tech")
     url = body.url.strip()
+    while url.startswith(("-", "*", "•", " ", "\t", "\r", "\n", '"', "'")):
+        url = url.lstrip("-*• \t\r\n\"'")
+        
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
+    
+    # Validate parsed domain labels
+    from urllib.parse import urlparse
+    try:
+        parsed = urlparse(url)
+        netloc = parsed.netloc
+        if not netloc or any(label.startswith("-") or label.endswith("-") for label in netloc.split(".")):
+            raise ValueError()
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid URL format. Please make sure the domain name is typed correctly (e.g., 'digitaltwin.tech')."
+        )
     
     # 2. Scrape
     try:
         text = scrape_url_text(url)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to scrape URL: {str(e)}")
     
