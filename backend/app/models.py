@@ -73,6 +73,13 @@ class DigitalTwin(Base):
     knowledge_documents = relationship("KnowledgeDocument", back_populates="digital_twin", cascade="all, delete-orphan")
     leads = relationship("LeadCapture", back_populates="digital_twin", cascade="all, delete-orphan")
 
+    @property
+    def widget_token(self) -> str:
+        import hashlib
+        from .services.auth_service import SECRET_KEY
+        twin_id = self.id or 0
+        return hashlib.sha256(f"{SECRET_KEY}-{twin_id}".encode()).hexdigest()[:16]
+
 class Conversation(Base):
     __tablename__ = "conversations"
     

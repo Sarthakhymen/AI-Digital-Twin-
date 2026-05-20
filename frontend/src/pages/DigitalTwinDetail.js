@@ -516,7 +516,7 @@ const DigitalTwinDetail = () => {
                     size="small" 
                     sx={{ color: '#aaa', '&:hover': { color: '#fff' } }}
                     onClick={() => {
-                      const snippet = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-color="${widgetColor}"></script>`;
+                      const snippet = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js?token=${twin?.widget_token || ''}" data-position="${widgetPosition}" data-color="${widgetColor}"></script>`;
                       navigator.clipboard.writeText(snippet);
                       setSnackbar({ open: true, message: 'Chat snippet copied!', severity: 'success' });
                     }}
@@ -525,7 +525,7 @@ const DigitalTwinDetail = () => {
                   </IconButton>
                 </Box>
                 <code style={{ wordBreak: 'break-all' }}>
-                  {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-color="${widgetColor}"></script>`}
+                  {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js?token=${twin?.widget_token || ''}" data-position="${widgetPosition}" data-color="${widgetColor}"></script>`}
                 </code>
               </Paper>
             </Box>
@@ -645,7 +645,7 @@ const DigitalTwinDetail = () => {
                           size="small" 
                           sx={{ color: '#aaa', '&:hover': { color: '#fff' } }}
                           onClick={() => {
-                            const snippet = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/voice-widget.js"></script>`;
+                            const snippet = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/voice-widget.js?token=${twin?.widget_token || ''}"></script>`;
                             navigator.clipboard.writeText(snippet);
                             setSnackbar({ open: true, message: 'Voice snippet copied!', severity: 'success' });
                           }}
@@ -654,7 +654,7 @@ const DigitalTwinDetail = () => {
                         </IconButton>
                       </Box>
                       <code style={{ wordBreak: 'break-all' }}>
-                        {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/voice-widget.js"></script>`}
+                        {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/voice-widget.js?token=${twin?.widget_token || ''}"></script>`}
                       </code>
                     </Paper>
                   </Box>
@@ -729,7 +729,7 @@ const DigitalTwinDetail = () => {
                     size="small"
                     startIcon={<ContentCopy fontSize="small" />}
                     onClick={() => {
-                      const s = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-color="${widgetColor}" data-lead-gen="true"></script>`;
+                      const s = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js?token=${twin?.widget_token || ''}" data-position="${widgetPosition}" data-color="${widgetColor}" data-lead-gen="true"></script>`;
                       navigator.clipboard.writeText(s);
                       setSnackbar({ open: true, message: 'Lead gen snippet copied!', severity: 'success' });
                     }}
@@ -745,7 +745,7 @@ const DigitalTwinDetail = () => {
                   </Button>
                 </Box>
                 <code style={{ fontSize: '12px', color: '#cbd5e1', wordBreak: 'break-all', fontFamily: '"Fira Code", monospace' }}>
-                  {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-color="${widgetColor}" data-lead-gen="true"></script>`}
+                  {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js?token=${twin?.widget_token || ''}" data-position="${widgetPosition}" data-color="${widgetColor}" data-lead-gen="true"></script>`}
                 </code>
               </Paper>
 

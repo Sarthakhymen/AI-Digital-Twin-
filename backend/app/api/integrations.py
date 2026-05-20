@@ -20,12 +20,20 @@ class ChatRequest(BaseModel):
 async def public_chat(
     twin_id: int,
     request: ChatRequest,
+    token: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
     """
     Public endpoint for web widgets to chat with a Digital Twin.
     No auth required for the customer.
     """
+    twin = db.query(DigitalTwin).filter(DigitalTwin.id == twin_id).first()
+    if not twin:
+        raise HTTPException(status_code=404, detail="Digital twin not found")
+        
+    if not token or token != twin.widget_token:
+        raise HTTPException(status_code=403, detail="Forbidden: Invalid or missing widget token")
+
     result = await integration_service.process_public_message(
         db=db,
         twin_id=twin_id,
@@ -55,26 +63,34 @@ async def whatsapp_webhook(
 from fastapi.responses import Response
 
 @router.get("/{twin_id}/widget.js")
-async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
+async def get_widget_js(twin_id: int, token: Optional[str] = None, db: Session = Depends(get_db)):
     """
     Returns the javascript snippet to inject the Digital Twin chat widget into any website.
+    Requires a valid widget token to prevent unauthorized access (IDOR protection).
     """
-    # Fetch twin name for personalization
+    # Fetch twin and validate token
     twin = db.query(DigitalTwin).filter(DigitalTwin.id == twin_id).first()
-    twin_name = twin.name if twin else "AI Assistant"
+    if not twin:
+        raise HTTPException(status_code=404, detail="Digital twin not found")
+    if not token or token != twin.widget_token:
+        raise HTTPException(status_code=403, detail="Forbidden: Invalid or missing widget token")
+
+    twin_name = twin.name
     
     # Check if we should display the branding (only for free/starter plans)
     show_branding = True
-    if twin and twin.business and twin.business.owner:
+    if twin.business and twin.business.owner:
         owner = twin.business.owner
         if owner.subscription_plan not in ("free", "starter", None):
             show_branding = False
             
     branding_html = '<div class="dt-branding">Powered by <a href="#" target="_blank">AI Digital Twin</a></div>' if show_branding else ''
+    widget_token = twin.widget_token
     
     return Response(content=f"""
 (function() {{
     const twinId = {twin_id};
+    const widgetToken = "{widget_token}";
     if (window["AIDigitalTwinWidgetLoaded_" + twinId]) {{
         console.warn("AI Digital Twin widget already loaded on this page.");
         return;
@@ -590,7 +606,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
         messagesEl.scrollTop = messagesEl.scrollHeight;
 
         try {{
-            const response = await fetch(`${{apiUrl}}/integrations/${{twinId}}/chat`, {{
+            const response = await fetch(`${{apiUrl}}/integrations/${{twinId}}/chat?token=${{widgetToken}}`, {{
                 method: 'POST',
                 headers: {{ 'Content-Type': 'application/json' }},
                 body: JSON.stringify({{ message: msg, session_id: sessionId }})
@@ -639,7 +655,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             leadSubmitBtn.textContent = 'Saving...';
             leadSubmitBtn.disabled = true;
             try {{
-                await fetch(`${{apiUrl}}/knowledge/${{twinId}}/leads`, {{
+                await fetch(`${{apiUrl}}/knowledge/${{twinId}}/leads?token=${{widgetToken}}`, {{
                     method: 'POST',
                     headers: {{ 'Content-Type': 'application/json' }},
                     body: JSON.stringify({{ name, email }})
@@ -668,16 +684,24 @@ def test_voice_route():
 
 # Route for Voice AI Widget script injection
 @router.get("/{twin_id}/voice-widget.js")
-async def get_voice_widget_js(twin_id: int, db: Session = Depends(get_db)):
+async def get_voice_widget_js(twin_id: int, token: Optional[str] = None, db: Session = Depends(get_db)):
     """
     Returns the javascript snippet to inject the Voice AI "Call" button into any website.
+    Requires a valid widget token to prevent unauthorized access (IDOR protection).
     """
     twin = db.query(DigitalTwin).filter(DigitalTwin.id == twin_id).first()
-    twin_name = twin.name if twin else "AI Voice"
+    if not twin:
+        raise HTTPException(status_code=404, detail="Digital twin not found")
+    if not token or token != twin.widget_token:
+        raise HTTPException(status_code=403, detail="Forbidden: Invalid or missing widget token")
+
+    twin_name = twin.name
+    widget_token = twin.widget_token
     
     return Response(content=f"""
 (function() {{
     const twinId = {twin_id};
+    const widgetToken = "{widget_token}";
     if (window["AIVoiceWidgetLoaded_" + twinId]) {{
         console.warn("AI Voice widget already loaded on this page.");
         return;

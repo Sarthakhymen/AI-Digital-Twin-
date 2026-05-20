@@ -376,15 +376,20 @@ class LeadCaptureCreate(BaseModel):
 def capture_lead_public(
     twin_id: int,
     body: LeadCaptureCreate,
+    token: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
     """
     Public endpoint — called by the embedded chat widget when visitor submits email.
     No auth required (runs on customer's external website).
+    Token is required to prevent unauthorized writes to arbitrary twin IDs.
     """
     twin = db.query(DigitalTwin).filter(DigitalTwin.id == twin_id).first()
     if not twin:
         raise HTTPException(status_code=404, detail="Twin not found")
+
+    if not token or token != twin.widget_token:
+        raise HTTPException(status_code=403, detail="Forbidden: Invalid or missing widget token")
     
     lead = LeadCapture(
         digital_twin_id=twin_id,

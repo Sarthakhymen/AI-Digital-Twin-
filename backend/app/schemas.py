@@ -110,6 +110,7 @@ class DigitalTwinResponse(DigitalTwinBase):
     status: str
     business_id: int
     voice_samples: Optional[List[Dict]] = None
+    widget_token: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
     
