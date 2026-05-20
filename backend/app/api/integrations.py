@@ -63,6 +63,15 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
     twin = db.query(DigitalTwin).filter(DigitalTwin.id == twin_id).first()
     twin_name = twin.name if twin else "AI Assistant"
     
+    # Check if we should display the branding (only for free/starter plans)
+    show_branding = True
+    if twin and twin.business and twin.business.owner:
+        owner = twin.business.owner
+        if owner.subscription_plan not in ("free", "starter", None):
+            show_branding = False
+            
+    branding_html = '<div class="dt-branding">Powered by <a href="#" target="_blank">AI Digital Twin</a></div>' if show_branding else ''
+    
     return Response(content=f"""
 (function() {{
     const twinId = {twin_id};
@@ -373,7 +382,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
                     <button id="dt-lead-skip" style="background:#f3f4f6;color:#6b7280;border:none;padding:9px 14px;border-radius:8px;font-size:13px;cursor:pointer;">Skip</button>
                 </div>
             </div>
-            <div class="dt-branding">Powered by <a href="#" target="_blank">Sahayak AI</a></div>
+            {branding_html}
             <div id="dt-chat-input-container">
                 <button id="dt-mic-button" title="Hold to speak">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
