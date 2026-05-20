@@ -1110,72 +1110,72 @@ const UserGuideMindmap = () => {
       label: "1. Signup & Login",
       title: "User Registers & Authenticates",
       description: "First, the user creates an account and logs into the secure digital twin builder dashboard.",
-      icon: <Lock className="w-4 h-4 text-rose-400" />,
-      x: 90,
-      y: 200
+      icon: <Lock className="w-5 h-5 text-rose-400" />,
+      x: 250,
+      y: 70
     },
     {
       id: "plan",
       label: "2. Plan Selection",
       title: "Activate Standard Subscription",
       description: "Select the Standard Tier for ₹1299/month to enable custom AI twins, vector indexes, and widget scripts.",
-      icon: <CreditCard className="w-4 h-4 text-indigo-400" />,
-      x: 210,
-      y: 200
+      icon: <CreditCard className="w-5 h-5 text-indigo-400" />,
+      x: 250,
+      y: 170
     },
     {
       id: "workspace",
       label: "3. Workspace Setup",
       title: "Register Business Workspace",
       description: "Enter your business name and website directory URL to initialize a multi-tenant workspace.",
-      icon: <Briefcase className="w-4 h-4 text-cyan-400" />,
-      x: 330,
-      y: 200
+      icon: <Briefcase className="w-5 h-5 text-cyan-400" />,
+      x: 250,
+      y: 270
     },
     {
       id: "details",
       label: "4. Train AI Twin",
       title: "Specify Character & Knowledge",
       description: "Customize your twin name, set its response tone, and upload documentation (PDF, TXT) or enter URLs.",
-      icon: <Settings className="w-4 h-4 text-emerald-400" />,
-      x: 490,
-      y: 90
+      icon: <Settings className="w-5 h-5 text-emerald-400" />,
+      x: 130,
+      y: 395
     },
     {
       id: "activate",
       label: "5. Activation Switch",
       title: "Synchronize & Activate Twin",
       description: "Once knowledge is synchronized, toggle your twin online to start processing live request threads.",
-      icon: <Power className="w-4 h-4 text-amber-400" />,
-      x: 650,
-      y: 90
+      icon: <Power className="w-5 h-5 text-amber-400" />,
+      x: 130,
+      y: 515
     },
     {
       id: "script",
       label: "6. Embed Script",
       title: "Copy Lightweight Widget Script",
       description: "Copy the single-line integration script and paste it into your local project website directory.",
-      icon: <Code2 className="w-4 h-4 text-purple-400" />,
-      x: 490,
-      y: 310
+      icon: <Code2 className="w-5 h-5 text-purple-400" />,
+      x: 370,
+      y: 395
     },
     {
       id: "live",
       label: "7. Go Live!",
       title: "Twin Live on Your Website",
       description: "The digital twin script activates immediately, displaying a sleek floating widget on your website.",
-      icon: <Globe className="w-4 h-4 text-pink-400" />,
-      x: 650,
-      y: 310
+      icon: <Globe className="w-5 h-5 text-pink-400" />,
+      x: 370,
+      y: 515
     },
     {
       id: "rag",
       label: "8. Live Database Query",
       title: "Input Query to Output Retrieval",
       description: "Type or click a question to trace the live vector matching search loop retrieve output from the DB.",
-      icon: <Database className="w-4 h-4 text-teal-400" />,
-      x: 810,
-      y: 200
+      icon: <Database className="w-5 h-5 text-teal-400" />,
+      x: 250,
+      y: 640
     }
   ];
 
@@ -1241,16 +1241,16 @@ const UserGuideMindmap = () => {
 
   const renderSvgMindmap = () => {
     return (
-      <svg viewBox="0 0 900 400" className="w-full h-auto overflow-visible select-none my-auto">
+      <svg viewBox="0 0 500 720" className="w-full h-auto overflow-visible select-none my-auto">
         <defs>
-          {/* Active Glowing Flow Gradient */}
-          <linearGradient id="active-glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          {/* Active Glowing Flow Gradient (Vertical Flow) */}
+          <linearGradient id="active-glow-grad" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#ec4899" />
             <stop offset="50%" stopColor="#a855f7" />
             <stop offset="100%" stopColor="#6366f1" />
           </linearGradient>
-          {/* Completed Channel Flow Gradient */}
-          <linearGradient id="completed-glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          {/* Completed Channel Flow Gradient (Vertical Flow) */}
+          <linearGradient id="completed-glow-grad" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#10b981" />
             <stop offset="100%" stopColor="#059669" />
           </linearGradient>
@@ -1273,14 +1273,14 @@ const UserGuideMindmap = () => {
           };
           
           const guideLinks = [
-            { from: 0, to: 1, d: "M 90 200 L 210 200" },
-            { from: 1, to: 2, d: "M 210 200 L 330 200" },
-            { from: 2, to: 3, d: "M 330 200 C 380 200, 440 90, 490 90" },
-            { from: 2, to: 5, d: "M 330 200 C 380 200, 440 310, 490 310" },
-            { from: 3, to: 4, d: "M 490 90 L 650 90" },
-            { from: 5, to: 6, d: "M 490 310 L 650 310" },
-            { from: 4, to: 7, d: "M 650 90 C 700 90, 760 200, 810 200" },
-            { from: 6, to: 7, d: "M 650 310 C 700 310, 760 200, 810 200" }
+            { from: 0, to: 1, d: "M 250 70 L 250 170" },
+            { from: 1, to: 2, d: "M 250 170 L 250 270" },
+            { from: 2, to: 3, d: "M 250 270 C 250 320, 130 345, 130 395" },
+            { from: 2, to: 5, d: "M 250 270 C 250 320, 370 345, 370 395" },
+            { from: 3, to: 4, d: "M 130 395 L 130 515" },
+            { from: 5, to: 6, d: "M 370 395 L 370 515" },
+            { from: 4, to: 7, d: "M 130 515 C 130 565, 250 590, 250 640" },
+            { from: 6, to: 7, d: "M 370 515 C 370 565, 250 590, 250 640" }
           ];
 
           return guideLinks.map((link, lIdx) => {
@@ -1295,7 +1295,7 @@ const UserGuideMindmap = () => {
                   d={link.d}
                   fill="none"
                   stroke={isCompleted ? "rgba(16, 185, 129, 0.45)" : isActive ? "rgba(244, 63, 94, 0.15)" : "rgba(255, 255, 255, 0.04)"}
-                  strokeWidth="3"
+                  strokeWidth="3.5"
                   strokeLinecap="round"
                 />
                 {/* Animated glowing flow path (only on the active path) */}
@@ -1304,7 +1304,7 @@ const UserGuideMindmap = () => {
                     d={link.d}
                     fill="none"
                     stroke="url(#active-glow-grad)"
-                    strokeWidth="3"
+                    strokeWidth="3.5"
                     strokeLinecap="round"
                     strokeDasharray="10 25"
                     className="animate-pulse-flow"
@@ -1335,9 +1335,9 @@ const UserGuideMindmap = () => {
             <foreignObject 
               key={step.id} 
               x={step.x - 70} 
-              y={step.y - 55} 
+              y={step.y - 65} 
               width="140" 
-              height="110"
+              height="130"
               className="overflow-visible"
             >
               <div 
@@ -1347,13 +1347,13 @@ const UserGuideMindmap = () => {
                 <div className="relative flex items-center justify-center">
                   {/* Pulsing ring behind the active node */}
                   {isActive && (
-                    <div className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-rose-500 to-indigo-500 opacity-75 blur-sm animate-pulse-opacity" />
+                    <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-rose-500 to-indigo-500 opacity-75 blur-sm animate-pulse-opacity" />
                   )}
 
                   {/* Icon Container Circle */}
-                  <div className={`w-11 h-11 rounded-full flex items-center justify-center border z-10 transition-all duration-300 ${
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center border z-10 transition-all duration-300 ${
                     isActive
-                      ? 'bg-slate-950 border-transparent text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.45)] scale-110'
+                      ? 'bg-slate-955 border-transparent text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.45)] scale-110'
                       : isCompleted
                         ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                         : `bg-slate-900 border-white/5 text-slate-400 group-hover:border-white/20 group-hover:text-white group-hover:bg-slate-800 ${themeGlowClass}`
@@ -1363,14 +1363,14 @@ const UserGuideMindmap = () => {
 
                   {/* Check badge when completed */}
                   {isCompleted && (
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center border border-slate-950 z-20 shadow-[0_0_8px_rgba(16,185,129,0.5)]">
-                      <Check className="w-2.5 h-2.5 stroke-[3.5]" />
+                    <div className="absolute -top-1 -right-1 w-5.5 h-5.5 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center border border-slate-950 z-20 shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+                      <Check className="w-3 h-3 stroke-[3.5]" />
                     </div>
                   )}
                 </div>
 
                 {/* Node Text Title */}
-                <span className={`mt-2.5 text-[9px] font-black text-center tracking-wider transition-colors font-sans uppercase ${
+                <span className={`mt-3 text-[10px] font-black text-center tracking-wider transition-colors font-sans uppercase ${
                   isActive 
                     ? 'text-white' 
                     : 'text-slate-500 group-hover:text-slate-350'
@@ -1494,22 +1494,11 @@ const UserGuideMindmap = () => {
           </div>
         </div>
 
-        {/* Tablet Mindmap Graph Canvas (Visible on Tablet only) */}
-        <div className="hidden md:block lg:hidden w-full max-w-4xl mx-auto mb-14 p-6 bg-slate-900/[0.15] border border-white/5 rounded-3xl relative overflow-hidden backdrop-blur-md">
-          {/* Blueprint style telemetry label */}
-          <div className="absolute top-3 left-4 text-[7px] font-mono text-slate-600 uppercase tracking-widest">NEURAL NETWORK ENGINE v1.2</div>
-          <div className="absolute top-3 right-4 text-[7px] font-mono text-emerald-500/40 uppercase tracking-widest flex items-center gap-1.5">
-            <span className="w-1 h-1 rounded-full bg-emerald-500 animate-ping" />
-            Active Channels: {currentStep + 1} / 8
-          </div>
-          {renderSvgMindmap()}
-        </div>
-
         {/* Main Grid Wrapper */}
         <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-8 items-stretch">
           
-          {/* Desktop Mindmap Graph Canvas (Visible on Desktop only, side-by-side spanning 2 rows) */}
-          <div className="hidden lg:block lg:col-span-7 lg:row-span-2 bg-slate-900/[0.15] border border-white/5 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md flex flex-col justify-center h-full">
+          {/* Unified Mindmap Graph Canvas (Visible on Tablet & Desktop) */}
+          <div className="hidden md:block md:col-span-5 md:row-span-2 lg:col-span-4 lg:row-span-1 bg-slate-900/[0.15] border border-white/5 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md flex flex-col justify-center h-full">
             {/* Blueprint style telemetry label */}
             <div className="absolute top-3 left-4 text-[7px] font-mono text-slate-600 uppercase tracking-widest">NEURAL NETWORK ENGINE v1.2</div>
             <div className="absolute top-3 right-4 text-[7px] font-mono text-emerald-500/40 uppercase tracking-widest flex items-center gap-1.5">
@@ -1520,7 +1509,7 @@ const UserGuideMindmap = () => {
           </div>
           
           {/* Left panel: Info & Explanation */}
-          <div className="col-span-12 md:col-span-5 lg:col-span-5 flex flex-col justify-between bg-slate-900/40 md:bg-white/[0.01] border border-white/5 rounded-3xl p-8 relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
+          <div className="col-span-12 md:col-span-7 lg:col-span-4 flex flex-col justify-between bg-slate-900/40 md:bg-white/[0.01] border border-white/5 rounded-3xl p-8 relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
             <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-[60px]" />
             
             <div className="space-y-6 font-sans">
@@ -1590,7 +1579,7 @@ const UserGuideMindmap = () => {
           </div>
 
           {/* Right panel: Visual Demonstration */}
-          <div className="col-span-12 md:col-span-7 lg:col-span-5 bg-slate-950/60 border border-white/5 rounded-3xl p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
+          <div className="col-span-12 md:col-span-7 lg:col-span-4 bg-slate-950/60 border border-white/5 rounded-3xl p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
             
             {/* Screen Container */}
             <div className="w-full flex-grow flex flex-col justify-center min-h-[360px]">
