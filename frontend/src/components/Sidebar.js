@@ -8,7 +8,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import LogoIcon from './LogoIcon';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, userFeatures } = useAuth();
@@ -32,36 +32,48 @@ const Sidebar = () => {
   const isFree = user?.subscription_plan === 'free' || user?.subscription_plan === 'starter' || !user?.subscription_plan;
 
   return (
-    <div className="w-[260px] h-screen fixed left-0 top-0 bg-[#0A0D14] border-r border-white/5 flex flex-col text-slate-300 font-sans z-50">
-      
-      {/* Header / Logo */}
-      <div className="h-20 flex items-center px-6 cursor-pointer" onClick={() => navigate('/')}>
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mr-3 shadow-lg shadow-indigo-500/20">
-          <LogoIcon className="w-5 h-5 text-white" />
-        </div>
-        <span className="text-white font-bold text-lg tracking-wide">AI Digital Twin</span>
-      </div>
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
 
-      {/* Navigation */}
-      <div className="flex-1 overflow-y-auto py-4 px-4 scrollbar-hide flex flex-col gap-1.5">
-        {navLinks.map((link) => {
-          const isActive = location.pathname === link.href;
-          return (
-            <button
-              key={link.name}
-              onClick={() => navigate(link.href)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                isActive 
-                  ? 'bg-gradient-to-r from-indigo-500/90 to-purple-500/90 text-white shadow-lg shadow-indigo-500/20' 
-                  : 'hover:bg-white/5 text-slate-400 hover:text-white'
-              }`}
-            >
-              <link.icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`} />
-              <span className="font-medium text-[14px]">{link.name}</span>
-            </button>
-          );
-        })}
-      </div>
+      <div className={`w-[260px] h-screen fixed left-0 top-0 bg-[#0A0D14] border-r border-white/5 flex flex-col text-slate-300 font-sans z-50 transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        
+        {/* Header / Logo */}
+        <div className="h-20 flex items-center px-6 cursor-pointer" onClick={() => { navigate('/'); if (onClose) onClose(); }}>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mr-3 shadow-lg shadow-indigo-500/20">
+            <LogoIcon className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-white font-bold text-lg tracking-wide">AI Digital Twin</span>
+        </div>
+
+        {/* Navigation */}
+        <div className="flex-1 overflow-y-auto py-4 px-4 scrollbar-hide flex flex-col gap-1.5">
+          {navLinks.map((link) => {
+            const isActive = location.pathname === link.href;
+            return (
+              <button
+                key={link.name}
+                onClick={() => {
+                  navigate(link.href);
+                  if (onClose) onClose();
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+                  isActive 
+                    ? 'bg-gradient-to-r from-indigo-500/90 to-purple-500/90 text-white shadow-lg shadow-indigo-500/20' 
+                    : 'hover:bg-white/5 text-slate-400 hover:text-white'
+                }`}
+              >
+                <link.icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`} />
+                <span className="font-medium text-[14px]">{link.name}</span>
+              </button>
+            );
+          })}
+        </div>
 
       {/* Bottom Section */}
       <div className="p-4 flex flex-col gap-4">
@@ -108,7 +120,8 @@ const Sidebar = () => {
           <Monitor className="w-4 h-4" />
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

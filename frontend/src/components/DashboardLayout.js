@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
 import { Box, InputBase, IconButton, Badge } from '@mui/material';
-import { Search, Bell } from 'lucide-react';
+import { Search, Bell, Menu } from 'lucide-react';
 import Sidebar from './Sidebar';
 
 const DashboardLayout = ({ children }) => {
   const [searchFocused, setSearchFocused] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#05050A' }}>
-      {/* Sidebar — fixed 260px */}
-      <Sidebar />
+      {/* Sidebar — responsive drawer */}
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main content area */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          pl: '260px',
+          pl: { xs: 0, lg: '260px' },
           width: '100%',
           overflowX: 'hidden',
+          transition: 'padding 0.3s ease',
         }}
       >
         {/* Top Header Bar */}
@@ -27,8 +29,8 @@ const DashboardLayout = ({ children }) => {
             height: '72px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'flex-end',
-            px: 4,
+            justifyContent: 'space-between',
+            px: { xs: 2, md: 4 },
             gap: 2,
             borderBottom: '1px solid rgba(255,255,255,0.04)',
             position: 'sticky',
@@ -38,54 +40,12 @@ const DashboardLayout = ({ children }) => {
             backdropFilter: 'blur(12px)',
           }}
         >
-          {/* Search Bar */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              bgcolor: '#121629',
-              border: `1px solid ${searchFocused ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.05)'}`,
-              borderRadius: '24px',
-              px: 2,
-              py: 0.75,
-              width: 260,
-              transition: 'border-color 0.2s ease',
-            }}
-          >
-            <Search size={15} color="rgba(255,255,255,0.4)" />
-            <InputBase
-              placeholder="Search anything..."
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
-              sx={{
-                flex: 1,
-                fontSize: '0.875rem',
-                color: '#fff',
-                '& input::placeholder': { color: 'rgba(255,255,255,0.35)' },
-              }}
-            />
-            <Box
-              sx={{
-                bgcolor: 'rgba(255,255,255,0.08)',
-                color: 'rgba(255,255,255,0.4)',
-                fontSize: '0.65rem',
-                px: 0.75,
-                py: 0.25,
-                borderRadius: '4px',
-                fontFamily: '"Outfit", sans-serif',
-                letterSpacing: '0.05em',
-                flexShrink: 0,
-              }}
-            >
-              ⌘K
-            </Box>
-          </Box>
-
-          {/* Notification Bell */}
+          {/* Mobile Hamburguer Toggle */}
           <IconButton
+            onClick={() => setSidebarOpen(true)}
             sx={{
-              color: 'rgba(255,255,255,0.5)',
+              display: { xs: 'flex', lg: 'none' },
+              color: 'rgba(255,255,255,0.7)',
               bgcolor: '#121629',
               border: '1px solid rgba(255,255,255,0.05)',
               borderRadius: '12px',
@@ -94,29 +54,93 @@ const DashboardLayout = ({ children }) => {
                 color: '#fff',
                 bgcolor: 'rgba(255,255,255,0.05)',
               },
-              transition: 'all 0.2s ease',
             }}
           >
-            <Badge
-              badgeContent={3}
+            <Menu size={18} />
+          </IconButton>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 'auto' }}>
+            {/* Search Bar */}
+            <Box
               sx={{
-                '& .MuiBadge-badge': {
-                  bgcolor: '#EF4444',
-                  color: '#fff',
-                  fontSize: '0.65rem',
-                  minWidth: 16,
-                  height: 16,
-                  border: '2px solid #05050A',
-                },
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                bgcolor: '#121629',
+                border: `1px solid ${searchFocused ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.05)'}`,
+                borderRadius: '24px',
+                px: 2,
+                py: 0.75,
+                width: { xs: 140, sm: 220, md: 260 },
+                transition: 'all 0.2s ease',
               }}
             >
-              <Bell size={18} />
-            </Badge>
-          </IconButton>
+              <Search size={15} color="rgba(255,255,255,0.4)" />
+              <InputBase
+                placeholder="Search..."
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                sx={{
+                  flex: 1,
+                  fontSize: '0.825rem',
+                  color: '#fff',
+                  '& input::placeholder': { color: 'rgba(255,255,255,0.35)' },
+                }}
+              />
+              <Box
+                sx={{
+                  display: { xs: 'none', md: 'block' },
+                  bgcolor: 'rgba(255,255,255,0.08)',
+                  color: 'rgba(255,255,255,0.4)',
+                  fontSize: '0.65rem',
+                  px: 0.75,
+                  py: 0.25,
+                  borderRadius: '4px',
+                  fontFamily: '"Outfit", sans-serif',
+                  letterSpacing: '0.05em',
+                  flexShrink: 0,
+                }}
+              >
+                ⌘K
+              </Box>
+            </Box>
+
+            {/* Notification Bell */}
+            <IconButton
+              sx={{
+                color: 'rgba(255,255,255,0.5)',
+                bgcolor: '#121629',
+                border: '1px solid rgba(255,255,255,0.05)',
+                borderRadius: '12px',
+                p: 1,
+                '&:hover': {
+                  color: '#fff',
+                  bgcolor: 'rgba(255,255,255,0.05)',
+                },
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <Badge
+                badgeContent={3}
+                sx={{
+                  '& .MuiBadge-badge': {
+                    bgcolor: '#EF4444',
+                    color: '#fff',
+                    fontSize: '0.65rem',
+                    minWidth: 16,
+                    height: 16,
+                    border: '2px solid #05050A',
+                  },
+                }}
+              >
+                <Bell size={18} />
+              </Badge>
+            </IconButton>
+          </Box>
         </Box>
 
         {/* Page Content */}
-        <Box sx={{ p: 4, pt: 3 }}>
+        <Box sx={{ p: { xs: 2.5, sm: 3, md: 4 }, pt: 3 }}>
           {children}
         </Box>
       </Box>

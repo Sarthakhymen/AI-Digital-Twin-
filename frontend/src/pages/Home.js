@@ -138,7 +138,7 @@ const BUSINESS_CONVOS = [
     business: '🛡️ Feature Gatekeeper',
     color: '#10B981',
     userMsg: 'Is there a limit on free trials?',
-    botReply: "Yes. Free trials are active for 3 days and limited to 50 messages. Upgrade to Standard ($29/mo) to unlock unlimited queries! ⚡",
+    botReply: "Yes. Free trials are active for 3 days and limited to 50 messages. Upgrade to Standard (₹2/mo) to unlock unlimited queries! ⚡",
   }
 ];
 
@@ -405,7 +405,7 @@ const Hero = () => {
               whileTap={{ scale: 0.98 }}
             >
               <Zap className="w-4 h-4 text-indigo-400" />
-              View Standard Tier ($29)
+              View Standard Tier (₹2)
             </motion.button>
           </motion.div>
 
@@ -658,7 +658,7 @@ const CapabilitiesPlayground = () => {
                     </div>
 
                     <div className="p-3.5 bg-white/5 border border-white/10 rounded-2xl text-[10px] text-slate-500 leading-normal">
-                      💡 Standard Plan ($29/mo) removes the "Powered by AI Digital Twin" watermark branding completely.
+                      💡 Standard Plan (₹2/mo) removes the "Powered by AI Digital Twin" watermark branding completely.
                     </div>
                   </div>
 
@@ -866,7 +866,7 @@ const CapabilitiesPlayground = () => {
               </div>
               <div>
                 <span className="block text-slate-600 uppercase font-bold">Access Check</span>
-                <span className="text-slate-400 font-extrabold uppercase">{activeTab === 'kb' || activeTab === 'widget' ? 'Standard ($29)' : 'Business Pro'}</span>
+                <span className="text-slate-400 font-extrabold uppercase">{activeTab === 'kb' || activeTab === 'widget' ? 'Standard (₹2)' : 'Business Pro'}</span>
               </div>
               <div>
                 <span className="block text-slate-600 uppercase font-bold">Gating Policy</span>
@@ -1179,7 +1179,7 @@ const UserGuideMindmap = () => {
       latency: "8ms",
       payload: "HierarchicalGate v1",
       description: "Controls endpoint accessibility. Validates plans and limits before processing requests.",
-      details: "Ensures Standard ($29) and Free Trial users are strictly blocked from using Business Pro APIs.",
+      details: "Ensures Standard (₹2) and Free Trial users are strictly blocked from using Business Pro APIs.",
       highlight: "Enforces plan-based monetization.",
       color: "from-emerald-500 to-teal-400",
       glowColor: "rgba(16, 185, 129, 0.4)",
@@ -1205,7 +1205,7 @@ const UserGuideMindmap = () => {
       status: "ACTIVE",
       latency: "12ms",
       payload: "Razorpay SDK",
-      description: "Processes subscription purchases and plans. Standard plan is priced at $29/mo (INR 29 for sandbox testing).",
+      description: "Processes subscription purchases and plans. Standard plan is priced at ₹2/mo.",
       details: "Supports immediate plan upgrades, manual payment requests via UPI, and subscription logs.",
       highlight: "INR / USD sandbox pricing.",
       color: "from-emerald-400 to-teal-500",
@@ -1215,7 +1215,7 @@ const UserGuideMindmap = () => {
         <div className="bg-slate-950/60 border border-white/10 rounded-xl p-4 space-y-3">
           <div className="flex justify-between items-center text-xs">
             <span className="text-slate-300 font-medium">Standard Plan (Test Price)</span>
-            <span className="font-bold text-white">$29 / ₹29</span>
+            <span className="font-bold text-white">₹2</span>
           </div>
           <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
             <div className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-[80%]" />
@@ -1782,7 +1782,7 @@ const FAQ = () => {
     },
     {
       question: "How does Standard plan pricing work?",
-      answer: "The Standard plan is priced at $29/month. This grants unlimited web chat assistant executions, customizable theme skins without branding watermarks, lead captures, and URL indexing. (A test sandbox rate of ₹29/INR is configured for payment verification)."
+      answer: "The Standard plan is priced at ₹2/month. This grants unlimited web chat assistant executions, customizable theme skins without branding watermarks, lead captures, and URL indexing."
     },
     {
       question: "What is Business Pro plan availability?",
@@ -1897,7 +1897,7 @@ const CTA = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Configure Tiers ($29/mo)
+                Configure Tiers (₹2/mo)
               </motion.button>
             </div>
 

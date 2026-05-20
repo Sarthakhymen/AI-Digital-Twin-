@@ -174,7 +174,7 @@ const Pricing = () => {
     {
       key: 'free',
       name: 'Free Trial',
-      price: '$0',
+      price: '₹0',
       period: 'for 3 days',
       description: 'Test the magic of AI Twins with zero commitment.',
       features: [
@@ -194,7 +194,7 @@ const Pricing = () => {
     {
       key: 'standard',
       name: 'Standard',
-      price: '$29',
+      price: '₹2',
       period: 'per month',
       description: 'Essential AI features for growing businesses.',
       features: [
@@ -216,7 +216,7 @@ const Pricing = () => {
     {
       key: 'business_pro',
       name: 'Business Pro',
-      price: '$99',
+      price: '₹2499',
       period: 'per month',
       description: 'Unleash the full potential of your AI Twin.',
       features: [

@@ -199,12 +199,18 @@ const Dashboard = () => {
 
       {/* Header */}
       <MotionBox variants={fadeUp} sx={{ mb: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: { xs: 'stretch', sm: 'flex-start' }, 
+          justifyContent: 'space-between', 
+          gap: 3 
+        }}>
           <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1.5, mb: 1 }}>
               <Typography variant="h4" sx={{ 
                 fontWeight: 800, 
-                fontSize: { xs: '1.75rem', md: '2.25rem' }, 
+                fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2.25rem' }, 
                 letterSpacing: '-0.03em',
                 color: '#ffffff',
                 fontFamily: '"Outfit", sans-serif'
@@ -213,24 +219,31 @@ const Dashboard = () => {
               </Typography>
               {planBadge && <Chip {...planBadge} size="small" />}
             </Box>
-            <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 400, fontSize: '1rem' }}>
+            <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 400, fontSize: { xs: '0.875rem', md: '1rem' } }}>
               Here's an overview of your digital twins' performance today.
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            gap: 2, 
+            width: { xs: '100%', sm: 'auto' },
+            justifyContent: { xs: 'stretch', sm: 'flex-start' }
+          }}>
             <Button
               variant="outlined"
               startIcon={<IntegrationInstructions sx={{ fontSize: '18px !important' }} />}
               onClick={() => navigate('/guide')}
               sx={{
+                flex: { xs: 1, sm: 'initial' },
                 borderRadius: '12px',
                 textTransform: 'none',
                 fontWeight: 600,
-                fontSize: '0.9rem',
+                fontSize: '0.85rem',
                 borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
                 color: 'text.primary',
                 px: 2.5,
+                py: 1,
                 backdropFilter: 'blur(10px)',
                 '&:hover': { 
                   borderColor: 'primary.main', 
@@ -249,13 +262,15 @@ const Dashboard = () => {
               disabled={user?.subscription_status === 'expired' || !canCreateTwin}
               disableElevation
               sx={{
+                flex: { xs: 1, sm: 'initial' },
                 borderRadius: '12px',
                 textTransform: 'none',
                 fontWeight: 700,
-                fontSize: '0.9rem',
+                fontSize: '0.85rem',
                 background: theme.palette.mode === 'dark' ? '#ffffff' : '#0a0a0f',
                 color: theme.palette.mode === 'dark' ? '#0a0a0f' : '#ffffff',
                 px: 3,
+                py: 1,
                 '&:hover': { 
                   background: theme.palette.mode === 'dark' ? '#e2e8f0' : '#1e293b',
                   transform: 'translateY(-2px)'
