@@ -49,6 +49,7 @@ const DigitalTwinDetail = () => {
   const [scrapeError, setScrapeError] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [widgetPosition, setWidgetPosition] = useState('right');
+  const [widgetColor, setWidgetColor] = useState('#667eea');
 
   // Feature gating helper
   const FeatureLock = ({ feature, children, title }) => {
@@ -115,7 +116,18 @@ const DigitalTwinDetail = () => {
 
   const activateMutation = useMutation({
     mutationFn: () => api.post(`/digital-twins/${id}/activate`),
-    onSuccess: () => queryClient.invalidateQueries(['digital-twin', id]),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['digital-twin', id]);
+      setSnackbar({ open: true, message: 'Digital twin activated!', severity: 'success' });
+    },
+  });
+
+  const pauseMutation = useMutation({
+    mutationFn: () => api.post(`/digital-twins/${id}/pause`),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['digital-twin', id]);
+      setSnackbar({ open: true, message: 'Digital twin paused!', severity: 'info' });
+    },
   });
 
   const deleteMutation = useMutation({
@@ -285,20 +297,21 @@ const DigitalTwinDetail = () => {
               >
                 Edit
               </Button>
-              {(twin.status === 'trained' || twin.status === 'training') && (
+              {(twin.status === 'trained' || twin.status === 'training' || twin.status === 'paused' || twin.status === 'inactive') && (
                 <Button
                   variant="contained"
                   startIcon={<PlayArrow />}
                   onClick={() => activateMutation.mutate()}
                   sx={{ background: '#ffffff', color: '#0a0a0f', textTransform: 'none', borderRadius: '10px', '&:hover': { background: '#e2e8f0' }, fontWeight: 600 }}
                 >
-                  Activate
+                  {twin.status === 'paused' || twin.status === 'inactive' ? 'Resume' : 'Activate'}
                 </Button>
               )}
               {twin.status === 'active' && (
                 <Button
                   variant="outlined"
                   startIcon={<Pause />}
+                  onClick={() => pauseMutation.mutate()}
                   sx={{ color: '#FBBF24', borderColor: 'rgba(245,158,11,0.4)', textTransform: 'none', borderRadius: '10px' }}
                 >
                   Pause
@@ -427,22 +440,60 @@ const DigitalTwinDetail = () => {
                 Add this premium chat widget to your website. Simply copy and paste this script tag into your website's <code>&lt;head&gt;</code> section.
               </Typography>
               
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', mb: 1, display: 'block' }}>Widget Position</Typography>
-                <ToggleButtonGroup
-                  value={widgetPosition}
-                  exclusive
-                  onChange={(e, newPos) => { if (newPos) setWidgetPosition(newPos); }}
-                  size="small"
-                  sx={{
-                    bgcolor: 'rgba(255,255,255,0.05)',
-                    '& .MuiToggleButton-root': { color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.1)' },
-                    '& .Mui-selected': { bgcolor: 'rgba(59, 130, 246, 0.2) !important', color: '#3b82f6 !important' }
-                  }}
-                >
-                  <ToggleButton value="left"><FormatAlignLeft sx={{ mr: 1, fontSize: 18 }}/> Left</ToggleButton>
-                  <ToggleButton value="right"><FormatAlignRight sx={{ mr: 1, fontSize: 18 }}/> Right</ToggleButton>
-                </ToggleButtonGroup>
+              <Box sx={{ display: 'flex', gap: 3, mb: 2.5, flexWrap: 'wrap' }}>
+                <Box>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', mb: 1, display: 'block' }}>Widget Position</Typography>
+                  <ToggleButtonGroup
+                    value={widgetPosition}
+                    exclusive
+                    onChange={(e, newPos) => { if (newPos) setWidgetPosition(newPos); }}
+                    size="small"
+                    sx={{
+                      bgcolor: 'rgba(255,255,255,0.05)',
+                      '& .MuiToggleButton-root': { color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.1)' },
+                      '& .Mui-selected': { bgcolor: 'rgba(59, 130, 246, 0.2) !important', color: '#3b82f6 !important' }
+                    }}
+                  >
+                    <ToggleButton value="left"><FormatAlignLeft sx={{ mr: 1, fontSize: 18 }}/> Left</ToggleButton>
+                    <ToggleButton value="right"><FormatAlignRight sx={{ mr: 1, fontSize: 18 }}/> Right</ToggleButton>
+                  </ToggleButtonGroup>
+                </Box>
+                
+                <Box>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', mb: 1, display: 'block' }}>Widget Theme Color</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <input 
+                      type="color" 
+                      value={widgetColor} 
+                      onChange={(e) => setWidgetColor(e.target.value)} 
+                      style={{ 
+                        width: '38px', 
+                        height: '38px', 
+                        border: 'none', 
+                        borderRadius: '8px', 
+                        cursor: 'pointer', 
+                        background: 'transparent',
+                        padding: 0
+                      }} 
+                    />
+                    <TextField 
+                      size="small" 
+                      value={widgetColor} 
+                      onChange={(e) => setWidgetColor(e.target.value)} 
+                      sx={{ 
+                        width: '120px',
+                        '& .MuiInputBase-root': { 
+                          height: '38px',
+                          color: '#fff', 
+                          bgcolor: 'rgba(255,255,255,0.05)', 
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          fontFamily: '"Fira Code", monospace'
+                        } 
+                      }} 
+                    />
+                  </Box>
+                </Box>
               </Box>
               
               <Paper 
@@ -465,7 +516,7 @@ const DigitalTwinDetail = () => {
                     size="small" 
                     sx={{ color: '#aaa', '&:hover': { color: '#fff' } }}
                     onClick={() => {
-                      const snippet = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}"></script>`;
+                      const snippet = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-color="${widgetColor}"></script>`;
                       navigator.clipboard.writeText(snippet);
                       setSnackbar({ open: true, message: 'Chat snippet copied!', severity: 'success' });
                     }}
@@ -474,7 +525,7 @@ const DigitalTwinDetail = () => {
                   </IconButton>
                 </Box>
                 <code style={{ wordBreak: 'break-all' }}>
-                  {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}"></script>`}
+                  {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-color="${widgetColor}"></script>`}
                 </code>
               </Paper>
             </Box>
@@ -678,7 +729,7 @@ const DigitalTwinDetail = () => {
                     size="small"
                     startIcon={<ContentCopy fontSize="small" />}
                     onClick={() => {
-                      const s = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-lead-gen="true"></script>`;
+                      const s = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-color="${widgetColor}" data-lead-gen="true"></script>`;
                       navigator.clipboard.writeText(s);
                       setSnackbar({ open: true, message: 'Lead gen snippet copied!', severity: 'success' });
                     }}
@@ -694,7 +745,7 @@ const DigitalTwinDetail = () => {
                   </Button>
                 </Box>
                 <code style={{ fontSize: '12px', color: '#cbd5e1', wordBreak: 'break-all', fontFamily: '"Fira Code", monospace' }}>
-                  {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-lead-gen="true"></script>`}
+                  {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-color="${widgetColor}" data-lead-gen="true"></script>`}
                 </code>
               </Paper>
 

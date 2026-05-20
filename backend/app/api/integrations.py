@@ -86,6 +86,42 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
     const scriptUrl = scriptTag ? scriptTag.src : '';
     const apiUrl = scriptUrl.split('/integrations/')[0];
     const position = scriptTag ? (scriptTag.getAttribute('data-position') || 'right') : 'right';
+    const userColor = scriptTag ? (scriptTag.getAttribute('data-color') || '') : '';
+    let widgetBackground = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    let hoverBorderColor = '#667eea';
+    let shadowColor = 'rgba(102,126,234,0.4)';
+    let focusShadow = 'rgba(102,126,234,0.1)';
+    let speakBg = 'rgba(102,126,234,0.1)';
+    let speakBgHover = 'rgba(102,126,234,0.2)';
+
+    if (userColor) {{
+        if (userColor.startsWith('linear-gradient') || userColor.startsWith('radial-gradient')) {{
+            widgetBackground = userColor;
+            hoverBorderColor = '#764ba2';
+            shadowColor = 'rgba(118, 75, 162, 0.4)';
+            focusShadow = 'rgba(118, 75, 162, 0.1)';
+            speakBg = 'rgba(118, 75, 162, 0.1)';
+            speakBgHover = 'rgba(118, 75, 162, 0.2)';
+        }} else {{
+            widgetBackground = userColor;
+            hoverBorderColor = userColor;
+            
+            if (userColor.startsWith('#') && userColor.length === 7) {{
+                const r = parseInt(userColor.slice(1, 3), 16);
+                const g = parseInt(userColor.slice(3, 5), 16);
+                const b = parseInt(userColor.slice(5, 7), 16);
+                shadowColor = `rgba(${{r}}, ${{g}}, ${{b}}, 0.4)`;
+                focusShadow = `rgba(${{r}}, ${{g}}, ${{b}}, 0.1)`;
+                speakBg = `rgba(${{r}}, ${{g}}, ${{b}}, 0.1)`;
+                speakBgHover = `rgba(${{r}}, ${{g}}, ${{b}}, 0.2)`;
+            }} else {{
+                shadowColor = 'rgba(0, 0, 0, 0.15)';
+                focusShadow = 'rgba(0, 0, 0, 0.05)';
+                speakBg = 'rgba(0, 0, 0, 0.05)';
+                speakBgHover = 'rgba(0, 0, 0, 0.1)';
+            }}
+        }}
+    }}
 
     // Inject CSS
     const style = document.createElement('style');
@@ -101,13 +137,13 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             width: 60px;
             height: 60px;
             border-radius: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: ${{widgetBackground}};
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(102,126,234,0.4);
+            box-shadow: 0 4px 20px ${{shadowColor}};
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: none;
             outline: none;
@@ -115,7 +151,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
         }}
         #dt-chat-button:hover {{
             transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 8px 25px rgba(102,126,234,0.5);
+            box-shadow: 0 8px 25px ${{shadowColor}};
         }}
         #dt-chat-window {{
             display: none;
@@ -140,7 +176,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             transform: scale(1);
         }}
         #dt-chat-header {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: ${{widgetBackground}};
             color: white;
             padding: 20px;
             font-weight: 600;
@@ -205,7 +241,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             to {{ opacity: 1; transform: translateY(0); }}
         }}
         .dt-message.user {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: ${{widgetBackground}};
             color: white;
             align-self: flex-end;
             border-bottom-right-radius: 4px;
@@ -237,8 +273,8 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
         }}
         .dt-quick-btn:hover {{
             background: #f3f4f6;
-            border-color: #667eea;
-            color: #667eea;
+            border-color: ${{hoverBorderColor}};
+            color: ${{hoverBorderColor}};
             transform: translateY(-2px);
         }}
         #dt-typing {{
@@ -286,12 +322,12 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             background: #f9fafb;
         }}
         #dt-chat-input:focus {{
-            border-color: #667eea;
+            border-color: ${{hoverBorderColor}};
             background: white;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+            box-shadow: 0 0 0 3px ${{focusShadow}};
         }}
         #dt-send-button {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: ${{widgetBackground}};
             color: white;
             border: none;
             width: 42px;
@@ -330,17 +366,17 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             50% {{ box-shadow: 0 0 0 10px rgba(239,68,68,0); }}
         }}
         .dt-speak-btn {{
-            background: rgba(102,126,234,0.1);
+            background: ${{speakBg}};
             border: none;
             cursor: pointer;
             padding: 5px;
             border-radius: 50%;
             margin-top: 6px;
-            color: #667eea;
+            color: ${{hoverBorderColor}};
             display: inline-flex;
             transition: all 0.2s;
         }}
-        .dt-speak-btn:hover {{ background: rgba(102,126,234,0.2); }}
+        .dt-speak-btn:hover {{ background: ${{speakBgHover}}; }}
         .dt-branding {{
             text-align: center;
             font-size: 10px;
@@ -384,7 +420,7 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
                 <input type="text" id="dt-lead-name" placeholder="Your name" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;" />
                 <input type="email" id="dt-lead-email" placeholder="Your email *" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;" />
                 <div style="display:flex;gap:8px;">
-                    <button id="dt-lead-submit" style="flex:1;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;padding:9px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">Submit</button>
+                    <button id="dt-lead-submit" style="flex:1;background:${{widgetBackground}};color:white;border:none;padding:9px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">Submit</button>
                     <button id="dt-lead-skip" style="background:#f3f4f6;color:#6b7280;border:none;padding:9px 14px;border-radius:8px;font-size:13px;cursor:pointer;">Skip</button>
                 </div>
             </div>

@@ -178,6 +178,33 @@ def activate_digital_twin(
     
     return {"message": "Digital twin activated successfully", "status": "active"}
 
+@router.post("/{twin_id}/pause")
+def pause_digital_twin(
+    twin_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Pause an active digital twin"""
+    digital_twin = db.query(DigitalTwin).join(Business).filter(
+        DigitalTwin.id == twin_id,
+        Business.owner_id == current_user.id
+    ).first()
+    
+    if not digital_twin:
+        raise HTTPException(status_code=404, detail="Digital twin not found")
+    
+    # Check subscription status
+    if current_user.subscription_status == "expired":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Your subscription has expired. Please upgrade to Pro to pause digital twins."
+        )
+    
+    digital_twin.status = "paused"
+    db.commit()
+    
+    return {"message": "Digital twin paused successfully", "status": "paused"}
+
 @router.delete("/{twin_id}")
 def delete_digital_twin(
     twin_id: int,
