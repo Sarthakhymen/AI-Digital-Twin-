@@ -130,32 +130,49 @@ const PremiumBackground = () => {
 // Real multi-business conversation cycles showing real product behaviors
 const BUSINESS_CONVOS = [
   {
-    business: '⚙️ AI Digital Twin',
-    color: '#6366F1',
-    userMsg: 'How do I link my twin to WhatsApp?',
-    botReply: "Just click the WhatsApp Scanner tab in your Dashboard, scan the QR code using your WhatsApp Linked Devices, and your twin takes over instantly! 📲",
+    business: '🍕 Spicy Basil Restaurant',
+    color: '#F59E0B',
+    greeting: "Hi! 👋 Welcome to Spicy Basil! Ask me about our menu, table booking, or orders.",
+    userMsg: 'Do you have gluten-free options and can I book a table for 4 tonight?',
+    botReply: "Yes! We have gluten-free wood-fired pizzas 🍕 and pastas. I've booked a table for 4 at 8:00 PM under your name. See you tonight! ✨",
   },
   {
-    business: '🎙️ Voice Synthesizer',
-    color: '#D946EF',
-    userMsg: 'Can my twin make real audio calls?',
-    botReply: "Yes! Record a 10s voice print to clone your tone. Visitors can then call your clone via WebRTC for real-time talk! 🗣️",
-  },
-  {
-    business: '📂 Knowledge Sync',
+    business: '🏥 CareFirst Dental Clinic',
     color: '#06B6D4',
-    userMsg: 'Does my twin read my PDF files?',
-    botReply: "Absolutely. Upload your PDFs, DOCX files, or website URLs. The engine vectorizes them so it replies with absolute accuracy. 📚",
+    greeting: "Hi! 👋 Welcome to CareFirst Dental. How can I help you schedule an appointment or query treatments today?",
+    userMsg: 'What are your clinic hours and how can I schedule an emergency extraction?',
+    botReply: "We are open 9 AM - 8 PM daily. I can book you for a dental emergency slot today at 4:30 PM. Would you like to confirm? 🦷",
   },
   {
-    business: '🛡️ Feature Gatekeeper',
+    business: '👗 Aura Boutique (Store)',
+    color: '#EC4899',
+    greeting: "Hi! 👋 Aura Boutique here! Ask me about new collections, sizing, shipping, or returns.",
+    userMsg: 'Do you ship internationally and what is your return policy?',
+    botReply: "We ship worldwide with free delivery above $100! ✈️ Returns are easy & free within 14 days of receipt. No questions asked!",
+  },
+  {
+    business: '🏡 Zenith Real Estate',
+    color: '#6366F1',
+    greeting: "Hi! 👋 Welcome to Zenith Real Estate. Ask me about properties, pricing, and active listings.",
+    userMsg: 'Are there any 2BHK apartments available under 50 Lakhs in Sector 62?',
+    botReply: "Yes! We have 3 premium 2BHK listings starting at 45 Lakhs in Sector 62 with modern amenities. Would you like to see photos? 🔑",
+  },
+  {
+    business: '🏋️ Apex Fitness Gym',
     color: '#10B981',
-    userMsg: 'Is there a limit on free trials?',
-    botReply: "Yes. Free trials are active for 3 days and limited to 50 messages. Upgrade to Standard (₹1299/mo) to unlock unlimited queries! ⚡",
+    greeting: "Hi! 👋 Welcome to Apex Fitness. How can I assist you with memberships, timings, or personal training?",
+    userMsg: 'What is your monthly membership fee and do you offer personal training?',
+    botReply: "Our membership starts at ₹1,499/mo. We have certified trainers for customized fat loss & strength programs. Want a free 1-day pass? 💪",
+  },
+  {
+    business: '🚘 DriveAuto Rentals',
+    color: '#EF4444',
+    greeting: "Hi! 👋 DriveAuto rentals here. Ask me about car models, prices, or documents needed to rent.",
+    userMsg: 'Can I rent a self-drive SUV for this weekend and what docs do I need?',
+    botReply: "Sure! We have SUVs like Thar & Creta available from ₹2,500/day. Just upload your Driving License & Aadhaar to start. 🚗",
   }
 ];
 
-const GREETING = { role: 'bot', content: "Hi! 👋 Ask me anything about creating your own AI Digital Twin!" };
 const TARGET_NAMES = ["Customers", "Clients", "Users", "Leads", "Buyers", "Students", "Patients", "Followers", "Guests"];
 
 // Smartphone Widget Simulator Component
@@ -178,17 +195,22 @@ const HeroSmartphoneVisualization = () => {
 
     const run = async () => {
       if (!mounted) return;
-      setMessages([GREETING]);
+      
+      // Initialize with first conversation's greeting
+      const firstConvo = BUSINESS_CONVOS[0];
+      const initialGreeting = { role: 'bot', content: firstConvo.greeting };
+      setMessages([initialGreeting]);
       setPhase('greeting');
       await new Promise(r => setTimeout(r, 2200));
 
       let idx = 0;
       while (mounted) {
         const convo = BUSINESS_CONVOS[idx % BUSINESS_CONVOS.length];
+        const greetingMsg = { role: 'bot', content: convo.greeting };
 
         // User message appears
         if (!mounted) break;
-        setMessages([GREETING, { role: 'user', content: convo.userMsg }]);
+        setMessages([greetingMsg, { role: 'user', content: convo.userMsg }]);
         setPhase('userMsg');
         await new Promise(r => setTimeout(r, 1500));
 
@@ -200,7 +222,7 @@ const HeroSmartphoneVisualization = () => {
         // Bot reply appears
         if (!mounted) break;
         setMessages([
-          GREETING,
+          greetingMsg,
           { role: 'user', content: convo.userMsg },
           { role: 'bot', content: convo.botReply },
         ]);
@@ -214,9 +236,11 @@ const HeroSmartphoneVisualization = () => {
         await new Promise(r => setTimeout(r, 800));
 
         idx++;
+        const nextConvo = BUSINESS_CONVOS[idx % BUSINESS_CONVOS.length];
+        const nextGreetingMsg = { role: 'bot', content: nextConvo.greeting };
         setConvoIndex(idx % BUSINESS_CONVOS.length);
         if (!mounted) break;
-        setMessages([GREETING]);
+        setMessages([nextGreetingMsg]);
         setPhase('greeting');
         await new Promise(r => setTimeout(r, 1600));
       }
@@ -448,10 +472,9 @@ const Hero = () => {
           {/* Subheading */}
           <motion.p
             variants={fadeInUp}
-            className="text-base sm:text-lg text-slate-400 max-w-xl font-medium leading-relaxed"
+            className="text-base sm:text-lg text-slate-300 max-w-xl font-medium leading-relaxed"
           >
-            Deploy a custom AI digital twin trained on your specific business records, documents, and transcripts. 
-            Automate customer queries over chat widgets and WhatsApp, or let visitors place voice calls with your cloned voice.
+            बिना <span className="text-indigo-400 font-semibold">1,000s lines of code</span> लिखे, पाएँ अपना खुद का <span className="text-purple-400 font-semibold">AI Digital Twin</span> जो हूबहू आपकी तरह <span className="text-pink-400 font-semibold">Hindi & English</span> दोनों में आपके ग्राहकों की हर Query को हल करेगा—ठीक उसी अपनेपन और समझदारी के साथ, जैसे आप खुद करते हैं।
           </motion.p>
 
           {/* CTAs */}
