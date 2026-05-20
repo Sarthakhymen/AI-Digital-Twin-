@@ -24,7 +24,20 @@ import {
   Volume2,
   Scan,
   RefreshCw,
-  Check
+  Check,
+  Globe,
+  Users,
+  CheckSquare,
+  TrendingUp,
+  MessageCircle,
+  BookOpen,
+  Smile,
+  CreditCard,
+  Briefcase,
+  Settings,
+  Power,
+  Code2,
+  Send
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LandingNavbar from '../components/LandingNavbar';
@@ -1058,712 +1071,782 @@ const HowItWorks = () => {
             </motion.div>
           ))}
         </div>
-
       </div>
     </section>
   );
 };
 
-// Interactive Node-Tree Graph Map Component
 const UserGuideMindmap = () => {
-  const [activeNode, setActiveNode] = useState("core");
+  const [currentStep, setCurrentStep] = useState(0);
 
-  const nodes = {
-    core: {
-      id: "core",
-      title: "AI Twin Engine",
-      subtitle: "Central Processing Core",
-      icon: <Brain className="w-6 h-6 text-rose-400" />,
-      status: "ONLINE",
-      latency: "84ms",
-      payload: "LLM-Orchestrator v2.0",
-      description: "The central cognitive brain of your AI Digital Twin. Replicates your reasoning, tone, and knowledge base in real-time.",
-      details: "Integrates Retrieval-Augmented Generation (RAG) to reference uploaded documents instantly, ensuring factual accuracy.",
-      highlight: "Processes queries in under 100ms.",
-      color: "from-rose-500 to-violet-600",
-      glowColor: "rgba(244, 63, 94, 0.4)",
-      x: 500, y: 300,
-      preview: (
-        <div className="flex flex-col items-center justify-center p-4 bg-slate-950/60 rounded-xl border border-slate-800/80 space-y-3">
-          <div className="relative">
-            <div className="absolute inset-0 bg-rose-500/20 rounded-full blur-xl animate-pulse" />
-            <Brain className="w-12 h-12 text-rose-500 relative animate-bounce" />
-          </div>
-          <span className="text-xs font-bold text-slate-200">Dual-Engine Orchestrator Active</span>
-          <div className="flex gap-2 text-[10px] text-slate-500 font-mono">
-            <span>THREADS: 64/64</span>
-            <span>MEM_SYNC: 99.8%</span>
-          </div>
-        </div>
-      )
+  // Form states to make the user guide interactive
+  const [workspaceName, setWorkspaceName] = useState("Amit's Coffee Shop");
+  const [workspaceWebsite, setWorkspaceWebsite] = useState("amitcoffeeshop.com");
+  const [twinName, setTwinName] = useState("Coffee Guide");
+  const [twinTone, setTwinTone] = useState("Friendly");
+  const [isTwinActive, setIsTwinActive] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [ingestedFiles, setIngestedFiles] = useState([]);
+  const [ingestProgress, setIngestProgress] = useState(0);
+  const [isIngesting, setIsIngesting] = useState(false);
+
+  // RAG query state variables
+  const [ragQuery, setRagQuery] = useState("");
+  const [ragPhase, setRagPhase] = useState("idle"); // idle | vectorizing | searching | retrieving | synthesizing | done
+  const [ragOutput, setRagOutput] = useState("");
+  const [ragSource, setRagSource] = useState("");
+  const [ragConfidence, setRagConfidence] = useState("");
+
+  const steps = [
+    {
+      id: "auth",
+      label: "1. Signup & Login",
+      title: "User Registers & Authenticates",
+      description: "First, the user creates an account and logs into the secure digital twin builder dashboard.",
+      icon: <Lock className="w-5 h-5 text-rose-400" />
     },
-    ingestion: {
-      id: "ingestion",
-      title: "Data Ingestion",
-      subtitle: "Neural Training Pipeline",
-      icon: <Cpu className="w-5 h-5 text-blue-400" />,
-      status: "SYNCED",
-      latency: "120ms",
-      payload: "Vector-Parser v1.4",
-      description: "Orchestrates the conversion of files, text transcripts, and voice records into machine-understandable vectors.",
-      details: "Handles concurrent document ingestion pipelines, converting text into 1536-dimensional embeddings.",
-      highlight: "Supports PDF, TXT, DOCX, and URLs.",
-      color: "from-blue-500 to-cyan-400",
-      glowColor: "rgba(59, 130, 246, 0.4)",
-      x: 280, y: 180,
-      preview: (
-        <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>Ingestion Queue:</span>
-            <span className="text-emerald-400 font-mono">0 pending</span>
-          </div>
-          <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-full" />
-          </div>
-          <p className="text-[10px] text-slate-500 text-center">Ready to process incoming file streams.</p>
-        </div>
-      )
+    {
+      id: "plan",
+      label: "2. Plan Selection",
+      title: "Activate Standard Subscription",
+      description: "Select the Standard Tier for ₹2/month to enable custom AI twins, vector indexes, and widget scripts.",
+      icon: <CreditCard className="w-5 h-5 text-indigo-400" />
     },
-    kb: {
-      id: "kb",
-      title: "Knowledge Base",
-      subtitle: "Vector Storage Engine",
-      icon: <Database className="w-4 h-4 text-cyan-400" />,
-      status: "READY",
-      latency: "15ms",
-      payload: "ChromaDB Indexer",
-      description: "Processes and indexes your custom files. Your twin references this exact knowledge base when answering user questions.",
-      details: "Ensures secure, tenant-isolated data storage. Your training files are never shared with public LLMs.",
-      highlight: "Strict multi-tenant security.",
-      color: "from-cyan-500 to-blue-600",
-      glowColor: "rgba(34, 211, 238, 0.3)",
-      x: 90, y: 100,
-      preview: (
-        <div className="border border-dashed border-white/10 bg-slate-950/40 rounded-xl p-4 flex flex-col items-center justify-center space-y-2 cursor-pointer hover:border-blue-500/40 transition-colors">
-          <Database className="w-6 h-6 text-blue-400 animate-pulse" />
-          <span className="text-xs font-semibold text-slate-300">Drag & drop files here</span>
-          <span className="text-[10px] text-slate-500">PDF, TXT, DOCX, or CSV (max 25MB)</span>
-        </div>
-      )
+    {
+      id: "workspace",
+      label: "3. Workspace Setup",
+      title: "Register Business Workspace",
+      description: "Enter your business name and website directory URL to initialize a multi-tenant workspace.",
+      icon: <Briefcase className="w-5 h-5 text-cyan-400" />
     },
-    voice_clone: {
-      id: "voice_clone",
-      title: "Voice Cloning",
-      subtitle: "Neural Speech Synthesizer",
-      icon: <Mic className="w-4 h-4 text-indigo-400" />,
-      status: "READY",
-      latency: "180ms",
-      payload: "Neural-Voice-Synth",
-      description: "Synthesizes custom voice profiles using neural speech cloning technology from a short voice sample.",
-      details: "Extracts acoustic parameters including pitch, tone, and speed to generate voice agent audio.",
-      highlight: "Generates high-fidelity clone audio.",
-      color: "from-indigo-500 to-violet-600",
-      glowColor: "rgba(99, 102, 241, 0.3)",
-      x: 90, y: 260,
-      preview: (
-        <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 flex flex-col items-center justify-center space-y-2">
-          <div className="w-full flex items-center gap-1.5 h-6 bg-slate-900 rounded-md px-2 border border-slate-800">
-            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-            <span className="text-[9px] font-mono text-indigo-400">VOICE_ENGINE: RECORDING...</span>
-          </div>
-          <span className="text-[10px] text-slate-500">Speak or upload a 10s voice snippet to capture your voice.</span>
-        </div>
-      )
+    {
+      id: "details",
+      label: "4. Train AI Twin",
+      title: "Specify Character & Knowledge",
+      description: "Customize your twin name, set its response tone, and upload documentation (PDF, TXT) or enter URLs.",
+      icon: <Settings className="w-5 h-5 text-emerald-400" />
     },
-    access: {
-      id: "access",
-      title: "Gating & Access",
-      subtitle: "Policy Enforcement",
-      icon: <Shield className="w-5 h-5 text-emerald-400" />,
-      status: "STRICT",
-      latency: "8ms",
-      payload: "HierarchicalGate v1",
-      description: "Controls endpoint accessibility. Validates plans and limits before processing requests.",
-      details: "Ensures Standard (₹2) and Free Trial users are strictly blocked from using Business Pro APIs.",
-      highlight: "Enforces plan-based monetization.",
-      color: "from-emerald-500 to-teal-400",
-      glowColor: "rgba(16, 185, 129, 0.4)",
-      x: 280, y: 420,
-      preview: (
-        <div className="bg-slate-950/60 border border-white/10 rounded-xl p-4 space-y-3">
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-400">Policy: Standard Gating</span>
-            <span className="text-emerald-400 font-bold">ENFORCED</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="px-2 py-0.5 bg-rose-500/10 text-rose-400 rounded-md font-bold text-[9px] border border-rose-500/20">PRO ONLY</span>
-            <span className="text-[10px] text-slate-500">WhatsApp & Voice bot routes strictly locked.</span>
-          </div>
-        </div>
-      )
+    {
+      id: "activate",
+      label: "5. Activation Switch",
+      title: "Synchronize & Activate Twin",
+      description: "Once knowledge is synchronized, toggle your twin online to start processing live request threads.",
+      icon: <Power className="w-5 h-5 text-amber-400" />
     },
-    pricing: {
-      id: "pricing",
-      title: "Flexible Tiers",
-      subtitle: "Payment Processing",
-      icon: <Info className="w-4 h-4 text-emerald-400" />,
-      status: "ACTIVE",
-      latency: "12ms",
-      payload: "Razorpay SDK",
-      description: "Processes subscription purchases and plans. Standard plan is priced at ₹2/mo.",
-      details: "Supports immediate plan upgrades, manual payment requests via UPI, and subscription logs.",
-      highlight: "INR / USD sandbox pricing.",
-      color: "from-emerald-400 to-teal-500",
-      glowColor: "rgba(52, 211, 153, 0.3)",
-      x: 90, y: 340,
-      preview: (
-        <div className="bg-slate-950/60 border border-white/10 rounded-xl p-4 space-y-3">
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-300 font-medium">Standard Plan (Test Price)</span>
-            <span className="font-bold text-white">₹2</span>
-          </div>
-          <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-[80%]" />
-          </div>
-          <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
-            <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Secure sandbox checkout using UPI/Razorpay</span>
-          </div>
-        </div>
-      )
+    {
+      id: "script",
+      label: "6. Embed Script",
+      title: "Copy Lightweight Widget Script",
+      description: "Copy the single-line integration script and paste it into your local project website directory.",
+      icon: <Code2 className="w-5 h-5 text-purple-400" />
     },
-    gating: {
-      id: "gating",
-      title: "Feature Gating",
-      subtitle: "Route Interception",
-      icon: <Lock className="w-4 h-4 text-teal-400" />,
-      status: "ENFORCED",
-      latency: "5ms",
-      payload: "RequirePlan Dependency",
-      description: "A strict backend dependency that intercepts API calls and checks the user's plan credentials.",
-      details: "Guards routes such as WhatsApp config, voice agent dialing, and advanced reporting charts.",
-      highlight: "Guarantees secure route protection.",
-      color: "from-teal-400 to-emerald-600",
-      glowColor: "rgba(20, 184, 166, 0.3)",
-      x: 90, y: 500,
-      preview: (
-        <div className="bg-slate-950/60 border border-white/10 rounded-xl p-3 space-y-2">
-          <div className="flex items-center gap-2 text-xs">
-            <Lock className="w-4 h-4 text-rose-500" />
-            <span className="text-slate-300 font-bold">Access Denied (403)</span>
-          </div>
-          <p className="text-[10px] text-slate-500">You must be on Business Pro to edit WhatsApp settings.</p>
-        </div>
-      )
+    {
+      id: "live",
+      label: "7. Go Live!",
+      title: "Twin Live on Your Website",
+      description: "The digital twin script activates immediately, displaying a sleek floating widget on your website.",
+      icon: <Globe className="w-5 h-5 text-pink-400" />
     },
-    channels: {
-      id: "channels",
-      title: "Omni-Channel",
-      subtitle: "Integration Dispatcher",
-      icon: <Workflow className="w-5 h-5 text-amber-400" />,
-      status: "ROUTING",
-      latency: "62ms",
-      payload: "Router v2.1",
-      description: "Dispatches incoming messages from widgets, voice calls, or messaging APIs to the AI Twin brain.",
-      details: "Manages session states and coordinates responses back to their respective origin channels.",
-      highlight: "Concurrent multi-channel dispatch.",
-      color: "from-amber-500 to-orange-400",
-      glowColor: "rgba(245, 158, 11, 0.4)",
-      x: 720, y: 180,
-      preview: (
-        <div className="bg-slate-950/60 border border-white/10 rounded-xl p-4 space-y-2">
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-400">Routes Active:</span>
-            <span className="text-amber-400 font-bold">2 Connected</span>
-          </div>
-          <div className="flex gap-2 justify-center py-1">
-            <span className="px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded-md font-mono text-[9px]">WIDGET</span>
-            <span className="px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded-md font-mono text-[9px]">VOICE</span>
-          </div>
-        </div>
-      )
-    },
-    widget: {
-      id: "widget",
-      title: "Web Chat Widget",
-      subtitle: "Embedded Script UI",
-      icon: <Smartphone className="w-4 h-4 text-amber-400" />,
-      status: "DEPLOYED",
-      latency: "35ms",
-      payload: "widget.js v1",
-      description: "A lightweight script injected via HTML to display a sleek, modern chat interface on client websites.",
-      details: "Configurable placement, colors, watermarks, and built-in lead generation collection forms.",
-      highlight: "Single-line HTML integration.",
-      color: "from-amber-400 to-yellow-500",
-      glowColor: "rgba(251, 191, 36, 0.3)",
-      x: 910, y: 100,
-      preview: (
-        <div className="space-y-2">
-          <div className="bg-slate-950/80 border border-white/10 rounded-lg p-3 font-mono text-[9px] text-slate-300 relative group overflow-x-auto whitespace-pre">
-            <code>{`<script src="https://ai-twin-2le9.onrender.com/api/v1/integrations/8/widget.js" data-position="right"></script>`}</code>
-          </div>
-          <p className="text-[10px] text-slate-500 text-center">Copy-paste this script right before the closing &lt;/body&gt; tag.</p>
-        </div>
-      )
-    },
-    voice_call: {
-      id: "voice_call",
-      title: "Voice Agent",
-      subtitle: "Real-time Voice Caller",
-      icon: <Mic className="w-4 h-4 text-orange-400" />,
-      status: "STANDBY",
-      latency: "190ms",
-      payload: "WebRTC Synth",
-      description: "Allows visitors to place direct audio calls to speak with your voice-cloned digital twin.",
-      details: "Integrates WebRTC audio streams, fast speech-to-text, and cloned voice-synthesis for conversational speed.",
-      highlight: "Under 200ms latency voice response.",
-      color: "from-orange-400 to-amber-500",
-      glowColor: "rgba(251, 146, 60, 0.3)",
-      x: 910, y: 260,
-      preview: (
-        <div className="flex flex-col items-center justify-center py-2 bg-slate-950/60 rounded-xl border border-white/10 space-y-2">
-          <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center animate-pulse">
-            <Mic className="w-5 h-5 text-emerald-400" />
-          </div>
-          <span className="text-[10px] font-bold text-slate-200">RTC Audio Stream: 128kbps</span>
-          <button className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md text-[10px] font-bold transition-all">
-            Call Simulated Agent
-          </button>
-        </div>
-      )
-    },
-    analytics: {
-      id: "analytics",
-      title: "Analytics & Logs",
-      subtitle: "System Monitor",
-      icon: <Activity className="w-5 h-5 text-purple-400" />,
-      status: "COLLECTING",
-      latency: "40ms",
-      payload: "Audit-Core v1",
-      description: "Aggregates performance analytics, message count thresholds, and payment requests.",
-      details: "Exposes system telemetry and session counts, notifying admins when resource limits are reached.",
-      highlight: "Tracks digital twin usage patterns.",
-      color: "from-purple-500 to-fuchsia-400",
-      glowColor: "rgba(168, 85, 247, 0.4)",
-      x: 720, y: 420,
-      preview: (
-        <div className="bg-slate-950/60 border border-white/10 rounded-xl p-4 space-y-2">
-          <div className="flex justify-between items-center text-xs">
-            <span>Log Collector:</span>
-            <span className="text-purple-400 animate-pulse font-mono">COLLECTING</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
-            <Terminal className="w-3.5 h-3.5 text-slate-450" />
-            <span>SYS_EVENT: User msg counted (OK)</span>
-          </div>
-        </div>
-      )
-    },
-    dashboard: {
-      id: "dashboard",
-      title: "Performance Stats",
-      subtitle: "Reporting Interface",
-      icon: <BarChart3 className="w-4 h-4 text-purple-400" />,
-      status: "ACTIVE",
-      latency: "25ms",
-      payload: "ChartJS v2",
-      description: "Provides analytical charts tracking message counts, active conversation threads, and response rates.",
-      details: "Displays real-time usage graphs on the user's dashboard to audit system performance.",
-      highlight: "Visually maps user interactions.",
-      color: "from-purple-400 to-fuchsia-500",
-      glowColor: "rgba(192, 132, 252, 0.3)",
-      x: 910, y: 340,
-      preview: (
-        <div className="bg-slate-950/60 border border-white/10 rounded-xl p-3 space-y-2">
-          <div className="flex items-end justify-between h-10 px-4">
-            <div className="w-3 bg-purple-500/40 rounded-t h-[40%]" />
-            <div className="w-3 bg-purple-500/60 rounded-t h-[60%]" />
-            <div className="w-3 bg-purple-500/80 rounded-t h-[90%]" />
-            <div className="w-3 bg-purple-500 rounded-t h-[75%]" />
-          </div>
-          <div className="text-[9px] text-slate-500 text-center font-mono">CONVERSATION TRAFFIC TODAY</div>
-        </div>
-      )
-    },
-    admin_override: {
-      id: "admin_override",
-      title: "Admin Controls",
-      subtitle: "Root Management Portal",
-      icon: <Sliders className="w-4 h-4 text-fuchsia-400" />,
-      status: "ROOT",
-      latency: "10ms",
-      payload: "AdminOverride v2",
-      description: "Allows the owner to override any user's subscription settings and verify UPI requests.",
-      details: "Provides UI to adjust message counts, change plans, extend expirations, and verify UPI transactions.",
-      highlight: "Instantly override subscription parameters.",
-      color: "from-fuchsia-400 to-pink-500",
-      glowColor: "rgba(232, 121, 249, 0.3)",
-      x: 910, y: 500,
-      preview: (
-        <div className="bg-slate-950/60 border border-white/10 rounded-xl p-4 space-y-3">
-          <div className="flex items-center justify-between text-xs font-mono">
-            <span className="text-slate-400">User: sarthak@domain.com</span>
-            <span className="px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-md font-bold text-[9px] border border-purple-500/20">SYS_PRO</span>
-          </div>
-          <div className="flex justify-between items-center text-[10px] text-slate-500">
-            <span>Bypass Message limits:</span>
-            <span className="text-emerald-400 font-bold">TRUE</span>
-          </div>
-        </div>
-      )
+    {
+      id: "rag",
+      label: "8. Live Database Query",
+      title: "Input Query to Output Retrieval",
+      description: "Type or click a question to trace the live vector matching search loop retrieve output from the DB.",
+      icon: <Database className="w-5 h-5 text-teal-400" />
     }
+  ];
+
+  const handleCopyScript = () => {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const selectedNode = nodes[activeNode];
+  const handleSimulateIngestion = () => {
+    setIsIngesting(true);
+    setIngestProgress(0);
+    const interval = setInterval(() => {
+      setIngestProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsIngesting(false);
+          setIngestedFiles(["pricing_menu.pdf", "timings_guide.txt"]);
+          return 100;
+        }
+        return prev + 25;
+      });
+    }, 450);
+  };
+
+  const handleRagSearch = (queryText) => {
+    setRagQuery(queryText);
+    setRagPhase("vectorizing");
+    setRagOutput("");
+    setRagSource("");
+    setRagConfidence("");
+
+    setTimeout(() => {
+      setRagPhase("searching");
+      setTimeout(() => {
+        setRagPhase("retrieving");
+        setTimeout(() => {
+          setRagPhase("synthesizing");
+          setTimeout(() => {
+            setRagPhase("done");
+            const q = queryText.toLowerCase();
+            if (q.includes("mocha") || q.includes("ice") || q.includes("drink") || q.includes("price") || q.includes("cost") || q.includes("menu")) {
+              setRagOutput(`"Yes, we serve delicious Iced Mocha for ₹120. We also have Espresso (₹80) and Cappuccino (₹100) on our menu."`);
+              setRagSource("pricing_menu.pdf (Chunk 2, Lines 12-16)");
+              setRagConfidence("98.8% Cosine Similarity Match");
+            } else if (q.includes("time") || q.includes("timing") || q.includes("open") || q.includes("close")) {
+              setRagOutput(`"Our coffee shop is open daily from 8 AM to 10 PM, Monday through Sunday."`);
+              setRagSource("timings_guide.txt (Chunk 1, Lines 3-5)");
+              setRagConfidence("96.5% Cosine Similarity Match");
+            } else if (q.includes("delivery") || q.includes("home") || q.includes("order")) {
+              setRagOutput(`"Yes! We offer home delivery within a 5km radius of our coffee shop. Delivery is free for orders above ₹300."`);
+              setRagSource("pricing_menu.pdf (Chunk 4, Lines 22-25)");
+              setRagConfidence("97.2% Cosine Similarity Match");
+            } else {
+              setRagOutput(`"Hello! I am ${twinName}, Amit's AI Digital Twin. I can assist you with our menu prices, operating hours, and ordering options."`);
+              setRagSource("general_context.docx (Chunk 1, Line 2)");
+              setRagConfidence("89.4% Generic Match");
+            }
+          }, 800);
+        }, 800);
+      }, 800);
+    }, 800);
+  };
 
   return (
-    <section className="relative py-28 overflow-hidden z-10 bg-slate-950/40">
+    <section className="relative py-24 bg-slate-950/40 border-t border-b border-white/5 overflow-hidden z-10">
+      {/* Ambient background glows */}
+      <div className="absolute top-1/4 left-1/10 w-96 h-96 bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/10 w-96 h-96 bg-violet-500/5 rounded-full blur-[120px] pointer-events-none" />
+
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Title */}
         <div className="text-center mb-16">
           <span className="text-xs font-bold text-rose-500 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
-            <Sparkles className="w-4 h-4" /> Platform Blueprint
+            <Sparkles className="w-4 h-4 text-rose-500" /> AI Digital Twin Lifecycle
           </span>
           <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Interactive User Guide & Node Map
+            Interactive User Guide & Workflow
           </h2>
           <p className="mt-4 text-slate-400 max-w-2xl mx-auto text-sm font-medium">
-            Click on nodes below to inspect our architecture flow, subscription variables, integration code scripts, and administrative panels.
+            Walk through the complete process of building your twin, embedding the widget, and retrieving live context from the database.
           </p>
         </div>
 
-        {/* Mindmap Layout Wrapper */}
+        {/* Stepper Navigation bar */}
+        <div className="flex flex-wrap justify-center gap-2 mb-10 pb-4 border-b border-white/5 font-sans">
+          {steps.map((step, idx) => {
+            const isActive = currentStep === idx;
+            const isCompleted = idx < currentStep;
+            return (
+              <button
+                key={step.id}
+                onClick={() => setCurrentStep(idx)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                  isActive
+                    ? 'bg-gradient-to-r from-rose-500/10 to-violet-600/10 border-rose-500/40 text-white shadow-[0_0_15px_rgba(244,63,94,0.15)]'
+                    : isCompleted
+                      ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400'
+                      : 'bg-white/[0.01] border-white/5 text-slate-400 hover:bg-white/[0.03] hover:text-white'
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] ${
+                  isActive
+                    ? 'bg-rose-500 text-white'
+                    : isCompleted
+                      ? 'bg-emerald-500 text-slate-950'
+                      : 'bg-slate-800 text-slate-400'
+                }`}>
+                  {isCompleted ? <Check className="w-3 h-3" /> : idx + 1}
+                </div>
+                <span>{step.label.split(". ")[1]}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Main Grid Wrapper */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
-          {/* SVG Mindmap Column */}
-          <div className="lg:col-span-8 bg-slate-950/60 border border-white/5 rounded-3xl p-6 relative overflow-hidden flex items-center justify-center select-none shadow-2xl min-h-[500px]">
-            {/* Ambient Background Grid */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:30px_30px] opacity-40 pointer-events-none" />
+          {/* Left panel: Info & Explanation */}
+          <div className="lg:col-span-5 flex flex-col justify-between bg-white/[0.01] border border-white/5 rounded-3xl p-8 relative overflow-hidden backdrop-blur-md">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-[60px]" />
+            
+            <div className="space-y-6 font-sans">
+              <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <span className="px-2.5 py-0.5 bg-rose-500/10 text-rose-400 font-mono text-[9px] rounded uppercase tracking-widest font-bold border border-rose-500/20">
+                  Step {currentStep + 1} of 8
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[10px] text-emerald-400 font-mono font-bold tracking-wider">ACTIVE PIPELINE</span>
+                </span>
+              </div>
 
-            {/* Desktop SVG Node Graph */}
-            <div className="relative w-full aspect-[1000/600] max-w-full hidden md:block z-10">
-              <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1000 600">
-                <defs>
-                  <linearGradient id="gradient-blue" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.8" />
-                  </linearGradient>
-                  <linearGradient id="gradient-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#14b8a6" stopOpacity="0.8" />
-                  </linearGradient>
-                  <linearGradient id="gradient-amber" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#f97316" stopOpacity="0.8" />
-                  </linearGradient>
-                  <linearGradient id="gradient-purple" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#d946ef" stopOpacity="0.8" />
-                  </linearGradient>
-                </defs>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-900 border border-white/10 flex items-center justify-center">
+                  {steps[currentStep].icon}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">{steps[currentStep].title}</h3>
+                  <span className="text-[9px] text-slate-500 font-mono tracking-widest uppercase font-bold">Workspace Phase</span>
+                </div>
+              </div>
 
-                {/* SVG Connections with data pulses */}
-                {/* Center to Ingestion */}
-                <path d="M 500,300 C 400,300 380,180 280,180" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="3" fill="none" />
-                <motion.path
-                  d="M 500,300 C 400,300 380,180 280,180"
-                  stroke="url(#gradient-blue)"
-                  strokeWidth="2.5"
-                  fill="none"
-                  strokeDasharray="10, 25"
-                  animate={{ strokeDashoffset: [0, -70] }}
-                  transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
-                />
+              <p className="text-sm text-slate-300 leading-relaxed font-semibold">
+                {steps[currentStep].description}
+              </p>
 
-                {/* Ingestion to KB */}
-                <path d="M 280,180 C 200,180 170,100 90,100" stroke="rgba(6, 182, 212, 0.25)" strokeWidth="2" fill="none" />
-                <motion.path
-                  d="M 280,180 C 200,180 170,100 90,100"
-                  stroke="#22d3ee"
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeDasharray="8, 15"
-                  animate={{ strokeDashoffset: [0, -30] }}
-                  transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
-                />
-
-                {/* Ingestion to Voice Clone */}
-                <path d="M 280,180 C 200,180 170,260 90,260" stroke="rgba(99, 102, 241, 0.25)" strokeWidth="2" fill="none" />
-                <motion.path
-                  d="M 280,180 C 200,180 170,260 90,260"
-                  stroke="#818cf8"
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeDasharray="8, 15"
-                  animate={{ strokeDashoffset: [0, -30] }}
-                  transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
-                />
-
-                {/* Center to Access */}
-                <path d="M 500,300 C 400,300 380,420 280,420" stroke="rgba(16, 185, 129, 0.2)" strokeWidth="3" fill="none" />
-                <motion.path
-                  d="M 500,300 C 400,300 380,420 280,420"
-                  stroke="url(#gradient-emerald)"
-                  strokeWidth="2.5"
-                  fill="none"
-                  strokeDasharray="10, 25"
-                  animate={{ strokeDashoffset: [0, -70] }}
-                  transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
-                />
-
-                {/* Access to Pricing */}
-                <path d="M 280,420 C 200,420 170,340 90,340" stroke="rgba(52, 211, 153, 0.25)" strokeWidth="2" fill="none" />
-                <motion.path
-                  d="M 280,420 C 200,420 170,340 90,340"
-                  stroke="#34d399"
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeDasharray="8, 15"
-                  animate={{ strokeDashoffset: [0, -30] }}
-                  transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
-                />
-
-                {/* Access to Gating */}
-                <path d="M 280,420 C 200,420 170,500 90,500" stroke="rgba(20, 184, 166, 0.25)" strokeWidth="2" fill="none" />
-                <motion.path
-                  d="M 280,420 C 200,420 170,500 90,500"
-                  stroke="#2dd4bf"
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeDasharray="8, 15"
-                  animate={{ strokeDashoffset: [0, -30] }}
-                  transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
-                />
-
-                {/* Center to Channels */}
-                <path d="M 500,300 C 600,300 620,180 720,180" stroke="rgba(245, 158, 11, 0.2)" strokeWidth="3" fill="none" />
-                <motion.path
-                  d="M 500,300 C 600,300 620,180 720,180"
-                  stroke="url(#gradient-amber)"
-                  strokeWidth="2.5"
-                  fill="none"
-                  strokeDasharray="10, 25"
-                  animate={{ strokeDashoffset: [0, 70] }}
-                  transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
-                />
-
-                {/* Channels to Widget */}
-                <path d="M 720,180 C 800,180 830,100 910,100" stroke="rgba(251, 191, 36, 0.25)" strokeWidth="2" fill="none" />
-                <motion.path
-                  d="M 720,180 C 800,180 830,100 910,100"
-                  stroke="#fbbf24"
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeDasharray="8, 15"
-                  animate={{ strokeDashoffset: [0, 30] }}
-                  transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
-                />
-
-                {/* Channels to Voice Agent */}
-                <path d="M 720,180 C 800,180 830,260 910,260" stroke="rgba(249, 115, 22, 0.25)" strokeWidth="2" fill="none" />
-                <motion.path
-                  d="M 720,180 C 800,180 830,260 910,260"
-                  stroke="#fb923c"
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeDasharray="8, 15"
-                  animate={{ strokeDashoffset: [0, 30] }}
-                  transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
-                />
-
-                {/* Center to Analytics */}
-                <path d="M 500,300 C 600,300 620,420 720,420" stroke="rgba(139, 92, 246, 0.2)" strokeWidth="3" fill="none" />
-                <motion.path
-                  d="M 500,300 C 600,300 620,420 720,420"
-                  stroke="url(#gradient-purple)"
-                  strokeWidth="2.5"
-                  fill="none"
-                  strokeDasharray="10, 25"
-                  animate={{ strokeDashoffset: [0, 70] }}
-                  transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
-                />
-
-                {/* Analytics to Stats */}
-                <path d="M 720,420 C 800,420 830,340 910,340" stroke="rgba(192, 132, 252, 0.25)" strokeWidth="2" fill="none" />
-                <motion.path
-                  d="M 720,420 C 800,420 830,340 910,340"
-                  stroke="#c084fc"
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeDasharray="8, 15"
-                  animate={{ strokeDashoffset: [0, 30] }}
-                  transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
-                />
-
-                {/* Analytics to Admin Controls */}
-                <path d="M 720,420 C 800,420 830,500 910,500" stroke="rgba(232, 121, 249, 0.25)" strokeWidth="2" fill="none" />
-                <motion.path
-                  d="M 720,420 C 800,420 830,500 910,500"
-                  stroke="#e879f9"
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeDasharray="8, 15"
-                  animate={{ strokeDashoffset: [0, 30] }}
-                  transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
-                />
-              </svg>
-
-              {/* Render HTML Nodes Over SVG */}
-              {Object.values(nodes).map((node) => {
-                const isActive = activeNode === node.id;
-                const isRoot = node.id === "core";
-                const isBranch = ["ingestion", "access", "channels", "analytics"].includes(node.id);
-
-                return (
-                  <motion.div
-                    key={node.id}
-                    className="absolute"
-                    style={{
-                      left: `${node.x / 10}%`,
-                      top: `${node.y / 6}%`,
-                      transform: 'translate(-50%, -50%)',
-                    }}
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.96 }}
-                  >
-                    <button
-                      onClick={() => setActiveNode(node.id)}
-                      className={`flex flex-col items-center justify-center rounded-2xl transition-all duration-300 ${
-                        isRoot
-                          ? 'w-24 h-24 bg-gradient-to-br from-rose-600/90 to-violet-700/90 text-white border border-white/20 shadow-[0_0_25px_rgba(244,63,94,0.4)]'
-                          : isBranch
-                            ? `px-4 py-2.5 bg-slate-900/95 border text-white ${
-                                isActive ? 'border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.25)]' : 'border-white/5 hover:border-white/10'
-                              }`
-                            : `w-12 h-12 bg-slate-900/95 rounded-full border flex items-center justify-center ${
-                                isActive ? 'border-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.25)]' : 'border-white/5 hover:border-white/10'
-                              }`
-                      }`}
-                    >
-                      {isRoot ? (
-                        <>
-                          <Brain className="w-8 h-8 text-white animate-pulse" />
-                          <span className="text-[10px] font-bold mt-1 uppercase tracking-wider text-white">Engine</span>
-                        </>
-                      ) : isBranch ? (
-                        <div className="flex items-center gap-2">
-                          {node.icon}
-                          <span className="text-[10px] font-extrabold tracking-wide uppercase">{node.title}</span>
-                        </div>
-                      ) : (
-                        node.icon
-                      )}
-                    </button>
-
-                    {/* Small Node Floating Title */}
-                    {!isRoot && !isBranch && (
-                      <div className="absolute top-14 left-1/2 -translate-x-1/2 bg-slate-900/95 border border-white/5 rounded px-2 py-0.5 text-[8px] font-extrabold text-slate-300 tracking-wide uppercase whitespace-nowrap shadow-md">
-                        {node.title}
-                      </div>
-                    )}
-                  </motion.div>
-                );
-              })}
+              {/* Tips Callout */}
+              <div className="bg-slate-950/60 border border-white/5 rounded-2xl p-4 mt-2">
+                <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                  💡 {
+                    currentStep === 0 ? "You can login securely via Google auth or standard password credentials. Each login triggers a personalized dashboard greeting."
+                    : currentStep === 1 ? "The Standard Tier is configured for immediate sandbox test verification at just ₹2. Payment gating rules are enforced strictly."
+                    : currentStep === 2 ? "Setting up a business folder isolation model ensures that different company chatbots cannot read each other's data."
+                    : currentStep === 3 ? "Ingested files are parsed, split into overlaps, embedded via OpenAI text models, and saved inside a tenant-isolated ChromaDB."
+                    : currentStep === 4 ? "Activating the switch sets the twin status flag to 'ONLINE'. OFFLINE twins automatically alert visitors to upgrade or return later."
+                    : currentStep === 5 ? "The single script tag contains async attributes, which ensures it does not impact your page loading times and speed metrics."
+                    : currentStep === 6 ? "The web chat widget will automatically read your theme color settings and place itself fixed at the bottom right corner."
+                    : "Simulate a search: click on a query preset button and watch the RAG matching sequence execute live between the LLM and the Vector DB."
+                  }
+                </p>
+              </div>
             </div>
 
-            {/* Mobile Accordion tree view */}
-            <div className="w-full space-y-3.5 md:hidden block z-10 py-6">
-              {Object.values(nodes).map((node) => {
-                const isActive = activeNode === node.id;
-                return (
-                  <div
-                    key={node.id}
-                    onClick={() => setActiveNode(node.id)}
-                    className={`p-4 rounded-2xl border transition-all cursor-pointer ${
-                      isActive 
-                        ? 'bg-slate-900 border-indigo-500 shadow-xl' 
-                        : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]'
-                    }`}
+            {/* Stepper buttons */}
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/5 font-sans">
+              <button
+                disabled={currentStep === 0}
+                onClick={() => setCurrentStep((prev) => prev - 1)}
+                className="px-4 py-2.5 rounded-xl border border-white/5 text-xs font-bold text-slate-400 hover:bg-white/5 hover:text-white transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+              >
+                Back Step
+              </button>
+              <button
+                onClick={() => {
+                  if (currentStep < 7) {
+                    setCurrentStep((prev) => prev + 1);
+                  } else {
+                    setCurrentStep(0); // reset
+                  }
+                }}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-violet-600 hover:from-rose-400 hover:to-violet-500 text-white text-xs font-bold transition-all shadow-[0_0_20px_rgba(244,63,94,0.3)] flex items-center gap-1.5"
+              >
+                {currentStep === 7 ? "Restart Tour" : "Next Step"} <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Right panel: Visual Demonstration */}
+          <div className="lg:col-span-7 bg-slate-950/60 border border-white/5 rounded-3xl p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden backdrop-blur-md">
+            
+            {/* Screen Container */}
+            <div className="w-full flex-grow flex flex-col justify-center min-h-[360px]">
+              
+              <AnimatePresence mode="wait">
+                
+                {/* 1. Signup / Login Screen */}
+                {steps[currentStep].id === 'auth' && (
+                  <motion.div
+                    key="auth"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-sm mx-auto w-full bg-slate-900/90 border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl font-sans"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center bg-slate-900/90 ${isActive ? 'text-indigo-400' : 'text-slate-500'}`}>
-                        {node.icon}
+                    <div className="text-center space-y-1">
+                      <h4 className="text-sm font-bold text-white">Access AI Twin Builder</h4>
+                      <p className="text-[10px] text-slate-500">Sign in to your application dashboard</p>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Email Address</label>
+                        <input
+                          type="text"
+                          disabled
+                          value="sarthak@domain.com"
+                          className="w-full h-8 bg-slate-955 border border-white/5 rounded px-3 text-xs text-slate-350 focus:outline-none"
+                        />
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">{node.title}</h4>
-                        <span className="text-[9px] text-slate-500 tracking-widest uppercase font-bold">{node.subtitle}</span>
+                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Password</label>
+                        <input
+                          type="password"
+                          disabled
+                          value="•••••••••••••••"
+                          className="w-full h-8 bg-slate-955 border border-white/5 rounded px-3 text-xs text-slate-450 focus:outline-none"
+                        />
+                      </div>
+                      <button
+                        onClick={() => setCurrentStep(1)}
+                        className="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white rounded text-xs font-bold transition-all mt-2 flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(225,29,72,0.2)] animate-pulse"
+                      >
+                        Sign In Securely <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 2. Select Plan Screen */}
+                {steps[currentStep].id === 'plan' && (
+                  <motion.div
+                    key="plan"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="w-full space-y-4 font-sans"
+                  >
+                    <div className="text-center">
+                      <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Choose Subscription tier</h4>
+                      <p className="text-[10px] text-slate-500 mt-0.5">Standard is active for simple ₹2 sandbox tests</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                      <div className="bg-slate-900/40 border border-white/5 rounded-xl p-4 opacity-50 flex flex-col justify-between">
+                        <div>
+                          <span className="text-[9px] font-bold text-slate-500 uppercase">Free Trial</span>
+                          <span className="block text-lg font-bold text-slate-400 mt-1">₹0</span>
+                          <span className="block text-[8px] text-slate-500 mt-1">3 days limit & 50 messages limit</span>
+                        </div>
+                        <span className="text-[9px] text-slate-500 mt-4 block text-center">Gated Tier</span>
+                      </div>
+
+                      <div className="bg-slate-900 border-2 border-indigo-500/50 rounded-xl p-4 flex flex-col justify-between shadow-[0_0_20px_rgba(99,102,241,0.15)] relative">
+                        <div className="absolute top-2 right-2 bg-indigo-500 text-slate-950 font-bold text-[8px] px-1.5 py-0.5 rounded-full uppercase">
+                          ACTIVE
+                        </div>
+                        <div>
+                          <span className="text-[9px] font-bold text-indigo-400 uppercase">Standard Tier</span>
+                          <span className="block text-lg font-bold text-white mt-1">₹2 <span className="text-xs text-slate-400 font-normal">/mo</span></span>
+                          <span className="block text-[8px] text-slate-350 mt-1">Unlimited responses, custom widgets, scraping</span>
+                        </div>
+                        <button
+                          onClick={() => setCurrentStep(2)}
+                          className="w-full py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[10px] font-bold transition-all mt-4"
+                        >
+                          Selected (Proceed)
+                        </button>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  </motion.div>
+                )}
+
+                {/* 3. Add Business Screen */}
+                {steps[currentStep].id === 'workspace' && (
+                  <motion.div
+                    key="workspace"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-sm mx-auto w-full bg-slate-900/90 border border-white/10 rounded-2xl p-6 space-y-4 font-sans"
+                  >
+                    <div className="border-b border-white/5 pb-2">
+                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">Initialize Business Workspace</h4>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1">Business Name</label>
+                        <input
+                          type="text"
+                          value={workspaceName}
+                          onChange={(e) => setWorkspaceName(e.target.value)}
+                          className="w-full h-8 bg-slate-950 border border-white/10 rounded px-3 text-xs text-white focus:outline-none focus:border-cyan-500"
+                          placeholder="e.g. Acme Coffee House"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1">Website URL</label>
+                        <input
+                          type="text"
+                          value={workspaceWebsite}
+                          onChange={(e) => setWorkspaceWebsite(e.target.value)}
+                          className="w-full h-8 bg-slate-955 border border-white/10 rounded px-3 text-xs text-white focus:outline-none focus:border-cyan-500"
+                          placeholder="e.g. amitcoffeeshop.com"
+                        />
+                      </div>
+                      <button
+                        onClick={() => setCurrentStep(3)}
+                        className="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded text-xs font-bold transition-all mt-2"
+                      >
+                        Create Business Folder
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 4. Train AI Twin Screen */}
+                {steps[currentStep].id === 'details' && (
+                  <motion.div
+                    key="details"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-md mx-auto w-full bg-slate-900/95 border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl font-sans"
+                  >
+                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">Configure & Ingest Knowledge</h4>
+                      <span className="text-[8px] text-slate-500 font-mono">Workspace: {workspaceName}</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="block text-[8px] font-bold text-slate-400 uppercase">Twin Custom Name</label>
+                        <input
+                          type="text"
+                          value={twinName}
+                          onChange={(e) => setTwinName(e.target.value)}
+                          className="w-full h-7 bg-slate-955 border border-white/5 rounded px-2.5 text-xs text-white focus:outline-none"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-[8px] font-bold text-slate-400 uppercase">Conversation Tone</label>
+                        <select
+                          value={twinTone}
+                          onChange={(e) => setTwinTone(e.target.value)}
+                          className="w-full h-7 bg-slate-955 border border-white/5 rounded px-2.5 text-xs text-white focus:outline-none"
+                        >
+                          <option value="Friendly">Friendly & Warm</option>
+                          <option value="Formal">Formal & Business</option>
+                          <option value="Analytical">Analytical & Direct</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Simulator Dropzone */}
+                    <div className="space-y-2 pt-2">
+                      <label className="block text-[8px] font-bold text-slate-400 uppercase">Vector Datasets (Files & Links)</label>
+                      
+                      {ingestedFiles.length === 0 && !isIngesting ? (
+                        <div
+                          onClick={handleSimulateIngestion}
+                          className="border border-dashed border-white/10 hover:border-emerald-500/30 bg-slate-955 rounded-xl p-6 flex flex-col items-center justify-center space-y-2 cursor-pointer transition-colors"
+                        >
+                          <Database className="w-6 h-6 text-emerald-500 animate-bounce" />
+                          <span className="text-[10px] text-slate-355 font-medium">Click to ingest coffee menu PDFs & urls</span>
+                          <span className="text-[8px] text-slate-500 font-mono">Simulates embedding conversion to Vector DB</span>
+                        </div>
+                      ) : isIngesting ? (
+                        <div className="bg-slate-950/60 border border-white/5 rounded-xl p-6 flex flex-col items-center justify-center space-y-2">
+                          <RefreshCw className="w-5 h-5 text-emerald-400 animate-spin" />
+                          <span className="text-[10px] text-slate-300 font-medium">Extracting paragraphs & generating vectors...</span>
+                          <div className="w-full max-w-xs bg-slate-905 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-emerald-500 h-full transition-all duration-300" style={{ width: `${ingestProgress}%` }} />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-slate-955 border border-white/10 rounded-xl p-4 space-y-3">
+                          <div className="flex items-center justify-between text-[9px] text-slate-450 font-bold">
+                            <span>Ingestion Status:</span>
+                            <span className="text-emerald-400 font-bold uppercase">15,840 Vectors Sync Complete</span>
+                          </div>
+                          <div className="space-y-1.5">
+                            {ingestedFiles.map((file) => (
+                              <div key={file} className="flex items-center gap-1.5 text-[9px] text-slate-300 bg-slate-900/60 p-1 px-2.5 rounded border border-white/5 font-mono">
+                                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>{file} (Indexed)</span>
+                              </div>
+                            ))}
+                          </div>
+                          <button
+                            onClick={() => setIngestedFiles([])}
+                            className="text-[9px] text-slate-500 hover:text-slate-300 underline font-mono"
+                          >
+                            Re-upload datasets
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 5. Activate Switch Screen */}
+                {steps[currentStep].id === 'activate' && (
+                  <motion.div
+                    key="activate"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-xs mx-auto w-full bg-slate-900 border border-white/10 rounded-2xl p-6 space-y-5 text-center shadow-xl font-sans"
+                  >
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Twin Activation Console</h4>
+                    
+                    <div className="flex flex-col items-center justify-center p-6 bg-slate-950/60 rounded-xl border border-white/5 space-y-3">
+                      <div className={`w-3.5 h-3.5 rounded-full ${isTwinActive ? 'bg-emerald-500 animate-ping' : 'bg-rose-500'}`} />
+                      <span className={`text-xs font-bold font-mono uppercase tracking-widest ${isTwinActive ? 'text-emerald-400' : 'text-rose-500'}`}>
+                        Twin Status: {isTwinActive ? 'ONLINE' : 'OFFLINE'}
+                      </span>
+
+                      {/* Toggle Switch */}
+                      <button
+                        onClick={() => setIsTwinActive(!isTwinActive)}
+                        className={`w-14 h-7 rounded-full transition-all relative p-1 mt-2 ${isTwinActive ? 'bg-emerald-600' : 'bg-slate-800'}`}
+                      >
+                        <div className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 ${isTwinActive ? 'translate-x-7' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
+
+                    <div className="flex gap-2 justify-center text-[9px] font-mono text-slate-500">
+                      <span>RAG: CONNECTED</span>
+                      <span>•</span>
+                      <span>LATENCY: 84ms</span>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 6. Copy Script Screen */}
+                {steps[currentStep].id === 'script' && (
+                  <motion.div
+                    key="script"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-lg mx-auto w-full bg-slate-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl font-sans"
+                  >
+                    {/* Header bar */}
+                    <div className="flex items-center justify-between bg-slate-950 px-4 py-2 border-b border-white/5">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                      </div>
+                      <span className="text-[9px] font-mono text-slate-500">index.html (Acme Website Directory)</span>
+                    </div>
+
+                    <div className="p-4 space-y-4">
+                      <p className="text-[10px] text-slate-400 font-semibold">Copy and paste this script tag inside your HTML body:</p>
+                      
+                      <div className="bg-slate-955 p-4.5 rounded-xl border border-white/5 font-mono text-[10px] text-indigo-300 relative group overflow-x-auto whitespace-pre select-all">
+                        <code>{`<!-- AI Digital Twin Chat Widget Integration -->\n<script\n  src="https://ai-twin-2le9.onrender.com/api/v1/widget.js"\n  data-twin-id="${twinName.toLowerCase().replace(/\s+/g, '-')}"\n  data-theme="#6366f1">\n</script>`}</code>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] text-slate-500 font-mono font-medium">Requires no extra dependencies or frameworks</span>
+                        <button
+                          onClick={handleCopyScript}
+                          className={`px-4 py-1.5 rounded text-xs font-bold transition-all ${
+                            copied 
+                              ? 'bg-emerald-600 text-white' 
+                              : 'bg-white/5 border border-white/10 text-slate-200 hover:bg-white/10'
+                          }`}
+                        >
+                          {copied ? "Copied tag!" : "Copy Embed Script"}
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 7. Twin Live Website Screen */}
+                {steps[currentStep].id === 'live' && (
+                  <motion.div
+                    key="live"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-md mx-auto w-full bg-slate-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative font-sans"
+                  >
+                    {/* Browser Address Bar */}
+                    <div className="flex items-center gap-2 bg-slate-950 px-4 py-2 border-b border-white/5 text-[10px] font-mono text-slate-500">
+                      <div className="flex gap-1">
+                        <div className="w-2 h-2 rounded-full bg-white/20" />
+                        <div className="w-2 h-2 rounded-full bg-white/20" />
+                      </div>
+                      <div className="bg-slate-900 px-3 py-0.5 rounded w-full max-w-[200px] text-slate-400 text-center truncate">
+                        https://www.{workspaceWebsite || 'amitcoffeeshop.com'}
+                      </div>
+                    </div>
+
+                    {/* Simulated Coffee Shop Webpage */}
+                    <div className="p-6 h-[220px] bg-slate-955 flex flex-col justify-between relative">
+                      <div className="space-y-2">
+                        <span className="text-[9px] font-bold text-rose-500 uppercase tracking-widest">{workspaceName || "Amit's Coffee Shop"}</span>
+                        <h4 className="text-lg font-black text-white leading-tight">Fresh Roasted Artisan Beans</h4>
+                        <p className="text-[10px] text-slate-400 max-w-[80%]">Crafted with precision, serving premium espressos, gourmet teas, and warm delivery daily.</p>
+                      </div>
+
+                      {/* Mock floating widget button */}
+                      <div className="absolute bottom-4 right-4 flex flex-col items-end space-y-2">
+                        <div className="bg-slate-900 border border-white/10 rounded-xl p-3 shadow-2xl max-w-[220px] text-[9px] space-y-1.5">
+                          <div className="flex items-center gap-1.5 border-b border-white/5 pb-1">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                            <span className="font-bold text-white">{twinName} (Online)</span>
+                          </div>
+                          <p className="text-slate-350">"Hi! I am the automated virtual twin of Amit. Ask me about coffee prices or shop hours!"</p>
+                        </div>
+                        
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-rose-500 to-violet-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(244,63,94,0.4)] animate-bounce cursor-pointer">
+                          <MessageCircle className="w-5 h-5 text-white" />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 8. Live Database RAG Query Simulator Screen */}
+                {steps[currentStep].id === 'rag' && (
+                  <motion.div
+                    key="rag"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch font-sans"
+                  >
+                    
+                    {/* Chat Widget Panel */}
+                    <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 flex flex-col justify-between space-y-3">
+                      <div>
+                        <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-2">
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider">{twinName} Assistant</span>
+                          <span className="text-[8px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.2 rounded font-mono">CHROME_DB_SYNC</span>
+                        </div>
+                        
+                        {/* Conversation dialogue box */}
+                        <div className="space-y-2 h-[130px] overflow-y-auto p-1">
+                          {ragQuery ? (
+                            <div className="flex flex-col space-y-2">
+                              {/* Visitor Input */}
+                              <div className="px-3 py-1.5 bg-slate-950/80 rounded-xl rounded-tr-none text-[10px] text-white self-end max-w-[85%] border border-white/5">
+                                {ragQuery}
+                              </div>
+                              
+                              {/* RAG response */}
+                              {ragPhase === 'done' && (
+                                <div className="px-3 py-1.5 bg-indigo-500/10 text-slate-200 text-[10px] rounded-xl rounded-tl-none self-start max-w-[85%] border border-indigo-500/20">
+                                  {ragOutput}
+                                  <span className="block text-[7px] text-slate-500 font-mono mt-1 uppercase">Source: {ragSource.split(" ")[0]}</span>
+                                </div>
+                              )}
+
+                              {ragPhase !== 'done' && (
+                                <div className="px-3 py-1.5 bg-slate-950/40 text-slate-500 text-[9px] rounded-xl rounded-tl-none self-start max-w-[85%] border border-dashed border-white/5 animate-pulse font-mono uppercase">
+                                  Retrieving answer...
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-center text-slate-500">
+                              <MessageCircle className="w-6 h-6 text-slate-600 mb-1" />
+                              <p className="text-[9px]">Select a preset query below to test RAG database retrieval</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Quick preset buttons */}
+                      <div className="space-y-1.5 pt-2 border-t border-white/5">
+                        <span className="text-[8px] text-slate-500 font-bold uppercase tracking-wider block">Query Presets</span>
+                        <div className="flex flex-wrap gap-1.5">
+                          <button
+                            onClick={() => handleRagSearch("Do you have Iced Mocha? What is the price?")}
+                            className="px-2 py-1 bg-white/5 border border-white/5 hover:border-indigo-500/30 text-[9px] font-semibold text-slate-350 rounded-lg hover:text-white transition-all animate-pulse"
+                          >
+                            "Mocha price?"
+                          </button>
+                          <button
+                            onClick={() => handleRagSearch("What are your coffee shop timings?")}
+                            className="px-2 py-1 bg-white/5 border border-white/5 hover:border-indigo-500/30 text-[9px] font-semibold text-slate-350 rounded-lg hover:text-white transition-all animate-pulse"
+                          >
+                            "Shop Timings?"
+                          </button>
+                          <button
+                            onClick={() => handleRagSearch("Is home delivery available?")}
+                            className="px-2 py-1 bg-white/5 border border-white/5 hover:border-indigo-500/30 text-[9px] font-semibold text-slate-355 rounded-lg hover:text-white transition-all animate-pulse"
+                          >
+                            "Home Delivery?"
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* RAG pipeline execution console */}
+                    <div className="bg-slate-950 border border-white/10 rounded-2xl p-4 flex flex-col justify-between font-mono text-[9px]">
+                      <div>
+                        <div className="flex items-center gap-1.5 border-b border-white/5 pb-2 mb-3">
+                          <Terminal className="w-3.5 h-3.5 text-indigo-400" />
+                          <span className="text-slate-400 font-bold">RAG Retrieval Telemetry</span>
+                        </div>
+
+                        {/* List of steps and checkmarks */}
+                        <div className="space-y-2">
+                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
+                            ragPhase === 'vectorizing' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              {['vectorizing', 'searching', 'retrieving', 'synthesizing', 'done'].indexOf(ragPhase) > 0 ? (
+                                <Check className="w-3 h-3 text-emerald-400" />
+                              ) : (
+                                <Cpu className={`w-3 h-3 ${ragPhase === 'vectorizing' ? 'animate-spin' : ''}`} />
+                              )}
+                              <span>1. Vectorizing Input Query</span>
+                            </div>
+                            {ragPhase === 'vectorizing' && <span className="text-[8px] animate-pulse text-indigo-400">1536d Array...</span>}
+                          </div>
+
+                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
+                            ragPhase === 'searching' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              {['searching', 'retrieving', 'synthesizing', 'done'].indexOf(ragPhase) > 1 ? (
+                                <Check className="w-3 h-3 text-emerald-400" />
+                              ) : (
+                                <Database className={`w-3 h-3 ${ragPhase === 'searching' ? 'animate-bounce' : ''}`} />
+                              )}
+                              <span>2. Scanning ChromaDB index</span>
+                            </div>
+                            {ragPhase === 'searching' && <span className="text-[8px] animate-pulse text-indigo-400">Matching keys...</span>}
+                          </div>
+
+                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
+                            ragPhase === 'retrieving' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              {['retrieving', 'synthesizing', 'done'].indexOf(ragPhase) > 2 ? (
+                                <Check className="w-3 h-3 text-emerald-400" />
+                              ) : (
+                                <FileText className="w-3 h-3" />
+                              )}
+                              <span>3. Retrieving Document Chunk</span>
+                            </div>
+                            {ragPhase === 'retrieving' && <span className="text-[8px] animate-pulse text-indigo-400">Extracting text...</span>}
+                          </div>
+
+                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
+                            ragPhase === 'synthesizing' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              {['synthesizing', 'done'].indexOf(ragPhase) > 3 ? (
+                                <Check className="w-3 h-3 text-emerald-400" />
+                              ) : (
+                                <Brain className="w-3 h-3" />
+                              )}
+                              <span>4. LLM Synthesis & Output</span>
+                            </div>
+                            {ragPhase === 'synthesizing' && <span className="text-[8px] animate-pulse text-indigo-400">Generating token...</span>}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Display retrieved metrics */}
+                      {ragPhase === 'done' && (
+                        <div className="mt-3 bg-slate-900 border border-white/5 rounded-lg p-2 space-y-1.5 text-[8px] text-slate-400">
+                          <div><span className="text-slate-500 font-bold uppercase">Nearest Neighbor:</span> <span className="text-indigo-300">{ragSource}</span></div>
+                          <div><span className="text-slate-500 font-bold uppercase">Confidence Score:</span> <span className="text-emerald-400">{ragConfidence}</span></div>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+
+              </AnimatePresence>
+
             </div>
+
           </div>
 
-          {/* Selected Node Details Sidebar Card */}
-          <div className="lg:col-span-4 flex flex-col justify-between">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeNode}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.35 }}
-                className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 flex flex-col justify-between h-full relative overflow-hidden shadow-2xl backdrop-blur-md"
-              >
-                {/* Telemetry glow inside card */}
-                <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-[80px] opacity-15 pointer-events-none bg-gradient-to-br ${selectedNode.color}`} />
-                
-                {/* Header */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                    <span className="px-2 py-0.5 bg-white/5 border border-white/10 text-slate-500 font-mono text-[9px] rounded uppercase tracking-widest font-bold">
-                      System Module
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                      <span className="text-[9px] text-emerald-400 font-mono font-bold tracking-wider">{selectedNode.status}</span>
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${selectedNode.color} p-0.5 shadow-lg`}>
-                      <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-white">
-                        {selectedNode.icon}
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white tracking-tight">{selectedNode.title}</h3>
-                      <p className="text-[10px] text-slate-500 font-mono tracking-widest uppercase font-bold">{selectedNode.subtitle}</p>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-slate-300 leading-relaxed font-semibold mt-4">
-                    {selectedNode.description}
-                  </p>
-
-                  <div className="bg-slate-950/60 border border-white/5 rounded-2xl p-4 mt-2">
-                    <p className="text-[11px] text-slate-400 leading-relaxed font-semibold">
-                      💡 {selectedNode.details}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Telemetry Log */}
-                <div className="mt-6 pt-4 border-t border-white/5 space-y-4">
-                  <div className="grid grid-cols-2 gap-3 font-mono text-[8px] text-slate-500 bg-slate-950/80 rounded-xl p-2.5 border border-white/5">
-                    <div>
-                      <span className="block text-slate-600 font-bold uppercase">Latency Limit</span>
-                      <span className="text-slate-400 font-extrabold">{selectedNode.latency}</span>
-                    </div>
-                    <div>
-                      <span className="block text-slate-600 font-bold uppercase">Linked Core</span>
-                      <span className="text-slate-400 font-extrabold truncate block">{selectedNode.payload}</span>
-                    </div>
-                  </div>
-
-                  {selectedNode.preview}
-
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="text-indigo-400 font-bold tracking-wide flex items-center gap-1 uppercase text-[9px]">
-                      <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-spin" /> {selectedNode.highlight}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
         </div>
 
       </div>
