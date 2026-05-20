@@ -385,6 +385,33 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
             background: #fcfcfd;
         }}
         .dt-branding a {{ color: #764ba2; text-decoration: none; font-weight: 600; }}
+
+        @media (max-width: 480px) {{
+            #dt-widget-container.dt-open {{
+                bottom: 0 !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }}
+            #dt-widget-container.dt-open #dt-chat-window {{
+                display: flex !important;
+                position: fixed !important;
+                bottom: 0 !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                max-height: 100% !important;
+                border-radius: 0 !important;
+                border: none !important;
+            }}
+            #dt-widget-container.dt-open #dt-chat-button {{
+                display: none !important;
+            }}
+        }}
     `;
     document.head.appendChild(style);
 
@@ -458,10 +485,12 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
         isOpen = !isOpen;
         if (isOpen) {{
             windowEl.style.display = 'flex';
+            container.classList.add('dt-open');
             setTimeout(() => windowEl.classList.add('open'), 10);
             input.focus();
         }} else {{
             windowEl.classList.remove('open');
+            container.classList.remove('dt-open');
             setTimeout(() => windowEl.style.display = 'none', 300);
         }}
     }};

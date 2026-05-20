@@ -119,6 +119,7 @@
             `;
             button.style.backgroundColor = '#3b82f6';
         }
+        handleMobileChange(mediaQuery);
     };
 
     // Listen for messages from the iframe (like closing the widget from inside)
@@ -137,13 +138,51 @@
     const mediaQuery = window.matchMedia('(max-width: 480px)');
     function handleMobileChange(e) {
         if (e.matches) {
-            iframe.style.width = 'calc(100vw - 40px)';
-            iframe.style.height = 'calc(100vh - 120px)';
-            iframe.style.maxHeight = 'none';
+            if (isOpen) {
+                container.style.bottom = '0';
+                container.style.left = '0';
+                container.style.right = '0';
+                container.style.width = '100vw';
+                container.style.height = '100vh';
+                iframe.style.width = '100vw';
+                iframe.style.height = '100vh';
+                iframe.style.maxHeight = 'none';
+                iframe.style.borderRadius = '0';
+                iframe.style.margin = '0';
+                button.style.display = 'none';
+            } else {
+                container.style.bottom = '20px';
+                if (position === 'left') {
+                    container.style.left = '20px';
+                    container.style.right = 'auto';
+                } else {
+                    container.style.right = '20px';
+                    container.style.left = 'auto';
+                }
+                container.style.width = 'auto';
+                container.style.height = 'auto';
+                iframe.style.width = '350px';
+                iframe.style.height = '600px';
+                iframe.style.maxHeight = '80vh';
+                iframe.style.borderRadius = '16px';
+                button.style.display = 'flex';
+            }
         } else {
+            container.style.bottom = '20px';
+            if (position === 'left') {
+                container.style.left = '20px';
+                container.style.right = 'auto';
+            } else {
+                container.style.right = '20px';
+                container.style.left = 'auto';
+            }
+            container.style.width = 'auto';
+            container.style.height = 'auto';
             iframe.style.width = '350px';
             iframe.style.height = '600px';
             iframe.style.maxHeight = '80vh';
+            iframe.style.borderRadius = '16px';
+            button.style.display = 'flex';
         }
     }
     mediaQuery.addListener(handleMobileChange);

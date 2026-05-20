@@ -307,7 +307,7 @@ const HeroSmartphoneVisualization = () => {
       />
 
       {/* Phone Body Wrapper */}
-      <div className="relative w-[300px] h-[600px] bg-[#0c0d12] rounded-[3.2rem] border-[6px] border-[#222530] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden ring-1 ring-white/10">
+      <div className="relative w-[280px] min-[380px]:w-[300px] h-[560px] min-[380px]:h-[600px] bg-[#0c0d12] rounded-[3.2rem] border-[6px] border-[#222530] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden ring-1 ring-white/10">
         
         {/* Notch / Speaker */}
         <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-30">

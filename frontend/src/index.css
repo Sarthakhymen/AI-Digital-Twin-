@@ -257,6 +257,26 @@ body {
 /* 3D Interactive Book Design System */
 .book-perspective {
   perspective: 1600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+@media (min-width: 1024px) and (max-width: 1200px) {
+  .book-perspective {
+    transform: scale(0.8);
+    margin-top: -60px;
+    margin-bottom: -60px;
+  }
+}
+@media (min-width: 1200px) and (max-width: 1350px) {
+  .book-perspective {
+    transform: scale(0.9);
+    margin-top: -30px;
+    margin-bottom: -30px;
+  }
 }
 
 .book-container {

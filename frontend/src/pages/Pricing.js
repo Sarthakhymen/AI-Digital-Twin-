@@ -512,7 +512,7 @@ const Pricing = () => {
                       Business Pro includes <span className="text-white font-semibold">AI meeting scheduling, table bookings, voice agent</span>, and advanced WhatsApp automation. Drop your details and we'll reach out when it's ready.
                     </p>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Full Name *</label>
                         <input
@@ -537,7 +537,7 @@ const Pricing = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Phone</label>
                         <input

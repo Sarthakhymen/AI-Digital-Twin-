@@ -205,7 +205,27 @@ const CreateTwin = () => {
 
       {error && <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>{error}</Alert>}
       
-      <Stepper activeStep={activeStep} alternativeLabel connector={<CustomConnector />} sx={{ mb: 6 }}>
+      {/* Current Step Description on Mobile */}
+      <Box sx={{ display: { xs: 'block', sm: 'none' }, textAlign: 'center', mb: 3 }}>
+        <Typography variant="body2" sx={{ color: '#8B5CF6', fontWeight: 700, fontFamily: '"Outfit", sans-serif', letterSpacing: '0.1em' }}>
+          STEP {activeStep + 1} OF 4
+        </Typography>
+        <Typography variant="h6" sx={{ color: '#fff', fontWeight: 600, fontFamily: '"Outfit", sans-serif', mt: 0.5 }}>
+          {steps[activeStep]}
+        </Typography>
+      </Box>
+
+      <Stepper 
+        activeStep={activeStep} 
+        alternativeLabel 
+        connector={<CustomConnector />} 
+        sx={{ 
+          mb: 6,
+          '& .MuiStepLabel-labelContainer': {
+            display: { xs: 'none', sm: 'block' }
+          }
+        }}
+      >
         {steps.map((label) => (
           <Step key={label}>
             <StepLabel StepIconComponent={CustomStepIcon}>
