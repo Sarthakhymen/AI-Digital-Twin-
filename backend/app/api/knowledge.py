@@ -354,6 +354,41 @@ def capture_lead_public(
     return {"message": "Thanks! We'll be in touch soon.", "lead_id": lead.id}
 
 
+@router.get("/leads/all")
+def list_all_leads(
+    current_user: User = Depends(RequirePlan(["standard", "business_pro"], feature_name="lead_generation")),
+    db: Session = Depends(get_db)
+):
+    """View all captured leads across all Digital Twins belonging to the current user's businesses"""
+    twins = db.query(DigitalTwin).join(Business).filter(
+        Business.owner_id == current_user.id
+    ).all()
+    twin_ids = [t.id for t in twins]
+    twin_names = {t.id: t.name for t in twins}
+    
+    if not twin_ids:
+        return []
+        
+    leads = db.query(LeadCapture).filter(
+        LeadCapture.digital_twin_id.in_(twin_ids)
+    ).order_by(LeadCapture.created_at.desc()).all()
+    
+    return [
+        {
+            "id": l.id,
+            "name": l.name,
+            "email": l.email,
+            "phone": l.phone,
+            "message": l.message,
+            "source": l.source,
+            "digital_twin_id": l.digital_twin_id,
+            "digital_twin_name": twin_names.get(l.digital_twin_id, "Unknown Twin"),
+            "created_at": l.created_at.isoformat() if l.created_at else None
+        }
+        for l in leads
+    ]
+
+
 @router.get("/{twin_id}/leads")
 def list_leads(
     twin_id: int,

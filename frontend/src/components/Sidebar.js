@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
-  LayoutDashboard, Building2, PlusCircle, BarChart3, 
+  LayoutDashboard, Building2, PlusCircle, Users, BarChart3, 
   BookOpen, Mic, Settings, Shield, ChevronRight, Moon, Sun, Monitor
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,6 +17,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Businesses', href: '/businesses', icon: Building2 },
     { name: 'Create Twin', href: '/create-twin', icon: PlusCircle },
+    { name: 'Leads', href: '/leads', icon: Users },
     ...(userFeatures?.advanced_analytics ? [{ name: 'Analytics', href: '/analytics', icon: BarChart3 }] : []),
     { name: 'Setup Guide', href: '/guide', icon: BookOpen },
     ...(userFeatures?.voice_agent ? [{ name: 'Voice Agent', href: '/voice-agent', icon: Mic }] : []),

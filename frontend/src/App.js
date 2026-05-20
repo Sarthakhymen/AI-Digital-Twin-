@@ -19,6 +19,7 @@ import Pricing from './pages/Pricing';
 import Guide from './pages/Guide';
 import EmbedChat from './pages/EmbedChat';
 import AdminDashboard from './admin/AdminDashboard';
+import Leads from './pages/Leads';
 
 import DashboardLayout from './components/DashboardLayout';
 
@@ -50,6 +51,7 @@ function App() {
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/businesses" element={<ProtectedRoute><Businesses /></ProtectedRoute>} />
               <Route path="/create-twin" element={<ProtectedRoute><CreateTwin /></ProtectedRoute>} />
+              <Route path="/leads" element={<ProtectedRoute><Leads /></ProtectedRoute>} />
               <Route path="/twins/:id" element={<ProtectedRoute><DigitalTwinDetail /></ProtectedRoute>} />
               <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
