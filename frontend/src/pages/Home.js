@@ -456,6 +456,13 @@ const Hero = () => {
             Without writing <span className="text-indigo-400 font-semibold">1,000s of lines of code</span>, deploy your own <span className="text-purple-400 font-semibold">AI Digital Twin</span> that answers customer queries in both <span className="text-pink-400 font-semibold">English & Hindi</span>—handling every conversation with the exact same care, tone, and intelligence as you would, 24/7.
           </motion.p>
 
+          <motion.div variants={fadeInUp} className="flex items-center gap-2 mt-4 mb-6">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm border border-emerald-500/30">⚡</span>
+            <p className="text-sm sm:text-base text-slate-400 font-medium">
+              You can make your twin in just <span className="text-emerald-400 font-bold">4-5 minutes</span>. Zero coding required.
+            </p>
+          </motion.div>
+
           {/* CTAs */}
           <motion.div
             variants={fadeInUp}
