@@ -156,12 +156,22 @@ const BUSINESS_CONVOS = [
 ];
 
 const GREETING = { role: 'bot', content: "Hi! 👋 Ask me anything about creating your own AI Digital Twin!" };
+const TARGET_NAMES = ["Customers", "Clients", "Users", "Leads", "Buyers", "Students", "Patients", "Followers", "Guests"];
 
 // Smartphone Widget Simulator Component
 const HeroSmartphoneVisualization = () => {
   const [phase, setPhase] = useState('greeting'); // greeting | userMsg | typing | botReply | pause
   const [convoIndex, setConvoIndex] = useState(0);
   const [messages, setMessages] = useState([]);
+
+  const [nameIndex, setNameIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNameIndex((prev) => (prev + 1) % TARGET_NAMES.length);
+    }, 1500);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -220,7 +230,58 @@ const HeroSmartphoneVisualization = () => {
   const accentColor = currentConvo.color;
 
   return (
-    <div className="relative flex items-center justify-center w-full lg:max-w-md mx-auto">
+    <div className="relative flex items-center justify-center w-full lg:max-w-md mx-auto pb-16 md:pb-0">
+      {/* Dynamic Spiral Arrow Callout (Visible on md and larger) */}
+      <div className="hidden md:flex absolute -left-36 lg:-left-44 top-1/4 flex-col items-center z-20 max-w-[180px] text-center pointer-events-none select-none">
+        <div className="font-handwriting text-[23px] text-slate-200 leading-tight transform -rotate-6 filter drop-shadow-[0_2px_10px_rgba(99,102,241,0.2)]">
+          Your twin is exactly talking like this with your
+          <div className="h-9 overflow-hidden mt-0.5 flex justify-center items-center">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={nameIndex}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -20, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="block text-indigo-400 font-extrabold tracking-wider text-[21px] uppercase font-sans"
+              >
+                {TARGET_NAMES[nameIndex]}
+              </motion.span>
+            </AnimatePresence>
+          </div>
+        </div>
+        
+        {/* Curved hand-drawn style spiral SVG arrow pointing to screen */}
+        <div className="mt-1 transform translate-x-12 rotate-[12deg] text-indigo-400/80 filter drop-shadow-[0_2px_6px_rgba(99,102,241,0.15)]">
+          <svg viewBox="0 0 100 80" className="w-20 h-16 animate-pulse" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path 
+              d="M10,15 C40,-5 75,5 85,25 C95,45 85,65 65,70 C45,75 35,60 45,45 C55,30 75,35 85,55" 
+              stroke="currentColor" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
+              strokeDasharray="4 3"
+            />
+            <path 
+              d="M75,55 L85,55 L85,45" 
+              stroke="currentColor" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* Dynamic Callout (Visible on mobile only below phone) */}
+      <div className="md:hidden absolute -bottom-10 left-0 right-0 flex justify-center text-center select-none z-20">
+        <span className="text-[12px] bg-slate-900/90 border border-white/10 px-4 py-2 rounded-full text-slate-300 font-medium tracking-wide backdrop-blur-md shadow-lg">
+          Your twin is exactly talking like this with your{" "}
+          <span className="text-indigo-400 font-extrabold tracking-wider uppercase ml-1">
+            {TARGET_NAMES[nameIndex]}
+          </span>
+        </span>
+      </div>
+
       {/* Decorative background glow behind phone */}
       <motion.div
         className="absolute w-72 h-96 rounded-full blur-3xl -z-10 opacity-30"
