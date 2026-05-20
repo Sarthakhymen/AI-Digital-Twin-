@@ -1287,22 +1287,22 @@ const UserGuideMindmap = () => {
                 <path
                   d={link.d}
                   fill="none"
-                  stroke={isCompleted ? "rgba(16, 185, 129, 0.12)" : isActive ? "rgba(244, 63, 94, 0.15)" : "rgba(255, 255, 255, 0.04)"}
+                  stroke={isCompleted ? "rgba(16, 185, 129, 0.45)" : isActive ? "rgba(244, 63, 94, 0.15)" : "rgba(255, 255, 255, 0.04)"}
                   strokeWidth="3"
                   strokeLinecap="round"
                 />
-                {/* Animated glowing flow path */}
-                {(isCompleted || isActive) && (
+                {/* Animated glowing flow path (only on the active path) */}
+                {isActive && (
                   <path
                     d={link.d}
                     fill="none"
-                    stroke={isCompleted ? "url(#completed-glow-grad)" : "url(#active-glow-grad)"}
+                    stroke="url(#active-glow-grad)"
                     strokeWidth="3"
                     strokeLinecap="round"
                     strokeDasharray="10 25"
                     className="animate-pulse-flow"
                     style={{
-                      animationDuration: isCompleted ? '4.5s' : '2.2s'
+                      animationDuration: '2.2s'
                     }}
                   />
                 )}
@@ -1340,10 +1340,7 @@ const UserGuideMindmap = () => {
                 <div className="relative flex items-center justify-center">
                   {/* Pulsing ring behind the active node */}
                   {isActive && (
-                    <>
-                      <div className="absolute -inset-2.5 rounded-full bg-rose-500/20 blur-md animate-ping" />
-                      <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-rose-500 to-indigo-500 animate-spin opacity-85" style={{ animationDuration: '4s' }} />
-                    </>
+                    <div className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-rose-500 to-indigo-500 opacity-75 blur-sm animate-pulse-opacity" />
                   )}
 
                   {/* Icon Container Circle */}
@@ -1414,6 +1411,19 @@ const UserGuideMindmap = () => {
           }
           .animate-pulse-flow {
             animation: pulse-flow 2s linear infinite;
+          }
+          @keyframes pulse-opacity-fast {
+            0% {
+              opacity: 0.3;
+              transform: scale(0.95);
+            }
+            100% {
+              opacity: 0.85;
+              transform: scale(1.05);
+            }
+          }
+          .animate-pulse-opacity {
+            animation: pulse-opacity-fast 1.6s ease-in-out infinite alternate;
           }
         `}} />
 
@@ -1503,7 +1513,7 @@ const UserGuideMindmap = () => {
           </div>
           
           {/* Left panel: Info & Explanation */}
-          <div className="col-span-12 md:col-span-5 lg:col-span-7 flex flex-col justify-between bg-white/[0.01] border border-white/5 rounded-3xl p-8 relative overflow-hidden backdrop-blur-md">
+          <div className="col-span-12 md:col-span-5 lg:col-span-7 flex flex-col justify-between bg-slate-900/40 md:bg-white/[0.01] border border-white/5 rounded-3xl p-8 relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
             <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-[60px]" />
             
             <div className="space-y-6 font-sans">
@@ -1573,7 +1583,7 @@ const UserGuideMindmap = () => {
           </div>
 
           {/* Right panel: Visual Demonstration */}
-          <div className="col-span-12 md:col-span-7 lg:col-span-7 bg-slate-950/60 border border-white/5 rounded-3xl p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden backdrop-blur-md">
+          <div className="col-span-12 md:col-span-7 lg:col-span-7 bg-slate-950/60 border border-white/5 rounded-3xl p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
             
             {/* Screen Container */}
             <div className="w-full flex-grow flex flex-col justify-center min-h-[360px]">
