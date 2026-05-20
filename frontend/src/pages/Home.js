@@ -1502,7 +1502,7 @@ const UserGuideMindmap = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-8 items-stretch">
           
           {/* Desktop Mindmap Graph Canvas (Visible on Desktop only, side-by-side spanning 2 rows) */}
-          <div className="hidden lg:block lg:col-span-5 lg:row-span-2 bg-slate-900/[0.15] border border-white/5 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md flex flex-col justify-center h-full">
+          <div className="hidden lg:block lg:col-span-7 lg:row-span-2 bg-slate-900/[0.15] border border-white/5 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md flex flex-col justify-center h-full">
             {/* Blueprint style telemetry label */}
             <div className="absolute top-3 left-4 text-[7px] font-mono text-slate-600 uppercase tracking-widest">NEURAL NETWORK ENGINE v1.2</div>
             <div className="absolute top-3 right-4 text-[7px] font-mono text-emerald-500/40 uppercase tracking-widest flex items-center gap-1.5">
@@ -1513,7 +1513,7 @@ const UserGuideMindmap = () => {
           </div>
           
           {/* Left panel: Info & Explanation */}
-          <div className="col-span-12 md:col-span-5 lg:col-span-7 flex flex-col justify-between bg-slate-900/40 md:bg-white/[0.01] border border-white/5 rounded-3xl p-8 relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
+          <div className="col-span-12 md:col-span-5 lg:col-span-5 flex flex-col justify-between bg-slate-900/40 md:bg-white/[0.01] border border-white/5 rounded-3xl p-8 relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
             <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-[60px]" />
             
             <div className="space-y-6 font-sans">
@@ -1583,7 +1583,7 @@ const UserGuideMindmap = () => {
           </div>
 
           {/* Right panel: Visual Demonstration */}
-          <div className="col-span-12 md:col-span-7 lg:col-span-7 bg-slate-950/60 border border-white/5 rounded-3xl p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
+          <div className="col-span-12 md:col-span-7 lg:col-span-5 bg-slate-950/60 border border-white/5 rounded-3xl p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
             
             {/* Screen Container */}
             <div className="w-full flex-grow flex flex-col justify-center min-h-[360px]">
