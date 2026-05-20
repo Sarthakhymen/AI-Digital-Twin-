@@ -14,11 +14,6 @@ const Settings = () => {
     email: user?.email || '',
     phone: user?.phone || ''
   });
-  const [notifications, setNotifications] = useState({
-    email_alerts: true,
-    weekly_reports: true,
-    conversation_summaries: false
-  });
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -105,7 +100,6 @@ const Settings = () => {
           }}
         >
           <Tab label="Profile" />
-          <Tab label="Notifications" />
           <Tab label="Security" />
         </Tabs>
 
@@ -157,38 +151,6 @@ const Settings = () => {
               )}
 
               {activeTab === 1 && (
-                <Box maxWidth={600}>
-                  <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', mb: 3, color: '#fff' }}>Notification Preferences</Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <Box>
-                        <Typography sx={{ fontWeight: 500, color: '#fff' }}>Email Alerts</Typography>
-                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>Receive alerts for new conversations</Typography>
-                      </Box>
-                      <Switch checked={notifications.email_alerts} onChange={(e) => setNotifications({ ...notifications, email_alerts: e.target.checked })} sx={switchSx} />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <Box>
-                        <Typography sx={{ fontWeight: 500, color: '#fff' }}>Weekly Reports</Typography>
-                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>Receive weekly performance reports</Typography>
-                      </Box>
-                      <Switch checked={notifications.weekly_reports} onChange={(e) => setNotifications({ ...notifications, weekly_reports: e.target.checked })} sx={switchSx} />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <Box>
-                        <Typography sx={{ fontWeight: 500, color: '#fff' }}>Daily Summaries</Typography>
-                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>Receive daily conversation summaries</Typography>
-                      </Box>
-                      <Switch checked={notifications.conversation_summaries} onChange={(e) => setNotifications({ ...notifications, conversation_summaries: e.target.checked })} sx={switchSx} />
-                    </Box>
-                  </Box>
-                  <Button variant="contained" sx={buttonSx} onClick={handleSave}>Save Preferences</Button>
-                </Box>
-              )}
-
-              {activeTab === 2 && (
                 <Box maxWidth={600}>
                   <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', mb: 3, color: '#fff' }}>Change Password</Typography>
                   <TextField 
