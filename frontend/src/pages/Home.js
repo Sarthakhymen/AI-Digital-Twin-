@@ -1103,56 +1103,72 @@ const UserGuideMindmap = () => {
       label: "1. Signup & Login",
       title: "User Registers & Authenticates",
       description: "First, the user creates an account and logs into the secure digital twin builder dashboard.",
-      icon: <Lock className="w-5 h-5 text-rose-400" />
+      icon: <Lock className="w-4 h-4 text-rose-400" />,
+      x: 90,
+      y: 200
     },
     {
       id: "plan",
       label: "2. Plan Selection",
       title: "Activate Standard Subscription",
       description: "Select the Standard Tier for ₹2/month to enable custom AI twins, vector indexes, and widget scripts.",
-      icon: <CreditCard className="w-5 h-5 text-indigo-400" />
+      icon: <CreditCard className="w-4 h-4 text-indigo-400" />,
+      x: 210,
+      y: 200
     },
     {
       id: "workspace",
       label: "3. Workspace Setup",
       title: "Register Business Workspace",
       description: "Enter your business name and website directory URL to initialize a multi-tenant workspace.",
-      icon: <Briefcase className="w-5 h-5 text-cyan-400" />
+      icon: <Briefcase className="w-4 h-4 text-cyan-400" />,
+      x: 330,
+      y: 200
     },
     {
       id: "details",
       label: "4. Train AI Twin",
       title: "Specify Character & Knowledge",
       description: "Customize your twin name, set its response tone, and upload documentation (PDF, TXT) or enter URLs.",
-      icon: <Settings className="w-5 h-5 text-emerald-400" />
+      icon: <Settings className="w-4 h-4 text-emerald-400" />,
+      x: 490,
+      y: 90
     },
     {
       id: "activate",
       label: "5. Activation Switch",
       title: "Synchronize & Activate Twin",
       description: "Once knowledge is synchronized, toggle your twin online to start processing live request threads.",
-      icon: <Power className="w-5 h-5 text-amber-400" />
+      icon: <Power className="w-4 h-4 text-amber-400" />,
+      x: 650,
+      y: 90
     },
     {
       id: "script",
       label: "6. Embed Script",
       title: "Copy Lightweight Widget Script",
       description: "Copy the single-line integration script and paste it into your local project website directory.",
-      icon: <Code2 className="w-5 h-5 text-purple-400" />
+      icon: <Code2 className="w-4 h-4 text-purple-400" />,
+      x: 490,
+      y: 310
     },
     {
       id: "live",
       label: "7. Go Live!",
       title: "Twin Live on Your Website",
       description: "The digital twin script activates immediately, displaying a sleek floating widget on your website.",
-      icon: <Globe className="w-5 h-5 text-pink-400" />
+      icon: <Globe className="w-4 h-4 text-pink-400" />,
+      x: 650,
+      y: 310
     },
     {
       id: "rag",
       label: "8. Live Database Query",
       title: "Input Query to Output Retrieval",
       description: "Type or click a question to trace the live vector matching search loop retrieve output from the DB.",
-      icon: <Database className="w-5 h-5 text-teal-400" />
+      icon: <Database className="w-4 h-4 text-teal-400" />,
+      x: 810,
+      y: 200
     }
   ];
 
@@ -1237,36 +1253,234 @@ const UserGuideMindmap = () => {
           </p>
         </div>
 
-        {/* Stepper Navigation bar */}
-        <div className="flex flex-wrap justify-center gap-2 mb-10 pb-4 border-b border-white/5 font-sans">
-          {steps.map((step, idx) => {
-            const isActive = currentStep === idx;
-            const isCompleted = idx < currentStep;
-            return (
-              <button
-                key={step.id}
-                onClick={() => setCurrentStep(idx)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all ${
-                  isActive
-                    ? 'bg-gradient-to-r from-rose-500/10 to-violet-600/10 border-rose-500/40 text-white shadow-[0_0_15px_rgba(244,63,94,0.15)]'
-                    : isCompleted
-                      ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400'
-                      : 'bg-white/[0.01] border-white/5 text-slate-400 hover:bg-white/[0.03] hover:text-white'
-                }`}
-              >
-                <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] ${
-                  isActive
-                    ? 'bg-rose-500 text-white'
-                    : isCompleted
-                      ? 'bg-emerald-500 text-slate-950'
-                      : 'bg-slate-800 text-slate-400'
-                }`}>
-                  {isCompleted ? <Check className="w-3 h-3" /> : idx + 1}
+        {/* Dynamic Styles for pulse-flow animations */}
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes pulse-flow {
+            0% {
+              stroke-dashoffset: 40;
+            }
+            100% {
+              stroke-dashoffset: 0;
+            }
+          }
+          .animate-pulse-flow {
+            animation: pulse-flow 2s linear infinite;
+          }
+        `}} />
+
+        {/* Mobile Stepper Timeline (Visible on Mobile) */}
+        <div className="md:hidden flex flex-col gap-4 mb-10 border-b border-white/5 pb-6 font-sans">
+          <div className="relative pl-8 space-y-4">
+            {/* Vertical Line */}
+            <div className="absolute left-3.5 top-2 bottom-2 w-0.5 bg-white/5">
+              <div 
+                className="bg-gradient-to-b from-rose-500 to-indigo-600 w-full transition-all duration-500" 
+                style={{ height: `${(currentStep / 7) * 100}%` }}
+              />
+            </div>
+
+            {steps.map((step, idx) => {
+              const isActive = currentStep === idx;
+              const isCompleted = idx < currentStep;
+              return (
+                <div 
+                  key={step.id} 
+                  onClick={() => setCurrentStep(idx)}
+                  className={`flex items-start gap-4 p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-white/[0.02] border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.08)]'
+                      : 'bg-transparent border-transparent'
+                  }`}
+                >
+                  {/* Node Circle */}
+                  <div className="absolute left-1.5 flex items-center justify-center mt-0.5">
+                    <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center transition-all ${
+                      isActive
+                        ? 'bg-rose-500 border-rose-455 shadow-[0_0_8px_rgba(244,63,94,0.5)]'
+                        : isCompleted
+                          ? 'bg-emerald-500 border-emerald-400'
+                          : 'bg-slate-900 border-white/10'
+                    }`}>
+                      {isCompleted && <Check className="w-2.5 h-2.5 text-slate-950 stroke-[3.5]" />}
+                    </div>
+                  </div>
+
+                  <div className="flex-grow">
+                    <div className="flex items-center justify-between">
+                      <span className={`text-[11px] font-black uppercase tracking-wide transition-colors ${isActive ? 'text-white' : 'text-slate-500'}`}>
+                        {step.label}
+                      </span>
+                      {isActive && (
+                        <span className="text-[7px] font-mono font-bold bg-rose-500/10 border border-rose-500/20 text-rose-400 px-1.5 py-0.2 rounded uppercase">
+                          ACTIVE
+                        </span>
+                      )}
+                    </div>
+                    {isActive && (
+                      <p className="mt-1.5 text-[10px] text-slate-400 leading-relaxed font-semibold">
+                        {step.description}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <span>{step.label.split(". ")[1]}</span>
-              </button>
-            );
-          })}
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Desktop Mindmap Graph Canvas (Visible on Desktop/Tablet) */}
+        <div className="hidden md:block w-full max-w-4xl mx-auto mb-14 p-6 bg-slate-900/[0.15] border border-white/5 rounded-3xl relative overflow-hidden backdrop-blur-md">
+          {/* Blueprint style telemetry label */}
+          <div className="absolute top-3 left-4 text-[7px] font-mono text-slate-600 uppercase tracking-widest">NEURAL NETWORK ENGINE v1.2</div>
+          <div className="absolute top-3 right-4 text-[7px] font-mono text-emerald-500/40 uppercase tracking-widest flex items-center gap-1.5">
+            <span className="w-1 h-1 rounded-full bg-emerald-500 animate-ping" />
+            Active Channels: {currentStep + 1} / 8
+          </div>
+
+          <svg viewBox="0 0 900 400" className="w-full h-auto overflow-visible select-none">
+            <defs>
+              {/* Active Glowing Flow Gradient */}
+              <linearGradient id="active-glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#ec4899" />
+                <stop offset="50%" stopColor="#a855f7" />
+                <stop offset="100%" stopColor="#6366f1" />
+              </linearGradient>
+              {/* Completed Channel Flow Gradient */}
+              <linearGradient id="completed-glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#10b981" />
+                <stop offset="100%" stopColor="#059669" />
+              </linearGradient>
+              
+              {/* Faint Dot Grid Pattern */}
+              <pattern id="dot-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <circle cx="1.5" cy="1.5" r="0.75" fill="rgba(255, 255, 255, 0.05)" />
+              </pattern>
+            </defs>
+
+            {/* Faint Dot Grid Background */}
+            <rect width="100%" height="100%" fill="url(#dot-grid)" rx="16" />
+
+            {/* Bezier and Linear connection paths */}
+            {(() => {
+              const getLinkStatus = (fromIdx, toIdx) => {
+                if (currentStep >= toIdx) return "completed";
+                if (currentStep >= fromIdx && currentStep < toIdx) return "active";
+                return "pending";
+              };
+              
+              const guideLinks = [
+                { from: 0, to: 1, d: "M 90 200 L 210 200" },
+                { from: 1, to: 2, d: "M 210 200 L 330 200" },
+                { from: 2, to: 3, d: "M 330 200 C 380 200, 440 90, 490 90" },
+                { from: 2, to: 5, d: "M 330 200 C 380 200, 440 310, 490 310" },
+                { from: 3, to: 4, d: "M 490 90 L 650 90" },
+                { from: 5, to: 6, d: "M 490 310 L 650 310" },
+                { from: 4, to: 7, d: "M 650 90 C 700 90, 760 200, 810 200" },
+                { from: 6, to: 7, d: "M 650 310 C 700 310, 760 200, 810 200" }
+              ];
+
+              return guideLinks.map((link, lIdx) => {
+                const status = getLinkStatus(link.from, link.to);
+                const isCompleted = status === "completed";
+                const isActive = status === "active";
+                
+                return (
+                  <g key={lIdx}>
+                    {/* Background backing line */}
+                    <path
+                      d={link.d}
+                      fill="none"
+                      stroke={isCompleted ? "rgba(16, 185, 129, 0.12)" : isActive ? "rgba(244, 63, 94, 0.15)" : "rgba(255, 255, 255, 0.04)"}
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                    {/* Animated glowing flow path */}
+                    {(isCompleted || isActive) && (
+                      <path
+                        d={link.d}
+                        fill="none"
+                        stroke={isCompleted ? "url(#completed-glow-grad)" : "url(#active-glow-grad)"}
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeDasharray="10 25"
+                        className="animate-pulse-flow"
+                        style={{
+                          animationDuration: isCompleted ? '4.5s' : '2.2s'
+                        }}
+                      />
+                    )}
+                  </g>
+                );
+              });
+            })()}
+
+            {/* Node circle icons & text labels */}
+            {steps.map((step, idx) => {
+              const isActive = currentStep === idx;
+              const isCompleted = idx < currentStep;
+              
+              const themeGlowClass = 
+                idx === 0 || idx === 6 ? 'group-hover:shadow-[0_0_15px_rgba(244,63,94,0.3)]' : // pink/rose
+                idx === 1 || idx === 5 ? 'group-hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]' : // indigo/purple
+                idx === 2 ? 'group-hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]' : // cyan
+                idx === 3 ? 'group-hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]' : // emerald
+                idx === 4 ? 'group-hover:shadow-[0_0_15px_rgba(245,158,11,0.3)]' : // amber
+                'group-hover:shadow-[0_0_15px_rgba(20,184,166,0.3)]'; // teal
+                
+              return (
+                <foreignObject 
+                  key={step.id} 
+                  x={step.x - 70} 
+                  y={step.y - 55} 
+                  width="140" 
+                  height="110"
+                  className="overflow-visible"
+                >
+                  <div 
+                    onClick={() => setCurrentStep(idx)}
+                    className="flex flex-col items-center justify-center w-full h-full group cursor-pointer"
+                  >
+                    <div className="relative flex items-center justify-center">
+                      {/* Pulsing ring behind the active node */}
+                      {isActive && (
+                        <>
+                          <div className="absolute -inset-2.5 rounded-full bg-rose-500/20 blur-md animate-ping" />
+                          <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-rose-500 to-indigo-500 animate-spin opacity-85" style={{ animationDuration: '4s' }} />
+                        </>
+                      )}
+
+                      {/* Icon Container Circle */}
+                      <div className={`w-11 h-11 rounded-full flex items-center justify-center border z-10 transition-all duration-300 ${
+                        isActive
+                          ? 'bg-slate-950 border-transparent text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.45)] scale-110'
+                          : isCompleted
+                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                            : `bg-slate-900 border-white/5 text-slate-400 group-hover:border-white/20 group-hover:text-white group-hover:bg-slate-800 ${themeGlowClass}`
+                      }`}>
+                        {step.icon}
+                      </div>
+
+                      {/* Check badge when completed */}
+                      {isCompleted && (
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center border border-slate-950 z-20 shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+                          <Check className="w-2.5 h-2.5 stroke-[3.5]" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Node Text Title */}
+                    <span className={`mt-2.5 text-[9px] font-black text-center tracking-wider transition-colors font-sans uppercase ${
+                      isActive 
+                        ? 'text-white' 
+                        : 'text-slate-500 group-hover:text-slate-350'
+                    }`}>
+                      {step.label.split(". ")[1]}
+                    </span>
+                  </div>
+                </foreignObject>
+              );
+            })}
+          </svg>
         </div>
 
         {/* Main Grid Wrapper */}
