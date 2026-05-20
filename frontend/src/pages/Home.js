@@ -2400,100 +2400,91 @@ const CTA = () => {
 // Premium startup Footer
 const Footer = () => {
   const navigate = useNavigate();
-  const { user, loading, logout } = useAuth();
-
-  const accountLinks = loading
-    ? [{ name: 'Loading...', action: () => { } }]
-    : user
-      ? [
-        { name: 'Dashboard', action: () => navigate('/dashboard') },
-        { name: 'Settings', action: () => navigate('/settings') },
-        { name: 'Logout', action: () => { logout(); navigate('/'); } }
-      ]
-      : [
-        { name: 'Sign In', action: () => navigate('/login') },
-        { name: 'Get Started', action: () => navigate('/register') }
-      ];
-
-  const links = {
-    Platform: [
-      { name: 'Features Blueprint', action: () => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }) },
-      { name: 'Interactive Sandbox', action: () => navigate('/') },
-      { name: 'System Guide', action: () => navigate('/guide') }
-    ],
-    Organization: [
-      { name: 'Terms of Service', action: () => navigate('/legal') },
-      { name: 'Pricing Tiers', action: () => navigate('/pricing') },
-      { name: 'Engineering support', action: () => window.location.href = "mailto:nexora.aidigital.twin@gmail.com" }
-    ],
-    Account: accountLinks
-  };
 
   return (
-    <footer className="pt-24 pb-12 bg-slate-950 border-t border-white/5 relative z-10 overflow-hidden">
+    <footer className="pt-16 pb-12 bg-slate-950 border-t border-white/5 relative z-10 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand details */}
-          <div className="col-span-2 space-y-4">
+          <div className="space-y-4">
             <div
               onClick={() => navigate('/')}
-              className="flex items-center gap-3 cursor-pointer group"
+              className="flex items-center gap-3 cursor-pointer group w-fit"
             >
               <div className="flex items-center justify-center p-2 rounded-xl bg-white/5 group-hover:bg-indigo-500/10 transition-colors">
-                <LogoIcon className="w-7 h-7" />
+                <LogoIcon className="w-6 h-6" />
               </div>
-              <span className="text-xl font-bold text-white tracking-tight">AI Digital Twin</span>
+              <span className="text-lg font-bold text-white tracking-tight">AI Digital Twin</span>
             </div>
             <p className="text-xs text-slate-500 max-w-xs font-semibold leading-relaxed">
-              Deploy your cognitive replica. Secure multi-tenant neural networks supporting low-latency chat widgets and cloned speech dialog systems.
+              Automate customer queries over chat widgets and WhatsApp 24/7 on autopilot.
             </p>
           </div>
 
-          {/* Links list mapping */}
-          {Object.entries(links).map(([category, items]) => (
-            <div key={category}>
-              <h4 className="text-xs font-bold text-white mb-6 uppercase tracking-widest">{category}</h4>
-              <ul className="space-y-4">
-                {items.map((item) => (
-                  <li key={item.name}>
-                    <button
-                      onClick={item.action}
-                      className="text-xs text-slate-500 hover:text-white transition-colors text-left font-semibold uppercase tracking-wider"
-                    >
-                      {item.name}
-                    </button>
-                  </li>
-                ))}
+          {/* Links Column */}
+          <div className="grid grid-cols-2 gap-8 md:col-span-2">
+            <div>
+              <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-widest">Product</h4>
+              <ul className="space-y-3">
+                <li>
+                  <button
+                    onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
+                  >
+                    Features
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/pricing')}
+                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
+                  >
+                    Pricing
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/guide')}
+                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
+                  >
+                    System Guide
+                  </button>
+                </li>
               </ul>
             </div>
-          ))}
 
-          {/* Contact details */}
-          <div className="col-span-2 md:col-span-1">
-            <h4 className="text-xs font-bold text-white mb-6 uppercase tracking-widest">Network</h4>
-            <ul className="space-y-4 text-xs text-slate-500 font-semibold tracking-wider uppercase">
-              <li>
-                <a href="mailto:nexora.aidigital.twin@gmail.com" className="hover:text-white transition-colors break-all">
-                  nexora.aidigital.twin@gmail.com
-                </a>
-              </li>
-              <li>
-                <a href="tel:+919625410112" className="hover:text-white transition-colors">
-                  +91 9625410112
-                </a>
-              </li>
-            </ul>
+            <div>
+              <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-widest">Support</h4>
+              <ul className="space-y-3">
+                <li>
+                  <a
+                    href="mailto:nexora.aidigital.twin@gmail.com"
+                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left break-all"
+                  >
+                    nexora.aidigital.twin@gmail.com
+                  </a>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/legal')}
+                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
+                  >
+                    Terms & Privacy
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
         {/* System operational status banner */}
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">
-            &copy; {new Date().getFullYear()} AI Digital Twin Core. All backend gateways operational.
+            &copy; {new Date().getFullYear()} AI Digital Twin.
           </p>
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-            <span className="text-[9px] font-mono text-emerald-500 uppercase tracking-widest font-extrabold">All Core Services Online</span>
+            <span className="text-[9px] font-mono text-emerald-500 uppercase tracking-widest font-extrabold">All Systems Operational</span>
           </div>
         </div>
       </div>
