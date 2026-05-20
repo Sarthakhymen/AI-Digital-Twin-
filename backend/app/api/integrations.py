@@ -75,6 +75,12 @@ async def get_widget_js(twin_id: int, db: Session = Depends(get_db)):
     return Response(content=f"""
 (function() {{
     const twinId = {twin_id};
+    if (window["AIDigitalTwinWidgetLoaded_" + twinId]) {{
+        console.warn("AI Digital Twin widget already loaded on this page.");
+        return;
+    }}
+    window["AIDigitalTwinWidgetLoaded_" + twinId] = true;
+
     // Auto-detect API URL based on script location
     const scriptTag = document.currentScript;
     const scriptUrl = scriptTag ? scriptTag.src : '';
@@ -607,6 +613,12 @@ async def get_voice_widget_js(twin_id: int, db: Session = Depends(get_db)):
     return Response(content=f"""
 (function() {{
     const twinId = {twin_id};
+    if (window["AIVoiceWidgetLoaded_" + twinId]) {{
+        console.warn("AI Voice widget already loaded on this page.");
+        return;
+    }}
+    window["AIVoiceWidgetLoaded_" + twinId] = true;
+
     const twinName = "{twin_name}";
     const scriptTag = document.currentScript;
     const scriptUrl = scriptTag ? scriptTag.src : '';

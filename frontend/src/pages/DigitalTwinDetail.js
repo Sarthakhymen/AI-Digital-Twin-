@@ -182,6 +182,28 @@ const DigitalTwinDetail = () => {
     return (bytes / 1048576).toFixed(1) + ' MB';
   };
 
+  const exportLeadsToCSV = () => {
+    if (!leads || leads.length === 0) return;
+    const headers = ["Name", "Email", "Phone", "Captured At"];
+    const rows = leads.map(lead => [
+      lead.name || "",
+      lead.email || "",
+      lead.phone || "",
+      lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN') : ""
+    ]);
+    
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + [headers.join(","), ...rows.map(e => e.map(val => `"${val.replace(/"/g, '""')}"`).join(","))].join("\n");
+      
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${twin?.name || 'twin'}_leads.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'active': return 'success';
@@ -496,64 +518,6 @@ const DigitalTwinDetail = () => {
                   {scrapeStatus === 'scraping' && (
                     <LinearProgress sx={{ mb: 2, bgcolor: 'rgba(245,158,11,0.1)', '& .MuiLinearProgress-bar': { bgcolor: '#f59e0b' } }} />
                   )}
-
-                  <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.06)' }} />
-
-                  {/* Lead Captures Section */}
-                  <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 700 }}>
-                    <Email sx={{ fontSize: 18, color: '#f59e0b' }} /> Lead Captures
-                    <Chip label={`${leads.length} leads`} size="small" sx={{ bgcolor: 'rgba(245,158,11,0.15)', color: '#f59e0b', fontWeight: 700, ml: 1 }} />
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Emails collected from your embedded chat widget. Add <code style={{ color: '#f59e0b' }}>data-lead-gen="true"</code> to your widget script to enable collection.
-                  </Typography>
-
-                  {/* Updated snippet with lead gen */}
-                  <Paper variant="outlined" sx={{ p: 1.5, bgcolor: '#1e1e1e', borderRadius: 2, border: 'none', mb: 2 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                      <Typography variant="caption" sx={{ color: '#6b7280', fontFamily: 'monospace' }}>Widget with Lead Gen enabled:</Typography>
-                      <IconButton size="small" sx={{ color: '#aaa' }} onClick={() => {
-                        const s = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-lead-gen="true"></script>`;
-                        navigator.clipboard.writeText(s);
-                        setSnackbar({ open: true, message: 'Lead gen snippet copied!', severity: 'success' });
-                      }}><ContentCopy fontSize="small" /></IconButton>
-                    </Box>
-                    <code style={{ fontSize: '11px', color: '#d4d4d4', wordBreak: 'break-all', fontFamily: '"Fira Code", monospace' }}>
-                      {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-lead-gen="true"></script>`}
-                    </code>
-                  </Paper>
-
-                  {leads.length === 0 ? (
-                    <Box sx={{ textAlign: 'center', py: 3, color: 'rgba(255,255,255,0.3)' }}>
-                      <Email sx={{ fontSize: 40, mb: 1, opacity: 0.3 }} />
-                      <Typography variant="body2">No leads captured yet. Embed your widget with <code>data-lead-gen="true"</code> to start collecting.</Typography>
-                    </Box>
-                  ) : (
-                    <TableContainer component={Paper} sx={{ bgcolor: 'rgba(255,255,255,0.03)', borderRadius: 2, border: '1px solid rgba(255,255,255,0.06)' }}>
-                      <Table size="small">
-                        <TableHead>
-                          <TableRow>
-                            <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700 }}>Name</TableCell>
-                            <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700 }}>Email</TableCell>
-                            <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700 }}>Phone</TableCell>
-                            <TableCell sx={{ color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700 }}>Captured</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {leads.map((lead) => (
-                            <TableRow key={lead.id} sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' } }}>
-                              <TableCell sx={{ color: '#fff', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{lead.name || '—'}</TableCell>
-                              <TableCell sx={{ color: '#f59e0b', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{lead.email}</TableCell>
-                              <TableCell sx={{ color: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{lead.phone || '—'}</TableCell>
-                              <TableCell sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                                {lead.created_at ? new Date(lead.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  )}
                 </Box>
               </FeatureLock>
             </Box>
@@ -625,6 +589,125 @@ const DigitalTwinDetail = () => {
 
           </Grid>
         </Grid>
+        </CardContent>
+      </Card>
+
+      {/* ========== CAPTURED LEADS SECTION ========== */}
+      <Card sx={{
+        background: '#0a0a0f',
+        border: '1px solid rgba(255,255,255,0.06)',
+        boxShadow: '0 4px 24px -4px rgba(0, 0, 0, 0.3)',
+        borderRadius: '16px',
+        color: '#fff',
+        mt: 4,
+      }}>
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+            <Box>
+              <Typography variant="h5" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 700, mb: 0.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Email sx={{ color: '#f59e0b' }} /> Captured Leads
+                <Chip
+                  label={`${leads.length} leads`}
+                  size="small"
+                  sx={{
+                    bgcolor: 'rgba(245, 158, 11, 0.15)',
+                    color: '#f59e0b',
+                    border: '1px solid rgba(245, 158, 11, 0.3)',
+                    fontFamily: '"Outfit", sans-serif',
+                    fontWeight: 700,
+                  }}
+                />
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                Emails and phone numbers collected from your embedded chat widget. Add <code style={{ color: '#f59e0b' }}>data-lead-gen="true"</code> to your widget script to enable collection.
+              </Typography>
+            </Box>
+            {leads.length > 0 && (
+              <Button
+                variant="outlined"
+                onClick={exportLeadsToCSV}
+                sx={{
+                  color: '#f59e0b',
+                  borderColor: 'rgba(245, 158, 11, 0.4)',
+                  borderRadius: '10px',
+                  textTransform: 'none',
+                  fontFamily: '"Outfit", sans-serif',
+                  fontWeight: 600,
+                  '&:hover': {
+                    bgcolor: 'rgba(245, 158, 11, 0.05)',
+                    borderColor: '#f59e0b'
+                  }
+                }}
+              >
+                📥 Export CSV
+              </Button>
+            )}
+          </Box>
+
+          <FeatureLock feature="lead_generation" title="Lead Generation">
+            <Box sx={{ mt: 1 }}>
+              {/* Copy Script Snippet Helper */}
+              <Paper variant="outlined" sx={{ p: 2.5, bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 3, mb: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
+                  <Typography variant="subtitle2" sx={{ color: '#fff', fontWeight: 600 }}>Embed Code with Lead Capture Enabled:</Typography>
+                  <Button
+                    size="small"
+                    startIcon={<ContentCopy fontSize="small" />}
+                    onClick={() => {
+                      const s = `<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-lead-gen="true"></script>`;
+                      navigator.clipboard.writeText(s);
+                      setSnackbar({ open: true, message: 'Lead gen snippet copied!', severity: 'success' });
+                    }}
+                    sx={{
+                      color: '#f59e0b',
+                      textTransform: 'none',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      '&:hover': { bgcolor: 'rgba(245, 158, 11, 0.1)' }
+                    }}
+                  >
+                    Copy Script
+                  </Button>
+                </Box>
+                <code style={{ fontSize: '12px', color: '#cbd5e1', wordBreak: 'break-all', fontFamily: '"Fira Code", monospace' }}>
+                  {`<script src="${process.env.REACT_APP_API_URL || 'https://ai-digital-twin-2le9.onrender.com/api/v1'}/integrations/${id}/widget.js" data-position="${widgetPosition}" data-lead-gen="true"></script>`}
+                </code>
+              </Paper>
+
+              {leads.length === 0 ? (
+                <Box sx={{ textAlign: 'center', py: 6, color: 'rgba(255,255,255,0.3)', bgcolor: 'rgba(255,255,255,0.01)', borderRadius: 3, border: '1px dashed rgba(255,255,255,0.1)' }}>
+                  <Email sx={{ fontSize: 48, mb: 1.5, opacity: 0.3, color: '#f59e0b' }} />
+                  <Typography variant="subtitle1" sx={{ color: '#fff', fontWeight: 600 }}>No leads captured yet</Typography>
+                  <Typography variant="body2" sx={{ mt: 0.5, color: 'rgba(255,255,255,0.5)' }}>Embed the script above on your site to start collecting names, emails, and phone numbers.</Typography>
+                </Box>
+              ) : (
+                <TableContainer component={Paper} sx={{ bgcolor: 'transparent', boxShadow: 'none', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 3 }}>
+                  <Table>
+                    <TableHead sx={{ bgcolor: 'rgba(255,255,255,0.02)' }}>
+                      <TableRow>
+                        <TableCell sx={{ color: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700, fontSize: '0.875rem' }}>Name</TableCell>
+                        <TableCell sx={{ color: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700, fontSize: '0.875rem' }}>Email</TableCell>
+                        <TableCell sx={{ color: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700, fontSize: '0.875rem' }}>Phone</TableCell>
+                        <TableCell sx={{ color: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: 700, fontSize: '0.875rem' }}>Captured Date</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {leads.map((lead) => (
+                        <TableRow key={lead.id} sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' } }}>
+                          <TableCell sx={{ color: '#fff', borderBottom: '1px solid rgba(255,255,255,0.04)', fontWeight: 500 }}>{lead.name || '—'}</TableCell>
+                          <TableCell sx={{ color: '#f59e0b', borderBottom: '1px solid rgba(255,255,255,0.04)', fontWeight: 600 }}>{lead.email}</TableCell>
+                          <TableCell sx={{ color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{lead.phone || '—'}</TableCell>
+                          <TableCell sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                            {lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </Box>
+          </FeatureLock>
         </CardContent>
       </Card>
 
