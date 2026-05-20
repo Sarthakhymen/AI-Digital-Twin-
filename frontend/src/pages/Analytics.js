@@ -34,7 +34,7 @@ const Analytics = () => {
     enabled: !!userFeatures?.advanced_analytics && user?.subscription_status !== 'expired'
   });
 
-  const trends = conversationData?.trends || [];
+  const trends = conversationData?.conversation_trends || [];
   const channels = channelData?.channels || [];
   const twins = performanceData?.digital_twins || [];
 
@@ -179,8 +179,8 @@ const Analytics = () => {
                     </Box>
 
                     <Box sx={{ mb: 3, p: 2, background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mb: 1 }}>Avg Duration</Typography>
-                      <Typography variant="h4" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 600, color: '#F59E0B' }}>{conversationData?.average_duration || 0}s</Typography>
+                      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mb: 1 }}>Total Messages</Typography>
+                      <Typography variant="h4" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 600, color: '#F59E0B' }}>{conversationData?.total_messages || 0}</Typography>
                     </Box>
 
                     <Box sx={{ p: 2, background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -211,7 +211,7 @@ const Analytics = () => {
                       innerRadius={80}
                       fill="#8884d8"
                       dataKey="conversations"
-                      nameKey="channel"
+                      nameKey="name"
                       paddingAngle={5}
                     >
                       {channels.map((entry, index) => (

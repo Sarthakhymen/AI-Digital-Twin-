@@ -35,26 +35,52 @@ def get_conversation_analytics(
     
     # Calculate metrics
     total_conversations = len(conversations)
-    avg_duration = sum([c.duration or 0 for c in conversations]) / total_conversations if total_conversations > 0 else 0
+    # Daily conversation data
+    daily_data = {}
+    for i in range(30):
+        date = (datetime.utcnow() - timedelta(days=i)).strftime("%Y-%m-%d")
+        daily_data[date] = {"conversations": 0, "messages": 0, "satisfaction": 0, "count": 0}
     
-    # Group by date for trends
-    daily_stats = {}
+    total_messages = 0
     for conv in conversations:
-        date_key = conv.created_at.strftime("%Y-%m-%d")
-        if date_key not in daily_stats:
-            daily_stats[date_key] = {"conversations": 0, "messages": 0}
-        daily_stats[date_key]["conversations"] += 1
-        daily_stats[date_key]["messages"] += len(conv.messages) if conv.messages else 0
+        date = conv.created_at.strftime("%Y-%m-%d")
+        msg_count = len(conv.messages) if conv.messages else 0
+        total_messages += msg_count
+        if date in daily_data:
+            daily_data[date]["conversations"] += 1
+            daily_data[date]["messages"] += msg_count
+            if conv.satisfaction_score:
+                daily_data[date]["satisfaction"] += conv.satisfaction_score
+                daily_data[date]["count"] += 1
     
-    trends = [
-        {"date": date, **stats}
-        for date, stats in sorted(daily_stats.items())
+    # Format for chart
+    conversation_data = [
+        {
+            "date": date,
+            "conversations": data["conversations"],
+            "messages": data["messages"],
+            "satisfaction": round(data["satisfaction"] / data["count"], 1) if data["count"] > 0 else 0
+        }
+        for date, data in sorted(daily_data.items())
     ]
     
+    # Channel breakdown
+    channel_data = {}
+    for conv in conversations:
+        channel = conv.channel or "unknown"
+        if channel not in channel_data:
+            channel_data[channel] = {"conversations": 0, "messages": 0}
+        channel_data[channel]["conversations"] += 1
+        channel_data[channel]["messages"] += len(conv.messages) if conv.messages else 0
+    
     return {
-        "total_conversations": total_conversations,
-        "average_duration": round(avg_duration, 2),
-        "trends": trends
+        "conversation_trends": conversation_data,
+        "total_conversations": len(conversations),
+        "total_messages": total_messages,
+        "channels": [
+            {"name": name, "conversations": data["conversations"], "messages": data["messages"]}
+            for name, data in channel_data.items()
+        ]
     }
 
 @router.get("/performance")

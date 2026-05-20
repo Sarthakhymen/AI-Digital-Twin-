@@ -44,6 +44,21 @@ def get_dashboard_overview(
         if scores:
             avg_satisfaction = sum(scores) / len(scores)
     
+    # Calculate total messages from ALL conversations (not just recent)
+    all_conversations = db.query(Conversation).join(DigitalTwin).filter(
+        DigitalTwin.business_id.in_(business_ids)
+    ).all()
+    
+    total_messages = 0
+    for conv in all_conversations:
+        if conv.messages:
+            # Count user messages only (each user msg = 1 message counted)
+            total_messages += len([m for m in conv.messages if m.get("role") == "user" or m.get("is_user")])
+    
+    # Fallback: if DB conversations undercount, use the user's message_count tracker
+    tracked_messages = current_user.message_count or 0
+    total_messages = max(total_messages, tracked_messages)
+    
     # Recent activity
     recent_activity = []
     for conv in sorted(recent_conversations, key=lambda x: x.created_at, reverse=True)[:5]:
@@ -60,6 +75,7 @@ def get_dashboard_overview(
             "total_digital_twins": len(digital_twins),
             "active_twins": len([t for t in digital_twins if t.status == "active"]),
             "weekly_conversations": total_conversations,
+            "total_messages": total_messages,
             "average_satisfaction": round(avg_satisfaction * 20, 1) if avg_satisfaction else 0  # Convert to percentage
         },
         "recent_activity": recent_activity,
