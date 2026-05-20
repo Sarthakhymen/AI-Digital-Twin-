@@ -474,7 +474,7 @@ const Hero = () => {
             variants={fadeInUp}
             className="text-base sm:text-lg text-slate-300 max-w-xl font-medium leading-relaxed"
           >
-            बिना <span className="text-indigo-400 font-semibold">1,000s lines of code</span> लिखे, पाएँ अपना खुद का <span className="text-purple-400 font-semibold">AI Digital Twin</span> जो हूबहू आपकी तरह <span className="text-pink-400 font-semibold">Hindi & English</span> दोनों में आपके ग्राहकों की हर Query को हल करेगा—ठीक उसी अपनेपन और समझदारी के साथ, जैसे आप खुद करते हैं।
+            Without writing <span className="text-indigo-400 font-semibold">1,000s of lines of code</span>, deploy your own <span className="text-purple-400 font-semibold">AI Digital Twin</span> that answers customer queries in both <span className="text-pink-400 font-semibold">English & Hindi</span>—handling every conversation with the exact same care, tone, and intelligence as you would, 24/7.
           </motion.p>
 
           {/* CTAs */}
