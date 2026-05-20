@@ -43,6 +43,13 @@ async def public_chat(
     )
     
     if "error" in result:
+        # If twin is not active, it was likely locked due to limit
+        if result["error"] == "Digital twin not active":
+            return {
+                "response": "⚠️ This AI assistant is currently unavailable. The free trial has ended. Please contact the business owner to upgrade.",
+                "success": False,
+                "limit_reached": True
+            }
         raise HTTPException(status_code=404, detail=result["error"])
         
     return result
@@ -428,6 +435,41 @@ async def get_widget_js(twin_id: int, token: Optional[str] = None, db: Session =
                 display: none !important;
             }}
         }}
+        #dt-upgrade-banner {{
+            display: none;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            color: white;
+            text-align: center;
+            font-size: 13.5px;
+            font-weight: 600;
+            line-height: 1.5;
+        }}
+        #dt-upgrade-banner a {{
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 20px;
+            background: white;
+            color: #ef4444;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+            transition: all 0.2s;
+        }}
+        #dt-upgrade-banner a:hover {{
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }}
+        .dt-locked #dt-chat-input-container {{
+            display: none !important;
+        }}
+        .dt-locked #dt-quick-replies {{
+            display: none !important;
+        }}
+        .dt-locked #dt-lead-form {{
+            display: none !important;
+        }}
     `;
     document.head.appendChild(style);
 
@@ -452,6 +494,11 @@ async def get_widget_js(twin_id: int, token: Optional[str] = None, db: Session =
                 <div id="dt-typing">
                     <div class="dt-typing-dots"><span></span><span></span><span></span></div>
                 </div>
+            </div>
+            <div id="dt-upgrade-banner">
+                🔒 Free trial ended — 50 message limit reached.<br>
+                Upgrade to keep chatting with unlimited messages!
+                <br><a href="https://ai-digital-twin-2le9.onrender.com/pricing" target="_blank">⚡ Upgrade Now</a>
             </div>
             <div id="dt-quick-replies">
                 <button class="dt-quick-btn" data-msg="Tell me about your business">🏢 About Us</button>
@@ -592,7 +639,28 @@ async def get_widget_js(twin_id: int, token: Optional[str] = None, db: Session =
         leadFormEl.scrollIntoView({{ behavior: 'smooth' }});
     }};
     
+    let isLocked = false;
+
+    const lockWidget = () => {{
+        isLocked = true;
+        const banner = document.getElementById('dt-upgrade-banner');
+        if (banner) banner.style.display = 'block';
+        const chatWindow = document.getElementById('dt-chat-window');
+        if (chatWindow) chatWindow.classList.add('dt-locked');
+        // Hide input area completely
+        input.disabled = true;
+        sendBtn.disabled = true;
+        // Store locked state so it persists
+        sessionStorage.setItem(`dt_locked_${{twinId}}`, '1');
+    }};
+
+    // Check if already locked from a previous session
+    if (sessionStorage.getItem(`dt_locked_${{twinId}}`) === '1') {{
+        setTimeout(lockWidget, 100);
+    }}
+
     const sendMessage = async (text) => {{
+        if (isLocked) return;
         const msg = text || input.value.trim();
         if (!msg) return;
 
@@ -614,6 +682,13 @@ async def get_widget_js(twin_id: int, token: Optional[str] = None, db: Session =
             const data = await response.json();
             typingEl.style.display = 'none';
             
+            if (data.limit_reached) {{
+                // Trial/limit exhausted — lock the widget permanently
+                addMessage(data.response, 'twin');
+                lockWidget();
+                return;
+            }}
+
             if (response.ok && data.response) {{
                 addMessage(data.response, 'twin');
                 messageCount++;
@@ -628,9 +703,11 @@ async def get_widget_js(twin_id: int, token: Optional[str] = None, db: Session =
             typingEl.style.display = 'none';
             addMessage('Connection error. Please check your internet.', 'twin');
         }} finally {{
-            input.disabled = false;
-            sendBtn.disabled = !input.value.trim();
-            input.focus();
+            if (!isLocked) {{
+                input.disabled = false;
+                sendBtn.disabled = !input.value.trim();
+                input.focus();
+            }}
         }}
     }};
 

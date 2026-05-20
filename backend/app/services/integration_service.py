@@ -34,8 +34,9 @@ class IntegrationService:
                     
             if owner.subscription_status == "expired":
                 return {
-                    "response": "This AI assistant is currently unavailable due to an expired subscription. Please contact the business owner.",
-                    "success": False
+                    "response": "⚠️ This AI assistant is currently unavailable due to an expired subscription. Please contact the business owner.",
+                    "success": False,
+                    "limit_reached": True
                 }
 
             from app.api.auth import get_user_features
@@ -57,11 +58,19 @@ class IntegrationService:
                 if twin.status == "active":
                     twin.status = "inactive"
                     db.commit()
-                return {"response": "upgrade plzz", "success": False}
+                return {
+                    "response": "⚠️ Free trial limit reached! You've used all 50 free messages. Upgrade to Standard plan to continue chatting with unlimited messages.",
+                    "success": False,
+                    "limit_reached": True
+                }
                 
             # Regular Limit check
             if max_messages != -1 and current_count >= max_messages:
-                return {"response": "This AI assistant has reached its message limit. Please contact the business owner.", "success": False}
+                return {
+                    "response": "This AI assistant has reached its message limit. Please contact the business owner.",
+                    "success": False,
+                    "limit_reached": True
+                }
             
             owner.message_count = current_count + 1
             db.commit()
