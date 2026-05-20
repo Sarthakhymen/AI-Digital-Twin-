@@ -170,8 +170,8 @@ class RazorpayVerifyRequest(BaseModel):
 
 # Razorpay pricing mapping in Paisa (₹1 = 100 Paisa)
 RAZORPAY_PRICES = {
-    "standard": 249900,      # ₹2,499 (Approx $29)
-    "business_pro": 659900   # ₹6,599 (Approx $79)
+    "standard": 500,         # ₹5 (Testing)
+    "business_pro": 1000     # ₹10 (Testing)
 }
 
 @router.post("/razorpay/create-order")
@@ -509,6 +509,10 @@ PLAN_LIMITS = {
         "max_twins": 10
     }
 }
+
+# Plan aliases
+PLAN_LIMITS["starter"] = PLAN_LIMITS["free"]
+PLAN_LIMITS["pro"] = PLAN_LIMITS["business_pro"]
 
 @router.get("/plan-limits")
 async def get_plan_limits(

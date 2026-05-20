@@ -110,6 +110,34 @@ def toggle_user_feature(user_id: int, request: FeatureToggleRequest, db: Any = D
     db.commit()
     return {"message": f"Feature '{request.feature_name}' updated successfully.", "custom_features": user.custom_features}
 
+class SubscriptionUpdateRequest(BaseModel):
+    subscription_plan: str
+    subscription_status: str
+    subscription_expires_at: datetime | None = None
+    message_count: int | None = None
+
+@router.post("/users/{user_id}/subscription")
+def update_user_subscription(user_id: int, request: SubscriptionUpdateRequest, db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
+    """Admin: Directly update subscription plan, status, message count, and expiration for a user"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    user.subscription_plan = request.subscription_plan
+    user.subscription_status = request.subscription_status
+    user.subscription_expires_at = request.subscription_expires_at
+    if request.message_count is not None:
+        user.message_count = request.message_count
+        
+    db.commit()
+    return {
+        "message": f"Subscription for user {user.email} updated successfully.",
+        "subscription_plan": user.subscription_plan,
+        "subscription_status": user.subscription_status,
+        "subscription_expires_at": user.subscription_expires_at,
+        "message_count": user.message_count
+    }
+
 @router.get("/payments")
 def list_payments(db: Any = Depends(get_db), admin_user: Any = Depends(check_admin)):
     """List all manual payments"""

@@ -206,14 +206,14 @@ const Dashboard = () => {
                 fontWeight: 800, 
                 fontSize: { xs: '1.75rem', md: '2.25rem' }, 
                 letterSpacing: '-0.03em',
-                color: 'text.primary',
+                color: '#ffffff',
                 fontFamily: '"Outfit", sans-serif'
               }}>
-                {getGreeting()}{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}
+                {getGreeting()}{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : (user?.email ? `, ${user.email.split('@')[0]}` : '')}
               </Typography>
               {planBadge && <Chip {...planBadge} size="small" />}
             </Box>
-            <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: 400, fontSize: '1rem' }}>
+            <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 400, fontSize: '1rem' }}>
               Here's an overview of your digital twins' performance today.
             </Typography>
           </Box>

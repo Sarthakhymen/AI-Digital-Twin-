@@ -9,10 +9,10 @@ class IntegrationService:
     async def process_public_message(self, db: Session, twin_id: int, message: str, customer_name: str = "Visitor", session_id: str = None, channel: str = "web_widget"):
         """Process a message from a public integration (web widget, whatsapp, etc.)"""
         
-        # 1. Verify twin exists and is active
-        twin = db.query(DigitalTwin).filter(DigitalTwin.id == twin_id, DigitalTwin.status == "active").first()
+        # 1. Verify twin exists
+        twin = db.query(DigitalTwin).filter(DigitalTwin.id == twin_id).first()
         if not twin:
-            return {"error": "Digital twin not found or not active"}
+            return {"error": "Digital twin not found"}
 
         # 1.5 Check Plan Limits and increment message count
         owner = twin.business.owner if twin.business else None
@@ -21,7 +21,7 @@ class IntegrationService:
             from datetime import timedelta
             
             # Trial / Subscription Expiry Check
-            if owner.subscription_plan == "free" and owner.trial_started_at:
+            if owner.subscription_plan in ("free", "starter") and owner.trial_started_at:
                 now = datetime.now(pytz.utc)
                 # Ensure timezone awareness
                 trial_start = owner.trial_started_at
@@ -49,11 +49,26 @@ class IntegrationService:
             if channel == "whatsapp" and not has_whatsapp:
                 return {"response": "WhatsApp integration is not available on your current plan. Please upgrade to Standard or Business Pro.", "success": False}
                 
-            if max_messages != -1 and owner.message_count >= max_messages:
+            current_count = owner.message_count or 0
+            
+            # Free Trial Limit check
+            if owner.subscription_plan in ("free", "starter") and max_messages != -1 and current_count >= max_messages:
+                # Deactivate twin if it's active
+                if twin.status == "active":
+                    twin.status = "inactive"
+                    db.commit()
+                return {"response": "upgrade plzz", "success": False}
+                
+            # Regular Limit check
+            if max_messages != -1 and current_count >= max_messages:
                 return {"response": "This AI assistant has reached its message limit. Please contact the business owner.", "success": False}
             
-            owner.message_count += 1
+            owner.message_count = current_count + 1
             db.commit()
+
+        # Check standard active status
+        if twin.status != "active":
+            return {"error": "Digital twin not active"}
             
         # 2. Get or create conversation
         conversation = None

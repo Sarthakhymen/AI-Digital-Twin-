@@ -29,7 +29,7 @@ def get_current_user(
 def check_subscription_status(user: User):
     """Check if the user's subscription is valid and not expired."""
     # Free trial expiry check
-    if user.subscription_plan == "free" and user.trial_started_at:
+    if user.subscription_plan in ("free", "starter") and user.trial_started_at:
         # Check if 3 days have passed
         now = datetime.now(pytz.utc)
         trial_end = user.trial_started_at + timedelta(days=3)
@@ -78,11 +78,46 @@ class RequirePlan:
                     detail=f"Access denied. This feature has been disabled by an administrator."
                 )
 
-        if user.subscription_plan not in self.allowed_plans:
+        # Normalize plan names
+        # Plan hierarchy: free/starter < standard < pro/business_pro
+        user_plan = user.subscription_plan or "free"
+        if user_plan == "starter":
+            user_plan = "free"
+        elif user_plan == "pro":
+            user_plan = "business_pro"
+
+        # Canonicalize the allowed plans
+        canonical_allowed = []
+        for plan in self.allowed_plans:
+            if plan == "starter":
+                canonical_allowed.append("free")
+            elif plan == "pro":
+                canonical_allowed.append("business_pro")
+            else:
+                canonical_allowed.append(plan)
+
+        # Strict plan gating rules:
+        # If the resource/feature requires business_pro, standard and free plans are strictly blocked.
+        if "business_pro" in canonical_allowed and "standard" not in canonical_allowed:
+            if user_plan != "business_pro":
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Access denied. This feature is only available on the Business Pro plan."
+                )
+        # If the resource/feature requires standard, free plan is strictly blocked.
+        elif "standard" in canonical_allowed:
+            if user_plan not in ("standard", "business_pro"):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Access denied. This feature requires a Standard or Business Pro subscription."
+                )
+        # Fallback exact matching
+        elif user_plan not in canonical_allowed:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Upgrade your plan to access this feature. Required plan(s): {', '.join(self.allowed_plans)}"
             )
+
         return user
 
 def get_admin_user(current_user: User = Depends(get_current_active_user)) -> User:

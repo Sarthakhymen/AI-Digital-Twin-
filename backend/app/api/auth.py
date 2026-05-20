@@ -56,6 +56,12 @@ def get_user_features(current_user: Any = Depends(get_current_active_user)):
         status = current_user.subscription_status
         plan = current_user.subscription_plan or "free"
         
+        # Normalize plan names
+        if plan == "starter":
+            plan = "free"
+        elif plan == "pro":
+            plan = "business_pro"
+            
         if status != "active" and plan != "free":
             # If payment is pending or expired, downgrade features to free
             base_features = PLAN_LIMITS["free"].copy()
@@ -65,6 +71,10 @@ def get_user_features(current_user: Any = Depends(get_current_active_user)):
     except ImportError:
         base_features = {}
         plan = current_user.subscription_plan or "free"
+        if plan == "starter":
+            plan = "free"
+        elif plan == "pro":
+            plan = "business_pro"
         
     custom_features = current_user.custom_features or {}
     

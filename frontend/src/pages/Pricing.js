@@ -175,7 +175,7 @@ const Pricing = () => {
       key: 'free',
       name: 'Free Trial',
       price: '$0',
-      period: 'for 7 days',
+      period: 'for 3 days',
       description: 'Test the magic of AI Twins with zero commitment.',
       features: [
         'Web Chat Widget (with watermark)',
@@ -184,7 +184,7 @@ const Pricing = () => {
         'Sub-100ms response time',
         'No credit card required',
       ],
-      cta: trialLoading ? 'Activating...' : (getPlanStatus('free').isCurrent ? 'Your Current Plan' : 'Start 7-Day Trial'),
+      cta: trialLoading ? 'Activating...' : (getPlanStatus('free').isCurrent ? 'Your Current Plan' : 'Start 3-Day Trial'),
       onAction: getPlanStatus('free').isCurrent ? null : handleTrial,
       icon: Clock,
       color: 'blue',
@@ -194,7 +194,7 @@ const Pricing = () => {
     {
       key: 'standard',
       name: 'Standard',
-      price: '$29',
+      price: '$5',
       period: 'per month',
       description: 'Essential AI features for growing businesses.',
       features: [
@@ -216,7 +216,7 @@ const Pricing = () => {
     {
       key: 'business_pro',
       name: 'Business Pro',
-      price: '$79',
+      price: '$10',
       period: 'per month',
       description: 'Unleash the full potential of your AI Twin.',
       features: [

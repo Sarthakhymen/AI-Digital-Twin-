@@ -113,6 +113,20 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleUpdateSubscription = async (userId, plan, subscriptionStatus, expiresAt, msgCount) => {
+    try {
+      await api.post(`/admin/users/${userId}/subscription`, {
+        subscription_plan: plan,
+        subscription_status: subscriptionStatus,
+        subscription_expires_at: expiresAt ? new Date(expiresAt).toISOString() : null,
+        message_count: msgCount !== "" && msgCount !== null ? parseInt(msgCount, 10) : null
+      });
+      fetchData();
+    } catch (err) {
+      alert("Failed to update subscription: " + (err.response?.data?.detail || err.message));
+    }
+  };
+
   const runQuery = async () => {
     try {
       const res = await api.post('/admin/db/execute', null, { params: { query } });
@@ -389,16 +403,16 @@ const AdminDashboard = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+              className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl my-8"
             >
               <div className="p-6 border-b border-slate-800 flex justify-between items-center">
-                <h3 className="text-xl font-bold text-white">Edit Features</h3>
+                <h3 className="text-xl font-bold text-white">Manage User Subscription & Features</h3>
                 <button 
                   onClick={() => setEditingUserFeatures(null)}
                   className="text-slate-400 hover:text-white transition-colors"
@@ -409,12 +423,88 @@ const AdminDashboard = () => {
                 </button>
               </div>
               
-              <div className="p-6 space-y-6">
+              <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
                 <p className="text-sm text-slate-400">
-                  Modifying feature overrides for: <strong className="text-white">{editingUserFeatures.email}</strong>
+                  Modifying overrides for: <strong className="text-white">{editingUserFeatures.email}</strong>
                 </p>
 
+                {/* Subscription Settings */}
+                <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800 space-y-4">
+                  <h4 className="text-xs font-black tracking-widest text-slate-500 uppercase">Subscription Settings</h4>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 mb-1">Plan</label>
+                      <select 
+                        value={editingUserFeatures.subscription_plan || "free"}
+                        onChange={(e) => {
+                          const newPlan = e.target.value;
+                          setEditingUserFeatures(prev => ({ ...prev, subscription_plan: newPlan }));
+                          handleUpdateSubscription(editingUserFeatures.id, newPlan, editingUserFeatures.subscription_status || "active", editingUserFeatures.subscription_expires_at, editingUserFeatures.message_count);
+                        }}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500/50"
+                      >
+                        <option value="free">Free Trial</option>
+                        <option value="starter">Starter (Free)</option>
+                        <option value="standard">Standard</option>
+                        <option value="business_pro">Business Pro</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 mb-1">Status</label>
+                      <select 
+                        value={editingUserFeatures.subscription_status || "active"}
+                        onChange={(e) => {
+                          const newStatus = e.target.value;
+                          setEditingUserFeatures(prev => ({ ...prev, subscription_status: newStatus }));
+                          handleUpdateSubscription(editingUserFeatures.id, editingUserFeatures.subscription_plan || "free", newStatus, editingUserFeatures.subscription_expires_at, editingUserFeatures.message_count);
+                        }}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500/50"
+                      >
+                        <option value="active">Active</option>
+                        <option value="expired">Expired</option>
+                        <option value="pending_verification">Pending Verification</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 mb-1">Message Count</label>
+                      <input 
+                        type="number"
+                        value={editingUserFeatures.message_count !== undefined && editingUserFeatures.message_count !== null ? editingUserFeatures.message_count : 0}
+                        onChange={(e) => {
+                          const val = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
+                          setEditingUserFeatures(prev => ({ ...prev, message_count: val }));
+                        }}
+                        onBlur={() => {
+                          handleUpdateSubscription(editingUserFeatures.id, editingUserFeatures.subscription_plan || "free", editingUserFeatures.subscription_status || "active", editingUserFeatures.subscription_expires_at, editingUserFeatures.message_count);
+                        }}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500/50"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 mb-1">Expiration Date</label>
+                      <input 
+                        type="date"
+                        value={editingUserFeatures.subscription_expires_at ? new Date(editingUserFeatures.subscription_expires_at).toISOString().split('T')[0] : ""}
+                        onChange={(e) => {
+                          const dateVal = e.target.value ? new Date(e.target.value).toISOString() : null;
+                          setEditingUserFeatures(prev => ({ ...prev, subscription_expires_at: dateVal }));
+                          handleUpdateSubscription(editingUserFeatures.id, editingUserFeatures.subscription_plan || "free", editingUserFeatures.subscription_status || "active", dateVal, editingUserFeatures.message_count);
+                        }}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500/50"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Feature Overrides */}
                 <div className="space-y-4">
+                  <h4 className="text-xs font-black tracking-widest text-slate-500 uppercase">Feature Overrides</h4>
                   {[
                     { key: 'whatsapp', label: 'WhatsApp Bot Access' },
                     { key: 'voice', label: 'Voice Agent Access' },
