@@ -151,7 +151,7 @@ const BUSINESS_CONVOS = [
     business: '🛡️ Feature Gatekeeper',
     color: '#10B981',
     userMsg: 'Is there a limit on free trials?',
-    botReply: "Yes. Free trials are active for 3 days and limited to 50 messages. Upgrade to Standard (₹2/mo) to unlock unlimited queries! ⚡",
+    botReply: "Yes. Free trials are active for 3 days and limited to 50 messages. Upgrade to Standard (₹1299/mo) to unlock unlimited queries! ⚡",
   }
 ];
 
@@ -418,7 +418,7 @@ const Hero = () => {
               whileTap={{ scale: 0.98 }}
             >
               <Zap className="w-4 h-4 text-indigo-400" />
-              View Standard Tier (₹2)
+              View Standard Tier (₹1299)
             </motion.button>
           </motion.div>
 
@@ -671,7 +671,7 @@ const CapabilitiesPlayground = () => {
                     </div>
 
                     <div className="p-3.5 bg-white/5 border border-white/10 rounded-2xl text-[10px] text-slate-500 leading-normal">
-                      💡 Standard Plan (₹2/mo) removes the "Powered by AI Digital Twin" watermark branding completely.
+                      💡 Standard Plan (₹1299/mo) removes the "Powered by AI Digital Twin" watermark branding completely.
                     </div>
                   </div>
 
@@ -879,7 +879,7 @@ const CapabilitiesPlayground = () => {
               </div>
               <div>
                 <span className="block text-slate-600 uppercase font-bold">Access Check</span>
-                <span className="text-slate-400 font-extrabold uppercase">{activeTab === 'kb' || activeTab === 'widget' ? 'Standard (₹2)' : 'Business Pro'}</span>
+                <span className="text-slate-400 font-extrabold uppercase">{activeTab === 'kb' || activeTab === 'widget' ? 'Standard (₹1299)' : 'Business Pro'}</span>
               </div>
               <div>
                 <span className="block text-slate-600 uppercase font-bold">Gating Policy</span>
@@ -1111,7 +1111,7 @@ const UserGuideMindmap = () => {
       id: "plan",
       label: "2. Plan Selection",
       title: "Activate Standard Subscription",
-      description: "Select the Standard Tier for ₹2/month to enable custom AI twins, vector indexes, and widget scripts.",
+      description: "Select the Standard Tier for ₹1299/month to enable custom AI twins, vector indexes, and widget scripts.",
       icon: <CreditCard className="w-4 h-4 text-indigo-400" />,
       x: 210,
       y: 200
@@ -1546,7 +1546,7 @@ const UserGuideMindmap = () => {
                 <p className="text-xs text-slate-400 leading-relaxed font-medium">
                   💡 {
                     currentStep === 0 ? "You can login securely via Google auth or standard password credentials. Each login triggers a personalized dashboard greeting."
-                    : currentStep === 1 ? "The Standard Tier is configured for immediate sandbox test verification at just ₹2. Payment gating rules are enforced strictly."
+                    : currentStep === 1 ? "The Standard Tier is configured for sandbox test verification at ₹1299. Payment gating rules are enforced strictly."
                     : currentStep === 2 ? "Setting up a business folder isolation model ensures that different company chatbots cannot read each other's data."
                     : currentStep === 3 ? "Ingested files are parsed, split into overlaps, embedded via OpenAI text models, and saved inside a tenant-isolated ChromaDB."
                     : currentStep === 4 ? "Activating the switch sets the twin status flag to 'ONLINE'. OFFLINE twins automatically alert visitors to upgrade or return later."
@@ -1643,7 +1643,7 @@ const UserGuideMindmap = () => {
                   >
                     <div className="text-center">
                       <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Choose Subscription tier</h4>
-                      <p className="text-[10px] text-slate-500 mt-0.5">Standard is active for simple ₹2 sandbox tests</p>
+                      <p className="text-[10px] text-slate-500 mt-0.5">Standard is active for ₹1299 sandbox tests</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                       <div className="bg-slate-900/40 border border-white/5 rounded-xl p-4 opacity-50 flex flex-col justify-between">
@@ -1661,7 +1661,7 @@ const UserGuideMindmap = () => {
                         </div>
                         <div>
                           <span className="text-[9px] font-bold text-indigo-400 uppercase">Standard Tier</span>
-                          <span className="block text-lg font-bold text-white mt-1">₹2 <span className="text-xs text-slate-400 font-normal">/mo</span></span>
+                          <span className="block text-lg font-bold text-white mt-1">₹1299 <span className="text-xs text-slate-400 font-normal">/mo</span></span>
                           <span className="block text-[8px] text-slate-350 mt-1">Unlimited responses, custom widgets, scraping</span>
                         </div>
                         <button
@@ -2105,7 +2105,7 @@ const FAQ = () => {
     },
     {
       question: "How does Standard plan pricing work?",
-      answer: "The Standard plan is priced at ₹2/month. This grants unlimited web chat assistant executions, customizable theme skins without branding watermarks, lead captures, and URL indexing."
+      answer: "The Standard plan is priced at ₹1299/month. This grants unlimited web chat assistant executions, customizable theme skins without branding watermarks, lead captures, and URL indexing."
     },
     {
       question: "What is Business Pro plan availability?",
@@ -2220,7 +2220,7 @@ const CTA = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Configure Tiers (₹2/mo)
+                Configure Tiers (₹1299/mo)
               </motion.button>
             </div>
 

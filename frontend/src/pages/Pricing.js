@@ -194,7 +194,7 @@ const Pricing = () => {
     {
       key: 'standard',
       name: 'Standard',
-      price: '₹2',
+      price: '₹1299',
       period: 'per month',
       description: 'Essential AI features for growing businesses.',
       features: [
@@ -216,7 +216,7 @@ const Pricing = () => {
     {
       key: 'business_pro',
       name: 'Business Pro',
-      price: '₹2499',
+      price: '₹3999',
       period: 'per month',
       description: 'Unleash the full potential of your AI Twin.',
       features: [
