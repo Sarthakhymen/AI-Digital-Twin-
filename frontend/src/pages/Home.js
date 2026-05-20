@@ -12,14 +12,11 @@ import {
   Database,
   Sliders,
   Lock,
-  Info,
   Cpu,
   Sparkles,
   Smartphone,
   CheckCircle,
   Terminal,
-  Activity,
-  Workflow,
   FileText,
   Volume2,
   Scan,
@@ -27,19 +24,14 @@ import {
   Check,
   Globe,
   Users,
-  CheckSquare,
-  TrendingUp,
   MessageCircle,
   BookOpen,
-  Smile,
   CreditCard,
   Briefcase,
   Settings,
   Power,
-  Code2,
-  Send
+  Code2
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 import LandingNavbar from '../components/LandingNavbar';
 import LogoIcon from '../components/LogoIcon';
 
@@ -982,133 +974,641 @@ const CapabilitiesPlayground = () => {
 
 // Premium Features Cards Section
 const Features = () => {
-  const features = [
-    {
-      icon: Mic,
-      title: 'Voice Cloning Synthesizer',
-      description: 'Clone your acoustic voice signature from a 10s audio record. Power voice bot dials with natural tone.',
-      plan: 'Business Pro',
-      colorClass: 'feature-card-rose',
-      textColor: 'text-rose-400',
-      textGlow: 'group-hover:text-rose-400',
-      glowBg: 'bg-rose-500/5 group-hover:bg-rose-500/10',
-      iconBg: 'group-hover:bg-rose-500/15',
-    },
-    {
-      icon: Database,
-      title: 'Multi-Format Knowledge Ingestion',
-      description: 'Upload PDF files, TXT records, or scrape full site URLs. Indexes data into an isolated vector database.',
-      plan: 'Standard',
-      colorClass: 'feature-card-cyan',
-      textColor: 'text-cyan-400',
-      textGlow: 'group-hover:text-cyan-400',
-      glowBg: 'bg-cyan-500/5 group-hover:bg-cyan-500/10',
-      iconBg: 'group-hover:bg-cyan-500/15',
-    },
-    {
-      icon: Scan,
-      title: 'WhatsApp Automation Gateway',
-      description: 'Link your WhatsApp using simple QR scanners. Let your twin manage client chats 24/7 on autopilot.',
-      plan: 'Business Pro',
-      colorClass: 'feature-card-emerald',
-      textColor: 'text-emerald-400',
-      textGlow: 'group-hover:text-emerald-400',
-      glowBg: 'bg-emerald-500/5 group-hover:bg-emerald-500/10',
-      iconBg: 'group-hover:bg-emerald-500/15',
-    },
-    {
-      icon: Smartphone,
-      title: 'Lightweight Web Widget',
-      description: 'Embed a clean, customized chat widget onto client websites with a single line of script. Remove watermarks.',
-      plan: 'Standard',
-      colorClass: 'feature-card-purple',
-      textColor: 'text-purple-400',
-      textGlow: 'group-hover:text-purple-400',
-      glowBg: 'bg-purple-500/5 group-hover:bg-purple-500/10',
-      iconBg: 'group-hover:bg-purple-500/15',
-    },
-    {
-      icon: BarChart3,
-      title: 'Detailed Analytical Reporting',
-      description: 'Track conversation logs, message count limits, query volumes, and analytics tables.',
-      plan: 'Standard',
-      colorClass: 'feature-card-amber',
-      textColor: 'text-amber-400',
-      textGlow: 'group-hover:text-amber-400',
-      glowBg: 'bg-amber-500/5 group-hover:bg-amber-500/10',
-      iconBg: 'group-hover:bg-amber-500/15',
-    },
-    {
-      icon: Shield,
-      title: 'Strict Route Gating Guard',
-      description: 'Robust backend authentication policy gates. Standard users are strictly blocked from Business Pro APIs.',
-      plan: 'System-wide',
-      colorClass: 'feature-card-indigo',
-      textColor: 'text-indigo-400',
-      textGlow: 'group-hover:text-indigo-400',
-      glowBg: 'bg-indigo-500/5 group-hover:bg-indigo-500/10',
-      iconBg: 'group-hover:bg-indigo-500/15',
+  const navigate = useNavigate();
+  const [spreadIndex, setSpreadIndex] = useState(0);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [direction, setDirection] = useState('next');
+  const [displaySpreadIndex, setDisplaySpreadIndex] = useState(0);
+  
+  // Responsive check
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Voice Twin wave play state
+  const [isVoicePlaying, setIsVoicePlaying] = useState(false);
+  
+  // WhatsApp Scanner Link state
+  const [isWALinked, setIsWALinked] = useState(false);
+  
+  // Mini Widget Customizer color state
+  const [widgetColor, setWidgetColor] = useState('#06b6d4'); // Cyan default
+
+  // Gating guard request logs state
+  const [gateLog, setGateLog] = useState([
+    { method: 'POST', endpoint: '/api/v1/twin/chat', status: 200, role: 'Business Pro' }
+  ]);
+  
+  const addGateLog = (role, status) => {
+    setGateLog(prev => [
+      { method: 'POST', endpoint: '/api/v1/twin/chat', status, role },
+      ...prev.slice(0, 3)
+    ]);
+  };
+
+  const turnToSpread = (targetIndex) => {
+    if (targetIndex === spreadIndex || isFlipping) return;
+    const dir = targetIndex > spreadIndex ? 'next' : 'prev';
+    setDirection(dir);
+    setIsFlipping(true);
+    
+    if (dir === 'next') {
+      setTimeout(() => {
+        setDisplaySpreadIndex(targetIndex);
+      }, 250);
+    } else {
+      setDisplaySpreadIndex(targetIndex);
     }
-  ];
+    
+    setSpreadIndex(targetIndex);
+    
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 500);
+  };
+  
+  // Define content for each page
+  // Page 0: Cover / Table of Contents
+  const renderPage0 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center gap-2 text-indigo-400 mb-6">
+          <BookOpen className="w-5 h-5 animate-pulse" />
+          <span className="text-[10px] font-bold tracking-wider uppercase">System Spec Manual</span>
+        </div>
+        <h3 className="text-2xl font-black text-white tracking-tight leading-tight mb-3">
+          Cognitive AI Twin Blueprint
+        </h3>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-8">
+          Welcome to the technical capability manual. Turn pages to inspect each engine, simulator, and route guard.
+        </p>
+        
+        <div className="space-y-3">
+          {[
+            { ch: 'Ch 1', title: 'Voice Synthesizer', spread: 0 },
+            { ch: 'Ch 2', title: 'Knowledge Vectorizer', spread: 1 },
+            { ch: 'Ch 3', title: 'WhatsApp Gateway', spread: 1 },
+            { ch: 'Ch 4', title: 'Embedded Web Widget', spread: 2 },
+            { ch: 'Ch 5', title: 'Analytical Dashboard', spread: 2 },
+            { ch: 'Ch 6', title: 'Route Security Gate', spread: 3 }
+          ].map((item, idx) => (
+            <button
+              key={idx}
+              onClick={() => turnToSpread(item.spread)}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/10 transition-all text-left text-xs font-semibold text-slate-300 hover:text-indigo-300"
+            >
+              <span>{item.ch}: {item.title}</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>ANTIGRAVITY SYSTEMS</span>
+        <span>PAGE 01</span>
+      </div>
+    </div>
+  );
+
+  // Page 1: Feature 1 - Voice Synthesizer
+  const renderPage1 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-lg">
+            <Mic className="w-4 h-4 text-rose-400" />
+            <span className="text-[10px] font-bold tracking-wider text-rose-300 uppercase">Voice Synthesizer</span>
+          </div>
+          <span className="text-[8px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/30 px-1.5 py-0.5 rounded uppercase">Business Pro</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 1: Voice Cloning Synthesizer</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-6">
+          Clone your acoustic voice signature from a 10s audio record. Power voice bot dials with natural tone, pitch, and accent alignment.
+        </p>
+
+        {/* Waveform Simulator box */}
+        <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex flex-col items-center gap-4">
+          <div className="flex items-center gap-1.5 h-12">
+            {Array.from({ length: 18 }).map((_, i) => (
+              <div
+                key={i}
+                className="w-1 bg-gradient-to-t from-rose-500 to-pink-500 rounded-full"
+                style={{
+                  height: isVoicePlaying ? '100%' : '15%',
+                  animation: isVoicePlaying ? `voice-wave 0.8s ease-in-out infinite alternate` : 'none',
+                  animationDelay: `${i * 0.05}s`
+                }}
+              />
+            ))}
+          </div>
+          
+          <button
+            onClick={() => setIsVoicePlaying(!isVoicePlaying)}
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-500 hover:bg-rose-600 text-white transition-colors flex items-center gap-1.5 shadow-[0_0_15px_rgba(244,63,94,0.3)]"
+          >
+            {isVoicePlaying ? (
+              <>
+                <Volume2 className="w-3.5 h-3.5 animate-bounce" />
+                Stop Sample Cloned Voice
+              </>
+            ) : (
+              <>
+                <Mic className="w-3.5 h-3.5" />
+                Listen Sample Cloned Voice
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>CLONE ENGINE</span>
+        <span>PAGE 02</span>
+      </div>
+    </div>
+  );
+
+  // Page 2: Feature 2 - Multi-Format Ingestion
+  const renderPage2 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-1 rounded-lg">
+            <Database className="w-4 h-4 text-cyan-400" />
+            <span className="text-[10px] font-bold tracking-wider text-cyan-300 uppercase">Knowledge Vectorizer</span>
+          </div>
+          <span className="text-[8px] font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-1.5 py-0.5 rounded uppercase">Standard</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 2: Multi-Format Knowledge Ingestion</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-6">
+          Upload PDF files, TXT records, or scrape full site URLs. The vectorizer parses and indexes data into an isolated vector database instantly.
+        </p>
+
+        {/* SVG Flow diagram */}
+        <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
+          <svg viewBox="0 0 260 100" className="w-full max-w-[240px]">
+            {/* Left nodes */}
+            <rect x="10" y="5" width="45" height="20" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
+            <text x="32" y="17" fill="#94a3b8" fontSize="8" textAnchor="middle">PDF Doc</text>
+
+            <rect x="10" y="40" width="45" height="20" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
+            <text x="32" y="52" fill="#94a3b8" fontSize="8" textAnchor="middle">TXT Log</text>
+
+            <rect x="10" y="75" width="45" height="20" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
+            <text x="32" y="87" fill="#94a3b8" fontSize="8" textAnchor="middle">URL Link</text>
+
+            {/* Right target nodes */}
+            <circle cx="130" cy="50" r="22" fill="rgba(6,182,212,0.1)" stroke="rgba(6,182,212,0.3)" />
+            <text x="130" y="53" fill="#22d3ee" fontSize="7" textAnchor="middle" fontWeight="bold">Chunker</text>
+
+            <rect x="200" y="37" width="50" height="26" rx="4" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.4)" />
+            <text x="225" y="50" fill="#22d3ee" fontSize="8" textAnchor="middle" fontWeight="bold">Vector DB</text>
+
+            {/* Connecting lines */}
+            <path d="M 55 15 L 110 40" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
+            <path d="M 55 50 L 108 50" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
+            <path d="M 55 85 L 110 60" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
+            <path d="M 152 50 L 200 50" fill="none" stroke="#22d3ee" strokeWidth="1.5" className="flow-line-animated" />
+          </svg>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>VECTOR DATABASE</span>
+        <span>PAGE 03</span>
+      </div>
+    </div>
+  );
+
+  // Page 3: Feature 3 - WhatsApp Gateway
+  const renderPage3 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+            <Scan className="w-4 h-4 text-emerald-400" />
+            <span className="text-[10px] font-bold tracking-wider text-emerald-300 uppercase">WhatsApp Gateway</span>
+          </div>
+          <span className="text-[8px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded uppercase">Business Pro</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 3: WhatsApp Gateway Linker</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-6">
+          Link your WhatsApp using simple QR scanners. Let your twin manage client chats 24/7 on autopilot with secure webhook routers.
+        </p>
+
+        {/* QR simulation */}
+        <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center gap-4">
+          <div className="relative w-16 h-16 bg-white p-1 rounded-lg flex-shrink-0">
+            {/* Grid QR representation */}
+            <div className="w-full h-full bg-slate-900 rounded-sm flex flex-col justify-between p-1">
+              <div className="flex justify-between">
+                <div className="w-4 h-4 border border-white rounded-xs" />
+                <div className="w-4 h-4 border border-white rounded-xs" />
+              </div>
+              <div className="flex justify-between items-end">
+                <div className="w-4 h-4 border border-white rounded-xs" />
+                <div className="w-3 h-3 bg-white rounded-xs" />
+              </div>
+            </div>
+            
+            {/* Laser scanning bar */}
+            {!isWALinked && (
+              <motion.div 
+                className="absolute left-0 inset-x-0 h-0.5 bg-emerald-400 shadow-md"
+                animate={{ top: ['4px', '60px', '4px'] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            )}
+          </div>
+          
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className={`w-2 h-2 rounded-full ${isWALinked ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+              <span className="text-[10px] font-mono font-bold text-slate-300">
+                {isWALinked ? 'Linked & Autopilot Live' : 'Awaiting QR Scan'}
+              </span>
+            </div>
+            <button
+              onClick={() => setIsWALinked(!isWALinked)}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-colors ${
+                isWALinked 
+                  ? 'bg-transparent border-slate-700 text-slate-400 hover:text-slate-200' 
+                  : 'bg-emerald-500 hover:bg-emerald-600 border-transparent text-white'
+              }`}
+            >
+              {isWALinked ? 'Disconnect Gateway' : 'Scan & Link Test'}
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>WHATSAPP INTEGRATION</span>
+        <span>PAGE 04</span>
+      </div>
+    </div>
+  );
+
+  // Page 4: Feature 4 - Web Widget
+  const renderPage4 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-lg">
+            <Smartphone className="w-4 h-4 text-purple-400" />
+            <span className="text-[10px] font-bold tracking-wider text-purple-300 uppercase">Web Chat Widget</span>
+          </div>
+          <span className="text-[8px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30 px-1.5 py-0.5 rounded uppercase">Standard</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 4: Lightweight Web Widget</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-5">
+          Embed a clean, fully customized chat widget onto client websites with a single line of script. Remove watermarks.
+        </p>
+
+        {/* Live widget preview block */}
+        <div className="p-3.5 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-mono text-slate-400">Preview Widget Theme:</span>
+            <div className="flex gap-1.5">
+              {['#06b6d4', '#d946ef', '#10b981', '#f59e0b', '#f43f5e'].map((col) => (
+                <button 
+                  key={col} 
+                  className="w-3.5 h-3.5 rounded-full border border-white/10 transition-transform hover:scale-110"
+                  style={{ backgroundColor: col }}
+                  onClick={() => setWidgetColor(col)}
+                />
+              ))}
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between bg-slate-900 p-2.5 rounded-lg border border-white/5">
+            <div className="flex items-center gap-1.5">
+              <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] text-white" style={{ backgroundColor: widgetColor }}>
+                AI
+              </div>
+              <span className="text-[9px] font-bold text-white">Digital Twin Support</span>
+            </div>
+            
+            <div 
+              className="w-7 h-7 rounded-full flex items-center justify-center text-white transition-all shadow-md"
+              style={{ backgroundColor: widgetColor }}
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>UI INTEGRATION</span>
+        <span>PAGE 05</span>
+      </div>
+    </div>
+  );
+
+  // Page 5: Feature 5 - Analytics
+  const renderPage5 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg">
+            <BarChart3 className="w-4 h-4 text-amber-400" />
+            <span className="text-[10px] font-bold tracking-wider text-amber-300 uppercase">Analytical Reporting</span>
+          </div>
+          <span className="text-[8px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded uppercase">Standard</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 5: Analytical Reporting</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-5">
+          Track conversation logs, message count limits, query volumes, and response success rates in an analytics dashboard.
+        </p>
+
+        {/* Analytical bar chart mockup */}
+        <div className="p-3.5 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-3">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-slate-900/60 p-2 rounded-lg border border-white/5 text-center">
+              <span className="text-[8px] text-slate-500 block uppercase">Accuracy</span>
+              <span className="text-xs font-black text-amber-400">99.4%</span>
+            </div>
+            <div className="bg-slate-900/60 p-2 rounded-lg border border-white/5 text-center">
+              <span className="text-[8px] text-slate-500 block uppercase">Latency</span>
+              <span className="text-xs font-black text-amber-400">85ms</span>
+            </div>
+            <div className="bg-slate-900/60 p-2 rounded-lg border border-white/5 text-center">
+              <span className="text-[8px] text-slate-500 block uppercase">Resolved</span>
+              <span className="text-xs font-black text-amber-400">12,492</span>
+            </div>
+          </div>
+          
+          {/* Animated chart bars */}
+          <div className="h-10 flex items-end justify-between px-1">
+            {[45, 62, 55, 78, 92, 98].map((h, i) => (
+              <div key={i} className="w-5 bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-sm animate-pulse" style={{ height: `${h}%`, animationDelay: `${i * 0.15}s` }} />
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>ANALYTICS ENGINE</span>
+        <span>PAGE 06</span>
+      </div>
+    </div>
+  );
+
+  // Page 6: Feature 6 - Security Gate
+  const renderPage6 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 px-2.5 py-1 rounded-lg">
+            <Shield className="w-4 h-4 text-indigo-400" />
+            <span className="text-[10px] font-bold tracking-wider text-indigo-300 uppercase">Route Gating Guard</span>
+          </div>
+          <span className="text-[8px] font-mono bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded uppercase">System-wide</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 6: Route Gating Guard</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-5">
+          Robust backend authentication policy gates. Standard users are strictly blocked from premium Business Pro API endpoints.
+        </p>
+
+        {/* Security Gate Simulation */}
+        <div className="p-3.5 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-2.5">
+          <div className="flex justify-between items-center gap-2">
+            <button 
+              onClick={() => addGateLog('Standard', 403)}
+              className="flex-1 py-1.5 rounded bg-amber-500/10 border border-amber-500/30 text-[9px] font-bold text-amber-300 hover:bg-amber-500/20 transition-all text-center"
+            >
+              Simulate Standard Key
+            </button>
+            <button 
+              onClick={() => addGateLog('Business Pro', 200)}
+              className="flex-1 py-1.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-[9px] font-bold text-emerald-300 hover:bg-emerald-500/20 transition-all text-center"
+            >
+              Simulate Pro Key
+            </button>
+          </div>
+          
+          <div className="space-y-1.5 font-mono text-[8px] bg-slate-950 p-2 rounded border border-white/5">
+            {gateLog.map((log, idx) => (
+              <div key={idx} className="flex justify-between items-center py-0.5 border-b border-white/5 last:border-0">
+                <span className="text-indigo-400">{log.method} {log.endpoint}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-slate-500">[{log.role}]</span>
+                  <span className={log.status === 200 ? 'text-emerald-400' : 'text-rose-400'}>
+                    {log.status}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>SECURITY POLICY</span>
+        <span>PAGE 07</span>
+      </div>
+    </div>
+  );
+
+  // Page 7: Back Cover / CTA
+  const renderPage7 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1 text-center">
+      <div className="my-auto">
+        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-5">
+          <Zap className="w-6 h-6 text-indigo-400 animate-pulse" />
+        </div>
+        <h4 className="text-2xl font-black text-white leading-tight mb-2">Launch Your AI Twin</h4>
+        <p className="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto mb-6 font-medium">
+          Ready to scale your business reach with conversational AI twins in English & Hindi? Set up is quick and requires zero coding.
+        </p>
+        
+        <div className="flex flex-col gap-2.5 max-w-xs mx-auto">
+          <button
+            onClick={() => navigate('/register')}
+            className="w-full py-2.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl text-xs font-bold shadow-lg hover:opacity-90 transition-opacity"
+          >
+            Create Your Twin Free
+          </button>
+          
+          <button
+            onClick={() => navigate('/pricing')}
+            className="w-full py-2.5 bg-white/5 border border-white/10 hover:border-white/20 text-white rounded-xl text-xs font-bold transition-all"
+          >
+            Check Premium Plans (₹1299)
+          </button>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>SYSTEM VERSION 1.2</span>
+        <span>PAGE 08</span>
+      </div>
+    </div>
+  );
+
+  // Render static spread contents based on displayIndex
+  const getSpreadLeftContent = (index) => {
+    switch (index) {
+      case 0: return renderPage0();
+      case 1: return renderPage2();
+      case 2: return renderPage4();
+      case 3: return renderPage6();
+      default: return null;
+    }
+  };
+
+  const getSpreadRightContent = (index) => {
+    switch (index) {
+      case 0: return renderPage1();
+      case 1: return renderPage3();
+      case 2: return renderPage5();
+      case 3: return renderPage7();
+      default: return null;
+    }
+  };
+
+  // Flipping sheet contents
+  const getFlippingFrontContent = () => {
+    if (direction === 'next') {
+      return getSpreadRightContent(spreadIndex - 1);
+    } else {
+      return getSpreadRightContent(spreadIndex);
+    }
+  };
+
+  const getFlippingBackContent = () => {
+    if (direction === 'next') {
+      return getSpreadLeftContent(spreadIndex);
+    } else {
+      return getSpreadLeftContent(spreadIndex + 1);
+    }
+  };
 
   return (
     <section id="features" className="relative py-28 z-10 overflow-hidden bg-slate-950/40">
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Title */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-16">
           <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.25em]">Cognitive Features</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight animate-fade-in">
             Comprehensive Capabilities, Zero Compromise
           </h2>
           <p className="mt-4 text-slate-400 max-w-xl mx-auto text-sm font-medium">
-            Each feature maps directly to real backend models and routers configured in your account settings.
+            Browse our system specifications manual. Click chapters below or flip the pages of our 3D manual.
           </p>
         </div>
 
-        {/* Feature Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, i) => {
-            const Icon = feature.icon;
-            return (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                whileHover={{ y: -5 }}
-                className={`group relative p-8 rounded-2xl gradient-border-card ${feature.colorClass} shadow-2xl transition-all duration-300 overflow-hidden`}
+        {isMobile ? (
+          /* Responsive Mobile View: Cards Grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage1()}
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage2()}
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage3()}
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage4()}
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage5()}
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage6()}
+            </div>
+          </div>
+        ) : (
+          /* Desktop View: Gorgeous 3D Interactive Flipping Book */
+          <div className="flex flex-col items-center">
+            <div className="book-perspective py-6">
+              
+              {/* Outer Book Container */}
+              <div className="book-container">
+                
+                {/* Metallic spine shading line */}
+                <div className="book-spine-line" />
+                
+                {/* Left Underlay Page (Static) */}
+                <div className="book-page-half book-page-left p-10 bg-slate-900/95">
+                  {getSpreadLeftContent(displaySpreadIndex)}
+                </div>
+
+                {/* Right Underlay Page (Static) */}
+                <div className="book-page-half book-page-right p-10 bg-slate-900/95">
+                  {getSpreadRightContent(displaySpreadIndex)}
+                </div>
+
+                {/* 3D Flipping Page Sheet */}
+                {isFlipping && (
+                  <motion.div
+                    className="book-flipping-sheet"
+                    initial={{ rotateY: direction === 'next' ? 0 : -180 }}
+                    animate={{ rotateY: direction === 'next' ? -180 : 0 }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                  >
+                    {/* Front side of flipping sheet */}
+                    <div className="book-flipping-side book-flipping-side-front p-10 bg-slate-900/95 text-white">
+                      {getFlippingFrontContent()}
+                    </div>
+                    
+                    {/* Back side of flipping sheet */}
+                    <div className="book-flipping-side book-flipping-side-back p-10 bg-slate-900/95 text-white">
+                      {getFlippingBackContent()}
+                    </div>
+                  </motion.div>
+                )}
+
+              </div>
+            </div>
+
+            {/* Turn Buttons controls */}
+            <div className="flex items-center gap-6 mt-8">
+              <button
+                disabled={spreadIndex === 0 || isFlipping}
+                onClick={() => turnToSpread(spreadIndex - 1)}
+                className={`flex items-center justify-center w-12 h-12 rounded-full border border-white/10 text-white transition-all bg-white/5 ${
+                  spreadIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/10 hover:border-indigo-500/40 hover:scale-105 active:scale-95'
+                }`}
               >
-                {/* Visual card corner glow effect */}
-                <div className={`absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl transition-all pointer-events-none ${feature.glowBg}`} />
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+              </button>
 
-                <div className={`w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-6 transition-colors ${feature.iconBg}`}>
-                  <Icon className={`w-5 h-5 text-slate-400 ${feature.textGlow} transition-colors`} />
-                </div>
+              <span className="text-xs font-mono font-bold text-slate-400">
+                SPREAD {spreadIndex + 1} OF 4
+              </span>
 
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className={`text-lg font-bold text-white tracking-tight ${feature.textGlow} transition-colors`}>
-                    {feature.title}
-                  </h3>
-                  <span className={`text-[8px] font-mono font-bold px-2 py-0.5 rounded border ${
-                    feature.plan === 'Business Pro' 
-                      ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' 
-                      : feature.plan === 'Standard'
-                        ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
-                        : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
-                  }`}>
-                    {feature.plan}
-                  </span>
-                </div>
-
-                <p className="text-slate-400 text-xs leading-relaxed font-medium">
-                  {feature.description}
-                </p>
-              </motion.div>
-            );
-          })}
-        </div>
+              <button
+                disabled={spreadIndex === 3 || isFlipping}
+                onClick={() => turnToSpread(spreadIndex + 1)}
+                className={`flex items-center justify-center w-12 h-12 rounded-full border border-white/10 text-white transition-all bg-white/5 ${
+                  spreadIndex === 3 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/10 hover:border-indigo-500/40 hover:scale-105 active:scale-95'
+                }`}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
 
       </div>
     </section>
