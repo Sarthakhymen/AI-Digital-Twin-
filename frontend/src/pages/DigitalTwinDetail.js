@@ -17,9 +17,31 @@ import { Lock } from '@mui/icons-material';
 const DigitalTwinDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { userFeatures } = useAuth();
+  const { user, userFeatures } = useAuth();
   const queryClient = useQueryClient();
   const fileInputRef = useRef(null);
+
+  const plan = user?.subscription_plan || 'free';
+  const isStandard = plan === 'standard';
+  const isPro = plan === 'business_pro' || plan === 'pro';
+
+  // Container 1 (Web Chat Widget) dynamic styling
+  const container1Style = isPro
+    ? { bgcolor: 'rgba(225, 29, 72, 0.04)', border: '1px solid rgba(225, 29, 72, 0.2)' }
+    : isStandard
+      ? { bgcolor: 'rgba(245, 158, 11, 0.04)', border: '1px solid rgba(245, 158, 11, 0.2)' }
+      : { bgcolor: 'rgba(59, 130, 246, 0.04)', border: '1px solid rgba(59, 130, 246, 0.2)' };
+
+  const container1BadgeText = isPro ? 'Business Pro Plan' : isStandard ? 'Standard Plan' : 'Free Trial Plan';
+  const container1BadgeColor = isPro ? '#e11d48' : isStandard ? '#f59e0b' : '#3b82f6';
+
+  // Container 2 (URL Scraping) dynamic styling
+  const container2Style = isPro
+    ? { bgcolor: 'rgba(225, 29, 72, 0.04)', border: '1px solid rgba(225, 29, 72, 0.2)' }
+    : { bgcolor: 'rgba(245, 158, 11, 0.04)', border: '1px solid rgba(245, 158, 11, 0.2)' };
+
+  const container2BadgeText = isPro ? 'Business Pro Plan' : 'Standard Plan';
+  const container2BadgeColor = isPro ? '#e11d48' : '#f59e0b';
   const voiceInputRef = useRef(null);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [scrapeUrl, setScrapeUrl] = useState('');
@@ -390,11 +412,11 @@ const DigitalTwinDetail = () => {
               <Public fontSize="small" /> Integrations & Deployments
             </Typography>
 
-            {/* Container 1: Free Trial Plan */}
-            <Box sx={{ mt: 3, p: 3, borderRadius: 3, bgcolor: 'rgba(59, 130, 246, 0.04)', border: '1px solid rgba(59, 130, 246, 0.2)', position: 'relative' }}>
+            {/* Container 1: Web Chat Widget */}
+            <Box sx={{ mt: 3, p: 3, borderRadius: 3, position: 'relative', ...container1Style }}>
               <Box sx={{ position: 'absolute', top: -12, left: 16, bgcolor: '#020617', px: 1 }}>
-                <Typography variant="caption" sx={{ color: '#3b82f6', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  Free Trial Plan
+                <Typography variant="caption" sx={{ color: container1BadgeColor, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  {container1BadgeText}
                 </Typography>
               </Box>
 
@@ -457,11 +479,11 @@ const DigitalTwinDetail = () => {
               </Paper>
             </Box>
 
-            {/* Container 2: Standard Plan */}
-            <Box sx={{ mt: 4, p: 3, borderRadius: 3, bgcolor: 'rgba(245, 158, 11, 0.04)', border: '1px solid rgba(245, 158, 11, 0.2)', position: 'relative' }}>
+            {/* Container 2: URL Scraping */}
+            <Box sx={{ mt: 4, p: 3, borderRadius: 3, position: 'relative', ...container2Style }}>
               <Box sx={{ position: 'absolute', top: -12, left: 16, bgcolor: '#020617', px: 1 }}>
-                <Typography variant="caption" sx={{ color: '#f59e0b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  Standard Plan
+                <Typography variant="caption" sx={{ color: container2BadgeColor, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  {container2BadgeText}
                 </Typography>
               </Box>
 

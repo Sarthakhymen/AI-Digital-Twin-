@@ -194,7 +194,7 @@ const Pricing = () => {
     {
       key: 'standard',
       name: 'Standard',
-      price: '₹1299',
+      price: '₹2',
       period: 'per month',
       description: 'Essential AI features for growing businesses. Captured leads are saved in Dashboard.',
       features: [
