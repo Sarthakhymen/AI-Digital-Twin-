@@ -170,7 +170,7 @@ class RazorpayVerifyRequest(BaseModel):
 
 # Razorpay pricing mapping in Paisa (₹1 = 100 Paisa)
 RAZORPAY_PRICES = {
-    "standard": 200,         # ₹2 (for testing)
+    "standard": 129900,        # ₹1299 (Launch Offer, original ₹1599)
     "business_pro": 399900     # ₹3999
 }
 

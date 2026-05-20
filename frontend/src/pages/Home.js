@@ -407,19 +407,6 @@ const HeroSmartphoneVisualization = () => {
           </div>
         </div>
       </div>
-
-      {/* Floating Status Indicator Badge */}
-      <motion.div
-        key={convoIndex}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="absolute -top-3 px-4 py-1.5 rounded-full text-[9px] font-bold text-white shadow-xl flex items-center gap-1.5 ring-1 ring-white/10 border border-white/5"
-        style={{ background: `linear-gradient(135deg, ${accentColor}, #0d0e15)` }}
-      >
-        <Sparkles className="w-3.5 h-3.5 text-white animate-pulse" />
-        {currentConvo.business.split(' ').slice(1).join(' ')}
-      </motion.div>
     </div>
   );
 };
@@ -747,7 +734,7 @@ const CapabilitiesPlayground = () => {
                     </div>
 
                     <div className="p-3.5 bg-white/5 border border-white/10 rounded-2xl text-[10px] text-slate-500 leading-normal">
-                      💡 Standard Plan (₹1299/mo) removes the "Powered by AI Digital Twin" watermark branding completely.
+                      💡 Standard Plan (₹1599 → ₹1299/mo Launch Offer) removes the "Powered by AI Digital Twin" watermark branding completely.
                     </div>
                   </div>
 
@@ -1089,7 +1076,7 @@ const Features = () => {
         
         <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 1: Voice Cloning Synthesizer</h4>
         <p className="text-xs text-slate-400 leading-relaxed font-medium mb-6">
-          Clone your acoustic voice signature from a 10s audio record. Power voice bot dials with natural tone, pitch, and accent alignment.
+          Clone your acoustic voice signature from a 10-second audio recording. Power voice bot dials with natural tone, pitch, and accent alignment.
         </p>
 
         {/* Waveform Simulator box */}
@@ -1431,7 +1418,7 @@ const Features = () => {
         </div>
         <h4 className="text-2xl font-black text-white leading-tight mb-2">Launch Your AI Twin</h4>
         <p className="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto mb-6 font-medium">
-          Ready to scale your business reach with conversational AI twins in English & Hindi? Set up is quick and requires zero coding.
+          Ready to scale your business reach with conversational AI twins in English & Hindi? Setup is quick and requires zero coding.
         </p>
         
         <div className="flex flex-col gap-2.5 max-w-xs mx-auto">
@@ -1629,7 +1616,7 @@ const HowItWorks = () => {
       step: '02',
       title: 'Neural Fine-Tuning',
       subtitle: 'Prompt tuning & voice synthesis',
-      description: 'Configure specific prompt rules, constraints, and record a 10s voice clip to synchronize speaking tone, speed, and cadence.',
+      description: 'Configure specific prompt rules, constraints, and record a 10-second voice clip to synchronize speaking tone, speed, and cadence.',
       badge: 'Synthesizer Synced'
     },
     {
@@ -1742,7 +1729,7 @@ const UserGuideMindmap = () => {
       id: "plan",
       label: "2. Plan Selection",
       title: "Activate Standard Subscription",
-      description: "Select the Standard Tier for ₹1299/month to enable custom AI twins, vector indexes, and widget scripts.",
+      description: "Select the Standard Tier at ₹1299/month (Launch Offer, originally ₹1599) to enable custom AI twins, vector indexes, and widget scripts.",
       icon: <CreditCard className="w-5 h-5 text-indigo-400" />,
       x: 250,
       y: 170
@@ -1796,7 +1783,7 @@ const UserGuideMindmap = () => {
       id: "rag",
       label: "8. Live Database Query",
       title: "Input Query to Output Retrieval",
-      description: "Type or click a question to trace the live vector matching search loop retrieve output from the DB.",
+      description: "Type or click a question to trace the live vector-matching search loop and retrieve output from the DB.",
       icon: <Database className="w-5 h-5 text-teal-400" />,
       x: 250,
       y: 640
@@ -2166,7 +2153,7 @@ const UserGuideMindmap = () => {
                 <p className="text-xs text-slate-400 leading-relaxed font-medium">
                   💡 {
                     currentStep === 0 ? "You can login securely via Google auth or standard password credentials. Each login triggers a personalized dashboard greeting."
-                    : currentStep === 1 ? "The Standard Tier is configured for sandbox test verification at ₹1299. Payment gating rules are enforced strictly."
+                    : currentStep === 1 ? "The Standard Tier is configured for sandbox test verification at ₹1299 (Launch Offer). Payment gating rules are enforced strictly."
                     : currentStep === 2 ? "Setting up a business folder isolation model ensures that different company chatbots cannot read each other's data."
                     : currentStep === 3 ? "Ingested files are parsed, split into overlaps, embedded via OpenAI text models, and saved inside a tenant-isolated ChromaDB."
                     : currentStep === 4 ? "Activating the switch sets the twin status flag to 'ONLINE'. OFFLINE twins automatically alert visitors to upgrade or return later."
@@ -2263,7 +2250,7 @@ const UserGuideMindmap = () => {
                   >
                     <div className="text-center">
                       <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Choose Subscription tier</h4>
-                      <p className="text-[10px] text-slate-500 mt-0.5">Standard is active for ₹1299 sandbox tests</p>
+                      <p className="text-[10px] text-slate-500 mt-0.5">Standard is active for ₹1299 launch tests</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                       <div className="bg-slate-900/40 border border-white/5 rounded-xl p-4 opacity-50 flex flex-col justify-between">
@@ -2281,7 +2268,7 @@ const UserGuideMindmap = () => {
                         </div>
                         <div>
                           <span className="text-[9px] font-bold text-indigo-400 uppercase">Standard Tier</span>
-                          <span className="block text-lg font-bold text-white mt-1">₹1299 <span className="text-xs text-slate-400 font-normal">/mo</span></span>
+                          <span className="block text-lg font-bold text-white mt-1">₹1299 <span className="text-xs text-slate-400 font-normal line-through">₹1599</span> <span className="text-xs text-emerald-400 font-semibold">/mo</span></span>
                           <span className="block text-[8px] text-slate-350 mt-1">Unlimited responses, custom widgets, scraping</span>
                         </div>
                         <button
@@ -2875,7 +2862,7 @@ const FAQ = () => {
     },
     {
       question: "How does Standard plan pricing work?",
-      answer: "The Standard plan is priced at ₹1299/month. This grants unlimited web chat assistant executions, customizable theme skins without branding watermarks, lead captures, and URL indexing."
+      answer: "The Standard plan is priced at ₹1599/month, but we're currently running a Launch Offer at just ₹1299/month. This grants unlimited web chat assistant executions, customizable theme skins without branding watermarks, lead captures, and URL indexing."
     },
     {
       question: "What is Business Pro plan availability?",
@@ -2967,7 +2954,7 @@ const CTA = () => {
               Initiate Your AI Digital Twin
             </h2>
             <p className="text-slate-400 max-w-xl mx-auto text-xs sm:text-sm font-semibold leading-relaxed">
-              Create your autonomous intelligence clone today. Upload custom documentation, capture voice patterns, and activate standard widget integrations or scan WhatsApp linked qr codes.
+              Create your autonomous intelligence clone today. Upload custom documentation, capture voice patterns, and activate standard widget integrations or scan WhatsApp-linked QR codes.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">

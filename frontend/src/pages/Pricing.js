@@ -194,7 +194,8 @@ const Pricing = () => {
     {
       key: 'standard',
       name: 'Standard',
-      price: '₹2',
+      price: '₹1299',
+      originalPrice: '₹1599',
       period: 'per month',
       description: 'Essential AI features for growing businesses. Captured leads are saved in Dashboard.',
       features: [
@@ -210,7 +211,7 @@ const Pricing = () => {
       color: 'amber',
       loading: checkoutLoading === 'standard',
       disabled: trialLoading || checkoutLoading !== null || getPlanStatus('standard').isCurrent,
-      badge: null,
+      badge: '🚀 Launch Offer',
       allowManual: !getPlanStatus('standard').isCurrent,
     },
     {
@@ -332,10 +333,18 @@ const Pricing = () => {
 
                 {/* Price */}
                 <div className="mb-8 text-left">
-                  <div className="flex items-baseline gap-1">
+                  <div className="flex items-baseline gap-2">
+                    {plan.originalPrice && (
+                      <span className="text-2xl font-bold text-slate-500 line-through">{plan.originalPrice}</span>
+                    )}
                     <span className={`text-5xl font-black ${plan.comingSoon ? 'text-slate-500' : 'text-white'}`}>{plan.price}</span>
                     <span className="text-slate-500 font-medium text-sm">{plan.period}</span>
                   </div>
+                  {plan.originalPrice && (
+                    <span className="inline-block mt-2 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                      🚀 Launch Offer — Save ₹300/mo
+                    </span>
+                  )}
                 </div>
 
                 {/* Features */}

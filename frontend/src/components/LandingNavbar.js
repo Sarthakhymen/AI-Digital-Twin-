@@ -128,7 +128,7 @@ const LandingNavbar = () => {
             {/* Desktop Navigation - Center with billboard style */}
             <motion.div
               variants={itemVariants}
-              className="hidden lg:flex items-center justify-center gap-1"
+              className="hidden lg:flex flex-1 items-center justify-center gap-1"
             >
               <div className="relative">
                 {/* Glassmorphism container */}
@@ -179,7 +179,7 @@ const LandingNavbar = () => {
             {/* Right section - AI Visualization + CTA */}
             <motion.div
               variants={itemVariants}
-              className="flex-1 hidden lg:flex items-center justify-end gap-4"
+              className="hidden lg:flex items-center justify-end gap-4"
             >
 
               {loading ? (
