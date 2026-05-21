@@ -35,6 +35,16 @@ class UserLogin(BaseModel):
 class GoogleLogin(BaseModel):
     code: str
 
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
+    password: Optional[str] = None
+
+class PreferencesUpdate(BaseModel):
+    email_alerts: Optional[bool] = None
+    weekly_reports: Optional[bool] = None
+    conversation_summaries: Optional[bool] = None
+
 class UserResponse(UserBase):
     id: int
     is_active: bool
@@ -44,6 +54,7 @@ class UserResponse(UserBase):
     subscription_status: str
     custom_features: Optional[Dict[str, Any]] = None
     message_count: int
+    preferences: Optional[Dict[str, Any]] = None
     trial_started_at: Optional[datetime] = None
     subscription_expires_at: Optional[datetime] = None
     created_at: datetime

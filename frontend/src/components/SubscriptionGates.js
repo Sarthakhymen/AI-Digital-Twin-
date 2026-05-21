@@ -57,7 +57,7 @@ const SubscriptionGates = ({ user, userFeatures }) => {
       icon: Star,
       color: '#E11D48', // Rose
       isActive: isPro,
-      statusLabel: isPro ? 'Current Plan' : 'Locked',
+      statusLabel: isPro ? 'Current Plan' : 'Coming Soon',
       features: [
         { name: 'WhatsApp Integration', active: isPro },
         { name: 'Voice Agent Widget', active: isPro },

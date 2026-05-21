@@ -10,6 +10,7 @@ import {
 import { ArrowBack, PlayArrow, Pause, Edit, CloudUpload, Delete, Description, ContentCopy, Code, Public, FormatAlignLeft, FormatAlignRight, Language, Email, Star } from '@mui/icons-material';
 import api from '../services/api';
 import WhatsAppScanner from '../components/WhatsAppScanner';
+import TwinRobotAvatar from '../components/TwinRobotAvatar';
 import { useAuth } from '../contexts/AuthContext';
 import { Lock } from '@mui/icons-material';
 
@@ -111,6 +112,13 @@ const DigitalTwinDetail = () => {
   const { data: documents = [], isLoading: docsLoading } = useQuery({
     queryKey: ['knowledge-docs', id],
     queryFn: () => api.get(`/knowledge/${id}/documents`).then(res => res.data),
+  });
+
+  const { data: dailySummaries = [], isLoading: summariesLoading } = useQuery({
+    queryKey: ['daily-summaries', id],
+    queryFn: () => api.get(`/digital-twins/${id}/daily-summaries`).then(res => res.data),
+    enabled: !!(user?.preferences?.conversation_summaries),
+    retry: false,
   });
 
   const activateMutation = useMutation({
@@ -327,20 +335,147 @@ const DigitalTwinDetail = () => {
               <Typography sx={{ color: 'rgba(255,255,255,0.7)' }}>{twin.description || 'No description provided'}</Typography>
 
               <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 600, mt: 3, mb: 2 }}>Personality Profile</Typography>
-              {twin.personality_profile ? (
-                <List dense>
-                  {Object.entries(twin.personality_profile).map(([key, value]) => (
-                    <ListItem key={key} sx={{ px: 0 }}>
-                      <ListItemText
-                        primary={<Typography sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>{key}</Typography>}
-                        secondary={<Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>{JSON.stringify(value)}</Typography>}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              ) : (
-                <Typography sx={{ color: 'rgba(255,255,255,0.5)' }}>No personality profile configured</Typography>
-              )}
+              <Box sx={{ 
+                background: 'rgba(255,255,255,0.02)', 
+                border: '1px solid rgba(255,255,255,0.06)', 
+                borderRadius: '16px', 
+                p: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}>
+                <TwinRobotAvatar 
+                  communicationStyle={twin.communication_style}
+                  personalityProfile={twin.personality_profile}
+                  name={twin.name}
+                />
+              </Box>
+
+              {/* Daily Conversation Summaries Section */}
+              <Box sx={{ mt: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Description fontSize="small" sx={{ color: '#8B5CF6' }} /> Daily AI Summaries
+                  </Typography>
+                  {user?.preferences?.conversation_summaries && (
+                    <Chip 
+                      label="7-Day Feed" 
+                      size="small" 
+                      sx={{ 
+                        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%)', 
+                        color: '#a78bfa', 
+                        fontWeight: 600,
+                        border: '1px solid rgba(139, 92, 246, 0.3)'
+                      }} 
+                    />
+                  )}
+                </Box>
+
+                {!user?.preferences?.conversation_summaries ? (
+                  <Card sx={{ 
+                    background: 'rgba(255,255,255,0.01)', 
+                    border: '1px dashed rgba(255,255,255,0.12)', 
+                    borderRadius: '16px', 
+                    p: 3,
+                    textAlign: 'center',
+                    boxShadow: 'none'
+                  }}>
+                    <CardContent sx={{ p: 0 }}>
+                      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mb: 2, lineHeight: 1.6 }}>
+                        💡 Daily Conversation Summaries are currently turned off. Turn them on to see automatically generated daily summaries of all your twin's interactions.
+                      </Typography>
+                      <Button 
+                        variant="outlined" 
+                        size="small" 
+                        onClick={() => navigate('/settings')}
+                        sx={{ 
+                          color: '#8B5CF6', 
+                          borderColor: 'rgba(139, 92, 246, 0.4)',
+                          textTransform: 'none',
+                          borderRadius: '8px',
+                          fontWeight: 600,
+                          '&:hover': { borderColor: '#8B5CF6', background: 'rgba(139, 92, 246, 0.05)' }
+                        }}
+                      >
+                        Configure Preferences
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ) : summariesLoading ? (
+                  <Box sx={{ width: '100%', py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                    <LinearProgress sx={{ width: '80%', bgcolor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { bgcolor: '#8B5CF6' } }} />
+                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)' }}>Generating daily insights...</Typography>
+                  </Box>
+                ) : dailySummaries.length === 0 ? (
+                  <Card sx={{ 
+                    background: 'rgba(255,255,255,0.01)', 
+                    border: '1px solid rgba(255,255,255,0.05)', 
+                    borderRadius: '16px', 
+                    p: 3,
+                    textAlign: 'center',
+                    boxShadow: 'none'
+                  }}>
+                    <CardContent sx={{ p: 0 }}>
+                      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                        No summaries available yet. Your summaries will appear here daily.
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {dailySummaries.map((summary) => (
+                      <Card 
+                        key={summary.id} 
+                        sx={{ 
+                          background: 'linear-gradient(135deg, rgba(255,255,255,0.01) 0%, rgba(255,255,255,0.03) 100%)', 
+                          border: '1px solid rgba(255,255,255,0.06)', 
+                          borderRadius: '14px', 
+                          boxShadow: 'none',
+                          transition: 'transform 0.2s, border-color 0.2s',
+                          '&:hover': {
+                            transform: 'translateY(-2px)',
+                            borderColor: 'rgba(139, 92, 246, 0.2)'
+                          }
+                        }}
+                      >
+                        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                            <Typography variant="subtitle2" sx={{ color: '#a78bfa', fontWeight: 700, fontFamily: '"Outfit", sans-serif' }}>
+                              {new Date(summary.summary_date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
+                            </Typography>
+                            <Chip 
+                              label={`${summary.conversation_count} chat${summary.conversation_count !== 1 ? 's' : ''}`}
+                              size="small" 
+                              sx={{ 
+                                bgcolor: summary.conversation_count > 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.05)',
+                                color: summary.conversation_count > 0 ? '#34d399' : 'rgba(255,255,255,0.5)',
+                                fontWeight: 600,
+                                fontSize: '0.75rem',
+                                border: '1px solid ' + (summary.conversation_count > 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.1)')
+                              }} 
+                            />
+                          </Box>
+                          
+                          <Box sx={{ pl: 1 }}>
+                            {summary.content.split('\n').map((line, idx) => {
+                              const cleanLine = line.replace(/^[•\-\*\s]+/, '').trim();
+                              if (!cleanLine) return null;
+                              return (
+                                <Box key={idx} sx={{ display: 'flex', gap: 1, alignItems: 'flex-start', mb: idx === summary.content.split('\n').length - 1 ? 0 : 1 }}>
+                                  <Typography sx={{ color: '#8B5CF6', mt: 0.2, fontSize: '0.875rem' }}>•</Typography>
+                                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, fontSize: '0.875rem' }}>
+                                    {cleanLine}
+                                  </Typography>
+                                </Box>
+                              );
+                            })}
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </Box>
+                )}
+              </Box>
             </Grid>
 
             <Grid item xs={12} md={6}>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Box, InputBase, IconButton, Badge } from '@mui/material';
-import { Search, Bell, Menu } from 'lucide-react';
+import { Box, InputBase, IconButton } from '@mui/material';
+import { Search, Menu } from 'lucide-react';
 import Sidebar from './Sidebar';
 
 const DashboardLayout = ({ children }) => {
@@ -104,38 +104,6 @@ const DashboardLayout = ({ children }) => {
                 ⌘K
               </Box>
             </Box>
-
-            {/* Notification Bell */}
-            <IconButton
-              sx={{
-                color: 'rgba(255,255,255,0.5)',
-                bgcolor: '#121629',
-                border: '1px solid rgba(255,255,255,0.05)',
-                borderRadius: '12px',
-                p: 1,
-                '&:hover': {
-                  color: '#fff',
-                  bgcolor: 'rgba(255,255,255,0.05)',
-                },
-                transition: 'all 0.2s ease',
-              }}
-            >
-              <Badge
-                badgeContent={3}
-                sx={{
-                  '& .MuiBadge-badge': {
-                    bgcolor: '#EF4444',
-                    color: '#fff',
-                    fontSize: '0.65rem',
-                    minWidth: 16,
-                    height: 16,
-                    border: '2px solid #05050A',
-                  },
-                }}
-              >
-                <Bell size={18} />
-              </Badge>
-            </IconButton>
           </Box>
         </Box>
 

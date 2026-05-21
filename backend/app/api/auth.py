@@ -7,7 +7,8 @@ from typing import Any
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..services import auth_service
-from ..schemas import UserCreate, UserLogin, UserResponse, Token
+from ..schemas import UserCreate, UserLogin, UserResponse, Token, UserUpdate, PreferencesUpdate
+from ..models import User
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 security = HTTPBearer()
@@ -44,6 +45,49 @@ def get_current_user(
     token = credentials.credentials
     user = auth_service.get_current_user(db, token)
     return user
+
+@router.put("/profile", response_model=UserResponse)
+def update_profile(
+    profile_data: UserUpdate,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Update profile details of current user"""
+    if profile_data.full_name is not None:
+        current_user.full_name = profile_data.full_name
+    if profile_data.phone is not None:
+        current_user.phone = profile_data.phone
+    if profile_data.password is not None and profile_data.password != "":
+        current_user.hashed_password = auth_service.get_password_hash(profile_data.password)
+        
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+@router.put("/preferences", response_model=UserResponse)
+def update_preferences(
+    pref_data: PreferencesUpdate,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Update user account settings/preferences"""
+    current_prefs = current_user.preferences or {}
+    updated_prefs = {**current_prefs}
+    
+    if pref_data.email_alerts is not None:
+        updated_prefs["email_alerts"] = pref_data.email_alerts
+    if pref_data.weekly_reports is not None:
+        updated_prefs["weekly_reports"] = pref_data.weekly_reports
+    if pref_data.conversation_summaries is not None:
+        updated_prefs["conversation_summaries"] = pref_data.conversation_summaries
+        
+    current_user.preferences = updated_prefs
+    from sqlalchemy.orm.attributes import flag_modified
+    flag_modified(current_user, "preferences")
+    
+    db.commit()
+    db.refresh(current_user)
+    return current_user
 
 from .dependencies import get_current_active_user
 

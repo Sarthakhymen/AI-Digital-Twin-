@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Box, Typography, Stepper, Step, StepLabel, Button, TextField,
-  FormControl, InputLabel, Select, MenuItem, Card, CardContent, Alert, useTheme, StepConnector, stepConnectorClasses
+  FormControl, InputLabel, Select, MenuItem, Card, CardContent, Alert, StepConnector, stepConnectorClasses
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -198,9 +198,36 @@ const CreateTwin = () => {
         <Typography variant="h4" sx={{ fontFamily: '"Outfit", sans-serif', fontWeight: 700, color: '#fff', mb: 1 }}>
           Create Digital Twin
         </Typography>
-        <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.6)', fontFamily: '"Inter", sans-serif' }}>
+        <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.6)', fontFamily: '"Inter", sans-serif', mb: 2.5 }}>
           Configure a new AI agent to represent your business
         </Typography>
+        <Box sx={{
+          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(139, 92, 246, 0.25)',
+          borderRadius: '12px',
+          py: 1.5,
+          px: 3,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 1,
+          boxShadow: '0 8px 32px 0 rgba(99, 102, 241, 0.05)',
+          maxWidth: '90%',
+          mx: 'auto',
+          mb: 1
+        }}>
+          <Typography variant="body2" sx={{
+            color: '#c084fc',
+            fontFamily: '"Outfit", sans-serif',
+            fontWeight: 600,
+            letterSpacing: '0.02em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1
+          }}>
+            <span style={{ fontSize: '1.1rem' }}>✨</span> You can make your twin in just 4-5 minutes. Zero coding required!
+          </Typography>
+        </Box>
       </Box>
 
       {error && <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>{error}</Alert>}

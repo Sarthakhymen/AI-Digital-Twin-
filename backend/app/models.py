@@ -28,6 +28,7 @@ class User(Base):
     subscription_expires_at = Column(DateTime(timezone=True))
     message_count = Column(Integer, default=0)  # Track messages per billing cycle
     custom_features = Column(JSON, default=dict)  # Admin-overridden features mapping
+    preferences = Column(JSON, default=lambda: {"email_alerts": True, "weekly_reports": True, "conversation_summaries": False})
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
@@ -72,6 +73,7 @@ class DigitalTwin(Base):
     conversations = relationship("Conversation", back_populates="digital_twin", cascade="all, delete-orphan")
     knowledge_documents = relationship("KnowledgeDocument", back_populates="digital_twin", cascade="all, delete-orphan")
     leads = relationship("LeadCapture", back_populates="digital_twin", cascade="all, delete-orphan")
+    daily_summaries = relationship("DailySummary", back_populates="digital_twin", cascade="all, delete-orphan")
 
     @property
     def widget_token(self) -> str:
@@ -166,4 +168,19 @@ class LeadCapture(Base):
     
     # Relationships
     digital_twin = relationship("DigitalTwin", back_populates="leads")
+
+
+class DailySummary(Base):
+    __tablename__ = "daily_summaries"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    digital_twin_id = Column(Integer, ForeignKey("digital_twins.id"), nullable=False)
+    summary_date = Column(String(10), nullable=False)  # YYYY-MM-DD
+    content = Column(Text, nullable=False)  # Markdown text summaries
+    conversation_count = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    digital_twin = relationship("DigitalTwin", back_populates="daily_summaries")
+
 

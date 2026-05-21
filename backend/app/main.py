@@ -34,7 +34,8 @@ def run_migrations():
                 ("is_admin", "BOOLEAN DEFAULT FALSE"),
                 ("has_used_trial", "BOOLEAN DEFAULT FALSE"),
                 ("message_count", "INTEGER DEFAULT 0"),
-                ("custom_features", "JSON DEFAULT '{}'")
+                ("custom_features", "JSON DEFAULT '{}'"),
+                ("preferences", "JSON DEFAULT '{\"email_alerts\": true, \"weekly_reports\": true, \"conversation_summaries\": false}'")
             ]
             
             for col_name, col_type in columns:
@@ -130,6 +131,30 @@ def run_migrations():
                         business_name VARCHAR(255),
                         message TEXT,
                         status VARCHAR(50) DEFAULT 'waiting',
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    );
+                """))
+
+            # Create daily_summaries table
+            if "sqlite" in str(engine.url):
+                conn.execute(text("""
+                    CREATE TABLE IF NOT EXISTS daily_summaries (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        digital_twin_id INTEGER REFERENCES digital_twins(id),
+                        summary_date VARCHAR(10) NOT NULL,
+                        content TEXT NOT NULL,
+                        conversation_count INTEGER DEFAULT 0,
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    );
+                """))
+            else:
+                conn.execute(text("""
+                    CREATE TABLE IF NOT EXISTS daily_summaries (
+                        id SERIAL PRIMARY KEY,
+                        digital_twin_id INTEGER REFERENCES digital_twins(id),
+                        summary_date VARCHAR(10) NOT NULL,
+                        content TEXT NOT NULL,
+                        conversation_count INTEGER DEFAULT 0,
                         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
                     );
                 """))

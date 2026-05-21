@@ -16,6 +16,41 @@ class ChatRequest(BaseModel):
     customer_name: Optional[str] = "Visitor"
     session_id: Optional[str] = None
 
+def check_is_locked(twin: DigitalTwin, db: Session) -> bool:
+    if not twin or not twin.business or not twin.business.owner:
+        return False
+    owner = twin.business.owner
+    
+    # Check if subscription status is already expired
+    if owner.subscription_status == "expired":
+        if twin.status == "active":
+            twin.status = "inactive"
+            db.commit()
+        return True
+        
+    # Check if plan is free or starter
+    if owner.subscription_plan in ("free", "starter", None):
+        max_messages = 50
+        is_limit_reached = (owner.message_count or 0) >= max_messages
+        
+        is_trial_expired = False
+        if owner.subscription_expires_at:
+            from datetime import datetime, timezone
+            expires_at = owner.subscription_expires_at
+            if expires_at.tzinfo is not None:
+                now = datetime.now(timezone.utc)
+            else:
+                now = datetime.utcnow()
+            is_trial_expired = now > expires_at
+            
+        if is_limit_reached or is_trial_expired:
+            owner.subscription_status = "expired"
+            twin.status = "inactive"
+            db.commit()
+            return True
+            
+    return False
+
 @router.post("/{twin_id}/chat")
 async def public_chat(
     twin_id: int,
@@ -33,6 +68,13 @@ async def public_chat(
         
     if not token or token != twin.widget_token:
         raise HTTPException(status_code=403, detail="Forbidden: Invalid or missing widget token")
+
+    if check_is_locked(twin, db):
+        return {
+            "response": "⚠️ Free trial limit reached! You've used all 50 free messages. Upgrade to Standard plan to continue chatting with unlimited messages.",
+            "success": False,
+            "limit_reached": True
+        }
 
     result = await integration_service.process_public_message(
         db=db,
@@ -93,11 +135,13 @@ async def get_widget_js(twin_id: int, token: Optional[str] = None, db: Session =
             
     branding_html = '<div class="dt-branding">Powered by <a href="#" target="_blank">AI Digital Twin</a></div>' if show_branding else ''
     widget_token = twin.widget_token
+    widget_init_locked = check_is_locked(twin, db)
     
     return Response(content=f"""
 (function() {{
     const twinId = {twin_id};
     const widgetToken = "{widget_token}";
+    const widgetInitLocked = {str(widget_init_locked).lower()};
     if (window["AIDigitalTwinWidgetLoaded_" + twinId]) {{
         console.warn("AI Digital Twin widget already loaded on this page.");
         return;
@@ -654,9 +698,11 @@ async def get_widget_js(twin_id: int, token: Optional[str] = None, db: Session =
         sessionStorage.setItem(`dt_locked_${{twinId}}`, '1');
     }};
 
-    // Check if already locked from a previous session
-    if (sessionStorage.getItem(`dt_locked_${{twinId}}`) === '1') {{
+    // Check if locked initially from backend or from session storage
+    if (widgetInitLocked) {{
         setTimeout(lockWidget, 100);
+    }} else {{
+        sessionStorage.removeItem(`dt_locked_${{twinId}}`);
     }}
 
     const sendMessage = async (text) => {{
@@ -774,11 +820,13 @@ async def get_voice_widget_js(twin_id: int, token: Optional[str] = None, db: Ses
 
     twin_name = twin.name
     widget_token = twin.widget_token
+    widget_init_locked = check_is_locked(twin, db)
     
     return Response(content=f"""
 (function() {{
     const twinId = {twin_id};
     const widgetToken = "{widget_token}";
+    const widgetInitLocked = {str(widget_init_locked).lower()};
     if (window["AIVoiceWidgetLoaded_" + twinId]) {{
         console.warn("AI Voice widget already loaded on this page.");
         return;
@@ -861,6 +909,10 @@ async def get_voice_widget_js(twin_id: int, token: Optional[str] = None, db: Ses
 
     // Click Event
     document.getElementById('ai-voice-button').onclick = function() {{
+        if (widgetInitLocked) {{
+            alert("⚠️ Free trial limit reached! Please upgrade your plan to make calls.");
+            return;
+        }}
         const width = 450;
         const height = 700;
         const left = (window.innerWidth / 2) - (width / 2);

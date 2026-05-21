@@ -1,24 +1,103 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Card, CardContent, Tabs, Tab, TextField, Button, Switch, FormControlLabel,
   Divider, Alert
 } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import api from '../services/api';
 
 const Settings = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
   const [profile, setProfile] = useState({
-    full_name: user?.full_name || '',
-    email: user?.email || '',
-    phone: user?.phone || ''
+    full_name: '',
+    phone: ''
+  });
+  const [security, setSecurity] = useState({
+    current_password: '',
+    new_password: '',
+    confirm_password: ''
+  });
+  const [preferences, setPreferences] = useState({
+    email_alerts: true,
+    weekly_reports: true,
+    conversation_summaries: false
   });
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        full_name: user.full_name || '',
+        phone: user.phone || ''
+      });
+      if (user.preferences) {
+        setPreferences({
+          email_alerts: user.preferences.email_alerts !== false,
+          weekly_reports: user.preferences.weekly_reports !== false,
+          conversation_summaries: !!user.preferences.conversation_summaries
+        });
+      }
+    }
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    try {
+      setError(null);
+      const res = await api.put('/auth/profile', {
+        full_name: profile.full_name,
+        phone: profile.phone
+      });
+      await updateUser(res.data);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.detail || 'Failed to save profile information.');
+    }
+  };
+
+  const handleSaveSecurity = async () => {
+    if (!security.new_password) {
+      setError('Please enter a new password.');
+      return;
+    }
+    if (security.new_password !== security.confirm_password) {
+      setError('New passwords do not match.');
+      return;
+    }
+    try {
+      setError(null);
+      const res = await api.put('/auth/profile', {
+        password: security.new_password
+      });
+      await updateUser(res.data);
+      setSecurity({
+        current_password: '',
+        new_password: '',
+        confirm_password: ''
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.detail || 'Failed to update password.');
+    }
+  };
+
+  const handleSavePreferences = async (updatedPrefs) => {
+    try {
+      setError(null);
+      const res = await api.put('/auth/preferences', updatedPrefs);
+      await updateUser(res.data);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.detail || 'Failed to save preferences.');
+    }
   };
 
   const textFieldSx = {
@@ -78,6 +157,13 @@ const Settings = () => {
             </Alert>
           </motion.div>
         )}
+        {error && (
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+            <Alert severity="error" sx={{ mb: 3, borderRadius: '12px', background: 'rgba(239, 68, 68, 0.1)', color: '#F87171', '& .MuiAlert-icon': { color: '#F87171' } }}>
+              {error}
+            </Alert>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <Card sx={{ 
@@ -101,6 +187,7 @@ const Settings = () => {
         >
           <Tab label="Profile" />
           <Tab label="Security" />
+          <Tab label="Preferences" />
         </Tabs>
 
         <CardContent sx={{ p: { xs: 3, md: 5 } }}>
@@ -128,7 +215,7 @@ const Settings = () => {
                     fullWidth
                     label="Email"
                     margin="normal"
-                    value={profile.email}
+                    value={user?.email || ''}
                     disabled
                     InputLabelProps={{ style: { color: 'rgba(255,255,255,0.6)' } }}
                     sx={{
@@ -146,7 +233,7 @@ const Settings = () => {
                     InputLabelProps={{ style: { color: 'rgba(255,255,255,0.6)' } }}
                     sx={textFieldSx}
                   />
-                  <Button variant="contained" sx={buttonSx} onClick={handleSave}>Save Profile</Button>
+                  <Button variant="contained" sx={buttonSx} onClick={handleSaveProfile}>Save Profile</Button>
                 </Box>
               )}
 
@@ -155,17 +242,11 @@ const Settings = () => {
                   <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', mb: 3, color: '#fff' }}>Change Password</Typography>
                   <TextField 
                     fullWidth 
-                    label="Current Password" 
-                    type="password" 
-                    margin="normal" 
-                    InputLabelProps={{ style: { color: 'rgba(255,255,255,0.6)' } }}
-                    sx={textFieldSx}
-                  />
-                  <TextField 
-                    fullWidth 
                     label="New Password" 
                     type="password" 
                     margin="normal" 
+                    value={security.new_password}
+                    onChange={(e) => setSecurity({ ...security, new_password: e.target.value })}
                     InputLabelProps={{ style: { color: 'rgba(255,255,255,0.6)' } }}
                     sx={textFieldSx}
                   />
@@ -174,10 +255,52 @@ const Settings = () => {
                     label="Confirm New Password" 
                     type="password" 
                     margin="normal" 
+                    value={security.confirm_password}
+                    onChange={(e) => setSecurity({ ...security, confirm_password: e.target.value })}
                     InputLabelProps={{ style: { color: 'rgba(255,255,255,0.6)' } }}
                     sx={textFieldSx}
                   />
-                  <Button variant="contained" sx={buttonSx} onClick={handleSave}>Update Password</Button>
+                  <Button variant="contained" sx={buttonSx} onClick={handleSaveSecurity}>Update Password</Button>
+                </Box>
+              )}
+
+              {activeTab === 2 && (
+                <Box maxWidth={600}>
+                  <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', mb: 3, color: '#fff' }}>Preferences</Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch 
+                        checked={preferences.email_alerts} 
+                        onChange={(e) => setPreferences({ ...preferences, email_alerts: e.target.checked })} 
+                        sx={switchSx} 
+                      />
+                    }
+                    label="Email Alerts"
+                    sx={{ color: '#fff', mb: 2, display: 'block' }}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Switch 
+                        checked={preferences.weekly_reports} 
+                        onChange={(e) => setPreferences({ ...preferences, weekly_reports: e.target.checked })} 
+                        sx={switchSx} 
+                      />
+                    }
+                    label="Weekly Reports"
+                    sx={{ color: '#fff', mb: 2, display: 'block' }}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Switch 
+                        checked={preferences.conversation_summaries} 
+                        onChange={(e) => setPreferences({ ...preferences, conversation_summaries: e.target.checked })} 
+                        sx={switchSx} 
+                      />
+                    }
+                    label="Daily Conversation Summaries"
+                    sx={{ color: '#fff', mb: 2, display: 'block' }}
+                  />
+                  <Button variant="contained" sx={buttonSx} onClick={() => handleSavePreferences(preferences)}>Save Preferences</Button>
                 </Box>
               )}
             </motion.div>

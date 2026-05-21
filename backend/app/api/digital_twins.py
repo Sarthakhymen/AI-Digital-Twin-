@@ -223,3 +223,39 @@ def delete_digital_twin(
     db.delete(digital_twin)
     db.commit()
     return {"message": "Digital twin deleted successfully"}
+
+@router.get("/{twin_id}/daily-summaries")
+async def get_daily_summaries(
+    twin_id: int,
+    summary_date: Optional[str] = None,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Get daily summaries for a digital twin (generating on-demand if missing)"""
+    digital_twin = db.query(DigitalTwin).join(Business).filter(
+        DigitalTwin.id == twin_id,
+        Business.owner_id == current_user.id
+    ).first()
+    
+    if not digital_twin:
+        raise HTTPException(status_code=404, detail="Digital twin not found")
+
+    from ..services.summary_service import summary_service
+    from datetime import date, timedelta
+
+    if summary_date:
+        res = await summary_service.generate_daily_summary(db, twin_id, summary_date)
+        if not res.get("success"):
+            raise HTTPException(status_code=400, detail=res.get("error"))
+        return [res.get("summary")]
+    else:
+        # Get summaries for the last 7 days
+        summaries = []
+        today = date.today()
+        for i in range(7):
+            d_str = (today - timedelta(days=i)).strftime("%Y-%m-%d")
+            res = await summary_service.generate_daily_summary(db, twin_id, d_str)
+            if res.get("success") and res.get("summary"):
+                summaries.append(res.get("summary"))
+        return summaries
+
