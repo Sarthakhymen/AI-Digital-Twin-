@@ -201,7 +201,7 @@ const Pricing = () => {
       features: [
         'Unlimited Web Chat Widget',
         'Custom Colors & Styling (No watermark)',
-        'Lead Gen Form (Captures name/email/phone; saves to Dashboard -> Leads)',
+        'Lead Gen Form (Captures name/email/phone to Dashboard)',
         'URL Scraping (Auto-Knowledge Base)',
         'Priority API Response speed',
       ],
@@ -342,7 +342,7 @@ const Pricing = () => {
                   </div>
                   {plan.originalPrice && (
                     <span className="inline-block mt-2 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                      🚀 Launch Offer — Save ₹300/mo
+                      🚀 Launch Offer — Save ₹300
                     </span>
                   )}
                 </div>

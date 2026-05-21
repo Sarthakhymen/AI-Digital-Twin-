@@ -553,6 +553,7 @@ async def get_widget_js(twin_id: int, token: Optional[str] = None, db: Session =
                 <p style="margin:0 0 10px; font-size:13px; color:#374151; font-weight:600;">📧 Get personalized help — leave your details:</p>
                 <input type="text" id="dt-lead-name" placeholder="Your name" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;" />
                 <input type="email" id="dt-lead-email" placeholder="Your email *" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;" />
+                <input type="tel" id="dt-lead-phone" placeholder="Phone Number (Optional)" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;" />
                 <div style="display:flex;gap:8px;">
                     <button id="dt-lead-submit" style="flex:1;background:${{widgetBackground}};color:white;border:none;padding:9px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">Submit</button>
                     <button id="dt-lead-skip" style="background:#f3f4f6;color:#6b7280;border:none;padding:9px 14px;border-radius:8px;font-size:13px;cursor:pointer;">Skip</button>
@@ -771,6 +772,7 @@ async def get_widget_js(twin_id: int, token: Optional[str] = None, db: Session =
         leadSubmitBtn.addEventListener('click', async () => {{
             const email = document.getElementById('dt-lead-email').value.trim();
             const name = document.getElementById('dt-lead-name').value.trim();
+            const phone = document.getElementById('dt-lead-phone').value.trim();
             if (!email || !email.includes('@')) {{
                 document.getElementById('dt-lead-email').style.borderColor = '#ef4444';
                 return;
@@ -781,13 +783,13 @@ async def get_widget_js(twin_id: int, token: Optional[str] = None, db: Session =
                 await fetch(`${{apiUrl}}/knowledge/${{twinId}}/leads?token=${{widgetToken}}`, {{
                     method: 'POST',
                     headers: {{ 'Content-Type': 'application/json' }},
-                    body: JSON.stringify({{ name, email }})
+                    body: JSON.stringify({{ name, email, phone }})
                 }});
             }} catch(e) {{}}
             sessionStorage.setItem(`dt_lead_${{twinId}}`, '1');
             leadCaptured = true;
             leadFormEl.style.display = 'none';
-            addMessage(`Thanks ${{name || ''}}! 🙌 We've saved your email and will follow up soon.`, 'twin');
+            addMessage(`Thanks ${{name || ''}}! 🙌 We've saved your details and will follow up soon.`, 'twin');
         }});
     }}
     if (leadSkipBtn) {{
