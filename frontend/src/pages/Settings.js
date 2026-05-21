@@ -20,8 +20,6 @@ const Settings = () => {
     confirm_password: ''
   });
   const [preferences, setPreferences] = useState({
-    email_alerts: true,
-    weekly_reports: true,
     conversation_summaries: false
   });
   const [saved, setSaved] = useState(false);
@@ -35,8 +33,6 @@ const Settings = () => {
       });
       if (user.preferences) {
         setPreferences({
-          email_alerts: user.preferences.email_alerts !== false,
-          weekly_reports: user.preferences.weekly_reports !== false,
           conversation_summaries: !!user.preferences.conversation_summaries
         });
       }
@@ -267,28 +263,6 @@ const Settings = () => {
               {activeTab === 2 && (
                 <Box maxWidth={600}>
                   <Typography variant="h6" sx={{ fontFamily: '"Outfit", sans-serif', mb: 3, color: '#fff' }}>Preferences</Typography>
-                  <FormControlLabel
-                    control={
-                      <Switch 
-                        checked={preferences.email_alerts} 
-                        onChange={(e) => setPreferences({ ...preferences, email_alerts: e.target.checked })} 
-                        sx={switchSx} 
-                      />
-                    }
-                    label="Email Alerts"
-                    sx={{ color: '#fff', mb: 2, display: 'block' }}
-                  />
-                  <FormControlLabel
-                    control={
-                      <Switch 
-                        checked={preferences.weekly_reports} 
-                        onChange={(e) => setPreferences({ ...preferences, weekly_reports: e.target.checked })} 
-                        sx={switchSx} 
-                      />
-                    }
-                    label="Weekly Reports"
-                    sx={{ color: '#fff', mb: 2, display: 'block' }}
-                  />
                   <FormControlLabel
                     control={
                       <Switch 

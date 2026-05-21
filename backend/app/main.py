@@ -35,7 +35,7 @@ def run_migrations():
                 ("has_used_trial", "BOOLEAN DEFAULT FALSE"),
                 ("message_count", "INTEGER DEFAULT 0"),
                 ("custom_features", "JSON DEFAULT '{}'"),
-                ("preferences", "JSON DEFAULT '{\"email_alerts\": true, \"weekly_reports\": true, \"conversation_summaries\": false}'")
+                ("preferences", "JSON DEFAULT '{\"conversation_summaries\": false}'")
             ]
             
             for col_name, col_type in columns:

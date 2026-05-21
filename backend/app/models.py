@@ -28,7 +28,7 @@ class User(Base):
     subscription_expires_at = Column(DateTime(timezone=True))
     message_count = Column(Integer, default=0)  # Track messages per billing cycle
     custom_features = Column(JSON, default=dict)  # Admin-overridden features mapping
-    preferences = Column(JSON, default=lambda: {"email_alerts": True, "weekly_reports": True, "conversation_summaries": False})
+    preferences = Column(JSON, default=lambda: {"conversation_summaries": False})
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     

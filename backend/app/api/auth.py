@@ -9,6 +9,7 @@ from ..database import get_db
 from ..services import auth_service
 from ..schemas import UserCreate, UserLogin, UserResponse, Token, UserUpdate, PreferencesUpdate
 from ..models import User
+from .dependencies import get_current_active_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 security = HTTPBearer()
