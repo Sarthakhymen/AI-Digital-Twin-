@@ -342,7 +342,7 @@ const Pricing = () => {
                   </div>
                   {plan.originalPrice && (
                     <span className="inline-block mt-2 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                      🚀 Launch Offer — Save ₹300
+                      🚀 Launch Offer Save ₹300
                     </span>
                   )}
                 </div>

@@ -232,7 +232,7 @@ const steps = [
   },
   {
     title: 'Dashboard Access',
-    description: 'After logging in, you will land on your Dashboard — your central control hub. From here, you can manage all your Digital Twins and businesses.',
+    description: 'After logging in, you will land on your Dashboard, your central control hub. From here, you can manage all your Digital Twins and businesses.',
     animation: <Step2Anim />,
     icon: <DashboardIcon fontSize="small" />,
     color: '#ffffff',
@@ -264,7 +264,7 @@ const steps = [
   },
   {
     title: 'Copy & Paste the Script',
-    description: 'Copy your unique script tag from the Twin settings page and paste it inside the <body> tag of your website HTML. That\'s it — your AI is live!',
+    description: 'Copy your unique script tag from the Twin settings page and paste it inside the <body> tag of your website HTML. That\'s it, your AI is live!',
     animation: <Step6Anim />,
     icon: <Code fontSize="small" />,
     color: '#ffffff',

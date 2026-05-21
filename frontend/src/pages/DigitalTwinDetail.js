@@ -757,7 +757,7 @@ const DigitalTwinDetail = () => {
 
                   {/* URL Scraping Section */}
                   <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 700 }}>
-                    <Language sx={{ fontSize: 18, color: '#f59e0b' }} /> URL Scraping — Auto-train from your website
+                    <Language sx={{ fontSize: 18, color: '#f59e0b' }} /> URL Scraping: Auto-train from your website
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                     Paste any webpage URL and we'll scrape its content and add it to your AI Twin's knowledge base. Free, instant, no APIs needed.
