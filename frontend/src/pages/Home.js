@@ -1,731 +1,3127 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
-  Star,
-  ChevronDown,
-  BarChart3,
-  BookOpen,
-  Users,
-  Rocket,
-  Menu,
-  X,
-  Check,
   ArrowRight,
-  MessageSquare,
-  Phone,
-  Database,
-  Cpu,
+  ChevronRight,
+  Zap,
   Shield,
-  Sliders
+  BarChart3,
+  Mic,
+  Brain,
+  Database,
+  Sliders,
+  Lock,
+  Cpu,
+  Sparkles,
+  Smartphone,
+  CheckCircle,
+  Terminal,
+  FileText,
+  Volume2,
+  Scan,
+  RefreshCw,
+  Check,
+  Globe,
+  Users,
+  MessageCircle,
+  BookOpen,
+  CreditCard,
+  Briefcase,
+  Settings,
+  Power,
+  Code2
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import LandingNavbar from '../components/LandingNavbar';
+import LogoIcon from '../components/LogoIcon';
 
-// Company Logos SVGs/Text Components
-const LogoInterscope = () => (
-  <div className="flex items-center gap-1.5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-    <div className="w-5 h-8 bg-black flex items-center justify-center text-white font-black text-xs tracking-tighter">I</div>
-    <span className="font-sans font-black tracking-widest text-sm text-black">INTERSCOPE</span>
-  </div>
-);
+// Premium animation variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+  }
+};
 
-const LogoSpotify = () => (
-  <div className="flex items-center gap-1 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-    <svg viewBox="0 0 24 24" className="w-6 h-6 fill-black" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-.982-.336.075-.668-.135-.744-.47-.076-.336.135-.668.47-.743 3.856-.88 7.15-.503 9.822 1.135.296.18.387.563.205.853zm1.224-2.723c-.226.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.076-1.182-.412.125-.845-.108-.97-.52-.125-.413.108-.847.52-.972 3.666-1.112 8.243-.57 11.34 1.333.367.227.487.708.26 1.074zm.106-2.833C14.484 8.74 8.784 8.55 5.467 9.558c-.51.155-1.045-.133-1.2-.643-.156-.51.132-1.045.642-1.2 3.812-1.157 10.11-.94 14.077 1.417.46.273.61.87.337 1.33-.273.46-.87.61-1.33.338z" />
-    </svg>
-    <span className="font-sans font-bold tracking-tight text-sm text-black">Spotify</span>
-  </div>
-);
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    }
+  }
+};
 
-const LogoNexera = () => (
-  <div className="flex items-center gap-1.5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-    <div className="grid grid-cols-3 gap-0.5 w-4 h-4">
-      {[...Array(9)].map((_, i) => (
-        <div key={i} className={`w-1 h-1 rounded-full ${i % 2 === 0 ? 'bg-black' : 'bg-gray-400'}`} />
-      ))}
+// Deep Space Premium Background
+const PremiumBackground = () => {
+  return (
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#030014]">
+      {/* Mesh gradients / Nebula glow */}
+      <motion.div
+        className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full opacity-35"
+        style={{
+          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%)',
+          filter: 'blur(100px)'
+        }}
+        animate={{
+          x: [0, 40, 0],
+          y: [0, -30, 0]
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <motion.div
+        className="absolute top-[40%] -right-[10%] w-[50%] h-[50%] rounded-full opacity-25"
+        style={{
+          background: 'radial-gradient(circle, rgba(217, 70, 239, 0.2) 0%, transparent 70%)',
+          filter: 'blur(100px)'
+        }}
+        animate={{
+          x: [0, -50, 0],
+          y: [0, 50, 0]
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <motion.div
+        className="absolute -bottom-[10%] left-[20%] w-[45%] h-[45%] rounded-full opacity-30"
+        style={{
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, transparent 75%)',
+          filter: 'blur(90px)'
+        }}
+        animate={{
+          scale: [1, 1.15, 1],
+          opacity: [0.25, 0.35, 0.25]
+        }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
+      {/* Grid overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px] opacity-40" />
+
+      {/* Subtle base64 grain overlay */}
+      <div className="absolute inset-0 opacity-[0.015] mix-blend-overlay bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9pc2UpIi8+PC9zdmc+')] pointer-events-none" />
     </div>
-    <span className="font-sans font-semibold tracking-wide text-sm text-black">nexera</span>
-  </div>
-);
+  );
+};
 
-const LogoM3 = () => (
-  <div className="flex items-center gap-0.5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-    <span className="font-serif italic font-black text-2xl text-black">M3</span>
-    <span className="font-sans font-medium text-[10px] tracking-widest text-gray-500 uppercase mt-1">Media</span>
-  </div>
-);
+// Real multi-business conversation cycles showing real product behaviors
+const BUSINESS_CONVOS = [
+  {
+    business: '🍕 Spicy Basil Restaurant',
+    color: '#F59E0B',
+    greeting: "Hi! 👋 Welcome to Spicy Basil! Ask me about our menu, table booking, or orders.",
+    userMsg: 'Do you have gluten-free options and can I book a table for 4 tonight?',
+    botReply: "Yes! We have gluten-free wood-fired pizzas 🍕 and pastas. I've booked a table for 4 at 8:00 PM under your name. See you tonight! ✨",
+  },
+  {
+    business: '🏥 CareFirst Dental Clinic',
+    color: '#06B6D4',
+    greeting: "Hi! 👋 Welcome to CareFirst Dental. How can I help you schedule an appointment or query treatments today?",
+    userMsg: 'What are your clinic hours and how can I schedule an emergency extraction?',
+    botReply: "We are open 9 AM - 8 PM daily. I can book you for a dental emergency slot today at 4:30 PM. Would you like to confirm? 🦷",
+  },
+  {
+    business: '👗 Aura Boutique (Store)',
+    color: '#EC4899',
+    greeting: "Hi! 👋 Aura Boutique here! Ask me about new collections, sizing, shipping, or returns.",
+    userMsg: 'Do you ship internationally and what is your return policy?',
+    botReply: "We ship worldwide with free delivery above $100! ✈️ Returns are easy & free within 14 days of receipt. No questions asked!",
+  },
+  {
+    business: '🏡 Zenith Real Estate',
+    color: '#6366F1',
+    greeting: "Hi! 👋 Welcome to Zenith Real Estate. Ask me about properties, pricing, and active listings.",
+    userMsg: 'Are there any 2BHK apartments available under 50 Lakhs in Sector 62?',
+    botReply: "Yes! We have 3 premium 2BHK listings starting at 45 Lakhs in Sector 62 with modern amenities. Would you like to see photos? 🔑",
+  },
+  {
+    business: '🏋️ Apex Fitness Gym',
+    color: '#10B981',
+    greeting: "Hi! 👋 Welcome to Apex Fitness. How can I assist you with memberships, timings, or personal training?",
+    userMsg: 'What is your monthly membership fee and do you offer personal training?',
+    botReply: "Our membership starts at ₹1,499/mo. We have certified trainers for customized fat loss & strength programs. Want a free 1-day pass? 💪",
+  },
+  {
+    business: '🚘 DriveAuto Rentals',
+    color: '#EF4444',
+    greeting: "Hi! 👋 DriveAuto rentals here. Ask me about car models, prices, or documents needed to rent.",
+    userMsg: 'Can I rent a self-drive SUV for this weekend and what docs do I need?',
+    botReply: "Sure! We have SUVs like Thar & Creta available from ₹2,500/day. Just upload your Driving License & Aadhaar to start. 🚗",
+  }
+];
 
-const LogoLauraCole = () => (
-  <div className="flex items-center gap-2 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-    <div className="w-6 h-6 rounded-full border border-black flex items-center justify-center text-[10px] font-bold text-black font-sans">LC</div>
-    <span className="font-sans font-light tracking-[0.2em] text-xs text-black">LAURA COLE</span>
-  </div>
-);
+const TARGET_NAMES = ["Customers", "Clients", "Users", "Leads", "Buyers", "Students", "Patients", "Followers", "Guests"];
 
-const LogoVertex = () => (
-  <div className="flex items-center gap-1 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-    <span className="font-sans font-extrabold tracking-tight text-sm text-black">vertex</span>
-    <div className="flex gap-0.5">
-      <div className="w-1 h-1 rounded-full bg-violet-600" />
-      <div className="w-1 h-1 rounded-full bg-indigo-500" />
+// Smartphone Widget Simulator Component
+const HeroSmartphoneVisualization = () => {
+  const [phase, setPhase] = useState('greeting'); // greeting | userMsg | typing | botReply | pause
+  const [convoIndex, setConvoIndex] = useState(0);
+  const [messages, setMessages] = useState([]);
+
+  const [nameIndex, setNameIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNameIndex((prev) => (prev + 1) % TARGET_NAMES.length);
+    }, 1500);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const run = async () => {
+      if (!mounted) return;
+      
+      // Initialize with first conversation's greeting
+      const firstConvo = BUSINESS_CONVOS[0];
+      const initialGreeting = { role: 'bot', content: firstConvo.greeting };
+      setMessages([initialGreeting]);
+      setPhase('greeting');
+      await new Promise(r => setTimeout(r, 2200));
+
+      let idx = 0;
+      while (mounted) {
+        const convo = BUSINESS_CONVOS[idx % BUSINESS_CONVOS.length];
+        const greetingMsg = { role: 'bot', content: convo.greeting };
+
+        // User message appears
+        if (!mounted) break;
+        setMessages([greetingMsg, { role: 'user', content: convo.userMsg }]);
+        setPhase('userMsg');
+        await new Promise(r => setTimeout(r, 1500));
+
+        // Typing indicator
+        if (!mounted) break;
+        setPhase('typing');
+        await new Promise(r => setTimeout(r, 1600));
+
+        // Bot reply appears
+        if (!mounted) break;
+        setMessages([
+          greetingMsg,
+          { role: 'user', content: convo.userMsg },
+          { role: 'bot', content: convo.botReply },
+        ]);
+        setPhase('botReply');
+        await new Promise(r => setTimeout(r, 3800));
+
+        // Reset for next conversation
+        if (!mounted) break;
+        setMessages([]);
+        setPhase('pause');
+        await new Promise(r => setTimeout(r, 800));
+
+        idx++;
+        const nextConvo = BUSINESS_CONVOS[idx % BUSINESS_CONVOS.length];
+        const nextGreetingMsg = { role: 'bot', content: nextConvo.greeting };
+        setConvoIndex(idx % BUSINESS_CONVOS.length);
+        if (!mounted) break;
+        setMessages([nextGreetingMsg]);
+        setPhase('greeting');
+        await new Promise(r => setTimeout(r, 1600));
+      }
+    };
+
+    run();
+    return () => { mounted = false; };
+  }, []);
+
+  const currentConvo = BUSINESS_CONVOS[convoIndex];
+  const accentColor = currentConvo.color;
+
+  return (
+    <div className="relative flex items-center justify-center w-full lg:max-w-md mx-auto pb-16 md:pb-0">
+      {/* Dynamic Spiral Arrow Callout (Visible on md and larger) */}
+      <div className="hidden md:flex absolute -left-[11rem] lg:-left-[13rem] top-[28%] flex-col items-end z-20 max-w-[200px] text-right pointer-events-none select-none">
+        <div className="font-handwriting text-[23px] text-slate-100 leading-tight transform -rotate-3 filter drop-shadow-[0_2px_10px_rgba(244,63,94,0.2)]">
+          Your twin is exactly talking like this with your
+          <div className="h-9 overflow-hidden mt-0.5 flex justify-end items-center">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={nameIndex}
+                initial={{ y: 15, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -15, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="block text-pink-400 font-extrabold tracking-wider text-[21px] uppercase font-sans"
+              >
+                {TARGET_NAMES[nameIndex]}
+              </motion.span>
+            </AnimatePresence>
+          </div>
+        </div>
+        
+        {/* Curved swooping arrow pointing to screen */}
+        <div className="mt-1 mr-4 transform translate-x-4 text-pink-400 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]">
+          <svg viewBox="0 0 100 50" className="w-24 h-12 overflow-visible" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path 
+              d="M 10 5 C 35 28, 55 32, 80 12" 
+              stroke="currentColor" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
+              strokeDasharray="4 3"
+            />
+            <path 
+              d="M 68 8 L 82 12 L 76 25" 
+              stroke="currentColor" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* Dynamic Callout (Visible on mobile only below phone) */}
+      <div className="md:hidden absolute -bottom-10 left-0 right-0 flex justify-center text-center select-none z-20">
+        <span className="text-[12px] bg-slate-900/90 border border-white/10 px-4 py-2 rounded-full text-slate-300 font-medium tracking-wide backdrop-blur-md shadow-lg">
+          Your twin is exactly talking like this with your{" "}
+          <span className="text-indigo-400 font-extrabold tracking-wider uppercase ml-1">
+            {TARGET_NAMES[nameIndex]}
+          </span>
+        </span>
+      </div>
+
+      {/* Decorative background glow behind phone */}
+      <motion.div
+        className="absolute w-72 h-96 rounded-full blur-3xl -z-10 opacity-30"
+        style={{ backgroundColor: accentColor }}
+        animate={{ scale: [1, 1.1, 1] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Phone Body Wrapper */}
+      <div className="relative w-[280px] min-[380px]:w-[300px] h-[560px] min-[380px]:h-[600px] bg-[#0c0d12] rounded-[3.2rem] border-[6px] border-[#222530] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden ring-1 ring-white/10">
+        
+        {/* Notch / Speaker */}
+        <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-30">
+          <div className="w-32 h-5 bg-[#222530] rounded-b-2xl flex items-center justify-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#0c0d12]" />
+            <div className="w-10 h-1 bg-[#15171e] rounded-full" />
+          </div>
+        </div>
+
+        {/* Screen Content */}
+        <div className="absolute inset-0 pt-8 pb-4 px-3 flex flex-col justify-between bg-slate-950">
+          {/* Header */}
+          <div className="flex items-center justify-between px-2 py-2.5 border-b border-white/5">
+            <div className="flex items-center gap-2">
+              <motion.div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
+                style={{ background: `${accentColor}22`, border: `1px solid ${accentColor}44` }}
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                {currentConvo.business.split(' ')[0]}
+              </motion.div>
+              <div>
+                <p className="text-[11px] font-bold text-white leading-none">{currentConvo.business.split(' ').slice(1).join(' ')}</p>
+                <p className="text-[9px] text-emerald-400 font-semibold mt-0.5">● Twin Answering</p>
+              </div>
+            </div>
+            <span className="text-[8px] bg-white/5 border border-white/10 px-1.5 py-0.5 rounded-md text-slate-400 font-mono">v1.2</span>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 overflow-hidden flex flex-col gap-2.5 justify-end py-3 px-1">
+            <AnimatePresence mode="popLayout">
+              {messages.map((msg, idx) => (
+                <motion.div
+                  key={`${convoIndex}-${idx}`}
+                  initial={{ opacity: 0, y: 12, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.92, y: -6 }}
+                  transition={{ duration: 0.35, ease: 'easeOut' }}
+                  className={`max-w-[85%] text-[11px] font-medium leading-relaxed px-3 py-2 rounded-2xl ${
+                    msg.role === 'user'
+                      ? 'self-end text-white rounded-br-sm shadow-md'
+                      : 'self-start text-slate-200 bg-white/5 border border-white/10 rounded-bl-sm'
+                  }`}
+                  style={msg.role === 'user' ? { background: accentColor } : {}}
+                >
+                  {msg.content}
+                </motion.div>
+              ))}
+
+              {/* Typing indicator */}
+              {phase === 'typing' && (
+                <motion.div
+                  key="typing"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="self-start bg-white/5 border border-white/10 rounded-2xl rounded-bl-sm px-3.5 py-2.5 flex gap-1.5 items-center"
+                >
+                  {[0, 0.2, 0.4].map((delay, i) => (
+                    <motion.div
+                      key={i}
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ background: accentColor }}
+                      animate={{ y: [0, -3, 0], opacity: [0.5, 1, 0.5] }}
+                      transition={{ repeat: Infinity, duration: 0.7, delay }}
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Interactive Watermark (Brand Name Update) */}
+          <div className="text-center py-1 border-t border-white/5 bg-slate-950">
+            <span className="text-[8px] text-slate-500 font-medium tracking-wide">
+              Powered by <span className="text-indigo-400 font-semibold">AI Digital Twin</span>
+            </span>
+          </div>
+
+          {/* Mock Input Bar */}
+          <div className="pt-2 flex items-center gap-2 px-1">
+            <div className="flex-1 h-8 bg-white/5 rounded-full border border-white/10 flex items-center px-3">
+              <span className="text-[10px] text-slate-500">Ask the digital twin...</span>
+            </div>
+            <motion.div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white shadow flex-shrink-0"
+              style={{ background: accentColor }}
+              animate={{ scale: [1, 1.06, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 ml-0.5">
+                <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+              </svg>
+            </motion.div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
-const Home = () => {
+// Futuristic Startup Hero Section
+const Hero = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
-  
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('analyse');
-  
-  // Staggered custom dropdowns for Solutions and Teams in Navbar
-  const [activeDropdown, setActiveDropdown] = useState(null);
 
-  // Tab Cycling logic (runs only when the user is not actively interacting)
-  const tabIds = ['analyse', 'train', 'testing', 'deploy'];
-  const timerRef = useRef(null);
+  return (
+    <section className="relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden z-10">
+      <div className="w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        {/* Pitch Column */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+          className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6"
+        >
+          {/* Badge */}
+          <motion.div variants={fadeInUp}>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[11px] font-bold tracking-wider text-indigo-300 uppercase">Next-Gen Cognitive Clones</span>
+              <ChevronRight className="w-3.5 h-3.5 text-indigo-400" />
+            </div>
+          </motion.div>
 
-  const startTabCycle = () => {
-    stopTabCycle();
-    timerRef.current = setInterval(() => {
-      setActiveTab((prevTab) => {
-        const currentIndex = tabIds.indexOf(prevTab);
-        const nextIndex = (currentIndex + 1) % tabIds.length;
-        return tabIds[nextIndex];
+          {/* Heading */}
+          <motion.h1
+            variants={fadeInUp}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-extrabold tracking-tight leading-[1.1]"
+          >
+            <span className="block bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">
+              Clone Your Intelligence.
+            </span>
+            <span className="block bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Automate Your Presence.
+            </span>
+          </motion.h1>
+
+          {/* Subheading */}
+          <motion.p
+            variants={fadeInUp}
+            className="text-base sm:text-lg text-slate-300 max-w-xl font-medium leading-relaxed"
+          >
+            Without writing <span className="text-indigo-400 font-semibold">1,000s of lines of code</span>, deploy your own <span className="text-purple-400 font-semibold">AI Digital Twin</span> that answers customer queries in both <span className="text-pink-400 font-semibold">English & Hindi</span>, handling every conversation with the exact same care, tone, and intelligence as you would, 24/7.
+          </motion.p>
+
+          <motion.div variants={fadeInUp} className="flex items-center gap-2 mt-4 mb-6">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm border border-emerald-500/30">⚡</span>
+            <p className="text-sm sm:text-base text-slate-400 font-medium">
+              You can make your twin in just <span className="text-emerald-400 font-bold">4-5 minutes</span>. Zero coding required.
+            </p>
+          </motion.div>
+
+          {/* CTAs */}
+          <motion.div
+            variants={fadeInUp}
+            className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+          >
+            <motion.button
+              onClick={() => navigate('/register')}
+              className="w-full sm:w-auto group relative px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-2xl font-bold text-sm overflow-hidden shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] transition-all"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                Create Your Twin Free
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </motion.button>
+
+            <motion.button
+              onClick={() => navigate('/pricing')}
+              className="w-full sm:w-auto px-8 py-4 bg-white/[0.04] border border-white/10 hover:border-white/20 text-white rounded-2xl font-bold text-sm backdrop-blur-md hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Zap className="w-4 h-4 text-indigo-400" />
+              View Standard Tier (₹1299)
+            </motion.button>
+          </motion.div>
+
+          {/* Micro stats banner */}
+          <motion.div
+            variants={fadeInUp}
+            className="pt-6 grid grid-cols-3 gap-6 border-t border-white/5 w-full max-w-md"
+          >
+            <div>
+              <span className="block text-xl font-bold text-white">Sub-100ms</span>
+              <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Response Speed</span>
+            </div>
+            <div>
+              <span className="block text-xl font-bold text-white">99.4%</span>
+              <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Accuracy Index</span>
+            </div>
+            <div>
+              <span className="block text-xl font-bold text-white">Omnichannel</span>
+              <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Web & WhatsApp</span>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* Smartphone Simulator Mockup Column */}
+        <div className="lg:col-span-5 flex justify-center">
+          <HeroSmartphoneVisualization />
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+// Interactive Capabilities Playground (NEW Component - No Fake Data)
+const CapabilitiesPlayground = () => {
+  const [activeTab, setActiveTab] = useState('kb'); // kb | widget | voice | whatsapp
+  
+  // Customizer state for Widget Tab
+  const [widgetColor, setWidgetColor] = useState('#6366F1');
+  const [showWatermark, setShowWatermark] = useState(true);
+
+  // Ingest states
+  const [uploadState, setUploadState] = useState('idle'); // idle | uploading | parsed
+  const [percent, setPercent] = useState(0);
+
+  const startUploadSim = () => {
+    setUploadState('uploading');
+    setPercent(0);
+    const interval = setInterval(() => {
+      setPercent((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setUploadState('parsed');
+          return 100;
+        }
+        return prev + 20;
       });
-    }, 4000);
+    }, 300);
   };
 
-  const stopTabCycle = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
+  // Voice synthesis states
+  const [voiceState, setVoiceState] = useState('idle'); // idle | recording | synth | complete
+  const startVoiceSim = () => {
+    setVoiceState('recording');
+    setTimeout(() => {
+      setVoiceState('synth');
+      setTimeout(() => {
+        setVoiceState('complete');
+      }, 2000);
+    }, 2000);
+  };
+
+  // WhatsApp states
+  const [waState, setWaState] = useState('idle'); // idle | scanning | connected
+  const startWaSim = () => {
+    setWaState('scanning');
+    setTimeout(() => {
+      setWaState('connected');
+    }, 3000);
+  };
+
+  const tabs = [
+    { id: 'kb', label: 'Knowledge Base Ingestion', icon: Database },
+    { id: 'widget', label: 'Web Chat Widget Customizer', icon: Smartphone },
+    { id: 'voice', label: 'Neural Voice Synthesis', icon: Mic },
+    { id: 'whatsapp', label: 'WhatsApp QR Linkage', icon: Scan }
+  ];
+
+  return (
+    <section className="relative py-24 bg-slate-950/20 border-t border-b border-white/5 overflow-hidden z-10">
+      <div className="max-w-7xl mx-auto px-6">
+        
+        {/* Title */}
+        <div className="text-center mb-16">
+          <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+            <Sliders className="w-4 h-4" /> Real-time Capability Sandbox
+          </span>
+          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            See the Platform Features in Action
+          </h2>
+          <p className="mt-4 text-slate-400 max-w-2xl mx-auto text-sm font-medium">
+            Test the real interactive capabilities that power your AI Digital Twin. Experience the exact functional components directly inside the browser.
+          </p>
+        </div>
+
+        {/* Grid Wrapper */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Tabs Selector list */}
+          <div className="lg:col-span-4 space-y-3">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl border text-left transition-all ${
+                    isActive
+                      ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-indigo-500/40 text-white shadow-lg'
+                      : 'bg-white/[0.02] border-white/5 text-slate-400 hover:bg-white/[0.04] hover:text-white'
+                  }`}
+                >
+                  <div className={`p-2 rounded-xl ${isActive ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white/5 text-slate-500'}`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Module</span>
+                    <span className="text-sm font-bold">{tab.label}</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Interactive Preview Container */}
+          <div className="lg:col-span-8 bg-white/[0.02] border border-white/5 rounded-3xl p-8 min-h-[400px] flex flex-col justify-between shadow-2xl relative overflow-hidden backdrop-blur-md">
+            
+            {/* Ambient inner glow */}
+            <div className="absolute -top-12 -right-12 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            <AnimatePresence mode="wait">
+              {activeTab === 'kb' && (
+                <motion.div
+                  key="kb"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-6"
+                >
+                  <div className="border-b border-white/5 pb-4">
+                    <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[9px] font-bold rounded uppercase tracking-wider border border-indigo-500/20">Knowledge Core</span>
+                    <h3 className="text-xl font-bold text-white mt-2">Vector Ingestion Pipeline</h3>
+                    <p className="text-xs text-slate-400 mt-1">Upload knowledge parameters. The pipeline tokenizes, indexes, and syncs vectors directly to the Digital Twin database.</p>
+                  </div>
+
+                  {/* Simulator Area */}
+                  {uploadState === 'idle' && (
+                    <div
+                      onClick={startUploadSim}
+                      className="border border-dashed border-white/10 hover:border-indigo-500/30 bg-slate-950/40 rounded-2xl p-8 flex flex-col items-center justify-center space-y-3 cursor-pointer transition-all"
+                    >
+                      <FileText className="w-10 h-10 text-indigo-400 animate-pulse" />
+                      <span className="text-xs font-semibold text-slate-200">Click to upload mock files (e.g. faq.pdf, pricing_terms.txt)</span>
+                      <span className="text-[10px] text-slate-500">Simulates vector processing and database injection</span>
+                    </div>
+                  )}
+
+                  {uploadState === 'uploading' && (
+                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
+                      <RefreshCw className="w-8 h-8 text-indigo-400 animate-spin" />
+                      <div className="w-full max-w-xs space-y-2">
+                        <div className="flex justify-between text-xs font-mono text-slate-400">
+                          <span>Tokenizing & Embedding...</span>
+                          <span>{percent}%</span>
+                        </div>
+                        <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden">
+                          <div className="bg-indigo-500 h-full transition-all duration-300" style={{ width: `${percent}%` }} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {uploadState === 'parsed' && (
+                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
+                      <CheckCircle className="w-10 h-10 text-emerald-400 animate-bounce" />
+                      <div className="text-center space-y-1">
+                        <span className="text-sm font-bold text-white">Database Synchronization Successful!</span>
+                        <p className="text-[11px] text-slate-500">25,840 vectors processed and indexed into ChromaDB tenant instance.</p>
+                      </div>
+                      <button
+                        onClick={() => setUploadState('idle')}
+                        className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
+                      >
+                        Reset Pipeline
+                      </button>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {activeTab === 'widget' && (
+                <motion.div
+                  key="widget"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-8"
+                >
+                  {/* Customizer Toggles */}
+                  <div className="space-y-6">
+                    <div>
+                      <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[9px] font-bold rounded uppercase tracking-wider border border-indigo-500/20">Customizer</span>
+                      <h3 className="text-xl font-bold text-white mt-2">Widget Editor</h3>
+                      <p className="text-xs text-slate-400 mt-1">Configure layout options. Changes will apply to the web integration preview immediately.</p>
+                    </div>
+
+                    {/* Colors selection */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Widget Color Theme</label>
+                      <div className="flex gap-3">
+                        {['#6366F1', '#D946EF', '#06B6D4', '#10B981', '#F59E0B'].map((color) => (
+                          <button
+                            key={color}
+                            onClick={() => setWidgetColor(color)}
+                            className="w-8 h-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center"
+                            style={{
+                              backgroundColor: color,
+                              borderColor: widgetColor === color ? 'white' : 'transparent'
+                            }}
+                          >
+                            {widgetColor === color && <Check className="w-4 h-4 text-white" />}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Watermark Toggle */}
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="wt"
+                        checked={showWatermark}
+                        onChange={(e) => setShowWatermark(e.target.checked)}
+                        className="w-4 h-4 accent-indigo-500 rounded bg-slate-900 border-white/10"
+                      />
+                      <label htmlFor="wt" className="text-xs text-slate-300 font-medium">
+                        Show "Powered by AI Digital Twin" watermark
+                      </label>
+                    </div>
+
+                    <div className="p-3.5 bg-white/5 border border-white/10 rounded-2xl text-[10px] text-slate-500 leading-normal">
+                      💡 Standard Plan (₹1599 → ₹1299/mo Launch Offer) removes the "Powered by AI Digital Twin" watermark branding completely.
+                    </div>
+                  </div>
+
+                  {/* Mock Widget Preview */}
+                  <div className="bg-slate-950/80 border border-white/10 rounded-2xl p-4 flex flex-col justify-between h-[300px] shadow-inner">
+                    {/* Widget Top bar */}
+                    <div className="flex items-center gap-2.5 pb-2.5 border-b border-white/5">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: widgetColor }}>
+                        🤖
+                      </div>
+                      <div>
+                        <span className="block text-[10px] font-bold text-white">AI Twin Assistant</span>
+                        <span className="block text-[8px] text-emerald-400 font-semibold">● Active</span>
+                      </div>
+                    </div>
+
+                    {/* Bubbles */}
+                    <div className="flex-1 flex flex-col gap-2 justify-end py-4">
+                      <div className="bg-white/5 border border-white/5 px-3 py-1.5 rounded-2xl rounded-bl-sm text-[9px] text-slate-300 self-start max-w-[85%]">
+                        Hello! Welcome to our website. How can I help you today?
+                      </div>
+                      <div className="px-3 py-1.5 rounded-2xl rounded-br-sm text-[9px] text-white self-end max-w-[85%]" style={{ backgroundColor: widgetColor }}>
+                        Show me standard plan details.
+                      </div>
+                    </div>
+
+                    {/* Branding watermarks */}
+                    {showWatermark && (
+                      <div className="text-center py-1 bg-slate-900/50 rounded-md border border-white/5 mb-2">
+                        <span className="text-[8px] text-slate-500">
+                          Powered by <span className="text-slate-400 font-bold">AI Digital Twin</span>
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Chat Input block */}
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-7 bg-white/5 rounded-full border border-white/10 px-2 flex items-center">
+                        <span className="text-[8px] text-slate-500">Ask a question...</span>
+                      </div>
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: widgetColor }}>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'voice' && (
+                <motion.div
+                  key="voice"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-6"
+                >
+                  <div className="border-b border-white/5 pb-4">
+                    <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[9px] font-bold rounded uppercase tracking-wider border border-indigo-500/20">Acoustic Synthesizer</span>
+                    <h3 className="text-xl font-bold text-white mt-2">Neural Voice Synthesis</h3>
+                    <p className="text-xs text-slate-400 mt-1">Record a 10-second audio profile. The AI models capture pitch, accent, and speech speed variables to clone your voice.</p>
+                  </div>
+
+                  {voiceState === 'idle' && (
+                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
+                      <Mic className="w-12 h-12 text-indigo-400" />
+                      <button
+                        onClick={startVoiceSim}
+                        className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-xs rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.3)] hover:scale-105 transition-all"
+                      >
+                        Start Voice Synthesis Recording
+                      </button>
+                      <p className="text-[10px] text-slate-500">Requires microphone permission (Simulated playground)</p>
+                    </div>
+                  )}
+
+                  {voiceState === 'recording' && (
+                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
+                      <div className="flex items-center gap-1.5 h-8">
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((bar) => (
+                          <motion.div
+                            key={bar}
+                            className="w-1 bg-red-500 rounded-full"
+                            style={{ height: 8 }}
+                            animate={{ height: [8, 32, 8] }}
+                            transition={{ duration: 0.5, repeat: Infinity, delay: bar * 0.05 }}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs font-mono text-red-500 font-bold uppercase animate-pulse">Recording voice prints... Speak clearly</span>
+                    </div>
+                  )}
+
+                  {voiceState === 'synth' && (
+                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
+                      <RefreshCw className="w-8 h-8 text-indigo-400 animate-spin" />
+                      <span className="text-xs text-slate-300 font-semibold uppercase tracking-wider">Extracting phonetic parameters...</span>
+                      <p className="text-[10px] text-slate-500">Mapping pitch vectors and sentence alignments</p>
+                    </div>
+                  )}
+
+                  {voiceState === 'complete' && (
+                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
+                      <Volume2 className="w-12 h-12 text-emerald-400 animate-bounce" />
+                      <div className="text-center space-y-1">
+                        <span className="text-xs font-mono text-emerald-400 font-bold">SYNTHESIS SUCCESSFUL</span>
+                        <h4 className="text-sm font-bold text-white">Your Cloned Voice Profile is Active</h4>
+                        <p className="text-[10px] text-slate-500">Twin can now process live WebRTC voice streams with 180ms latency.</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => alert('Simulated Playback: "Hello! This is my AI digital twin cloned voice."')}
+                          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-colors"
+                        >
+                          Play Voice Profile Sample
+                        </button>
+                        <button
+                          onClick={() => setVoiceState('idle')}
+                          className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300 hover:bg-white/10 transition-colors"
+                        >
+                          Re-record
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {activeTab === 'whatsapp' && (
+                <motion.div
+                  key="whatsapp"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-6"
+                >
+                  <div className="border-b border-white/5 pb-4">
+                    <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[9px] font-bold rounded uppercase tracking-wider border border-indigo-500/20">Messaging Gateway</span>
+                    <h3 className="text-xl font-bold text-white mt-2">WhatsApp Scanner Linkage</h3>
+                    <p className="text-xs text-slate-400 mt-1">Scan our dashboard QR code using WhatsApp linked devices. The system registers your WhatsApp session to automatically reply to customers.</p>
+                  </div>
+
+                  {waState === 'idle' && (
+                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
+                      <Scan className="w-12 h-12 text-indigo-400" />
+                      <button
+                        onClick={startWaSim}
+                        className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-xs rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.3)] hover:scale-105 transition-all"
+                      >
+                        Generate QR Code for Scan Linkage
+                      </button>
+                    </div>
+                  )}
+
+                  {waState === 'scanning' && (
+                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4 relative">
+                      <div className="w-36 h-36 bg-white border-4 border-slate-900 rounded-xl relative overflow-hidden flex items-center justify-center shadow-lg">
+                        {/* Mock QR image */}
+                        <div className="w-32 h-32 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900 via-slate-950 to-black opacity-90 p-2 grid grid-cols-6 grid-rows-6 gap-1">
+                          {[...Array(36)].map((_, i) => (
+                            <div key={i} className={`rounded-[2px] ${i % 3 === 0 || i % 7 === 0 ? 'bg-white' : 'bg-transparent'}`} />
+                          ))}
+                        </div>
+                        {/* Laser line scan */}
+                        <motion.div
+                          className="absolute inset-x-0 h-1 bg-emerald-500 shadow-[0_0_8px_#10b981]"
+                          animate={{ top: ['0%', '100%', '0%'] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                        />
+                      </div>
+                      <span className="text-xs font-mono text-indigo-400 animate-pulse uppercase tracking-wider font-bold">Scanning devices... Scan QR Code using WhatsApp</span>
+                    </div>
+                  )}
+
+                  {waState === 'connected' && (
+                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
+                      <CheckCircle className="w-10 h-10 text-emerald-400 animate-bounce" />
+                      <div className="text-center space-y-1">
+                        <span className="text-xs font-mono text-emerald-400 font-bold">DEVICE REGISTERED</span>
+                        <h4 className="text-sm font-bold text-white">WhatsApp Account Linked Successfully</h4>
+                        <p className="text-[10px] text-slate-500">Your AI Digital Twin is now auto-replying to incoming chats on your WhatsApp number.</p>
+                      </div>
+                      <button
+                        onClick={() => setWaState('idle')}
+                        className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300 hover:bg-white/10 transition-colors"
+                      >
+                        Disconnect Session
+                      </button>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Platform status telemetry */}
+            <div className="mt-8 pt-4 border-t border-white/5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-left font-mono text-[9px] text-slate-500">
+              <div>
+                <span className="block text-slate-600 uppercase font-bold">Latency</span>
+                <span className="text-slate-400 font-extrabold">{activeTab === 'kb' ? '15ms' : activeTab === 'widget' ? '35ms' : activeTab === 'voice' ? '180ms' : '62ms'}</span>
+              </div>
+              <div>
+                <span className="block text-slate-600 uppercase font-bold">Endpoint Route</span>
+                <span className="text-slate-400 font-extrabold truncate block">
+                  {activeTab === 'kb' ? '/api/v1/knowledge' : activeTab === 'widget' ? '/api/v1/integrations/widget' : activeTab === 'voice' ? '/api/v1/voice/clone' : '/api/v1/integrations/whatsapp'}
+                </span>
+              </div>
+              <div>
+                <span className="block text-slate-600 uppercase font-bold">Access Check</span>
+                <span className="text-slate-400 font-extrabold uppercase">{activeTab === 'kb' || activeTab === 'widget' ? 'Standard (₹1299)' : 'Business Pro'}</span>
+              </div>
+              <div>
+                <span className="block text-slate-600 uppercase font-bold">Gating Policy</span>
+                <span className="text-emerald-400 font-extrabold">STRICT_ENFORCE</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+// Premium Features Cards Section
+const Features = () => {
+  const navigate = useNavigate();
+  const [spreadIndex, setSpreadIndex] = useState(0);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [direction, setDirection] = useState('next');
+  const [displaySpreadIndex, setDisplaySpreadIndex] = useState(0);
+  
+  // Responsive check
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Voice Twin wave play state
+  const [isVoicePlaying, setIsVoicePlaying] = useState(false);
+  
+  // WhatsApp Scanner Link state
+  const [isWALinked, setIsWALinked] = useState(false);
+  
+  // Mini Widget Customizer color state
+  const [widgetColor, setWidgetColor] = useState('#06b6d4'); // Cyan default
+
+  // Gating guard request logs state
+  const [gateLog, setGateLog] = useState([
+    { method: 'POST', endpoint: '/api/v1/twin/chat', status: 200, role: 'Business Pro' }
+  ]);
+  
+  const addGateLog = (role, status) => {
+    setGateLog(prev => [
+      { method: 'POST', endpoint: '/api/v1/twin/chat', status, role },
+      ...prev.slice(0, 3)
+    ]);
+  };
+
+  const turnToSpread = (targetIndex) => {
+    if (targetIndex === spreadIndex || isFlipping) return;
+    const dir = targetIndex > spreadIndex ? 'next' : 'prev';
+    setDirection(dir);
+    setIsFlipping(true);
+    
+    if (dir === 'next') {
+      setTimeout(() => {
+        setDisplaySpreadIndex(targetIndex);
+      }, 250);
+    } else {
+      setDisplaySpreadIndex(targetIndex);
+    }
+    
+    setSpreadIndex(targetIndex);
+    
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 500);
+  };
+  
+  // Define content for each page
+  // Page 0: Cover / Table of Contents
+  const renderPage0 = () => (
+    <div className="flex flex-col h-full justify-between py-1 px-1">
+      <div>
+        <div className="flex items-center gap-2 text-indigo-400 mb-3">
+          <BookOpen className="w-4 h-4 animate-pulse" />
+          <span className="text-[9px] font-bold tracking-wider uppercase">System Spec Manual</span>
+        </div>
+        <h3 className="text-xl font-black text-white tracking-tight leading-tight mb-1.5">
+          Cognitive AI Twin Blueprint
+        </h3>
+        <p className="text-[11px] text-slate-400 leading-relaxed font-medium mb-4">
+          Welcome to the technical capability manual. Click chapters below or flip pages to inspect each engine, simulator, and route guard.
+        </p>
+        
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { ch: 'Ch 1', title: 'Voice Synthesizer', spread: 0 },
+            { ch: 'Ch 2', title: 'Knowledge Vectorizer', spread: 1 },
+            { ch: 'Ch 3', title: 'WhatsApp Gateway', spread: 1 },
+            { ch: 'Ch 4', title: 'Embedded Web Widget', spread: 2 },
+            { ch: 'Ch 5', title: 'Analytical Dashboard', spread: 2 },
+            { ch: 'Ch 6', title: 'Route Security Gate', spread: 3 }
+          ].map((item, idx) => (
+            <button
+              key={idx}
+              onClick={() => turnToSpread(item.spread)}
+              className="flex flex-col justify-between p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/10 transition-all text-left h-16 group"
+            >
+              <span className="text-[9px] text-indigo-400 font-bold tracking-wider uppercase group-hover:text-indigo-300 transition-colors">{item.ch}</span>
+              <span className="text-[11px] font-bold text-white/90 leading-tight group-hover:text-white transition-colors">{item.title}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-3 flex items-center justify-between text-[9px] text-slate-500 font-mono mt-4">
+        <span>ANTIGRAVITY SYSTEMS</span>
+        <span>PAGE 01</span>
+      </div>
+    </div>
+  );
+
+  // Page 1: Feature 1 - Voice Synthesizer
+  const renderPage1 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-lg">
+            <Mic className="w-4 h-4 text-rose-400" />
+            <span className="text-[10px] font-bold tracking-wider text-rose-300 uppercase">Voice Synthesizer</span>
+          </div>
+          <span className="text-[8px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/30 px-1.5 py-0.5 rounded uppercase">Business Pro</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 1: Voice Cloning Synthesizer</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-6">
+          Clone your acoustic voice signature from a 10-second audio recording. Power voice bot dials with natural tone, pitch, and accent alignment.
+        </p>
+
+        {/* Waveform Simulator box */}
+        <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex flex-col items-center gap-4">
+          <div className="flex items-center gap-1.5 h-12">
+            {Array.from({ length: 18 }).map((_, i) => (
+              <div
+                key={i}
+                className="w-1 bg-gradient-to-t from-rose-500 to-pink-500 rounded-full"
+                style={{
+                  height: isVoicePlaying ? '100%' : '15%',
+                  animation: isVoicePlaying ? `voice-wave 0.8s ease-in-out infinite alternate` : 'none',
+                  animationDelay: `${i * 0.05}s`
+                }}
+              />
+            ))}
+          </div>
+          
+          <button
+            onClick={() => setIsVoicePlaying(!isVoicePlaying)}
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-500 hover:bg-rose-600 text-white transition-colors flex items-center gap-1.5 shadow-[0_0_15px_rgba(244,63,94,0.3)]"
+          >
+            {isVoicePlaying ? (
+              <>
+                <Volume2 className="w-3.5 h-3.5 animate-bounce" />
+                Stop Sample Cloned Voice
+              </>
+            ) : (
+              <>
+                <Mic className="w-3.5 h-3.5" />
+                Listen Sample Cloned Voice
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>CLONE ENGINE</span>
+        <span>PAGE 02</span>
+      </div>
+    </div>
+  );
+
+  // Page 2: Feature 2 - Multi-Format Ingestion
+  const renderPage2 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-1 rounded-lg">
+            <Database className="w-4 h-4 text-cyan-400" />
+            <span className="text-[10px] font-bold tracking-wider text-cyan-300 uppercase">Knowledge Vectorizer</span>
+          </div>
+          <span className="text-[8px] font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-1.5 py-0.5 rounded uppercase">Standard</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 2: Multi-Format Knowledge Ingestion</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-6">
+          Upload PDF files, TXT records, or scrape full site URLs. The vectorizer parses and indexes data into an isolated vector database instantly.
+        </p>
+
+        {/* SVG Flow diagram */}
+        <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
+          <svg viewBox="0 0 260 100" className="w-full max-w-[240px]">
+            {/* Left nodes */}
+            <rect x="10" y="5" width="45" height="20" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
+            <text x="32" y="17" fill="#94a3b8" fontSize="8" textAnchor="middle">PDF Doc</text>
+
+            <rect x="10" y="40" width="45" height="20" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
+            <text x="32" y="52" fill="#94a3b8" fontSize="8" textAnchor="middle">TXT Log</text>
+
+            <rect x="10" y="75" width="45" height="20" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
+            <text x="32" y="87" fill="#94a3b8" fontSize="8" textAnchor="middle">URL Link</text>
+
+            {/* Right target nodes */}
+            <circle cx="130" cy="50" r="22" fill="rgba(6,182,212,0.1)" stroke="rgba(6,182,212,0.3)" />
+            <text x="130" y="53" fill="#22d3ee" fontSize="7" textAnchor="middle" fontWeight="bold">Chunker</text>
+
+            <rect x="200" y="37" width="50" height="26" rx="4" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.4)" />
+            <text x="225" y="50" fill="#22d3ee" fontSize="8" textAnchor="middle" fontWeight="bold">Vector DB</text>
+
+            {/* Connecting lines */}
+            <path d="M 55 15 L 110 40" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
+            <path d="M 55 50 L 108 50" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
+            <path d="M 55 85 L 110 60" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
+            <path d="M 152 50 L 200 50" fill="none" stroke="#22d3ee" strokeWidth="1.5" className="flow-line-animated" />
+          </svg>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>VECTOR DATABASE</span>
+        <span>PAGE 03</span>
+      </div>
+    </div>
+  );
+
+  // Page 3: Feature 3 - WhatsApp Gateway
+  const renderPage3 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+            <Scan className="w-4 h-4 text-emerald-400" />
+            <span className="text-[10px] font-bold tracking-wider text-emerald-300 uppercase">WhatsApp Gateway</span>
+          </div>
+          <span className="text-[8px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded uppercase">Business Pro</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 3: WhatsApp Gateway Linker</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-6">
+          Link your WhatsApp using simple QR scanners. Let your twin manage client chats 24/7 on autopilot with secure webhook routers.
+        </p>
+
+        {/* QR simulation */}
+        <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center gap-4">
+          <div className="relative w-16 h-16 bg-white p-1 rounded-lg flex-shrink-0">
+            {/* Grid QR representation */}
+            <div className="w-full h-full bg-slate-900 rounded-sm flex flex-col justify-between p-1">
+              <div className="flex justify-between">
+                <div className="w-4 h-4 border border-white rounded-xs" />
+                <div className="w-4 h-4 border border-white rounded-xs" />
+              </div>
+              <div className="flex justify-between items-end">
+                <div className="w-4 h-4 border border-white rounded-xs" />
+                <div className="w-3 h-3 bg-white rounded-xs" />
+              </div>
+            </div>
+            
+            {/* Laser scanning bar */}
+            {!isWALinked && (
+              <motion.div 
+                className="absolute left-0 inset-x-0 h-0.5 bg-emerald-400 shadow-md"
+                animate={{ top: ['4px', '60px', '4px'] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            )}
+          </div>
+          
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className={`w-2 h-2 rounded-full ${isWALinked ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+              <span className="text-[10px] font-mono font-bold text-slate-300">
+                {isWALinked ? 'Linked & Autopilot Live' : 'Awaiting QR Scan'}
+              </span>
+            </div>
+            <button
+              onClick={() => setIsWALinked(!isWALinked)}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-colors ${
+                isWALinked 
+                  ? 'bg-transparent border-slate-700 text-slate-400 hover:text-slate-200' 
+                  : 'bg-emerald-500 hover:bg-emerald-600 border-transparent text-white'
+              }`}
+            >
+              {isWALinked ? 'Disconnect Gateway' : 'Scan & Link Test'}
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>WHATSAPP INTEGRATION</span>
+        <span>PAGE 04</span>
+      </div>
+    </div>
+  );
+
+  // Page 4: Feature 4 - Web Widget
+  const renderPage4 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-lg">
+            <Smartphone className="w-4 h-4 text-purple-400" />
+            <span className="text-[10px] font-bold tracking-wider text-purple-300 uppercase">Web Chat Widget</span>
+          </div>
+          <span className="text-[8px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30 px-1.5 py-0.5 rounded uppercase">Standard</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 4: Lightweight Web Widget</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-5">
+          Embed a clean, fully customized chat widget onto client websites with a single line of script. Remove watermarks.
+        </p>
+
+        {/* Live widget preview block */}
+        <div className="p-3.5 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-mono text-slate-400">Preview Widget Theme:</span>
+            <div className="flex gap-1.5">
+              {['#06b6d4', '#d946ef', '#10b981', '#f59e0b', '#f43f5e'].map((col) => (
+                <button 
+                  key={col} 
+                  className="w-3.5 h-3.5 rounded-full border border-white/10 transition-transform hover:scale-110"
+                  style={{ backgroundColor: col }}
+                  onClick={() => setWidgetColor(col)}
+                />
+              ))}
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between bg-slate-900 p-2.5 rounded-lg border border-white/5">
+            <div className="flex items-center gap-1.5">
+              <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] text-white" style={{ backgroundColor: widgetColor }}>
+                AI
+              </div>
+              <span className="text-[9px] font-bold text-white">Digital Twin Support</span>
+            </div>
+            
+            <div 
+              className="w-7 h-7 rounded-full flex items-center justify-center text-white transition-all shadow-md"
+              style={{ backgroundColor: widgetColor }}
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>UI INTEGRATION</span>
+        <span>PAGE 05</span>
+      </div>
+    </div>
+  );
+
+  // Page 5: Feature 5 - Analytics
+  const renderPage5 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg">
+            <BarChart3 className="w-4 h-4 text-amber-400" />
+            <span className="text-[10px] font-bold tracking-wider text-amber-300 uppercase">Analytical Reporting</span>
+          </div>
+          <span className="text-[8px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded uppercase">Standard</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 5: Analytical Reporting</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-5">
+          Track conversation logs, message count limits, query volumes, and response success rates in an analytics dashboard.
+        </p>
+
+        {/* Analytical bar chart mockup */}
+        <div className="p-3.5 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-3">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-slate-900/60 p-2 rounded-lg border border-white/5 text-center">
+              <span className="text-[8px] text-slate-500 block uppercase">Accuracy</span>
+              <span className="text-xs font-black text-amber-400">99.4%</span>
+            </div>
+            <div className="bg-slate-900/60 p-2 rounded-lg border border-white/5 text-center">
+              <span className="text-[8px] text-slate-500 block uppercase">Latency</span>
+              <span className="text-xs font-black text-amber-400">85ms</span>
+            </div>
+            <div className="bg-slate-900/60 p-2 rounded-lg border border-white/5 text-center">
+              <span className="text-[8px] text-slate-500 block uppercase">Resolved</span>
+              <span className="text-xs font-black text-amber-400">12,492</span>
+            </div>
+          </div>
+          
+          {/* Animated chart bars */}
+          <div className="h-10 flex items-end justify-between px-1">
+            {[45, 62, 55, 78, 92, 98].map((h, i) => (
+              <div key={i} className="w-5 bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-sm animate-pulse" style={{ height: `${h}%`, animationDelay: `${i * 0.15}s` }} />
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>ANALYTICS ENGINE</span>
+        <span>PAGE 06</span>
+      </div>
+    </div>
+  );
+
+  // Page 6: Feature 6 - Security Gate
+  const renderPage6 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 px-2.5 py-1 rounded-lg">
+            <Shield className="w-4 h-4 text-indigo-400" />
+            <span className="text-[10px] font-bold tracking-wider text-indigo-300 uppercase">Route Gating Guard</span>
+          </div>
+          <span className="text-[8px] font-mono bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded uppercase">System-wide</span>
+        </div>
+        
+        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 6: Route Gating Guard</h4>
+        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-5">
+          Robust backend authentication policy gates. Standard users are strictly blocked from premium Business Pro API endpoints.
+        </p>
+
+        {/* Security Gate Simulation */}
+        <div className="p-3.5 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-2.5">
+          <div className="flex justify-between items-center gap-2">
+            <button 
+              onClick={() => addGateLog('Standard', 403)}
+              className="flex-1 py-1.5 rounded bg-amber-500/10 border border-amber-500/30 text-[9px] font-bold text-amber-300 hover:bg-amber-500/20 transition-all text-center"
+            >
+              Simulate Standard Key
+            </button>
+            <button 
+              onClick={() => addGateLog('Business Pro', 200)}
+              className="flex-1 py-1.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-[9px] font-bold text-emerald-300 hover:bg-emerald-500/20 transition-all text-center"
+            >
+              Simulate Pro Key
+            </button>
+          </div>
+          
+          <div className="space-y-1.5 font-mono text-[8px] bg-slate-950 p-2 rounded border border-white/5">
+            {gateLog.map((log, idx) => (
+              <div key={idx} className="flex justify-between items-center py-0.5 border-b border-white/5 last:border-0">
+                <span className="text-indigo-400">{log.method} {log.endpoint}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-slate-500">[{log.role}]</span>
+                  <span className={log.status === 200 ? 'text-emerald-400' : 'text-rose-400'}>
+                    {log.status}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>SECURITY POLICY</span>
+        <span>PAGE 07</span>
+      </div>
+    </div>
+  );
+
+  // Page 7: Back Cover / CTA
+  const renderPage7 = () => (
+    <div className="flex flex-col h-full justify-between py-2 px-1 text-center">
+      <div className="my-auto">
+        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-5">
+          <Zap className="w-6 h-6 text-indigo-400 animate-pulse" />
+        </div>
+        <h4 className="text-2xl font-black text-white leading-tight mb-2">Launch Your AI Twin</h4>
+        <p className="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto mb-6 font-medium">
+          Ready to scale your business reach with conversational AI twins in English & Hindi? Setup is quick and requires zero coding.
+        </p>
+        
+        <div className="flex flex-col gap-2.5 max-w-xs mx-auto">
+          <button
+            onClick={() => navigate('/register')}
+            className="w-full py-2.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl text-xs font-bold shadow-lg hover:opacity-90 transition-opacity"
+          >
+            Create Your Twin Free
+          </button>
+          
+          <button
+            onClick={() => navigate('/pricing')}
+            className="w-full py-2.5 bg-white/5 border border-white/10 hover:border-white/20 text-white rounded-xl text-xs font-bold transition-all"
+          >
+            Check Premium Plans (₹1299)
+          </button>
+        </div>
+      </div>
+      
+      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+        <span>SYSTEM VERSION 1.2</span>
+        <span>PAGE 08</span>
+      </div>
+    </div>
+  );
+
+  // Render static spread contents based on displayIndex
+  const getSpreadLeftContent = (index) => {
+    switch (index) {
+      case 0: return renderPage0();
+      case 1: return renderPage2();
+      case 2: return renderPage4();
+      case 3: return renderPage6();
+      default: return null;
     }
   };
 
-  useEffect(() => {
-    startTabCycle();
-    return () => stopTabCycle();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const getSpreadRightContent = (index) => {
+    switch (index) {
+      case 0: return renderPage1();
+      case 1: return renderPage3();
+      case 2: return renderPage5();
+      case 3: return renderPage7();
+      default: return null;
+    }
+  };
 
-  const handleTabClick = (tabId) => {
-    setActiveTab(tabId);
-    stopTabCycle(); // Temporarily pause cycling when clicked
-    startTabCycle(); // Restart cycle with fresh interval
+  // Flipping sheet contents
+  const getFlippingFrontContent = () => {
+    if (direction === 'next') {
+      return getSpreadRightContent(spreadIndex - 1);
+    } else {
+      return getSpreadRightContent(spreadIndex);
+    }
+  };
+
+  const getFlippingBackContent = () => {
+    if (direction === 'next') {
+      return getSpreadLeftContent(spreadIndex);
+    } else {
+      return getSpreadLeftContent(spreadIndex + 1);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-gray-100 overflow-x-hidden">
-      
-      {/* ── NAVIGATION (Delay: 0.1s) ── */}
-      <header 
-        className="animate-fade-in-up border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-md z-50 transition-all duration-300"
-        style={{ animationDelay: '0.1s', opacity: 0 }}
-      >
-        <div className="px-6 py-4 flex items-center justify-between max-w-7xl mx-auto">
-          {/* Left: Brand logo */}
-          <div 
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 cursor-pointer group"
-          >
-            <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white transition-transform group-hover:rotate-12 duration-300">
-              <Star className="w-5 h-5 fill-white text-white" />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-black">Stellar.ai</span>
-            <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium ml-1">Twin Creator</span>
-          </div>
-
-          {/* Center (Desktop navigation) */}
-          <nav className="hidden md:flex items-center gap-8 relative">
-            {/* Solutions Dropdown */}
-            <div 
-              className="relative"
-              onMouseEnter={() => setActiveDropdown('solutions')}
-              onMouseLeave={() => setActiveDropdown(null)}
-            >
-              <button className="flex items-center gap-1 text-sm text-gray-600 hover:text-black font-medium transition-colors py-2">
-                Solutions <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-black" />
-              </button>
-              {activeDropdown === 'solutions' && (
-                <div className="absolute top-full left-0 w-60 bg-white border border-gray-100 shadow-xl rounded-2xl p-4 grid grid-cols-1 gap-2 z-50 animate-fade-in-overlay">
-                  <div className="p-2 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors" onClick={() => navigate('/voice-agent')}>
-                    <span className="block text-xs font-bold text-black">Neural Voice Cloning</span>
-                    <span className="text-[10px] text-gray-500">Duplicate your vocal signature in English/Hindi</span>
-                  </div>
-                  <div className="p-2 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors" onClick={() => navigate('/documentation')}>
-                    <span className="block text-xs font-bold text-black">Omnichannel Chatbot</span>
-                    <span className="text-[10px] text-gray-500">Inject twin logic into WhatsApp & Web widgets</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* For Teams Dropdown */}
-            <div 
-              className="relative"
-              onMouseEnter={() => setActiveDropdown('teams')}
-              onMouseLeave={() => setActiveDropdown(null)}
-            >
-              <button className="flex items-center gap-1 text-sm text-gray-600 hover:text-black font-medium transition-colors py-2">
-                For Teams <ChevronDown className="w-4 h-4 text-gray-400" />
-              </button>
-              {activeDropdown === 'teams' && (
-                <div className="absolute top-full left-0 w-60 bg-white border border-gray-100 shadow-xl rounded-2xl p-4 grid grid-cols-1 gap-2 z-50 animate-fade-in-overlay">
-                  <div className="p-2 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors">
-                    <span className="block text-xs font-bold text-black">Enterprise Multi-Twin</span>
-                    <span className="text-[10px] text-gray-500">Manage multiple business representatives</span>
-                  </div>
-                  <div className="p-2 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors" onClick={() => navigate('/pricing')}>
-                    <span className="block text-xs font-bold text-black">Agency Tier Pricing</span>
-                    <span className="text-[10px] text-gray-500">Scalable packages for support agencies</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <Link to="/pricing" className="text-sm text-gray-600 hover:text-black font-medium transition-colors py-2">
-              Pricing
-            </Link>
-            <Link to="/documentation" className="text-sm text-gray-600 hover:text-black font-medium transition-colors py-2">
-              Learn Hub
-            </Link>
-          </nav>
-
-          {/* Right (Desktop CTAs / Auth integration) */}
-          <div className="hidden md:flex items-center gap-4">
-            {user ? (
-              <>
-                <Link to="/dashboard" className="text-sm text-gray-700 hover:text-black font-medium transition-colors">
-                  Dashboard
-                </Link>
-                <button
-                  onClick={() => { logout(); navigate('/'); }}
-                  className="bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="text-sm text-gray-700 hover:text-black font-medium transition-colors">
-                  Login
-                </Link>
-                <button
-                  onClick={() => navigate('/register')}
-                  className="bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
-                >
-                  Get started free
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden text-black hover:text-gray-700 transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+    <section id="features" className="relative py-28 z-10 overflow-hidden bg-slate-950/40">
+      <div className="max-w-7xl mx-auto px-6">
+        
+        {/* Title */}
+        <div className="text-center mb-16">
+          <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.25em]">Cognitive Features</span>
+          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight animate-fade-in">
+            Comprehensive Capabilities, Zero Compromise
+          </h2>
+          <p className="mt-4 text-slate-400 max-w-xl mx-auto text-sm font-medium">
+            Browse our system specifications manual. Click chapters below or flip the pages of our 3D manual.
+          </p>
         </div>
 
-        {/* Mobile Navigation Dropdown */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 py-4 px-6 flex flex-col gap-4 animate-fade-in-overlay">
-            <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-gray-700 hover:text-black">
-              Pricing
-            </Link>
-            <Link to="/documentation" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-gray-700 hover:text-black">
-              Learn Hub
-            </Link>
-            <Link to="/voice-agent" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-gray-700 hover:text-black">
-              Voice Cloning
-            </Link>
-            <hr className="border-gray-100" />
-            {user ? (
-              <>
-                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-gray-700 hover:text-black">
-                  Dashboard
-                </Link>
-                <button
-                  onClick={() => { logout(); navigate('/'); setMobileMenuOpen(false); }}
-                  className="bg-black text-white w-full py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors text-center"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-gray-700 hover:text-black">
-                  Login
-                </Link>
-                <button
-                  onClick={() => { navigate('/register'); setMobileMenuOpen(false); }}
-                  className="bg-black text-white w-full py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors text-center"
-                >
-                  Get started free
-                </button>
-              </>
-            )}
+        {isMobile ? (
+          /* Responsive Mobile View: Cards Grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage1()}
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage2()}
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage3()}
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage4()}
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage5()}
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
+              {renderPage6()}
+            </div>
+          </div>
+        ) : (
+          /* Desktop View: Gorgeous 3D Interactive Flipping Book */
+          <div className="flex flex-col items-center">
+            <div className="book-perspective py-6">
+              
+              {/* Outer Book Container */}
+              <div className="book-container">
+                
+                {/* Metallic spine shading line */}
+                <div className="book-spine-line" />
+                
+                {/* Left Underlay Page (Static) */}
+                <div className="book-page-half book-page-left py-6 px-8 bg-slate-900/95">
+                  {getSpreadLeftContent(displaySpreadIndex)}
+                </div>
+
+                {/* Right Underlay Page (Static) */}
+                <div className="book-page-half book-page-right py-6 px-8 bg-slate-900/95">
+                  {getSpreadRightContent(displaySpreadIndex)}
+                </div>
+
+                {/* 3D Flipping Page Sheet */}
+                {isFlipping && (
+                  <motion.div
+                    className="book-flipping-sheet"
+                    initial={{ rotateY: direction === 'next' ? 0 : -180 }}
+                    animate={{ rotateY: direction === 'next' ? -180 : 0 }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                  >
+                    {/* Front side of flipping sheet */}
+                    <div className="book-flipping-side book-flipping-side-front py-6 px-8 bg-slate-900/95 text-white">
+                      {getFlippingFrontContent()}
+                    </div>
+                    
+                    {/* Back side of flipping sheet */}
+                    <div className="book-flipping-side book-flipping-side-back py-6 px-8 bg-slate-900/95 text-white">
+                      {getFlippingBackContent()}
+                    </div>
+                  </motion.div>
+                )}
+
+              </div>
+            </div>
+
+            {/* Turn Buttons controls */}
+            <div className="flex items-center gap-6 mt-8">
+              <button
+                disabled={spreadIndex === 0 || isFlipping}
+                onClick={() => turnToSpread(spreadIndex - 1)}
+                className={`flex items-center justify-center w-12 h-12 rounded-full border border-white/10 text-white transition-all bg-white/5 ${
+                  spreadIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/10 hover:border-indigo-500/40 hover:scale-105 active:scale-95'
+                }`}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+              </button>
+
+              <span className="text-xs font-mono font-bold text-slate-400">
+                SPREAD {spreadIndex + 1} OF 4
+              </span>
+
+              <button
+                disabled={spreadIndex === 3 || isFlipping}
+                onClick={() => turnToSpread(spreadIndex + 1)}
+                className={`flex items-center justify-center w-12 h-12 rounded-full border border-white/10 text-white transition-all bg-white/5 ${
+                  spreadIndex === 3 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/10 hover:border-indigo-500/40 hover:scale-105 active:scale-95'
+                }`}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
           </div>
         )}
-      </header>
 
-      {/* ── HERO SECTION ── */}
-      <section className="px-6 pt-24 pb-32 max-w-7xl mx-auto text-center relative">
+      </div>
+    </section>
+  );
+};
+
+// Premium How It Works Timeline Flow
+const HowItWorks = () => {
+  const steps = [
+    {
+      step: '01',
+      title: 'Knowledge Ingest',
+      subtitle: 'Upload documents or site links',
+      description: 'Upload PDF guides, text sheets, or website URLs. The vectorizer parses and tokenizes raw content into cognitive indexes instantly.',
+      badge: 'Database Synced'
+    },
+    {
+      step: '02',
+      title: 'Neural Fine-Tuning',
+      subtitle: 'Prompt tuning & voice synthesis',
+      description: 'Configure specific prompt rules, constraints, and record a 10-second voice clip to synchronize speaking tone, speed, and cadence.',
+      badge: 'Synthesizer Synced'
+    },
+    {
+      step: '03',
+      title: 'Live Omnichannel API',
+      subtitle: 'Deploy to Web chat & WhatsApp',
+      description: 'Inject a single-line script on your site or scan a WhatsApp QR code to link devices. Your digital twin auto-replies to clients immediately.',
+      badge: 'Autonomous Active'
+    }
+  ];
+
+  return (
+    <section className="relative py-28 z-10 overflow-hidden bg-slate-950/20">
+      <div className="max-w-7xl mx-auto px-6">
         
-        {/* Reviews Badge (Delay: 0.2s) */}
-        <div 
-          className="animate-fade-in-up inline-flex items-center gap-2 mb-8 bg-gray-50 border border-gray-200/60 px-4 py-2 rounded-full"
-          style={{ animationDelay: '0.2s', opacity: 0 }}
-        >
-          <div className="w-6 h-6 border border-gray-300 rounded bg-white flex items-center justify-center shadow-sm">
-            <Star className="w-3.5 h-3.5 fill-black text-black" />
-          </div>
-          <span className="text-sm font-semibold text-black tracking-tight">4.9 rating from 18.3K+ active owners</span>
-        </div>
-
-        {/* Main Heading (Delay: 0.3s) */}
-        <h1 
-          className="animate-fade-in-up text-5xl md:text-7xl lg:text-[80px] font-normal leading-[1.1] tracking-tight mb-6"
-          style={{ animationDelay: '0.3s', opacity: 0 }}
-        >
-          Work Smarter. Move Faster. <br />
-          <span className="bg-gradient-to-r from-black via-gray-600 to-gray-400 bg-clip-text text-transparent font-semibold">
-            AI Powers You Up.
-          </span>
-        </h1>
-
-        {/* Subheading (Delay: 0.4s) */}
-        <p 
-          className="animate-fade-in-up text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed"
-          style={{ animationDelay: '0.4s', opacity: 0 }}
-        >
-          Intelligent cognitive clones sync with your business data to handle customer inquiries, capture leads, and automate client booking 24/7.
-        </p>
-
-        {/* CTA Button (Delay: 0.5s) */}
-        <div 
-          className="animate-fade-in-up mb-16"
-          style={{ animationDelay: '0.5s', opacity: 0 }}
-        >
-          <button 
-            onClick={() => navigate(user ? '/dashboard' : '/register')}
-            className="bg-black hover:bg-gray-800 text-white px-8 py-3.5 rounded-full text-base font-semibold shadow-lg shadow-black/10 hover:shadow-black/20 hover:-translate-y-0.5 transition-all duration-300 inline-flex items-center gap-2"
-          >
-            {user ? 'Go to Dashboard' : 'Begin Free Trial'}
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* ── TAB BAR (Delay: 0.6s) ── */}
-        <div 
-          className="animate-fade-in-up max-w-3xl mx-auto mb-10"
-          style={{ animationDelay: '0.6s', opacity: 0 }}
-        >
-          {/* Mobile Tab Layout (2x2 Grid) */}
-          <div className="md:hidden grid grid-cols-2 gap-2 bg-gray-100 rounded-2xl p-1.5 shadow-inner">
-            <button 
-              onClick={() => handleTabClick('analyse')}
-              className={`flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-xs font-bold transition-all duration-300 ${activeTab === 'analyse' ? 'bg-white text-black shadow-sm scale-102' : 'text-gray-500 hover:text-black'}`}
-            >
-              <BarChart3 className="w-4 h-4" />
-              Analyse
-            </button>
-            <button 
-              onClick={() => handleTabClick('train')}
-              className={`flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-xs font-bold transition-all duration-300 ${activeTab === 'train' ? 'bg-white text-black shadow-sm scale-102' : 'text-gray-500 hover:text-black'}`}
-            >
-              <BookOpen className="w-4 h-4" />
-              Train
-            </button>
-            <button 
-              onClick={() => handleTabClick('testing')}
-              className={`flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-xs font-bold transition-all duration-300 ${activeTab === 'testing' ? 'bg-white text-black shadow-sm scale-102' : 'text-gray-500 hover:text-black'}`}
-            >
-              <Users className="w-4 h-4" />
-              Testing
-            </button>
-            <button 
-              onClick={() => handleTabClick('deploy')}
-              className={`flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-xs font-bold transition-all duration-300 ${activeTab === 'deploy' ? 'bg-white text-black shadow-sm scale-102' : 'text-gray-500 hover:text-black'}`}
-            >
-              <Rocket className="w-4 h-4" />
-              Deploy
-            </button>
-          </div>
-
-          {/* Desktop Tab Layout (Horizontal with Dividers) */}
-          <div className="hidden md:flex items-center justify-between bg-gray-100/80 backdrop-blur-md rounded-full p-1.5 border border-gray-200/50 shadow-inner">
-            <button 
-              onClick={() => handleTabClick('analyse')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-full text-sm font-semibold transition-all duration-300 ${activeTab === 'analyse' ? 'bg-white text-black shadow-sm scale-102 font-bold' : 'text-gray-600 hover:text-black'}`}
-            >
-              <BarChart3 className="w-4.5 h-4.5" />
-              Analyse
-            </button>
-            <div className="w-px h-5 bg-gray-300/80" />
-            
-            <button 
-              onClick={() => handleTabClick('train')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-full text-sm font-semibold transition-all duration-300 ${activeTab === 'train' ? 'bg-white text-black shadow-sm scale-102 font-bold' : 'text-gray-600 hover:text-black'}`}
-            >
-              <BookOpen className="w-4.5 h-4.5" />
-              Train
-            </button>
-            <div className="w-px h-5 bg-gray-300/80" />
-
-            <button 
-              onClick={() => handleTabClick('testing')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-full text-sm font-semibold transition-all duration-300 ${activeTab === 'testing' ? 'bg-white text-black shadow-sm scale-102 font-bold' : 'text-gray-600 hover:text-black'}`}
-            >
-              <Users className="w-4.5 h-4.5" />
-              Testing
-            </button>
-            <div className="w-px h-5 bg-gray-300/80" />
-
-            <button 
-              onClick={() => handleTabClick('deploy')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-full text-sm font-semibold transition-all duration-300 ${activeTab === 'deploy' ? 'bg-white text-black shadow-sm scale-102 font-bold' : 'text-gray-600 hover:text-black'}`}
-            >
-              <Rocket className="w-4.5 h-4.5" />
-              Deploy
-            </button>
-          </div>
-        </div>
-
-        {/* ── VIDEO + OVERLAY SECTION (Delay: 0.7s) ── */}
-        <div 
-          className="animate-fade-in-up relative rounded-3xl overflow-hidden h-[400px] md:h-[500px] max-w-5xl mx-auto border border-gray-200/80 shadow-2xl shadow-gray-200"
-          style={{ animationDelay: '0.7s', opacity: 0 }}
-        >
-          {/* Background Loop Video */}
-          <video 
-            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_165750_358b1e72-c921-48b7-aaac-f200994f32fb.mp4"
-            autoPlay 
-            loop 
-            muted 
-            playsInline 
-            className="w-full h-full object-cover"
-          />
-
-          {/* Conditional Overlays */}
-          {activeTab === 'analyse' && (
-            <div className="absolute inset-0 bg-black/35 backdrop-blur-[2px] animate-fade-in-overlay flex items-center justify-center">
-              <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 w-[90%] max-w-md shadow-2xl animate-slide-up-overlay text-left">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-1.5 rounded-lg bg-violet-100 text-violet-600">
-                    <Sliders className="w-5 h-5" />
-                  </div>
-                  <span className="text-xs font-extrabold uppercase tracking-widest text-violet-600">Setup Wizard</span>
-                </div>
-                <h3 className="text-lg md:text-xl font-bold text-black mb-2">Set Up Your AI Workspace</h3>
-                <p className="text-xs text-gray-500 mb-6 leading-relaxed">
-                  Ingest parameters to construct your digital replica. Sync vectors from files and databases directly.
-                </p>
-
-                {/* Progress bar */}
-                <div className="w-full bg-gray-100 h-2.5 rounded-full mb-6 overflow-hidden">
-                  <div className="bg-violet-600 h-full rounded-full transition-all duration-700" style={{ width: '25%' }} />
-                </div>
-
-                <div className="space-y-3.5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-violet-100 border border-violet-200 flex items-center justify-center text-xs font-bold text-violet-600">1</div>
-                    <span className="text-xs font-semibold text-black">Upload Business FAQs & Documents (Synced)</span>
-                  </div>
-                  <div className="flex items-center gap-3 opacity-55">
-                    <div className="w-5 h-5 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">2</div>
-                    <span className="text-xs font-semibold text-gray-800">Map Support Intents & Hand-off Logic</span>
-                  </div>
-                  <div className="flex items-center gap-3 opacity-55">
-                    <div className="w-5 h-5 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">3</div>
-                    <span className="text-xs font-semibold text-gray-800">Train Speech Clone (Optional Voice Ingest)</span>
-                  </div>
-                  <div className="flex items-center gap-3 opacity-55">
-                    <div className="w-5 h-5 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">4</div>
-                    <span className="text-xs font-semibold text-gray-800">Launch Sandbox Validation</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'train' && (
-            <div className="absolute inset-0 bg-black/35 backdrop-blur-[2px] animate-fade-in-overlay flex items-center justify-center">
-              <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 w-[90%] max-w-md shadow-2xl animate-slide-up-overlay text-left">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-1.5 rounded-lg bg-orange-100 text-orange-600">
-                    <Database className="w-5 h-5" />
-                  </div>
-                  <span className="text-xs font-extrabold uppercase tracking-widest text-orange-600">Model Training</span>
-                </div>
-                <h3 className="text-lg md:text-xl font-bold text-black mb-2">Cognitive Model Training</h3>
-                <p className="text-xs text-gray-500 mb-6 leading-relaxed">
-                  Synthesizing business intelligence and vector contexts. Adjusting weights for optimal accuracy.
-                </p>
-
-                {/* Progress bar */}
-                <div className="w-full bg-gray-100 h-2.5 rounded-full mb-6 overflow-hidden">
-                  <div className="bg-orange-500 h-full rounded-full transition-all duration-700" style={{ width: '67%' }} />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-50 border border-gray-100 rounded-2xl p-3.5">
-                    <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1">Index Vectors</span>
-                    <span className="text-sm font-black text-black">42,850 tokenized</span>
-                  </div>
-                  <div className="bg-gray-50 border border-gray-100 rounded-2xl p-3.5">
-                    <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1">Response Speed</span>
-                    <span className="text-sm font-black text-orange-600">Sub-100ms Avg</span>
-                  </div>
-                  <div className="bg-gray-50 border border-gray-100 rounded-2xl p-3.5">
-                    <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1">Accuracy Index</span>
-                    <span className="text-sm font-black text-black">99.4% Rated</span>
-                  </div>
-                  <div className="bg-gray-50 border border-gray-100 rounded-2xl p-3.5">
-                    <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1">Voice Similarity</span>
-                    <span className="text-sm font-black text-black">94.7% Match</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'testing' && (
-            <div className="absolute inset-0 bg-black/35 backdrop-blur-[2px] animate-fade-in-overlay flex items-center justify-center">
-              <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 w-[90%] max-w-md shadow-2xl animate-slide-up-overlay text-left">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-600">
-                    <Shield className="w-5 h-5" />
-                  </div>
-                  <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-600">Verification</span>
-                </div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg md:text-xl font-bold text-black">Test Suite Results</h3>
-                  <span className="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-emerald-200">
-                    Pass
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500 mb-5 leading-relaxed">
-                  Sandbox test queries executed. 127/127 verification cycles completed with zero failures.
-                </p>
-
-                {/* Mock Dialog Box */}
-                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 space-y-3 mb-4">
-                  <div className="flex flex-col gap-1 text-right">
-                    <span className="text-[9px] text-gray-400 font-medium">Customer (Sector 62)</span>
-                    <div className="bg-gray-200 text-black px-3.5 py-1.5 rounded-2xl rounded-tr-sm text-xs font-medium inline-block max-w-[80%] self-end">
-                      Do you have gluten-free wood-fired pizzas tonight?
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-1 text-left">
-                    <span className="text-[9px] text-violet-600 font-bold">★ Stellar AI Twin</span>
-                    <div className="bg-black text-white px-3.5 py-1.5 rounded-2xl rounded-tl-sm text-xs font-medium inline-block max-w-[85%]">
-                      Yes, we do! 🍕 We offer wood-fired gluten-free options for all our base pizzas. I can book you a table or take your pre-order right now!
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1.5 justify-center">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest">127 / 127 Unit Tests Succeeded</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'deploy' && (
-            <div className="absolute inset-0 bg-black/35 backdrop-blur-[2px] animate-fade-in-overlay flex items-center justify-center">
-              <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 w-[90%] max-w-md shadow-2xl animate-slide-up-overlay text-left">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-1.5 rounded-lg bg-indigo-100 text-indigo-600">
-                    <Rocket className="w-5 h-5" />
-                  </div>
-                  <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600">Deployment</span>
-                </div>
-                <h3 className="text-lg md:text-xl font-bold text-black mb-2">Deploy to Production</h3>
-                <p className="text-xs text-gray-500 mb-6 leading-relaxed">
-                  Go live with your cloned digital identity. Integrate API codes or link your active phone configurations.
-                </p>
-
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-4 h-4 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5" />
-                    </div>
-                    <span className="text-xs font-medium text-black">WhatsApp Node (QR code scanned)</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-4 h-4 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5" />
-                    </div>
-                    <span className="text-xs font-medium text-black">Web Chat Widget HTML Script Generated</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-4 h-4 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5" />
-                    </div>
-                    <span className="text-xs font-medium text-black">Calendly Booking API Sync Active</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-4 h-4 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5" />
-                    </div>
-                    <span className="text-xs font-medium text-black">Neural Voice API Synthesized</span>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={() => navigate('/register')}
-                  className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-full text-xs font-bold tracking-wider uppercase transition-colors text-center inline-flex items-center justify-center gap-2 shadow-lg shadow-black/10"
-                >
-                  Deploy Now
-                  <Rocket className="w-4 h-4 animate-bounce" />
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* ── COMPANY LOGOS (Delay: 0.8s) ── */}
-        <div 
-          className="animate-fade-in-up mt-24"
-          style={{ animationDelay: '0.8s', opacity: 0 }}
-        >
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest text-center mb-10">
-            Trusted by modern leaders and growing brands globally
+        {/* Title */}
+        <div className="text-center mb-20">
+          <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.25em]">Workflow Map</span>
+          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            How Your Digital Twin is Created
+          </h2>
+          <p className="mt-4 text-slate-400 max-w-md mx-auto text-sm font-medium">
+            A simple three-step deployment pipeline from ingestion to deployment.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-16 gap-y-8 max-w-5xl mx-auto">
-            <LogoInterscope />
-            <LogoSpotify />
-            <LogoNexera />
-            <LogoM3 />
-            <LogoLauraCole />
-            <LogoVertex />
+        </div>
+
+        {/* Steps Grid connection line */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative items-stretch">
+          {steps.map((step, i) => (
+            <motion.div
+              key={step.step}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.15 }}
+              className="relative"
+            >
+              <div className={`p-8 rounded-2xl gradient-border-card h-full flex flex-col justify-between overflow-hidden ${
+                i === 0 ? 'feature-card-cyan' : i === 1 ? 'feature-card-purple' : 'feature-card-emerald'
+              }`}>
+                <div>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-4xl font-black bg-gradient-to-r ${
+                      i === 0 ? 'from-cyan-400 to-indigo-500' : i === 1 ? 'from-purple-400 to-pink-500' : 'from-emerald-400 to-teal-500'
+                    } bg-clip-text text-transparent opacity-90 font-mono`}>{step.step}</span>
+                    <span className={`text-[8px] font-mono font-bold border px-2 py-0.5 rounded uppercase ${
+                      i === 0 
+                        ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400' 
+                        : i === 1 
+                          ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' 
+                          : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                    }`}>{step.badge}</span>
+                  </div>
+                  
+                  <h3 className="mt-6 text-xl font-bold text-white tracking-tight">{step.title}</h3>
+                  <span className="block text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 font-bold">{step.subtitle}</span>
+                  
+                  <p className="mt-4 text-slate-400 text-xs leading-relaxed font-medium">
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const UserGuideMindmap = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+
+  // Form states to make the user guide interactive
+  const [workspaceName, setWorkspaceName] = useState("Amit's Coffee Shop");
+  const [workspaceWebsite, setWorkspaceWebsite] = useState("amitcoffeeshop.com");
+  const [twinName, setTwinName] = useState("Coffee Guide");
+  const [twinTone, setTwinTone] = useState("Friendly");
+  const [isTwinActive, setIsTwinActive] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [ingestedFiles, setIngestedFiles] = useState([]);
+  const [ingestProgress, setIngestProgress] = useState(0);
+  const [isIngesting, setIsIngesting] = useState(false);
+
+  const [ragQuery, setRagQuery] = useState("");
+  const [ragPhase, setRagPhase] = useState("idle"); // idle | vectorizing | searching | retrieving | synthesizing | done
+  const [ragOutput, setRagOutput] = useState("");
+  const [ragSource, setRagSource] = useState("");
+  const [ragConfidence, setRagConfidence] = useState("");
+
+  // Simulated Lead Generation states for sandbox guide
+  const [simulatedLeads, setSimulatedLeads] = useState([]);
+  const [showLeadWidget, setShowLeadWidget] = useState(false);
+  const [leadFormName, setLeadFormName] = useState("");
+  const [leadFormEmail, setLeadFormEmail] = useState("");
+  const [leadFormPhone, setLeadFormPhone] = useState("");
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+
+  const steps = [
+    {
+      id: "auth",
+      label: "1. Signup & Login",
+      title: "User Registers & Authenticates",
+      description: "First, the user creates an account and logs into the secure digital twin builder dashboard.",
+      icon: <Lock className="w-5 h-5 text-rose-400" />,
+      x: 250,
+      y: 70
+    },
+    {
+      id: "plan",
+      label: "2. Plan Selection",
+      title: "Activate Standard Subscription",
+      description: "Select the Standard Tier at ₹1299/month (Launch Offer, originally ₹1599) to enable custom AI twins, vector indexes, and widget scripts.",
+      icon: <CreditCard className="w-5 h-5 text-indigo-400" />,
+      x: 250,
+      y: 170
+    },
+    {
+      id: "workspace",
+      label: "3. Workspace Setup",
+      title: "Register Business Workspace",
+      description: "Enter your business name and website directory URL to initialize a multi-tenant workspace.",
+      icon: <Briefcase className="w-5 h-5 text-cyan-400" />,
+      x: 250,
+      y: 270
+    },
+    {
+      id: "details",
+      label: "4. Train AI Twin",
+      title: "Specify Character & Knowledge",
+      description: "Customize your twin name, set its response tone, and upload documentation (PDF, TXT) or enter URLs.",
+      icon: <Settings className="w-5 h-5 text-emerald-400" />,
+      x: 130,
+      y: 395
+    },
+    {
+      id: "activate",
+      label: "5. Activation Switch",
+      title: "Synchronize & Activate Twin",
+      description: "Once knowledge is synchronized, toggle your twin online to start processing live request threads.",
+      icon: <Power className="w-5 h-5 text-amber-400" />,
+      x: 130,
+      y: 515
+    },
+    {
+      id: "script",
+      label: "6. Embed Script",
+      title: "Copy Lightweight Widget Script",
+      description: "Copy the single-line integration script and paste it into your local project website directory.",
+      icon: <Code2 className="w-5 h-5 text-purple-400" />,
+      x: 370,
+      y: 395
+    },
+    {
+      id: "live",
+      label: "7. Go Live!",
+      title: "Twin Live on Your Website",
+      description: "The digital twin script activates immediately, displaying a sleek floating widget on your website.",
+      icon: <Globe className="w-5 h-5 text-pink-400" />,
+      x: 370,
+      y: 515
+    },
+    {
+      id: "rag",
+      label: "8. Live Database Query",
+      title: "Input Query to Output Retrieval",
+      description: "Type or click a question to trace the live vector-matching search loop and retrieve output from the DB.",
+      icon: <Database className="w-5 h-5 text-teal-400" />,
+      x: 250,
+      y: 640
+    }
+  ];
+
+  const handleCopyScript = () => {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSimulateIngestion = () => {
+    setIsIngesting(true);
+    setIngestProgress(0);
+    const interval = setInterval(() => {
+      setIngestProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsIngesting(false);
+          setIngestedFiles(["pricing_menu.pdf", "timings_guide.txt"]);
+          return 100;
+        }
+        return prev + 25;
+      });
+    }, 450);
+  };
+
+  const handleRagSearch = (queryText) => {
+    setRagQuery(queryText);
+    setRagPhase("vectorizing");
+    setRagOutput("");
+    setRagSource("");
+    setRagConfidence("");
+
+    setTimeout(() => {
+      setRagPhase("searching");
+      setTimeout(() => {
+        setRagPhase("retrieving");
+        setTimeout(() => {
+          setRagPhase("synthesizing");
+          setTimeout(() => {
+            setRagPhase("done");
+            const q = queryText.toLowerCase();
+            if (q.includes("mocha") || q.includes("ice") || q.includes("drink") || q.includes("price") || q.includes("cost") || q.includes("menu")) {
+              setRagOutput(`"Yes, we serve delicious Iced Mocha for ₹120. We also have Espresso (₹80) and Cappuccino (₹100) on our menu."`);
+              setRagSource("pricing_menu.pdf (Chunk 2, Lines 12-16)");
+              setRagConfidence("98.8% Cosine Similarity Match");
+            } else if (q.includes("time") || q.includes("timing") || q.includes("open") || q.includes("close")) {
+              setRagOutput(`"Our coffee shop is open daily from 8 AM to 10 PM, Monday through Sunday."`);
+              setRagSource("timings_guide.txt (Chunk 1, Lines 3-5)");
+              setRagConfidence("96.5% Cosine Similarity Match");
+            } else if (q.includes("delivery") || q.includes("home") || q.includes("order")) {
+              setRagOutput(`"Yes! We offer home delivery within a 5km radius of our coffee shop. Delivery is free for orders above ₹300."`);
+              setRagSource("pricing_menu.pdf (Chunk 4, Lines 22-25)");
+              setRagConfidence("97.2% Cosine Similarity Match");
+            } else {
+              setRagOutput(`"Hello! I am ${twinName}, Amit's AI Digital Twin. I can assist you with our menu prices, operating hours, and ordering options."`);
+              setRagSource("general_context.docx (Chunk 1, Line 2)");
+              setRagConfidence("89.4% Generic Match");
+            }
+          }, 800);
+        }, 800);
+      }, 800);
+    }, 800);
+  };
+
+  const renderSvgMindmap = () => {
+    return (
+      <svg viewBox="0 0 500 720" className="w-full h-auto overflow-visible select-none my-auto">
+        <defs>
+          {/* Active Glowing Flow Gradient (Vertical Flow) */}
+          <linearGradient id="active-glow-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#ec4899" />
+            <stop offset="50%" stopColor="#a855f7" />
+            <stop offset="100%" stopColor="#6366f1" />
+          </linearGradient>
+          {/* Completed Channel Flow Gradient (Vertical Flow) */}
+          <linearGradient id="completed-glow-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#10b981" />
+            <stop offset="100%" stopColor="#059669" />
+          </linearGradient>
+          
+          {/* Faint Dot Grid Pattern */}
+          <pattern id="dot-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="1.5" cy="1.5" r="0.75" fill="rgba(255, 255, 255, 0.05)" />
+          </pattern>
+        </defs>
+
+        {/* Faint Dot Grid Background */}
+        <rect width="100%" height="100%" fill="url(#dot-grid)" rx="16" />
+
+        {/* Bezier and Linear connection paths */}
+        {(() => {
+          const getLinkStatus = (fromIdx, toIdx) => {
+            if (currentStep >= toIdx) return "completed";
+            if (currentStep >= fromIdx && currentStep < toIdx) return "active";
+            return "pending";
+          };
+          
+          const guideLinks = [
+            { from: 0, to: 1, d: "M 250 70 L 250 170" },
+            { from: 1, to: 2, d: "M 250 170 L 250 270" },
+            { from: 2, to: 3, d: "M 250 270 C 250 320, 130 345, 130 395" },
+            { from: 2, to: 5, d: "M 250 270 C 250 320, 370 345, 370 395" },
+            { from: 3, to: 4, d: "M 130 395 L 130 515" },
+            { from: 5, to: 6, d: "M 370 395 L 370 515" },
+            { from: 4, to: 7, d: "M 130 515 C 130 565, 250 590, 250 640" },
+            { from: 6, to: 7, d: "M 370 515 C 370 565, 250 590, 250 640" }
+          ];
+
+          return guideLinks.map((link, lIdx) => {
+            const status = getLinkStatus(link.from, link.to);
+            const isCompleted = status === "completed";
+            const isActive = status === "active";
+            
+            return (
+              <g key={lIdx}>
+                {/* Background backing line */}
+                <path
+                  d={link.d}
+                  fill="none"
+                  stroke={isCompleted ? "rgba(16, 185, 129, 0.45)" : isActive ? "rgba(244, 63, 94, 0.15)" : "rgba(255, 255, 255, 0.04)"}
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                />
+                {/* Animated glowing flow path (only on the active path) */}
+                {isActive && (
+                  <path
+                    d={link.d}
+                    fill="none"
+                    stroke="url(#active-glow-grad)"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeDasharray="10 25"
+                    className="animate-pulse-flow"
+                    style={{
+                      animationDuration: '2.2s'
+                    }}
+                  />
+                )}
+              </g>
+            );
+          });
+        })()}
+
+        {/* Node circle icons & text labels */}
+        {steps.map((step, idx) => {
+          const isActive = currentStep === idx;
+          const isCompleted = idx < currentStep;
+          
+          const themeGlowClass = 
+            idx === 0 || idx === 6 ? 'group-hover:shadow-[0_0_15px_rgba(244,63,94,0.3)]' : // pink/rose
+            idx === 1 || idx === 5 ? 'group-hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]' : // indigo/purple
+            idx === 2 ? 'group-hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]' : // cyan
+            idx === 3 ? 'group-hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]' : // emerald
+            idx === 4 ? 'group-hover:shadow-[0_0_15px_rgba(245,158,11,0.3)]' : // amber
+            'group-hover:shadow-[0_0_15px_rgba(20,184,166,0.3)]'; // teal
+            
+          return (
+            <foreignObject 
+              key={step.id} 
+              x={step.x - 70} 
+              y={step.y - 65} 
+              width="140" 
+              height="130"
+              className="overflow-visible"
+            >
+              <div 
+                onClick={() => setCurrentStep(idx)}
+                className="flex flex-col items-center justify-center w-full h-full group cursor-pointer"
+              >
+                <div className="relative flex items-center justify-center">
+                  {/* Pulsing ring behind the active node */}
+                  {isActive && (
+                    <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-rose-500 to-indigo-500 opacity-75 blur-sm animate-pulse-opacity" />
+                  )}
+
+                  {/* Icon Container Circle */}
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center border z-10 transition-all duration-300 ${
+                    isActive
+                      ? 'bg-slate-955 border-transparent text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.45)] scale-110'
+                      : isCompleted
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                        : `bg-slate-900 border-white/5 text-slate-400 group-hover:border-white/20 group-hover:text-white group-hover:bg-slate-800 ${themeGlowClass}`
+                  }`}>
+                    {step.icon}
+                  </div>
+
+                  {/* Check badge when completed */}
+                  {isCompleted && (
+                    <div className="absolute -top-1 -right-1 w-5.5 h-5.5 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center border border-slate-950 z-20 shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+                      <Check className="w-3 h-3 stroke-[3.5]" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Node Text Title */}
+                <span className={`mt-3 text-[10px] font-black text-center tracking-wider transition-colors font-sans uppercase ${
+                  isActive 
+                    ? 'text-white' 
+                    : 'text-slate-500 group-hover:text-slate-350'
+                }`}>
+                  {step.label.split(". ")[1]}
+                </span>
+              </div>
+            </foreignObject>
+          );
+        })}
+      </svg>
+    );
+  };
+
+  return (
+    <section className="relative py-24 bg-slate-950/40 border-t border-b border-white/5 overflow-hidden z-10">
+      {/* Ambient background glows */}
+      <div className="absolute top-1/4 left-1/10 w-96 h-96 bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/10 w-96 h-96 bg-violet-500/5 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-6">
+        
+        {/* Title */}
+        <div className="text-center mb-16">
+          <span className="text-xs font-bold text-rose-500 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+            <Sparkles className="w-4 h-4 text-rose-500" /> AI Digital Twin Lifecycle
+          </span>
+          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Interactive User Guide & Workflow
+          </h2>
+          <p className="mt-4 text-slate-400 max-w-2xl mx-auto text-sm font-medium">
+            Walk through the complete process of building your twin, embedding the widget, and retrieving live context from the database.
+          </p>
+        </div>
+
+        {/* Dynamic Styles for pulse-flow animations */}
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes pulse-flow {
+            0% {
+              stroke-dashoffset: 40;
+            }
+            100% {
+              stroke-dashoffset: 0;
+            }
+          }
+          .animate-pulse-flow {
+            animation: pulse-flow 2s linear infinite;
+          }
+          @keyframes pulse-opacity-fast {
+            0% {
+              opacity: 0.3;
+              transform: scale(0.95);
+            }
+            100% {
+              opacity: 0.85;
+              transform: scale(1.05);
+            }
+          }
+          .animate-pulse-opacity {
+            animation: pulse-opacity-fast 1.6s ease-in-out infinite alternate;
+          }
+        `}} />
+
+        {/* Mobile Stepper Timeline (Visible on Mobile) */}
+        <div className="md:hidden flex flex-col gap-4 mb-10 border-b border-white/5 pb-6 font-sans">
+          <div className="relative pl-8 space-y-4">
+            {/* Vertical Line */}
+            <div className="absolute left-3.5 top-2 bottom-2 w-0.5 bg-white/5">
+              <div 
+                className="bg-gradient-to-b from-rose-500 to-indigo-600 w-full transition-all duration-500" 
+                style={{ height: `${(currentStep / 7) * 100}%` }}
+              />
+            </div>
+
+            {steps.map((step, idx) => {
+              const isActive = currentStep === idx;
+              const isCompleted = idx < currentStep;
+              return (
+                <div 
+                  key={step.id} 
+                  onClick={() => setCurrentStep(idx)}
+                  className={`flex items-start gap-4 p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-white/[0.02] border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.08)]'
+                      : 'bg-transparent border-transparent'
+                  }`}
+                >
+                  {/* Node Circle */}
+                  <div className="absolute left-1.5 flex items-center justify-center mt-0.5">
+                    <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center transition-all ${
+                      isActive
+                        ? 'bg-rose-500 border-rose-455 shadow-[0_0_8px_rgba(244,63,94,0.5)]'
+                        : isCompleted
+                          ? 'bg-emerald-500 border-emerald-400'
+                          : 'bg-slate-900 border-white/10'
+                    }`}>
+                      {isCompleted && <Check className="w-2.5 h-2.5 text-slate-950 stroke-[3.5]" />}
+                    </div>
+                  </div>
+
+                  <div className="flex-grow">
+                    <div className="flex items-center justify-between">
+                      <span className={`text-[11px] font-black uppercase tracking-wide transition-colors ${isActive ? 'text-white' : 'text-slate-500'}`}>
+                        {step.label}
+                      </span>
+                      {isActive && (
+                        <span className="text-[7px] font-mono font-bold bg-rose-500/10 border border-rose-500/20 text-rose-400 px-1.5 py-0.2 rounded uppercase">
+                          ACTIVE
+                        </span>
+                      )}
+                    </div>
+                    {isActive && (
+                      <p className="mt-1.5 text-[10px] text-slate-400 leading-relaxed font-semibold">
+                        {step.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-      </section>
 
-      {/* ── CAPABILITIES GRID (Delay: 0.9s) ── */}
-      <section 
-        className="animate-fade-in-up bg-slate-50 border-t border-b border-gray-100 py-24"
-        style={{ animationDelay: '0.9s', opacity: 0 }}
-      >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-xs font-extrabold text-violet-600 uppercase tracking-widest flex items-center justify-center gap-2">
-              <Cpu className="w-4 h-4" /> Cognitive Cloning Suite
-            </span>
-            <h2 className="mt-4 text-3xl sm:text-4xl font-black text-black tracking-tight">
-              Powerful Features for Your Digital Clone
+        {/* Main Grid Wrapper */}
+        <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-8 items-stretch">
+          
+          {/* Unified Mindmap Graph Canvas (Visible on Tablet & Desktop) */}
+          <div className="hidden md:block md:col-span-5 md:row-span-2 lg:col-span-4 lg:row-span-1 bg-slate-900/[0.15] border border-white/5 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md flex flex-col justify-center h-full">
+            {/* Blueprint style telemetry label */}
+            <div className="absolute top-3 left-4 text-[7px] font-mono text-slate-600 uppercase tracking-widest">NEURAL NETWORK ENGINE v1.2</div>
+            <div className="absolute top-3 right-4 text-[7px] font-mono text-emerald-500/40 uppercase tracking-widest flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-emerald-500 animate-ping" />
+              Active Channels: {currentStep + 1} / 8
+            </div>
+            {renderSvgMindmap()}
+          </div>
+          
+          {/* Left panel: Info & Explanation */}
+          <div className="col-span-12 md:col-span-7 lg:col-span-4 flex flex-col justify-between bg-slate-900/40 md:bg-white/[0.01] border border-white/5 rounded-3xl p-8 relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-[60px]" />
+            
+            <div className="space-y-6 font-sans">
+              <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <span className="px-2.5 py-0.5 bg-rose-500/10 text-rose-400 font-mono text-[9px] rounded uppercase tracking-widest font-bold border border-rose-500/20">
+                  Step {currentStep + 1} of 8
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[10px] text-emerald-400 font-mono font-bold tracking-wider">ACTIVE PIPELINE</span>
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-900 border border-white/10 flex items-center justify-center">
+                  {steps[currentStep].icon}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">{steps[currentStep].title}</h3>
+                  <span className="text-[9px] text-slate-500 font-mono tracking-widest uppercase font-bold">Workspace Phase</span>
+                </div>
+              </div>
+
+              <p className="text-sm text-slate-300 leading-relaxed font-semibold">
+                {steps[currentStep].description}
+              </p>
+
+              {/* Tips Callout */}
+              <div className="bg-slate-950/60 border border-white/5 rounded-2xl p-4 mt-2">
+                <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                  💡 {
+                    currentStep === 0 ? "You can login securely via Google auth or standard password credentials. Each login triggers a personalized dashboard greeting."
+                    : currentStep === 1 ? "The Standard Tier is configured for sandbox test verification at ₹1299 (Launch Offer). Payment gating rules are enforced strictly."
+                    : currentStep === 2 ? "Setting up a business folder isolation model ensures that different company chatbots cannot read each other's data."
+                    : currentStep === 3 ? "Ingested files are parsed, split into overlaps, embedded via OpenAI text models, and saved inside a tenant-isolated ChromaDB."
+                    : currentStep === 4 ? "Activating the switch sets the twin status flag to 'ONLINE'. OFFLINE twins automatically alert visitors to upgrade or return later."
+                    : currentStep === 5 ? "The single script tag contains async attributes, which ensures it does not impact your page loading times and speed metrics."
+                    : currentStep === 6 ? "The web chat widget will automatically read your theme color settings and place itself fixed at the bottom right corner."
+                    : "Simulate a search: click on a query preset button and watch the RAG matching sequence execute live between the LLM and the Vector DB."
+                  }
+                </p>
+              </div>
+            </div>
+
+            {/* Stepper buttons */}
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/5 font-sans">
+              <button
+                disabled={currentStep === 0}
+                onClick={() => setCurrentStep((prev) => prev - 1)}
+                className="px-4 py-2.5 rounded-xl border border-white/5 text-xs font-bold text-slate-400 hover:bg-white/5 hover:text-white transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+              >
+                Back Step
+              </button>
+              <button
+                onClick={() => {
+                  if (currentStep < 7) {
+                    setCurrentStep((prev) => prev + 1);
+                  } else {
+                    setCurrentStep(0); // reset
+                  }
+                }}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-violet-600 hover:from-rose-400 hover:to-violet-500 text-white text-xs font-bold transition-all shadow-[0_0_20px_rgba(244,63,94,0.3)] flex items-center gap-1.5"
+              >
+                {currentStep === 7 ? "Restart Tour" : "Next Step"} <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Right panel: Visual Demonstration */}
+          <div className="col-span-12 md:col-span-7 lg:col-span-4 bg-slate-950/60 border border-white/5 rounded-3xl p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
+            
+            {/* Screen Container */}
+            <div className="w-full flex-grow flex flex-col justify-center min-h-[360px]">
+              
+              <AnimatePresence mode="wait">
+                
+                {/* 1. Signup / Login Screen */}
+                {steps[currentStep].id === 'auth' && (
+                  <motion.div
+                    key="auth"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-sm mx-auto w-full bg-slate-900/90 border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl font-sans"
+                  >
+                    <div className="text-center space-y-1">
+                      <h4 className="text-sm font-bold text-white">Access AI Twin Builder</h4>
+                      <p className="text-[10px] text-slate-500">Sign in to your application dashboard</p>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Email Address</label>
+                        <input
+                          type="text"
+                          disabled
+                          value="sarthak@domain.com"
+                          className="w-full h-8 bg-slate-955 border border-white/5 rounded px-3 text-xs text-slate-350 focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Password</label>
+                        <input
+                          type="password"
+                          disabled
+                          value="•••••••••••••••"
+                          className="w-full h-8 bg-slate-955 border border-white/5 rounded px-3 text-xs text-slate-450 focus:outline-none"
+                        />
+                      </div>
+                      <button
+                        onClick={() => setCurrentStep(1)}
+                        className="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white rounded text-xs font-bold transition-all mt-2 flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(225,29,72,0.2)] animate-pulse"
+                      >
+                        Sign In Securely <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 2. Select Plan Screen */}
+                {steps[currentStep].id === 'plan' && (
+                  <motion.div
+                    key="plan"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="w-full space-y-4 font-sans"
+                  >
+                    <div className="text-center">
+                      <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Choose Subscription tier</h4>
+                      <p className="text-[10px] text-slate-500 mt-0.5">Standard is active for ₹1299 launch tests</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                      <div className="bg-slate-900/40 border border-white/5 rounded-xl p-4 opacity-50 flex flex-col justify-between">
+                        <div>
+                          <span className="text-[9px] font-bold text-slate-500 uppercase">Free Trial</span>
+                          <span className="block text-lg font-bold text-slate-400 mt-1">₹0</span>
+                          <span className="block text-[8px] text-slate-500 mt-1">3 days limit & 50 messages limit</span>
+                        </div>
+                        <span className="text-[9px] text-slate-500 mt-4 block text-center">Gated Tier</span>
+                      </div>
+
+                      <div className="bg-slate-900 border-2 border-indigo-500/50 rounded-xl p-4 flex flex-col justify-between shadow-[0_0_20px_rgba(99,102,241,0.15)] relative">
+                        <div className="absolute top-2 right-2 bg-indigo-500 text-slate-950 font-bold text-[8px] px-1.5 py-0.5 rounded-full uppercase">
+                          ACTIVE
+                        </div>
+                        <div>
+                          <span className="text-[9px] font-bold text-indigo-400 uppercase">Standard Tier</span>
+                          <span className="block text-lg font-bold text-white mt-1">₹1299 <span className="text-xs text-slate-400 font-normal line-through">₹1599</span> <span className="text-xs text-emerald-400 font-semibold">/mo</span></span>
+                          <span className="block text-[8px] text-slate-350 mt-1">Unlimited responses, custom widgets, scraping</span>
+                        </div>
+                        <button
+                          onClick={() => setCurrentStep(2)}
+                          className="w-full py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[10px] font-bold transition-all mt-4"
+                        >
+                          Selected (Proceed)
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 3. Add Business Screen */}
+                {steps[currentStep].id === 'workspace' && (
+                  <motion.div
+                    key="workspace"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-sm mx-auto w-full bg-slate-900/90 border border-white/10 rounded-2xl p-6 space-y-4 font-sans"
+                  >
+                    <div className="border-b border-white/5 pb-2">
+                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">Initialize Business Workspace</h4>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1">Business Name</label>
+                        <input
+                          type="text"
+                          value={workspaceName}
+                          onChange={(e) => setWorkspaceName(e.target.value)}
+                          className="w-full h-8 bg-slate-950 border border-white/10 rounded px-3 text-xs text-white focus:outline-none focus:border-cyan-500"
+                          placeholder="e.g. Acme Coffee House"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1">Website URL</label>
+                        <input
+                          type="text"
+                          value={workspaceWebsite}
+                          onChange={(e) => setWorkspaceWebsite(e.target.value)}
+                          className="w-full h-8 bg-slate-955 border border-white/10 rounded px-3 text-xs text-white focus:outline-none focus:border-cyan-500"
+                          placeholder="e.g. amitcoffeeshop.com"
+                        />
+                      </div>
+                      <button
+                        onClick={() => setCurrentStep(3)}
+                        className="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded text-xs font-bold transition-all mt-2"
+                      >
+                        Create Business Folder
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 4. Train AI Twin Screen */}
+                {steps[currentStep].id === 'details' && (
+                  <motion.div
+                    key="details"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-md mx-auto w-full bg-slate-900/95 border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl font-sans"
+                  >
+                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">Configure & Ingest Knowledge</h4>
+                      <span className="text-[8px] text-slate-500 font-mono">Workspace: {workspaceName}</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="block text-[8px] font-bold text-slate-400 uppercase">Twin Custom Name</label>
+                        <input
+                          type="text"
+                          value={twinName}
+                          onChange={(e) => setTwinName(e.target.value)}
+                          className="w-full h-7 bg-slate-955 border border-white/5 rounded px-2.5 text-xs text-white focus:outline-none"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-[8px] font-bold text-slate-400 uppercase">Conversation Tone</label>
+                        <select
+                          value={twinTone}
+                          onChange={(e) => setTwinTone(e.target.value)}
+                          className="w-full h-7 bg-slate-955 border border-white/5 rounded px-2.5 text-xs text-white focus:outline-none"
+                        >
+                          <option value="Friendly">Friendly & Warm</option>
+                          <option value="Formal">Formal & Business</option>
+                          <option value="Analytical">Analytical & Direct</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Simulator Dropzone */}
+                    <div className="space-y-2 pt-2">
+                      <label className="block text-[8px] font-bold text-slate-400 uppercase">Vector Datasets (Files & Links)</label>
+                      
+                      {ingestedFiles.length === 0 && !isIngesting ? (
+                        <div
+                          onClick={handleSimulateIngestion}
+                          className="border border-dashed border-white/10 hover:border-emerald-500/30 bg-slate-955 rounded-xl p-6 flex flex-col items-center justify-center space-y-2 cursor-pointer transition-colors"
+                        >
+                          <Database className="w-6 h-6 text-emerald-500 animate-bounce" />
+                          <span className="text-[10px] text-slate-355 font-medium">Click to ingest coffee menu PDFs & urls</span>
+                          <span className="text-[8px] text-slate-500 font-mono">Simulates embedding conversion to Vector DB</span>
+                        </div>
+                      ) : isIngesting ? (
+                        <div className="bg-slate-950/60 border border-white/5 rounded-xl p-6 flex flex-col items-center justify-center space-y-2">
+                          <RefreshCw className="w-5 h-5 text-emerald-400 animate-spin" />
+                          <span className="text-[10px] text-slate-300 font-medium">Extracting paragraphs & generating vectors...</span>
+                          <div className="w-full max-w-xs bg-slate-905 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-emerald-500 h-full transition-all duration-300" style={{ width: `${ingestProgress}%` }} />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-slate-955 border border-white/10 rounded-xl p-4 space-y-3">
+                          <div className="flex items-center justify-between text-[9px] text-slate-450 font-bold">
+                            <span>Ingestion Status:</span>
+                            <span className="text-emerald-400 font-bold uppercase">15,840 Vectors Sync Complete</span>
+                          </div>
+                          <div className="space-y-1.5">
+                            {ingestedFiles.map((file) => (
+                              <div key={file} className="flex items-center gap-1.5 text-[9px] text-slate-300 bg-slate-900/60 p-1 px-2.5 rounded border border-white/5 font-mono">
+                                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>{file} (Indexed)</span>
+                              </div>
+                            ))}
+                          </div>
+                          <button
+                            onClick={() => setIngestedFiles([])}
+                            className="text-[9px] text-slate-500 hover:text-slate-300 underline font-mono"
+                          >
+                            Re-upload datasets
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 5. Activate Switch Screen */}
+                {steps[currentStep].id === 'activate' && (
+                  <motion.div
+                    key="activate"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-xs mx-auto w-full bg-slate-900 border border-white/10 rounded-2xl p-6 space-y-5 text-center shadow-xl font-sans"
+                  >
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Twin Activation Console</h4>
+                    
+                    <div className="flex flex-col items-center justify-center p-6 bg-slate-950/60 rounded-xl border border-white/5 space-y-3">
+                      <div className={`w-3.5 h-3.5 rounded-full ${isTwinActive ? 'bg-emerald-500 animate-ping' : 'bg-rose-500'}`} />
+                      <span className={`text-xs font-bold font-mono uppercase tracking-widest ${isTwinActive ? 'text-emerald-400' : 'text-rose-500'}`}>
+                        Twin Status: {isTwinActive ? 'ONLINE' : 'OFFLINE'}
+                      </span>
+
+                      {/* Toggle Switch */}
+                      <button
+                        onClick={() => setIsTwinActive(!isTwinActive)}
+                        className={`w-14 h-7 rounded-full transition-all relative p-1 mt-2 ${isTwinActive ? 'bg-emerald-600' : 'bg-slate-800'}`}
+                      >
+                        <div className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 ${isTwinActive ? 'translate-x-7' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
+
+                    <div className="flex gap-2 justify-center text-[9px] font-mono text-slate-500">
+                      <span>RAG: CONNECTED</span>
+                      <span>•</span>
+                      <span>LATENCY: 84ms</span>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 6. Copy Script Screen */}
+                {steps[currentStep].id === 'script' && (
+                  <motion.div
+                    key="script"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-lg mx-auto w-full bg-slate-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl font-sans"
+                  >
+                    {/* Header bar */}
+                    <div className="flex items-center justify-between bg-slate-950 px-4 py-2 border-b border-white/5">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                      </div>
+                      <span className="text-[9px] font-mono text-slate-500">index.html (Acme Website Directory)</span>
+                    </div>
+
+                    <div className="p-4 space-y-4">
+                      <p className="text-[10px] text-slate-400 font-semibold">Copy and paste this script tag inside your HTML body:</p>
+                      
+                      <div className="bg-slate-955 p-4.5 rounded-xl border border-white/5 font-mono text-[10px] text-indigo-300 relative group overflow-x-auto whitespace-pre select-all">
+                        <code>{`<!-- AI Digital Twin Chat Widget Integration -->\n<script\n  src="https://ai-twin-2le9.onrender.com/api/v1/widget.js"\n  data-twin-id="${twinName.toLowerCase().replace(/\s+/g, '-')}"\n  data-theme="#6366f1">\n</script>`}</code>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] text-slate-500 font-mono font-medium">Requires no extra dependencies or frameworks</span>
+                        <button
+                          onClick={handleCopyScript}
+                          className={`px-4 py-1.5 rounded text-xs font-bold transition-all ${
+                            copied 
+                              ? 'bg-emerald-600 text-white' 
+                              : 'bg-white/5 border border-white/10 text-slate-200 hover:bg-white/10'
+                          }`}
+                        >
+                          {copied ? "Copied tag!" : "Copy Embed Script"}
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 7. Twin Live Website Screen */}
+                {steps[currentStep].id === 'live' && (
+                  <motion.div
+                    key="live"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="max-w-md mx-auto w-full flex flex-col gap-4 font-sans"
+                  >
+                    {/* Simulated Live Webpage & Floating Widget */}
+                    <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative">
+                      {/* Browser Address Bar */}
+                      <div className="flex items-center gap-2 bg-slate-950 px-4 py-2 border-b border-white/5 text-[10px] font-mono text-slate-500">
+                        <div className="flex gap-1">
+                          <div className="w-2 h-2 rounded-full bg-white/20" />
+                          <div className="w-2 h-2 rounded-full bg-white/20" />
+                        </div>
+                        <div className="bg-slate-900 px-3 py-0.5 rounded w-full max-w-[200px] text-slate-400 text-center truncate">
+                          https://www.{workspaceWebsite || 'amitcoffeeshop.com'}
+                        </div>
+                      </div>
+
+                      {/* Simulated Coffee Shop Webpage Content */}
+                      <div className="p-6 h-[240px] bg-slate-950/20 flex flex-col justify-between relative overflow-hidden">
+                        <div className="space-y-2">
+                          <span className="text-[9px] font-bold text-rose-500 uppercase tracking-widest">{workspaceName || "Amit's Coffee Shop"}</span>
+                          <h4 className="text-lg font-black text-white leading-tight">Fresh Roasted Artisan Beans</h4>
+                          <p className="text-[10px] text-slate-400 max-w-[80%]">Crafted with precision, serving premium espressos, gourmet teas, and warm delivery daily.</p>
+                        </div>
+
+                        {/* If widget is closed, show floating button & prompt bubble */}
+                        {!showLeadWidget && (
+                          <div className="absolute bottom-4 right-4 flex flex-col items-end space-y-2">
+                            <div className="bg-slate-900/95 border border-white/10 rounded-xl p-3 shadow-2xl max-w-[220px] text-[9px] space-y-1.5 backdrop-blur-sm">
+                              <div className="flex items-center gap-1.5 border-b border-white/5 pb-1">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                                <span className="font-bold text-white">{twinName} (Online)</span>
+                              </div>
+                              <p className="text-slate-300">"Hi! Click my chat bubble below to test the Lead Generation Form!"</p>
+                            </div>
+                            
+                            <button
+                              onClick={() => setShowLeadWidget(true)}
+                              className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(99,102,241,0.4)] animate-bounce cursor-pointer hover:scale-110 transition-transform"
+                            >
+                              <MessageCircle className="w-5 h-5 text-white" />
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Simulated Chat Widget Window overlay */}
+                        {showLeadWidget && (
+                          <div className="absolute inset-x-4 bottom-4 top-4 bg-slate-900 border border-white/15 rounded-xl shadow-2xl flex flex-col justify-between overflow-hidden">
+                            {/* Widget Header */}
+                            <div className="bg-slate-950 px-4 py-2 border-b border-white/10 flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <span className="text-[10px] font-bold text-white">{twinName} Assistant</span>
+                              </div>
+                              <button 
+                                onClick={() => setShowLeadWidget(false)}
+                                className="text-slate-400 hover:text-white text-[10px] font-bold"
+                              >
+                                Close
+                              </button>
+                            </div>
+
+                            {/* Chat Area */}
+                            <div className="flex-grow p-4 overflow-y-auto space-y-3 flex flex-col justify-center">
+                              {!leadSubmitted ? (
+                                /* Lead Form */
+                                <div className="space-y-2.5">
+                                  <div className="text-center">
+                                    <h5 className="text-[10px] font-extrabold text-white uppercase tracking-wider">Start Consultation</h5>
+                                    <p className="text-[9px] text-slate-400">Introduce yourself to start chatting with {twinName}!</p>
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    <input 
+                                      type="text" 
+                                      placeholder="Full Name" 
+                                      value={leadFormName}
+                                      onChange={(e) => setLeadFormName(e.target.value)}
+                                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-[9px] text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                                    />
+                                    <input 
+                                      type="email" 
+                                      placeholder="Email Address" 
+                                      value={leadFormEmail}
+                                      onChange={(e) => setLeadFormEmail(e.target.value)}
+                                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-[9px] text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                                    />
+                                    <input 
+                                      type="text" 
+                                      placeholder="Phone Number (Optional)" 
+                                      value={leadFormPhone}
+                                      onChange={(e) => setLeadFormPhone(e.target.value)}
+                                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-[9px] text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                                    />
+                                  </div>
+                                  <button
+                                    onClick={() => {
+                                      if (!leadFormName || !leadFormEmail) {
+                                        alert("Please enter both Name and Email!");
+                                        return;
+                                      }
+                                      const newLead = {
+                                        id: Date.now(),
+                                        name: leadFormName,
+                                        email: leadFormEmail,
+                                        phone: leadFormPhone || "—",
+                                        created_at: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+                                      };
+                                      setSimulatedLeads([newLead, ...simulatedLeads]);
+                                      setLeadSubmitted(true);
+                                    }}
+                                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-[9px] py-1.5 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all"
+                                  >
+                                    Submit Details & Chat
+                                  </button>
+                                </div>
+                              ) : (
+                                /* Chat Session unlocked! */
+                                <div className="space-y-3 flex-grow flex flex-col justify-end">
+                                  <div className="bg-slate-955 border border-white/5 rounded-lg p-2 text-[9px] text-slate-350 self-end max-w-[85%]">
+                                    Hi! My name is {leadFormName} ({leadFormEmail}).
+                                  </div>
+                                  <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-2 text-[9px] text-slate-200 self-start max-w-[85%]">
+                                    👋 Welcome, {leadFormName}! Thank you for introducing yourself. I am ready to answer your questions.
+                                  </div>
+                                  <div className="flex items-center gap-1.5 justify-center py-1 text-[8px] font-mono text-emerald-400 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                                    <Check className="w-3 h-3 text-emerald-400" />
+                                    <span>LEAD SAVED TO DASHBOARD DATABASE</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Chat Input footer if submitted */}
+                            {leadSubmitted && (
+                              <div className="bg-slate-950 p-2 border-t border-white/10 flex items-center justify-between gap-2">
+                                <span className="text-[8px] text-slate-400 font-mono">Form captured successfully!</span>
+                                <button
+                                  onClick={() => {
+                                    setLeadSubmitted(false);
+                                    setLeadFormName("");
+                                    setLeadFormEmail("");
+                                    setLeadFormPhone("");
+                                  }}
+                                  className="text-[8px] text-indigo-400 hover:text-indigo-300 font-bold underline"
+                                >
+                                  Reset Form
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Simulated Dashboard Leads Database View */}
+                    <div className="bg-slate-950 border border-white/10 rounded-2xl p-4 flex flex-col gap-2.5">
+                      <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-3.5 h-3.5 text-amber-500" />
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider">📁 Dashboard leads Database</span>
+                        </div>
+                        <span className="text-[8px] bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded font-mono font-extrabold uppercase">Saved Live</span>
+                      </div>
+
+                      {simulatedLeads.length === 0 ? (
+                        <div className="py-6 flex flex-col items-center justify-center text-center border border-dashed border-white/5 rounded-xl bg-slate-900/20">
+                          <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center mb-1 text-slate-500 text-xs font-bold animate-pulse">!</div>
+                          <p className="text-[9px] text-slate-500 font-medium">Database is empty.</p>
+                          <p className="text-[8px] text-slate-600 max-w-[80%] mt-0.5">Submit the widget's Lead Gen Form above to watch this database populate in real-time!</p>
+                        </div>
+                      ) : (
+                        <div className="max-h-[110px] overflow-y-auto space-y-1.5">
+                          {simulatedLeads.map((lead) => (
+                            <div key={lead.id} className="flex items-center justify-between bg-slate-900 border border-white/5 rounded-xl p-2 text-[9px] font-mono hover:border-indigo-500/20 transition-all">
+                              <div className="space-y-0.5">
+                                <p className="font-bold text-white leading-none">{lead.name}</p>
+                                <p className="text-[8px] text-slate-400 leading-none">{lead.email}</p>
+                              </div>
+                              <div className="text-right space-y-0.5">
+                                <p className="text-slate-350 leading-none">{lead.phone}</p>
+                                <p className="text-[7px] text-slate-500 leading-none">{lead.created_at}</p>
+                              </div>
+                              <span className="text-[7px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 py-0.2 rounded font-bold">SAVED</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 8. Live Database RAG Query Simulator Screen */}
+                {steps[currentStep].id === 'rag' && (
+                  <motion.div
+                    key="rag"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch font-sans"
+                  >
+                    
+                    {/* Chat Widget Panel */}
+                    <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 flex flex-col justify-between space-y-3">
+                      <div>
+                        <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-2">
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider">{twinName} Assistant</span>
+                          <span className="text-[8px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.2 rounded font-mono">CHROME_DB_SYNC</span>
+                        </div>
+                        
+                        {/* Conversation dialogue box */}
+                        <div className="space-y-2 h-[130px] overflow-y-auto p-1">
+                          {ragQuery ? (
+                            <div className="flex flex-col space-y-2">
+                              {/* Visitor Input */}
+                              <div className="px-3 py-1.5 bg-slate-950/80 rounded-xl rounded-tr-none text-[10px] text-white self-end max-w-[85%] border border-white/5">
+                                {ragQuery}
+                              </div>
+                              
+                              {/* RAG response */}
+                              {ragPhase === 'done' && (
+                                <div className="px-3 py-1.5 bg-indigo-500/10 text-slate-200 text-[10px] rounded-xl rounded-tl-none self-start max-w-[85%] border border-indigo-500/20">
+                                  {ragOutput}
+                                  <span className="block text-[7px] text-slate-500 font-mono mt-1 uppercase">Source: {ragSource.split(" ")[0]}</span>
+                                </div>
+                              )}
+
+                              {ragPhase !== 'done' && (
+                                <div className="px-3 py-1.5 bg-slate-950/40 text-slate-500 text-[9px] rounded-xl rounded-tl-none self-start max-w-[85%] border border-dashed border-white/5 animate-pulse font-mono uppercase">
+                                  Retrieving answer...
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-center text-slate-500">
+                              <MessageCircle className="w-6 h-6 text-slate-600 mb-1" />
+                              <p className="text-[9px]">Select a preset query below to test RAG database retrieval</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Quick preset buttons */}
+                      <div className="space-y-1.5 pt-2 border-t border-white/5">
+                        <span className="text-[8px] text-slate-500 font-bold uppercase tracking-wider block">Query Presets</span>
+                        <div className="flex flex-wrap gap-1.5">
+                          <button
+                            onClick={() => handleRagSearch("Do you have Iced Mocha? What is the price?")}
+                            className="px-2 py-1 bg-white/5 border border-white/5 hover:border-indigo-500/30 text-[9px] font-semibold text-slate-350 rounded-lg hover:text-white transition-all animate-pulse"
+                          >
+                            "Mocha price?"
+                          </button>
+                          <button
+                            onClick={() => handleRagSearch("What are your coffee shop timings?")}
+                            className="px-2 py-1 bg-white/5 border border-white/5 hover:border-indigo-500/30 text-[9px] font-semibold text-slate-350 rounded-lg hover:text-white transition-all animate-pulse"
+                          >
+                            "Shop Timings?"
+                          </button>
+                          <button
+                            onClick={() => handleRagSearch("Is home delivery available?")}
+                            className="px-2 py-1 bg-white/5 border border-white/5 hover:border-indigo-500/30 text-[9px] font-semibold text-slate-355 rounded-lg hover:text-white transition-all animate-pulse"
+                          >
+                            "Home Delivery?"
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* RAG pipeline execution console */}
+                    <div className="bg-slate-950 border border-white/10 rounded-2xl p-4 flex flex-col justify-between font-mono text-[9px]">
+                      <div>
+                        <div className="flex items-center gap-1.5 border-b border-white/5 pb-2 mb-3">
+                          <Terminal className="w-3.5 h-3.5 text-indigo-400" />
+                          <span className="text-slate-400 font-bold">RAG Retrieval Telemetry</span>
+                        </div>
+
+                        {/* List of steps and checkmarks */}
+                        <div className="space-y-2">
+                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
+                            ragPhase === 'vectorizing' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              {['vectorizing', 'searching', 'retrieving', 'synthesizing', 'done'].indexOf(ragPhase) > 0 ? (
+                                <Check className="w-3 h-3 text-emerald-400" />
+                              ) : (
+                                <Cpu className={`w-3 h-3 ${ragPhase === 'vectorizing' ? 'animate-spin' : ''}`} />
+                              )}
+                              <span>1. Vectorizing Input Query</span>
+                            </div>
+                            {ragPhase === 'vectorizing' && <span className="text-[8px] animate-pulse text-indigo-400">1536d Array...</span>}
+                          </div>
+
+                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
+                            ragPhase === 'searching' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              {['searching', 'retrieving', 'synthesizing', 'done'].indexOf(ragPhase) > 1 ? (
+                                <Check className="w-3 h-3 text-emerald-400" />
+                              ) : (
+                                <Database className={`w-3 h-3 ${ragPhase === 'searching' ? 'animate-bounce' : ''}`} />
+                              )}
+                              <span>2. Scanning ChromaDB index</span>
+                            </div>
+                            {ragPhase === 'searching' && <span className="text-[8px] animate-pulse text-indigo-400">Matching keys...</span>}
+                          </div>
+
+                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
+                            ragPhase === 'retrieving' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              {['retrieving', 'synthesizing', 'done'].indexOf(ragPhase) > 2 ? (
+                                <Check className="w-3 h-3 text-emerald-400" />
+                              ) : (
+                                <FileText className="w-3 h-3" />
+                              )}
+                              <span>3. Retrieving Document Chunk</span>
+                            </div>
+                            {ragPhase === 'retrieving' && <span className="text-[8px] animate-pulse text-indigo-400">Extracting text...</span>}
+                          </div>
+
+                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
+                            ragPhase === 'synthesizing' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              {['synthesizing', 'done'].indexOf(ragPhase) > 3 ? (
+                                <Check className="w-3 h-3 text-emerald-400" />
+                              ) : (
+                                <Brain className="w-3 h-3" />
+                              )}
+                              <span>4. LLM Synthesis & Output</span>
+                            </div>
+                            {ragPhase === 'synthesizing' && <span className="text-[8px] animate-pulse text-indigo-400">Generating token...</span>}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Display retrieved metrics */}
+                      {ragPhase === 'done' && (
+                        <div className="mt-3 bg-slate-900 border border-white/5 rounded-lg p-2 space-y-1.5 text-[8px] text-slate-400">
+                          <div><span className="text-slate-500 font-bold uppercase">Nearest Neighbor:</span> <span className="text-indigo-300">{ragSource}</span></div>
+                          <div><span className="text-slate-500 font-bold uppercase">Confidence Score:</span> <span className="text-emerald-400">{ragConfidence}</span></div>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+
+              </AnimatePresence>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+// Technical Accordion FAQ Section
+const FAQ = () => {
+  const [openIndex, setOpenIndex] = useState(null);
+
+  const faqs = [
+    {
+      question: "What underlying AI models power the Digital Twin?",
+      answer: "We utilize fine-tuned, low-latency Large Language Models combined with ChromaDB vector indexers. This creates a secure Retrieval-Augmented Generation (RAG) loop matching your specific files, docs, and URLs with zero hallucination."
+    },
+    {
+      question: "How does Standard plan pricing work?",
+      answer: "The Standard plan is priced at ₹1599/month, but we're currently running a Launch Offer at just ₹1299/month. This grants unlimited web chat assistant executions, customizable theme skins without branding watermarks, lead captures, and URL indexing."
+    },
+    {
+      question: "What is Business Pro plan availability?",
+      answer: "Business Pro features (including live WhatsApp scanners, voice calling cloning synthesizers, and WebRTC streaming dialers) are currently Coming Soon. You can join the waitlist from our Dashboard."
+    },
+    {
+      question: "Can I inspect conversation history or limits?",
+      answer: "Absolutely. Users have access to full telemetry logs, conversational history tables, captured leads, and active message counts directly from their Dashboard. Free trials are strictly gated at 3 days / 50 messages."
+    }
+  ];
+
+  return (
+    <section className="relative py-28 z-10 bg-slate-950/40">
+      <div className="max-w-3xl mx-auto px-6">
+        
+        {/* Title */}
+        <div className="text-center mb-16">
+          <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.25em]">Frequently Asked Questions</span>
+          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Technical FAQs
+          </h2>
+        </div>
+
+        {/* Accordions */}
+        <div className="space-y-4">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <div
+                key={index}
+                className="bg-white/[0.01] border border-white/5 rounded-2xl overflow-hidden transition-all hover:bg-white/[0.02]"
+              >
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  className="w-full px-6 py-5 flex items-center justify-between text-left transition-colors"
+                >
+                  <span className="text-white font-bold text-sm sm:text-base">{faq.question}</span>
+                  <motion.div
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronRight className="w-5 h-5 text-slate-500" />
+                  </motion.div>
+                </button>
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-5 text-slate-400 text-xs sm:text-sm font-medium leading-relaxed border-t border-white/5 pt-4">
+                        {faq.answer}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+// Premium high-tech CTA deck console
+const CTA = () => {
+  const navigate = useNavigate();
+
+  return (
+    <section className="relative py-28 z-10 overflow-hidden bg-[#030014]">
+      <div className="max-w-5xl mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="relative p-12 md:p-20 rounded-3xl bg-white/[0.01] border border-white/5 overflow-hidden shadow-2xl"
+        >
+          {/* Cosmic gradient backdrop */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-60 h-60 bg-purple-500/5 rounded-full blur-[90px] pointer-events-none" />
+
+          <div className="relative text-center z-10 space-y-6">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+              Initiate Your AI Digital Twin
             </h2>
-            <p className="mt-3 text-gray-500 max-w-2xl mx-auto text-sm font-medium">
-              Stellar.ai makes creating your replica incredibly straightforward. Experience modern AI performance synced directly with your business parameters.
+            <p className="text-slate-400 max-w-xl mx-auto text-xs sm:text-sm font-semibold leading-relaxed">
+              Create your autonomous intelligence clone today. Upload custom documentation, capture voice patterns, and activate standard widget integrations or scan WhatsApp-linked QR codes.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+              <motion.button
+                onClick={() => navigate('/register')}
+                className="w-full sm:w-auto group relative px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-2xl font-bold text-sm overflow-hidden shadow-lg"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  Launch Console Panel
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </motion.button>
+              
+              <motion.button
+                onClick={() => navigate('/pricing')}
+                className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-bold text-sm hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Configure Tiers (₹1299/mo)
+              </motion.button>
+            </div>
+
+            <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-center gap-6 text-xs text-slate-500 font-mono uppercase tracking-wider">
+              <a href="mailto:nexora.aidigital.twin@gmail.com" className="hover:text-white transition-colors">
+                nexora.aidigital.twin@gmail.com
+              </a>
+              <span className="hidden md:block text-slate-700">•</span>
+              <a href="tel:+919625410112" className="hover:text-white transition-colors">
+                +91 9625410112
+              </a>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+// Premium startup Footer
+const Footer = () => {
+  const navigate = useNavigate();
+
+  return (
+    <footer className="pt-16 pb-12 bg-slate-950 border-t border-white/5 relative z-10 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+          {/* Brand details */}
+          <div className="space-y-4">
+            <div
+              onClick={() => navigate('/')}
+              className="flex items-center gap-3 cursor-pointer group w-fit"
+            >
+              <div className="flex items-center justify-center p-2 rounded-xl bg-white/5 group-hover:bg-indigo-500/10 transition-colors">
+                <LogoIcon className="w-6 h-6" />
+              </div>
+              <span className="text-lg font-bold text-white tracking-tight">AI Digital Twin</span>
+            </div>
+            <p className="text-xs text-slate-500 max-w-xs font-semibold leading-relaxed">
+              Automate customer queries over chat widgets and WhatsApp 24/7 on autopilot.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Box 1 */}
-            <div className="bg-white border border-gray-100 rounded-3xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-violet-100 text-violet-600 flex items-center justify-center mb-6">
-                  <Database className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-black mb-3">Knowledge Ingestion</h3>
-                <p className="text-sm text-gray-500 leading-relaxed mb-6">
-                  Upload PDFs, map URLs, or connect notion databases. The clone absorbs facts, menu pricing, terms, and services within seconds.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 text-xs font-bold text-violet-600">
-                Vector DB Synced <Check className="w-4 h-4" />
-              </div>
+          {/* Links Column */}
+          <div className="grid grid-cols-2 gap-8 md:col-span-2">
+            <div>
+              <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-widest">Product</h4>
+              <ul className="space-y-3">
+                <li>
+                  <button
+                    onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
+                  >
+                    Features
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/pricing')}
+                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
+                  >
+                    Pricing
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/guide')}
+                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
+                  >
+                    System Guide
+                  </button>
+                </li>
+              </ul>
             </div>
 
-            {/* Box 2 */}
-            <div className="bg-white border border-gray-100 rounded-3xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center mb-6">
-                  <Phone className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-black mb-3">Neural Voice Sync</h3>
-                <p className="text-sm text-gray-500 leading-relaxed mb-6">
-                  Provide a 20-second vocal snippet to construct your custom neural voice model. Twin replies naturally in your own tone and accent.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 text-xs font-bold text-orange-600">
-                Voice Clone Ready <Check className="w-4 h-4" />
-              </div>
-            </div>
-
-            {/* Box 3 */}
-            <div className="bg-white border border-gray-100 rounded-3xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-6">
-                  <MessageSquare className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-black mb-3">WhatsApp & Web Linkage</h3>
-                <p className="text-sm text-gray-500 leading-relaxed mb-6">
-                  Deploy to WhatsApp by scanning a QR code, or copy-paste our beautiful HTML snippet to place a chat widget directly on your website.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-600">
-                Omnichannel Active <Check className="w-4 h-4" />
-              </div>
+            <div>
+              <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-widest">Support</h4>
+              <ul className="space-y-3">
+                <li>
+                  <a
+                    href="mailto:nexora.aidigital.twin@gmail.com"
+                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left break-all"
+                  >
+                    nexora.aidigital.twin@gmail.com
+                  </a>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/legal')}
+                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
+                  >
+                    Terms & Privacy
+                  </button>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* ── FAQ SECTION ── */}
-      <section className="py-24 max-w-4xl mx-auto px-6">
-        <h2 className="text-3xl font-black text-black tracking-tight text-center mb-16">Frequently Asked Questions</h2>
-        <div className="space-y-6">
-          <div className="border-b border-gray-100 pb-6">
-            <h3 className="text-base font-bold text-black mb-2">How long does it take to train my AI Twin?</h3>
-            <p className="text-sm text-gray-500 leading-relaxed">
-              Typically under 5 minutes. As soon as you complete the setup wizard (upload FAQs, map pricing, and record an optional voice sample), training completes automatically.
-            </p>
-          </div>
-          <div className="border-b border-gray-100 pb-6">
-            <h3 className="text-base font-bold text-black mb-2">Does it support languages other than English?</h3>
-            <p className="text-sm text-gray-500 leading-relaxed">
-              Yes! Your AI Digital Twin fully supports conversations in both English and Hindi (Hinglish/hybrid supported), allowing you to cater to a diverse user base seamlessly.
-            </p>
-          </div>
-          <div className="border-b border-gray-100 pb-6">
-            <h3 className="text-base font-bold text-black mb-2">Can I review my twin's conversations?</h3>
-            <p className="text-sm text-gray-500 leading-relaxed">
-              Absolutely. The owner dashboard tracks all active and completed conversation threads in real time, capturing leads directly to your analytics panel.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FOOTER ── */}
-      <footer className="border-t border-gray-100 bg-white py-12 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-black flex items-center justify-center text-white">
-              <Star className="w-3.5 h-3.5 fill-white text-white" />
-            </div>
-            <span className="text-sm font-bold text-black">Stellar.ai</span>
-            <span className="text-xs text-gray-400 font-medium">© {new Date().getFullYear()} Stellar.ai Inc.</span>
-          </div>
-
-          <div className="flex gap-6">
-            <Link to="/pricing" className="text-xs font-semibold text-gray-500 hover:text-black transition-colors">Pricing</Link>
-            <Link to="/documentation" className="text-xs font-semibold text-gray-500 hover:text-black transition-colors">Docs</Link>
-            <Link to="/privacy" className="text-xs font-semibold text-gray-500 hover:text-black transition-colors">Privacy</Link>
-          </div>
-
+        {/* System operational status banner */}
+        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">
+            &copy; {new Date().getFullYear()} AI Digital Twin.
+          </p>
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-            <span className="text-[10px] font-mono text-emerald-600 font-extrabold uppercase tracking-wider">All Systems Operational</span>
+            <span className="text-[9px] font-mono text-emerald-500 uppercase tracking-widest font-extrabold">All Systems Operational</span>
           </div>
         </div>
-      </footer>
+      </div>
+    </footer>
+  );
+};
+
+// Main Home Component Redesign
+const Home = () => {
+  return (
+    <div className="relative min-h-screen bg-slate-950 text-white font-sans selection:bg-indigo-500/30 overflow-x-hidden">
+      {/* Navigation */}
+      <LandingNavbar />
+
+      {/* Background gradients */}
+      <PremiumBackground />
+
+      {/* Page layout structure */}
+      <main className="relative">
+        <Hero />
+        <CapabilitiesPlayground />
+        <Features />
+        <HowItWorks />
+        <UserGuideMindmap />
+        <FAQ />
+        <CTA />
+      </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
