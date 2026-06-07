@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
@@ -29,7 +29,17 @@ import {
   Briefcase,
   Settings,
   Power,
-  Code2
+  Code2,
+  Stars,
+  Orbit,
+  Pulse,
+  Network,
+  Layers,
+  Wand2,
+  Infinity,
+  Target,
+  Compass,
+  Telescope
 } from 'lucide-react';
 import LandingNavbar from '../components/LandingNavbar';
 import LogoIcon from '../components/LogoIcon';
