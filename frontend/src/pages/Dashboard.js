@@ -29,9 +29,11 @@ const fadeUp = {
 
 // Premium Clean Mixins
 const getGlassyStyles = (theme) => ({
-  background: theme.palette.mode === 'dark' ? '#0a0a0f' : '#ffffff',
+  background: theme.palette.mode === 'dark' ? 'rgba(10, 10, 15, 0.5)' : 'rgba(255, 255, 255, 0.7)',
   border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
-  boxShadow: theme.palette.mode === 'dark' ? '0 4px 24px -4px rgba(0, 0, 0, 0.3)' : '0 4px 24px -4px rgba(0, 0, 0, 0.05)',
+  boxShadow: theme.palette.mode === 'dark' ? '0 8px 32px 0 rgba(0, 0, 0, 0.37)' : '0 8px 32px 0 rgba(31, 38, 135, 0.05)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
 });
 
 const Dashboard = () => {
@@ -363,12 +365,14 @@ const Dashboard = () => {
                           sx={{
                             cursor: 'pointer',
                             borderRadius: '16px',
-                            background: theme.palette.mode === 'dark' ? '#0f111a' : '#ffffff',
+                            background: theme.palette.mode === 'dark' ? 'rgba(15, 17, 26, 0.4)' : 'rgba(255, 255, 255, 0.6)',
                             border: '1px solid',
                             borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
                             '&:hover': { 
-                              borderColor: 'rgba(255,255,255,0.12)',
+                              borderColor: 'rgba(99, 102, 241, 0.3)',
                             },
+                            backdropFilter: 'blur(12px)',
+                            WebkitBackdropFilter: 'blur(12px)',
                             transition: 'all 0.3s ease',
                           }}
                           onClick={() => navigate(`/twins/${twin.id}`)}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Sparkles, Zap, MessageSquare, Brain, ArrowRight } from 'lucide-react';
+import { Menu, X, Sparkles, ArrowRight, LayoutDashboard, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LogoIcon from './LogoIcon';
 
@@ -11,6 +11,7 @@ const LandingNavbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hoveredLink, setHoveredLink] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, logout } = useAuth();
@@ -188,30 +189,69 @@ const LandingNavbar = () => {
                   whileHover={{ scale: 1.02 }}
                 />
               ) : user ? (
-                <>
-                  <motion.button
-                    onClick={() => navigate('/dashboard')}
-                    className="group relative px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-2xl text-[13px] font-bold overflow-hidden"
-                    whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(99, 102, 241, 0.4)' }}
-                    whileTap={{ scale: 0.95 }}
+                <div className="relative">
+                  <button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="flex items-center gap-2 focus:outline-none focus:ring-0"
                   >
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                    />
-                    <span className="relative flex items-center gap-2">
-                      Dashboard
-                      <Sparkles className="w-4 h-4" />
-                    </span>
-                  </motion.button>
-                  <motion.button
-                    onClick={() => { logout(); navigate('/'); }}
-                    className="px-4 py-3 text-[13px] font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-xl hover:bg-slate-100 dark:hover:bg-white/5"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Logout
-                  </motion.button>
-                </>
+                    {user.profile_picture ? (
+                       <img
+                         src={user.profile_picture}
+                         alt={user.full_name || "Profile"}
+                         className="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/50 hover:ring-indigo-500 transition-all duration-300 shadow-md"
+                         referrerPolicy="no-referrer"
+                       />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm ring-2 ring-indigo-500/50 hover:ring-indigo-500 transition-all duration-300 shadow-md">
+                        {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U')}
+                      </div>
+                    )}
+                  </button>
+
+                  <AnimatePresence>
+                    {dropdownOpen && (
+                      <>
+                        <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                          className="absolute right-0 mt-3 w-64 bg-white/90 dark:bg-slate-900/95 border border-slate-200 dark:border-white/10 backdrop-blur-2xl rounded-2xl p-4 shadow-2xl z-20 flex flex-col gap-3"
+                        >
+                          <div className="flex flex-col border-b border-slate-100 dark:border-white/5 pb-3">
+                            <span className="text-[10px] text-indigo-500 dark:text-indigo-400 font-extrabold tracking-wider uppercase">Account</span>
+                            <span className="text-sm font-bold text-slate-800 dark:text-white truncate mt-1">{user.full_name || 'User'}</span>
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{user.email}</span>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <button
+                              onClick={() => { setDropdownOpen(false); navigate('/dashboard'); }}
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-left text-xs font-bold"
+                            >
+                              <LayoutDashboard className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                              Dashboard
+                            </button>
+                            <button
+                              onClick={() => { setDropdownOpen(false); navigate('/settings'); }}
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-left text-xs font-bold"
+                            >
+                              <Settings className="w-4 h-4 text-purple-500 dark:text-purple-400" />
+                              Settings
+                            </button>
+                            <button
+                              onClick={() => { setDropdownOpen(false); logout(); navigate('/'); }}
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-500 hover:text-rose-600 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all text-left text-xs font-bold"
+                            >
+                              <LogOut className="w-4 h-4" />
+                              Logout
+                            </button>
+                          </div>
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
+                </div>
               ) : (
                 <>
                   <motion.button
@@ -314,6 +354,19 @@ const LandingNavbar = () => {
                   <div className="h-14 w-full bg-slate-200 dark:bg-slate-800 animate-pulse rounded-2xl" />
                 ) : user ? (
                   <>
+                    <div className="flex items-center gap-3 px-4 py-3 bg-slate-100 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 mb-2 text-left">
+                      {user.profile_picture ? (
+                        <img src={user.profile_picture} alt="Profile" className="w-12 h-12 rounded-full object-cover ring-2 ring-indigo-500/30" referrerPolicy="no-referrer" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-lg">
+                          {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U')}
+                        </div>
+                      )}
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.full_name || 'User'}</span>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{user.email}</span>
+                      </div>
+                    </div>
                     <motion.button
                       onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }}
                       className="w-full py-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-2xl font-semibold flex items-center justify-center gap-2"

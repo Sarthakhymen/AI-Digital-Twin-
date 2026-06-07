@@ -1,83 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Zap, MessageSquare, Brain, ArrowRight, Settings, LayoutDashboard, BookOpen, Building2, BarChart3, Mic, Shield } from 'lucide-react';
+import { Menu, X, ArrowRight, Settings, LayoutDashboard, BookOpen, Building2, BarChart3, Mic, Shield, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LogoIcon from './LogoIcon';
-
-// AI Assistant Visualization Component
-const AIAssistantVisualization = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const steps = [
-    { icon: MessageSquare, label: 'User Request', color: 'from-blue-400 to-cyan-400' },
-    { icon: Brain, label: 'AI Processing', color: 'from-purple-400 to-pink-400' },
-    { icon: Zap, label: 'Instant Answer', color: 'from-green-400 to-emerald-400' }
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentStep((prev) => (prev + 1) % steps.length);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [steps.length]);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
-      className="hidden lg:flex items-center gap-3 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/10 rounded-2xl px-5 py-3"
-    >
-      {steps.map((step, index) => (
-        <React.Fragment key={step.label}>
-          <motion.div
-            animate={{
-              scale: currentStep === index ? [1, 1.1, 1] : 1,
-              opacity: currentStep === index ? 1 : 0.5
-            }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center gap-2"
-          >
-            <motion.div
-              animate={{
-                boxShadow: currentStep === index
-                  ? '0 0 20px rgba(99, 102, 241, 0.5)'
-                  : '0 0 0px rgba(99, 102, 241, 0)'
-              }}
-              className={`relative p-2 rounded-xl bg-gradient-to-br ${step.color}`}
-            >
-              <step.icon className="w-4 h-4 text-white" />
-              {currentStep === index && (
-                <motion.div
-                  className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent"
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                />
-              )}
-            </motion.div>
-            <span className="text-xs font-medium text-white/90">{step.label}</span>
-          </motion.div>
-          {index < steps.length - 1 && (
-            <motion.div
-              animate={{
-                x: currentStep === index ? [0, 5, 0] : 0,
-                opacity: currentStep === index ? 1 : 0.3
-              }}
-              transition={{ duration: 0.5 }}
-            >
-              <ArrowRight className="w-4 h-4 text-white/40" />
-            </motion.div>
-          )}
-        </React.Fragment>
-      ))}
-    </motion.div>
-  );
-};
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hoveredLink, setHoveredLink] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const { user, userFeatures, loading, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -233,32 +165,87 @@ const Navbar = () => {
               </div>
             </motion.div>
 
-            {/* Right section - Logout */}
+            {/* Right section - User Profile Dropdown */}
             <motion.div
               variants={itemVariants}
               className="flex-1 hidden lg:flex items-center justify-end gap-4"
             >
-
               {loading ? (
                 <motion.div
                   className="h-12 w-32 bg-white/5 animate-pulse rounded-2xl"
                   whileHover={{ scale: 1.02 }}
                 />
+              ) : user ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="flex items-center gap-2 focus:outline-none focus:ring-0"
+                  >
+                    {user.profile_picture ? (
+                       <img
+                         src={user.profile_picture}
+                         alt={user.full_name || "Profile"}
+                         className="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/50 hover:ring-indigo-500 transition-all duration-300 shadow-md"
+                         referrerPolicy="no-referrer"
+                       />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm ring-2 ring-indigo-500/50 hover:ring-indigo-500 transition-all duration-300 shadow-md">
+                        {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U')}
+                      </div>
+                    )}
+                  </button>
+
+                  <AnimatePresence>
+                    {dropdownOpen && (
+                      <>
+                        <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                          className="absolute right-0 mt-3 w-64 bg-slate-900/95 border border-white/10 backdrop-blur-2xl rounded-2xl p-4 shadow-2xl z-20 flex flex-col gap-3"
+                        >
+                          <div className="flex flex-col border-b border-white/5 pb-3">
+                            <span className="text-[10px] text-indigo-400 font-extrabold tracking-wider uppercase text-left">Account</span>
+                            <span className="text-sm font-bold text-white truncate mt-1 text-left">{user.full_name || 'User'}</span>
+                            <span className="text-[11px] text-slate-400 truncate text-left">{user.email}</span>
+                            {user.subscription_plan && (
+                              <span className="inline-block self-start mt-2 px-2 py-0.5 text-[9px] font-extrabold tracking-wider uppercase rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                {user.subscription_plan === 'business_pro' || user.subscription_plan === 'pro' ? 'Pro Plan' : user.subscription_plan === 'free' ? 'Free Trial' : 'Standard Plan'}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <button
+                              onClick={() => { setDropdownOpen(false); navigate('/'); }}
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all text-left text-xs font-bold"
+                            >
+                              <LayoutDashboard className="w-4 h-4 text-indigo-400" />
+                              Landing Page
+                            </button>
+                            <button
+                              onClick={() => { setDropdownOpen(false); navigate('/settings'); }}
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all text-left text-xs font-bold"
+                            >
+                              <Settings className="w-4 h-4 text-purple-400" />
+                              Settings
+                            </button>
+                            <button
+                              onClick={() => { setDropdownOpen(false); handleLogout(); }}
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all text-left text-xs font-bold"
+                            >
+                              <LogOut className="w-4 h-4" />
+                              Logout
+                            </button>
+                          </div>
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
+                </div>
               ) : (
-                <motion.button
-                  onClick={handleLogout}
-                  className="group relative px-6 py-3 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-2xl text-[13px] font-bold overflow-hidden"
-                  whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(239, 68, 68, 0.4)' }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-rose-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                  />
-                  <span className="relative flex items-center gap-2">
-                    Logout
-                    <ArrowRight className="w-4 h-4" />
-                  </span>
-                </motion.button>
+                <div />
               )}
             </motion.div>
 
@@ -341,6 +328,31 @@ const Navbar = () => {
               >
                 {loading ? (
                   <div className="h-14 w-full bg-slate-800 animate-pulse rounded-2xl" />
+                ) : user ? (
+                  <>
+                    <div className="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-2xl border border-white/10 mb-2 text-left">
+                      {user.profile_picture ? (
+                        <img src={user.profile_picture} alt="Profile" className="w-12 h-12 rounded-full object-cover ring-2 ring-indigo-500/30" referrerPolicy="no-referrer" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-lg">
+                          {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U')}
+                        </div>
+                      )}
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-bold text-white truncate">{user.full_name || 'User'}</span>
+                        <span className="text-[11px] text-slate-400 truncate">{user.email}</span>
+                      </div>
+                    </div>
+                    <motion.button
+                      onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                      className="w-full py-4 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-2xl font-semibold flex items-center justify-center gap-2"
+                      whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(239, 68, 68, 0.4)' }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <ArrowRight className="w-5 h-5" />
+                      Logout
+                    </motion.button>
+                  </>
                 ) : (
                   <motion.button
                     onClick={() => { handleLogout(); setMobileMenuOpen(false); }}

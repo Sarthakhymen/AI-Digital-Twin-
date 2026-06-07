@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
@@ -25,7 +25,6 @@ import {
   Globe,
   Users,
   MessageCircle,
-  BookOpen,
   CreditCard,
   Briefcase,
   Settings,
@@ -175,6 +174,29 @@ const HeroSmartphoneVisualization = () => {
 
   const [nameIndex, setNameIndex] = useState(0);
 
+  // Parallax tilt spring states
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  
+  const springConfig = { damping: 30, stiffness: 120 };
+  const rotateX = useSpring(useTransform(mouseY, [-300, 300], [12, -12]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-300, 300], [-12, 12]), springConfig);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const xVal = e.clientX - (rect.left + width / 2);
+    const yVal = e.clientY - (rect.top + height / 2);
+    mouseX.set(xVal);
+    mouseY.set(yVal);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
   useEffect(() => {
     const timer = setInterval(() => {
       setNameIndex((prev) => (prev + 1) % TARGET_NAMES.length);
@@ -307,7 +329,12 @@ const HeroSmartphoneVisualization = () => {
       />
 
       {/* Phone Body Wrapper */}
-      <div className="relative w-[280px] min-[380px]:w-[300px] h-[560px] min-[380px]:h-[600px] bg-[#0c0d12] rounded-[3.2rem] border-[6px] border-[#222530] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden ring-1 ring-white/10">
+      <motion.div
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }}
+        className="relative w-[280px] min-[380px]:w-[300px] h-[560px] min-[380px]:h-[600px] bg-[#0c0d12] rounded-[3.2rem] border-[6px] border-[#222530] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden ring-1 ring-white/10 cursor-grab active:cursor-grabbing will-change-transform"
+      >
         
         {/* Notch / Speaker */}
         <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-30">
@@ -406,7 +433,7 @@ const HeroSmartphoneVisualization = () => {
             </motion.div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
@@ -968,21 +995,7 @@ const CapabilitiesPlayground = () => {
 
 // Premium Features Cards Section
 const Features = () => {
-  const navigate = useNavigate();
-  const [spreadIndex, setSpreadIndex] = useState(0);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const [direction, setDirection] = useState('next');
-  const [displaySpreadIndex, setDisplaySpreadIndex] = useState(0);
   
-  // Responsive check
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 1024);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   // Voice Twin wave play state
   const [isVoicePlaying, setIsVoicePlaying] = useState(false);
   
@@ -1004,606 +1017,324 @@ const Features = () => {
     ]);
   };
 
-  const turnToSpread = (targetIndex) => {
-    if (targetIndex === spreadIndex || isFlipping) return;
-    const dir = targetIndex > spreadIndex ? 'next' : 'prev';
-    setDirection(dir);
-    setIsFlipping(true);
-    
-    if (dir === 'next') {
-      setTimeout(() => {
-        setDisplaySpreadIndex(targetIndex);
-      }, 250);
-    } else {
-      setDisplaySpreadIndex(targetIndex);
-    }
-    
-    setSpreadIndex(targetIndex);
-    
-    setTimeout(() => {
-      setIsFlipping(false);
-    }, 500);
-  };
-  
-  // Define content for each page
-  // Page 0: Cover / Table of Contents
-  const renderPage0 = () => (
-    <div className="flex flex-col h-full justify-between py-1 px-1">
-      <div>
-        <div className="flex items-center gap-2 text-indigo-400 mb-3">
-          <BookOpen className="w-4 h-4 animate-pulse" />
-          <span className="text-[9px] font-bold tracking-wider uppercase">System Spec Manual</span>
-        </div>
-        <h3 className="text-xl font-black text-white tracking-tight leading-tight mb-1.5">
-          Cognitive AI Twin Blueprint
-        </h3>
-        <p className="text-[11px] text-slate-400 leading-relaxed font-medium mb-4">
-          Welcome to the technical capability manual. Click chapters below or flip pages to inspect each engine, simulator, and route guard.
-        </p>
-        
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            { ch: 'Ch 1', title: 'Voice Synthesizer', spread: 0 },
-            { ch: 'Ch 2', title: 'Knowledge Vectorizer', spread: 1 },
-            { ch: 'Ch 3', title: 'WhatsApp Gateway', spread: 1 },
-            { ch: 'Ch 4', title: 'Embedded Web Widget', spread: 2 },
-            { ch: 'Ch 5', title: 'Analytical Dashboard', spread: 2 },
-            { ch: 'Ch 6', title: 'Route Security Gate', spread: 3 }
-          ].map((item, idx) => (
-            <button
-              key={idx}
-              onClick={() => turnToSpread(item.spread)}
-              className="flex flex-col justify-between p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/10 transition-all text-left h-16 group"
-            >
-              <span className="text-[9px] text-indigo-400 font-bold tracking-wider uppercase group-hover:text-indigo-300 transition-colors">{item.ch}</span>
-              <span className="text-[11px] font-bold text-white/90 leading-tight group-hover:text-white transition-colors">{item.title}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      <div className="border-t border-white/5 pt-3 flex items-center justify-between text-[9px] text-slate-500 font-mono mt-4">
-        <span>ANTIGRAVITY SYSTEMS</span>
-        <span>PAGE 01</span>
-      </div>
-    </div>
-  );
-
-  // Page 1: Feature 1 - Voice Synthesizer
-  const renderPage1 = () => (
-    <div className="flex flex-col h-full justify-between py-2 px-1">
-      <div>
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-lg">
-            <Mic className="w-4 h-4 text-rose-400" />
-            <span className="text-[10px] font-bold tracking-wider text-rose-300 uppercase">Voice Synthesizer</span>
-          </div>
-          <span className="text-[8px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/30 px-1.5 py-0.5 rounded uppercase">Business Pro</span>
-        </div>
-        
-        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 1: Voice Cloning Synthesizer</h4>
-        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-6">
-          Clone your acoustic voice signature from a 10-second audio recording. Power voice bot dials with natural tone, pitch, and accent alignment.
-        </p>
-
-        {/* Waveform Simulator box */}
-        <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex flex-col items-center gap-4">
-          <div className="flex items-center gap-1.5 h-12">
-            {Array.from({ length: 18 }).map((_, i) => (
-              <div
-                key={i}
-                className="w-1 bg-gradient-to-t from-rose-500 to-pink-500 rounded-full"
-                style={{
-                  height: isVoicePlaying ? '100%' : '15%',
-                  animation: isVoicePlaying ? `voice-wave 0.8s ease-in-out infinite alternate` : 'none',
-                  animationDelay: `${i * 0.05}s`
-                }}
-              />
-            ))}
-          </div>
-          
-          <button
-            onClick={() => setIsVoicePlaying(!isVoicePlaying)}
-            className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-500 hover:bg-rose-600 text-white transition-colors flex items-center gap-1.5 shadow-[0_0_15px_rgba(244,63,94,0.3)]"
-          >
-            {isVoicePlaying ? (
-              <>
-                <Volume2 className="w-3.5 h-3.5 animate-bounce" />
-                Stop Sample Cloned Voice
-              </>
-            ) : (
-              <>
-                <Mic className="w-3.5 h-3.5" />
-                Listen Sample Cloned Voice
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-      
-      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
-        <span>CLONE ENGINE</span>
-        <span>PAGE 02</span>
-      </div>
-    </div>
-  );
-
-  // Page 2: Feature 2 - Multi-Format Ingestion
-  const renderPage2 = () => (
-    <div className="flex flex-col h-full justify-between py-2 px-1">
-      <div>
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-1 rounded-lg">
-            <Database className="w-4 h-4 text-cyan-400" />
-            <span className="text-[10px] font-bold tracking-wider text-cyan-300 uppercase">Knowledge Vectorizer</span>
-          </div>
-          <span className="text-[8px] font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-1.5 py-0.5 rounded uppercase">Standard</span>
-        </div>
-        
-        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 2: Multi-Format Knowledge Ingestion</h4>
-        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-6">
-          Upload PDF files, TXT records, or scrape full site URLs. The vectorizer parses and indexes data into an isolated vector database instantly.
-        </p>
-
-        {/* SVG Flow diagram */}
-        <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
-          <svg viewBox="0 0 260 100" className="w-full max-w-[240px]">
-            {/* Left nodes */}
-            <rect x="10" y="5" width="45" height="20" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
-            <text x="32" y="17" fill="#94a3b8" fontSize="8" textAnchor="middle">PDF Doc</text>
-
-            <rect x="10" y="40" width="45" height="20" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
-            <text x="32" y="52" fill="#94a3b8" fontSize="8" textAnchor="middle">TXT Log</text>
-
-            <rect x="10" y="75" width="45" height="20" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
-            <text x="32" y="87" fill="#94a3b8" fontSize="8" textAnchor="middle">URL Link</text>
-
-            {/* Right target nodes */}
-            <circle cx="130" cy="50" r="22" fill="rgba(6,182,212,0.1)" stroke="rgba(6,182,212,0.3)" />
-            <text x="130" y="53" fill="#22d3ee" fontSize="7" textAnchor="middle" fontWeight="bold">Chunker</text>
-
-            <rect x="200" y="37" width="50" height="26" rx="4" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.4)" />
-            <text x="225" y="50" fill="#22d3ee" fontSize="8" textAnchor="middle" fontWeight="bold">Vector DB</text>
-
-            {/* Connecting lines */}
-            <path d="M 55 15 L 110 40" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
-            <path d="M 55 50 L 108 50" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
-            <path d="M 55 85 L 110 60" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
-            <path d="M 152 50 L 200 50" fill="none" stroke="#22d3ee" strokeWidth="1.5" className="flow-line-animated" />
-          </svg>
-        </div>
-      </div>
-      
-      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
-        <span>VECTOR DATABASE</span>
-        <span>PAGE 03</span>
-      </div>
-    </div>
-  );
-
-  // Page 3: Feature 3 - WhatsApp Gateway
-  const renderPage3 = () => (
-    <div className="flex flex-col h-full justify-between py-2 px-1">
-      <div>
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
-            <Scan className="w-4 h-4 text-emerald-400" />
-            <span className="text-[10px] font-bold tracking-wider text-emerald-300 uppercase">WhatsApp Gateway</span>
-          </div>
-          <span className="text-[8px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded uppercase">Business Pro</span>
-        </div>
-        
-        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 3: WhatsApp Gateway Linker</h4>
-        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-6">
-          Link your WhatsApp using simple QR scanners. Let your twin manage client chats 24/7 on autopilot with secure webhook routers.
-        </p>
-
-        {/* QR simulation */}
-        <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center gap-4">
-          <div className="relative w-16 h-16 bg-white p-1 rounded-lg flex-shrink-0">
-            {/* Grid QR representation */}
-            <div className="w-full h-full bg-slate-900 rounded-sm flex flex-col justify-between p-1">
-              <div className="flex justify-between">
-                <div className="w-4 h-4 border border-white rounded-xs" />
-                <div className="w-4 h-4 border border-white rounded-xs" />
-              </div>
-              <div className="flex justify-between items-end">
-                <div className="w-4 h-4 border border-white rounded-xs" />
-                <div className="w-3 h-3 bg-white rounded-xs" />
-              </div>
-            </div>
-            
-            {/* Laser scanning bar */}
-            {!isWALinked && (
-              <motion.div 
-                className="absolute left-0 inset-x-0 h-0.5 bg-emerald-400 shadow-md"
-                animate={{ top: ['4px', '60px', '4px'] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              />
-            )}
-          </div>
-          
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className={`w-2 h-2 rounded-full ${isWALinked ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-              <span className="text-[10px] font-mono font-bold text-slate-300">
-                {isWALinked ? 'Linked & Autopilot Live' : 'Awaiting QR Scan'}
-              </span>
-            </div>
-            <button
-              onClick={() => setIsWALinked(!isWALinked)}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-colors ${
-                isWALinked 
-                  ? 'bg-transparent border-slate-700 text-slate-400 hover:text-slate-200' 
-                  : 'bg-emerald-500 hover:bg-emerald-600 border-transparent text-white'
-              }`}
-            >
-              {isWALinked ? 'Disconnect Gateway' : 'Scan & Link Test'}
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
-        <span>WHATSAPP INTEGRATION</span>
-        <span>PAGE 04</span>
-      </div>
-    </div>
-  );
-
-  // Page 4: Feature 4 - Web Widget
-  const renderPage4 = () => (
-    <div className="flex flex-col h-full justify-between py-2 px-1">
-      <div>
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-lg">
-            <Smartphone className="w-4 h-4 text-purple-400" />
-            <span className="text-[10px] font-bold tracking-wider text-purple-300 uppercase">Web Chat Widget</span>
-          </div>
-          <span className="text-[8px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30 px-1.5 py-0.5 rounded uppercase">Standard</span>
-        </div>
-        
-        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 4: Lightweight Web Widget</h4>
-        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-5">
-          Embed a clean, fully customized chat widget onto client websites with a single line of script. Remove watermarks.
-        </p>
-
-        {/* Live widget preview block */}
-        <div className="p-3.5 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[9px] font-mono text-slate-400">Preview Widget Theme:</span>
-            <div className="flex gap-1.5">
-              {['#06b6d4', '#d946ef', '#10b981', '#f59e0b', '#f43f5e'].map((col) => (
-                <button 
-                  key={col} 
-                  className="w-3.5 h-3.5 rounded-full border border-white/10 transition-transform hover:scale-110"
-                  style={{ backgroundColor: col }}
-                  onClick={() => setWidgetColor(col)}
-                />
-              ))}
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between bg-slate-900 p-2.5 rounded-lg border border-white/5">
-            <div className="flex items-center gap-1.5">
-              <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] text-white" style={{ backgroundColor: widgetColor }}>
-                AI
-              </div>
-              <span className="text-[9px] font-bold text-white">Digital Twin Support</span>
-            </div>
-            
-            <div 
-              className="w-7 h-7 rounded-full flex items-center justify-center text-white transition-all shadow-md"
-              style={{ backgroundColor: widgetColor }}
-            >
-              <MessageCircle className="w-3.5 h-3.5" />
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
-        <span>UI INTEGRATION</span>
-        <span>PAGE 05</span>
-      </div>
-    </div>
-  );
-
-  // Page 5: Feature 5 - Analytics
-  const renderPage5 = () => (
-    <div className="flex flex-col h-full justify-between py-2 px-1">
-      <div>
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg">
-            <BarChart3 className="w-4 h-4 text-amber-400" />
-            <span className="text-[10px] font-bold tracking-wider text-amber-300 uppercase">Analytical Reporting</span>
-          </div>
-          <span className="text-[8px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded uppercase">Standard</span>
-        </div>
-        
-        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 5: Analytical Reporting</h4>
-        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-5">
-          Track conversation logs, message count limits, query volumes, and response success rates in an analytics dashboard.
-        </p>
-
-        {/* Analytical bar chart mockup */}
-        <div className="p-3.5 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-3">
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-slate-900/60 p-2 rounded-lg border border-white/5 text-center">
-              <span className="text-[8px] text-slate-500 block uppercase">Accuracy</span>
-              <span className="text-xs font-black text-amber-400">99.4%</span>
-            </div>
-            <div className="bg-slate-900/60 p-2 rounded-lg border border-white/5 text-center">
-              <span className="text-[8px] text-slate-500 block uppercase">Latency</span>
-              <span className="text-xs font-black text-amber-400">85ms</span>
-            </div>
-            <div className="bg-slate-900/60 p-2 rounded-lg border border-white/5 text-center">
-              <span className="text-[8px] text-slate-500 block uppercase">Resolved</span>
-              <span className="text-xs font-black text-amber-400">12,492</span>
-            </div>
-          </div>
-          
-          {/* Animated chart bars */}
-          <div className="h-10 flex items-end justify-between px-1">
-            {[45, 62, 55, 78, 92, 98].map((h, i) => (
-              <div key={i} className="w-5 bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-sm animate-pulse" style={{ height: `${h}%`, animationDelay: `${i * 0.15}s` }} />
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
-        <span>ANALYTICS ENGINE</span>
-        <span>PAGE 06</span>
-      </div>
-    </div>
-  );
-
-  // Page 6: Feature 6 - Security Gate
-  const renderPage6 = () => (
-    <div className="flex flex-col h-full justify-between py-2 px-1">
-      <div>
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 px-2.5 py-1 rounded-lg">
-            <Shield className="w-4 h-4 text-indigo-400" />
-            <span className="text-[10px] font-bold tracking-wider text-indigo-300 uppercase">Route Gating Guard</span>
-          </div>
-          <span className="text-[8px] font-mono bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded uppercase">System-wide</span>
-        </div>
-        
-        <h4 className="text-xl font-bold text-white mb-2 leading-tight">Ch 6: Route Gating Guard</h4>
-        <p className="text-xs text-slate-400 leading-relaxed font-medium mb-5">
-          Robust backend authentication policy gates. Standard users are strictly blocked from premium Business Pro API endpoints.
-        </p>
-
-        {/* Security Gate Simulation */}
-        <div className="p-3.5 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-2.5">
-          <div className="flex justify-between items-center gap-2">
-            <button 
-              onClick={() => addGateLog('Standard', 403)}
-              className="flex-1 py-1.5 rounded bg-amber-500/10 border border-amber-500/30 text-[9px] font-bold text-amber-300 hover:bg-amber-500/20 transition-all text-center"
-            >
-              Simulate Standard Key
-            </button>
-            <button 
-              onClick={() => addGateLog('Business Pro', 200)}
-              className="flex-1 py-1.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-[9px] font-bold text-emerald-300 hover:bg-emerald-500/20 transition-all text-center"
-            >
-              Simulate Pro Key
-            </button>
-          </div>
-          
-          <div className="space-y-1.5 font-mono text-[8px] bg-slate-950 p-2 rounded border border-white/5">
-            {gateLog.map((log, idx) => (
-              <div key={idx} className="flex justify-between items-center py-0.5 border-b border-white/5 last:border-0">
-                <span className="text-indigo-400">{log.method} {log.endpoint}</span>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-slate-500">[{log.role}]</span>
-                  <span className={log.status === 200 ? 'text-emerald-400' : 'text-rose-400'}>
-                    {log.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
-        <span>SECURITY POLICY</span>
-        <span>PAGE 07</span>
-      </div>
-    </div>
-  );
-
-  // Page 7: Back Cover / CTA
-  const renderPage7 = () => (
-    <div className="flex flex-col h-full justify-between py-2 px-1 text-center">
-      <div className="my-auto">
-        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-5">
-          <Zap className="w-6 h-6 text-indigo-400 animate-pulse" />
-        </div>
-        <h4 className="text-2xl font-black text-white leading-tight mb-2">Launch Your AI Twin</h4>
-        <p className="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto mb-6 font-medium">
-          Ready to scale your business reach with conversational AI twins in English & Hindi? Setup is quick and requires zero coding.
-        </p>
-        
-        <div className="flex flex-col gap-2.5 max-w-xs mx-auto">
-          <button
-            onClick={() => navigate('/register')}
-            className="w-full py-2.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl text-xs font-bold shadow-lg hover:opacity-90 transition-opacity"
-          >
-            Create Your Twin Free
-          </button>
-          
-          <button
-            onClick={() => navigate('/pricing')}
-            className="w-full py-2.5 bg-white/5 border border-white/10 hover:border-white/20 text-white rounded-xl text-xs font-bold transition-all"
-          >
-            Check Premium Plans (₹1299)
-          </button>
-        </div>
-      </div>
-      
-      <div className="border-t border-white/5 pt-4 flex items-center justify-between text-[9px] text-slate-500 font-mono">
-        <span>SYSTEM VERSION 1.2</span>
-        <span>PAGE 08</span>
-      </div>
-    </div>
-  );
-
-  // Render static spread contents based on displayIndex
-  const getSpreadLeftContent = (index) => {
-    switch (index) {
-      case 0: return renderPage0();
-      case 1: return renderPage2();
-      case 2: return renderPage4();
-      case 3: return renderPage6();
-      default: return null;
-    }
-  };
-
-  const getSpreadRightContent = (index) => {
-    switch (index) {
-      case 0: return renderPage1();
-      case 1: return renderPage3();
-      case 2: return renderPage5();
-      case 3: return renderPage7();
-      default: return null;
-    }
-  };
-
-  // Flipping sheet contents
-  const getFlippingFrontContent = () => {
-    if (direction === 'next') {
-      return getSpreadRightContent(spreadIndex - 1);
-    } else {
-      return getSpreadRightContent(spreadIndex);
-    }
-  };
-
-  const getFlippingBackContent = () => {
-    if (direction === 'next') {
-      return getSpreadLeftContent(spreadIndex);
-    } else {
-      return getSpreadLeftContent(spreadIndex + 1);
-    }
-  };
-
   return (
     <section id="features" className="relative py-28 z-10 overflow-hidden bg-slate-950/40">
       <div className="max-w-7xl mx-auto px-6">
-        
         {/* Title */}
         <div className="text-center mb-16">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.25em]">Cognitive Features</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight animate-fade-in">
-            Comprehensive Capabilities, Zero Compromise
+          <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.25em]">Cognitive Core</span>
+          <h2 className="mt-4 text-4xl sm:text-5xl font-black text-white tracking-tight leading-none">
+            Unified Platform Capabilities
           </h2>
           <p className="mt-4 text-slate-400 max-w-xl mx-auto text-sm font-medium">
-            Browse our system specifications manual. Click chapters below or flip the pages of our 3D manual.
+            Explore our state-of-the-art interactive engines designed to scale your presence autonomously.
           </p>
         </div>
 
-        {isMobile ? (
-          /* Responsive Mobile View: Cards Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
-              {renderPage1()}
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Card 1: Voice cloning (Ch 1) - col-span-2 */}
+          <div className="md:col-span-2 p-8 rounded-3xl gradient-border-card feature-card-rose flex flex-col justify-between h-[380px] group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded-xl">
+                  <Mic className="w-4 h-4 text-rose-405" />
+                  <span className="text-[10px] font-bold tracking-wider text-rose-300 uppercase">Voice Synthesizer</span>
+                </div>
+                <span className="text-[9px] font-mono bg-rose-500/25 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">Business Pro</span>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Voice Cloning Synthesizer</h3>
+              <p className="text-xs text-slate-400 max-w-lg leading-relaxed font-medium">
+                Clone your acoustic voice signature from a simple 10-second audio recording. Power voice call automation with natural pitch, speed, and cadence mapping.
+              </p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
-              {renderPage2()}
-            </div>
-            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
-              {renderPage3()}
-            </div>
-            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
-              {renderPage4()}
-            </div>
-            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
-              {renderPage5()}
-            </div>
-            <div className="p-6 rounded-2xl bg-slate-900 border border-white/5 shadow-xl">
-              {renderPage6()}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center mt-6">
+              {/* Waveform Visualization */}
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center justify-center gap-3">
+                <div className="flex items-center gap-1 h-10">
+                  {Array.from({ length: 18 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-1 bg-gradient-to-t from-rose-500 to-pink-500 rounded-full"
+                      style={{
+                        height: isVoicePlaying ? '100%' : '15%',
+                        animation: isVoicePlaying ? `voice-wave 0.8s ease-in-out infinite alternate` : 'none',
+                        animationDelay: `${i * 0.04}s`,
+                        transformOrigin: 'bottom center'
+                      }}
+                    />
+                  ))}
+                </div>
+                <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Acoustic prints</span>
+              </div>
+
+              <button
+                onClick={() => setIsVoicePlaying(!isVoicePlaying)}
+                className="w-full py-3.5 rounded-2xl text-xs font-extrabold bg-rose-500 hover:bg-rose-600 text-white transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(244,63,94,0.3)] group-hover:scale-[1.02]"
+              >
+                {isVoicePlaying ? (
+                  <>
+                    <Volume2 className="w-4 h-4 animate-bounce" />
+                    Stop Voice Sample
+                  </>
+                ) : (
+                  <>
+                    <Mic className="w-4 h-4" />
+                    Listen Cloned Voice
+                  </>
+                )}
+              </button>
             </div>
           </div>
-        ) : (
-          /* Desktop View: Gorgeous 3D Interactive Flipping Book */
-          <div className="flex flex-col items-center">
-            <div className="book-perspective py-6">
-              
-              {/* Outer Book Container */}
-              <div className="book-container">
-                
-                {/* Metallic spine shading line */}
-                <div className="book-spine-line" />
-                
-                {/* Left Underlay Page (Static) */}
-                <div className="book-page-half book-page-left py-6 px-8 bg-slate-900/95">
-                  {getSpreadLeftContent(displaySpreadIndex)}
-                </div>
 
-                {/* Right Underlay Page (Static) */}
-                <div className="book-page-half book-page-right py-6 px-8 bg-slate-900/95">
-                  {getSpreadRightContent(displaySpreadIndex)}
+          {/* Card 2: Knowledge Ingest (Ch 2) - col-span-1 */}
+          <div className="p-8 rounded-3xl gradient-border-card feature-card-cyan flex flex-col justify-between h-[380px] group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 rounded-xl">
+                  <Database className="w-4 h-4 text-cyan-400" />
+                  <span className="text-[10px] font-bold tracking-wider text-cyan-300 uppercase">Knowledge Vectorizer</span>
                 </div>
+                <span className="text-[9px] font-mono bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">Standard</span>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Multi-Format Ingestion</h3>
+              <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                Upload PDF documentation, raw text sheets, or scan custom site URLs. Chunk content into embedding indices instantly.
+              </p>
+            </div>
 
-                {/* 3D Flipping Page Sheet */}
-                {isFlipping && (
+            <div className="p-3 bg-white/5 border border-white/5 rounded-2xl mt-4">
+              <svg viewBox="0 0 260 100" className="w-full h-20">
+                <rect x="10" y="5" width="45" height="18" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
+                <text x="32" y="16" fill="#94a3b8" fontSize="7" textAnchor="middle">PDF Doc</text>
+
+                <rect x="10" y="40" width="45" height="18" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
+                <text x="32" y="51" fill="#94a3b8" fontSize="7" textAnchor="middle">TXT Sheet</text>
+
+                <rect x="10" y="75" width="45" height="18" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
+                <text x="32" y="86" fill="#94a3b8" fontSize="7" textAnchor="middle">URL Link</text>
+
+                <circle cx="130" cy="50" r="20" fill="rgba(6,182,212,0.1)" stroke="rgba(6,182,212,0.3)" />
+                <text x="130" y="52" fill="#22d3ee" fontSize="7" textAnchor="middle" fontWeight="bold">Chunker</text>
+
+                <rect x="200" y="37" width="50" height="26" rx="4" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.4)" />
+                <text x="225" y="52" fill="#22d3ee" fontSize="8" textAnchor="middle" fontWeight="bold">Vector DB</text>
+
+                <path d="M 55 14 L 110 40" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
+                <path d="M 55 49 L 110 49" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
+                <path d="M 55 84 L 110 60" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
+                <path d="M 150 49 L 200 49" fill="none" stroke="#22d3ee" strokeWidth="1.5" className="flow-line-animated" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Card 3: WhatsApp Linker (Ch 3) - col-span-1 */}
+          <div className="p-8 rounded-3xl gradient-border-card feature-card-emerald flex flex-col justify-between h-[380px] group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-xl">
+                  <Scan className="w-4 h-4 text-emerald-400" />
+                  <span className="text-[10px] font-bold tracking-wider text-emerald-300 uppercase">WhatsApp Gateway</span>
+                </div>
+                <span className="text-[9px] font-mono bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">Business Pro</span>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2 tracking-tight">WhatsApp Linkage</h3>
+              <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                Link customer contacts instantly by scanning QR codes. Automate client chat sessions on secure webhook nodes.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex items-center gap-4 mt-4">
+              <div className="relative w-14 h-14 bg-white p-1 rounded-xl flex-shrink-0">
+                <div className="w-full h-full bg-slate-900 rounded-lg flex flex-col justify-between p-1">
+                  <div className="flex justify-between">
+                    <div className="w-3.5 h-3.5 border border-white rounded-xs" />
+                    <div className="w-3.5 h-3.5 border border-white rounded-xs" />
+                  </div>
+                  <div className="flex justify-between items-end">
+                    <div className="w-3.5 h-3.5 border border-white rounded-xs" />
+                    <div className="w-2.5 h-2.5 bg-white rounded-xs" />
+                  </div>
+                </div>
+                {!isWALinked && (
                   <motion.div
-                    className="book-flipping-sheet"
-                    initial={{ rotateY: direction === 'next' ? 0 : -180 }}
-                    animate={{ rotateY: direction === 'next' ? -180 : 0 }}
-                    transition={{ duration: 0.5, ease: 'easeInOut' }}
-                  >
-                    {/* Front side of flipping sheet */}
-                    <div className="book-flipping-side book-flipping-side-front py-6 px-8 bg-slate-900/95 text-white">
-                      {getFlippingFrontContent()}
-                    </div>
-                    
-                    {/* Back side of flipping sheet */}
-                    <div className="book-flipping-side book-flipping-side-back py-6 px-8 bg-slate-900/95 text-white">
-                      {getFlippingBackContent()}
-                    </div>
-                  </motion.div>
+                    className="absolute left-0 inset-x-0 h-0.5 bg-emerald-400 shadow-md"
+                    animate={{ top: ['4px', '52px', '4px'] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  />
                 )}
-
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`w-1.5 h-1.5 rounded-full ${isWALinked ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                  <span className="text-[9px] font-mono font-bold text-slate-300 truncate">
+                    {isWALinked ? 'Gateway Linked' : 'Awaiting QR Scan'}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setIsWALinked(!isWALinked)}
+                  className={`w-full py-1.5 px-3 rounded-lg text-[9px] font-extrabold border transition-all truncate ${
+                    isWALinked
+                      ? 'bg-transparent border-slate-700 text-slate-400 hover:text-slate-200'
+                      : 'bg-emerald-500 hover:bg-emerald-600 border-transparent text-white shadow-lg'
+                  }`}
+                >
+                  {isWALinked ? 'Disconnect' : 'Scan Test QR'}
+                </button>
               </div>
             </div>
+          </div>
 
-            {/* Turn Buttons controls */}
-            <div className="flex items-center gap-6 mt-8">
-              <button
-                disabled={spreadIndex === 0 || isFlipping}
-                onClick={() => turnToSpread(spreadIndex - 1)}
-                className={`flex items-center justify-center w-12 h-12 rounded-full border border-white/10 text-white transition-all bg-white/5 ${
-                  spreadIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/10 hover:border-indigo-500/40 hover:scale-105 active:scale-95'
-                }`}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5">
-                  <path d="m15 18-6-6 6-6"/>
-                </svg>
-              </button>
+          {/* Card 4: Web widget Customizer (Ch 4) - col-span-2 */}
+          <div className="md:col-span-2 p-8 rounded-3xl gradient-border-card feature-card-purple flex flex-col justify-between h-[380px] group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-xl">
+                  <Smartphone className="w-4 h-4 text-purple-400" />
+                  <span className="text-[10px] font-bold tracking-wider text-purple-300 uppercase">Chat Widget</span>
+                </div>
+                <span className="text-[9px] font-mono bg-purple-500/25 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">Standard</span>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Embedded Web Chat Widget</h3>
+              <p className="text-xs text-slate-400 max-w-lg leading-relaxed font-medium">
+                Configure brand identities, colors, and layout components. Embed a lightweight floating chat widget into client applications with a single line of code.
+              </p>
+            </div>
 
-              <span className="text-xs font-mono font-bold text-slate-400">
-                SPREAD {spreadIndex + 1} OF 4
-              </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center mt-6">
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] text-slate-500 font-extrabold uppercase tracking-wider block">Widget Theme</label>
+                  <div className="flex gap-2">
+                    {['#06b6d4', '#d946ef', '#10b981', '#f59e0b', '#f43f5e'].map((col) => (
+                      <button
+                        key={col}
+                        className="w-5 h-5 rounded-full border border-white/10 transition-transform hover:scale-110 flex items-center justify-center"
+                        style={{ backgroundColor: col }}
+                        onClick={() => setWidgetColor(col)}
+                      >
+                        {widgetColor === col && <Check className="w-3 h-3 text-white" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="p-3 bg-white/5 border border-white/5 rounded-2xl text-[9px] text-slate-500 leading-normal">
+                  💡 Dynamic updates reflect instantly on the interactive sandbox widget preview panel.
+                </div>
+              </div>
 
-              <button
-                disabled={spreadIndex === 3 || isFlipping}
-                onClick={() => turnToSpread(spreadIndex + 1)}
-                className={`flex items-center justify-center w-12 h-12 rounded-full border border-white/10 text-white transition-all bg-white/5 ${
-                  spreadIndex === 3 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/10 hover:border-indigo-500/40 hover:scale-105 active:scale-95'
-                }`}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5">
-                  <path d="m9 18 6-6-6-6"/>
-                </svg>
-              </button>
+              {/* Chat widget preview */}
+              <div className="bg-slate-950 p-4 rounded-2xl border border-white/10 flex flex-col justify-between h-[130px] shadow-inner">
+                <div className="flex items-center justify-between pb-2 border-b border-white/5">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] text-white" style={{ backgroundColor: widgetColor }}>
+                      🤖
+                    </div>
+                    <span className="text-[9px] font-bold text-white">Digital Twin Support</span>
+                  </div>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                </div>
+                <div className="flex-1 flex flex-col gap-1 justify-end py-2">
+                  <div className="bg-white/5 border border-white/5 px-2 py-1 rounded-xl text-[8px] text-slate-300 self-start max-w-[85%]">
+                    Hello! Ask me anything.
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="flex-1 h-6 bg-white/5 rounded-full border border-white/10 px-2 flex items-center">
+                    <span className="text-[8px] text-slate-500">Ask a question...</span>
+                  </div>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: widgetColor }}>
+                    <ArrowRight className="w-3 h-3" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        )}
 
+          {/* Card 5: Analytics (Ch 5) - col-span-1 */}
+          <div className="p-8 rounded-3xl gradient-border-card feature-card-amber flex flex-col justify-between h-[380px] group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-xl">
+                  <BarChart3 className="w-4 h-4 text-amber-400" />
+                  <span className="text-[10px] font-bold tracking-wider text-amber-300 uppercase">Analytics</span>
+                </div>
+                <span className="text-[9px] font-mono bg-amber-500/25 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">Standard</span>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Analytical Reporting</h3>
+              <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                Track resolution index rates, response latency statistics, and active monthly message telemetry indexes.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-3 mt-4">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-slate-900/60 p-1.5 rounded-lg border border-white/5 text-center">
+                  <span className="text-[8px] text-slate-500 block uppercase">Accuracy</span>
+                  <span className="text-xs font-black text-amber-400">99.4%</span>
+                </div>
+                <div className="bg-slate-900/60 p-1.5 rounded-lg border border-white/5 text-center">
+                  <span className="text-[8px] text-slate-500 block uppercase">Latency</span>
+                  <span className="text-xs font-black text-amber-400">85ms</span>
+                </div>
+              </div>
+              <div className="h-10 flex items-end justify-between px-1">
+                {[45, 62, 55, 78, 92, 98].map((h, i) => (
+                  <div key={i} className="w-4 bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-sm" style={{ height: `${h}%` }} />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Card 6: Route Security Gate (Ch 6) - col-span-3 */}
+          <div className="md:col-span-2 lg:col-span-3 p-8 rounded-3xl gradient-border-card feature-card-indigo flex flex-col lg:flex-row justify-between lg:items-center gap-6 group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
+            <div className="lg:max-w-md">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 px-3 py-1 rounded-xl">
+                  <Shield className="w-4 h-4 text-indigo-400" />
+                  <span className="text-[10px] font-bold tracking-wider text-indigo-300 uppercase">Security Gate</span>
+                </div>
+                <span className="text-[9px] font-mono bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">System-wide</span>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Route Gating Guard</h3>
+              <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                Secure your workspace nodes. Standard subscription keys are automatically blocked from premium endpoints to prevent query abuse.
+              </p>
+            </div>
+
+            <div className="flex-1 max-w-md p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-3">
+              <div className="flex justify-between items-center gap-2">
+                <button
+                  onClick={() => addGateLog('Standard', 403)}
+                  className="flex-1 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-[9px] font-bold text-amber-300 hover:bg-amber-500/20 transition-all text-center"
+                >
+                  Simulate Standard Key
+                </button>
+                <button
+                  onClick={() => addGateLog('Business Pro', 200)}
+                  className="flex-1 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-[9px] font-bold text-emerald-300 hover:bg-emerald-500/20 transition-all text-center"
+                >
+                  Simulate Pro Key
+                </button>
+              </div>
+
+              <div className="space-y-1.5 font-mono text-[8px] bg-slate-950 p-2.5 rounded-xl border border-white/5">
+                {gateLog.map((log, idx) => (
+                  <div key={idx} className="flex justify-between items-center py-0.5 border-b border-white/5 last:border-0">
+                    <span className="text-indigo-400">{log.method} {log.endpoint}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-slate-500">[{log.role}]</span>
+                      <span className={log.status === 200 ? 'text-emerald-400' : 'text-rose-400'}>
+                        {log.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -1652,24 +1383,33 @@ const HowItWorks = () => {
 
         {/* Steps Grid connection line */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative items-stretch">
+          {/* Horizontal connection line behind cards on large screens */}
+          <div className="hidden lg:block absolute top-[52px] left-[15%] right-[15%] h-[1px] bg-gradient-to-r from-transparent via-slate-800 to-transparent -z-10" />
+          
           {steps.map((step, i) => (
             <motion.div
               key={step.step}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.15 }}
+              transition={{ delay: i * 0.15, duration: 0.6 }}
               className="relative"
             >
-              <div className={`p-8 rounded-2xl gradient-border-card h-full flex flex-col justify-between overflow-hidden ${
+              <div className={`p-8 rounded-3xl gradient-border-card h-full flex flex-col justify-between overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md ${
                 i === 0 ? 'feature-card-cyan' : i === 1 ? 'feature-card-purple' : 'feature-card-emerald'
               }`}>
                 <div>
                   <div className="flex justify-between items-center">
-                    <span className={`text-4xl font-black bg-gradient-to-r ${
-                      i === 0 ? 'from-cyan-400 to-indigo-500' : i === 1 ? 'from-purple-400 to-pink-500' : 'from-emerald-400 to-teal-500'
-                    } bg-clip-text text-transparent opacity-90 font-mono`}>{step.step}</span>
-                    <span className={`text-[8px] font-mono font-bold border px-2 py-0.5 rounded uppercase ${
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border font-mono text-base font-bold ${
+                      i === 0 
+                        ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)]' 
+                        : i === 1 
+                          ? 'bg-purple-500/10 border-purple-500/20 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.15)]' 
+                          : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
+                    }`}>
+                      {step.step}
+                    </div>
+                    <span className={`text-[8px] font-mono font-bold border px-2.5 py-1 rounded-lg uppercase ${
                       i === 0 
                         ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400' 
                         : i === 1 
