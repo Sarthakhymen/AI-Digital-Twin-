@@ -7,7 +7,7 @@ const MotionCard = motion(Card);
 
 const StatCard = ({ title, value, limit, icon, color, trend }) => {
   const isPositive = trend >= 0;
-  
+
   const formatValue = (val) => {
     if (typeof val === 'number' && val >= 1000) {
       return `${(val / 1000).toFixed(1)}k`;
@@ -17,96 +17,96 @@ const StatCard = ({ title, value, limit, icon, color, trend }) => {
 
   return (
     <MotionCard
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -4, scale: 1.02 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       sx={{
         height: '100%',
-        borderRadius: '20px',
-        border: '1px solid',
-        borderColor: 'rgba(255,255,255,0.06)',
-        background: '#0a0a0f', // Cleaner, darker background for SaaS look
-        boxShadow: '0 4px 24px -4px rgba(0,0,0,0.3)',
+        borderRadius: '14px',
+        border: '1px solid rgba(255,255,255,0.05)',
+        background: 'rgba(255,255,255,0.015)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        boxShadow: 'none',
         position: 'relative',
         overflow: 'hidden',
         cursor: 'default',
+        transition: 'all 0.25s ease',
         '&:hover': {
-          borderColor: 'rgba(255,255,255,0.12)',
+          borderColor: `${color}22`,
+          background: 'rgba(255,255,255,0.025)',
         }
       }}
     >
-      {/* Top subtle border highlight instead of gradient glow */}
-      <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: color, opacity: 0.8 }} />
+      {/* Top gradient line — slim, distinctive */}
+      <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: `linear-gradient(90deg, transparent, ${color}, transparent)`, opacity: 0.9 }} />
 
-      <CardContent sx={{ p: '24px !important', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        
+      <CardContent sx={{ p: '20px !important', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+
         {/* Header: Icon + Title */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
           <Box
             sx={{
-              width: 36,
-              height: 36,
-              borderRadius: '10px',
-              background: `linear-gradient(135deg, ${color}20 0%, ${color}05 100%)`,
-              border: `1px solid ${color}30`,
+              width: 34,
+              height: 34,
+              borderRadius: '9px',
+              background: `${color}12`,
+              border: `1px solid ${color}22`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            {React.cloneElement(icon, { sx: { fontSize: 20, color: color } })}
+            {React.cloneElement(icon, { sx: { fontSize: 18, color: color } })}
           </Box>
           <Typography
             variant="body2"
-            sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.9rem', fontFamily: '"Outfit", sans-serif' }}
+            sx={{ color: 'rgba(255,255,255,0.45)', fontWeight: 500, fontSize: '0.82rem', fontFamily: '"Inter", sans-serif', letterSpacing: '0.01em' }}
           >
             {title}
           </Typography>
         </Box>
 
         {/* Value Area */}
-        <Box sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: 800, fontSize: '2rem', color: '#ffffff', lineHeight: 1, fontFamily: '"Inter", sans-serif', letterSpacing: '-0.03em' }}
+            >
+              {formatValue(value)}
+            </Typography>
+            {limit !== undefined && (
               <Typography
-                variant="h4"
-                sx={{ fontWeight: 800, fontSize: '2.2rem', color: 'white', lineHeight: 1, fontFamily: '"Outfit", sans-serif' }}
+                variant="h6"
+                sx={{ fontWeight: 500, fontSize: '1.1rem', color: 'rgba(255,255,255,0.25)', lineHeight: 1, fontFamily: '"Inter", sans-serif' }}
               >
-                {formatValue(value)}
+                / {limit}
               </Typography>
-              {limit !== undefined && (
-                <Typography
-                  variant="h6"
-                  sx={{ fontWeight: 600, fontSize: '1.2rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1, fontFamily: '"Outfit", sans-serif' }}
-                >
-                  / {limit}
-                </Typography>
-              )}
-            </Box>
-            
-            {/* Trend Indicator - only show if trend is actually provided */}
-            {trend !== undefined && (
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.5, gap: 1 }}>
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  color: isPositive ? '#10B981' : '#EF4444',
-                  background: isPositive ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                  padding: '2px 8px',
-                  borderRadius: '6px'
-                }}>
-                  {isPositive ? <TrendingUp size={14} strokeWidth={2.5} /> : <TrendingDown size={14} strokeWidth={2.5} />}
-                  <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.75rem', ml: 0.5 }}>
-                    {Math.abs(trend)}%
-                  </Typography>
-                </Box>
-                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
-                  vs last week
-                </Typography>
-              </Box>
             )}
           </Box>
+
+          {trend !== undefined && (
+            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.5, gap: 0.75 }}>
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                color: isPositive ? '#00FFB3' : '#EF4444',
+                background: isPositive ? 'rgba(0,255,179,0.08)' : 'rgba(239,68,68,0.08)',
+                padding: '2px 7px',
+                borderRadius: '5px'
+              }}>
+                {isPositive ? <TrendingUp size={12} strokeWidth={2.5} /> : <TrendingDown size={12} strokeWidth={2.5} />}
+                <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.7rem', ml: 0.4 }}>
+                  {Math.abs(trend)}%
+                </Typography>
+              </Box>
+              <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.7rem' }}>
+                vs last week
+              </Typography>
+            </Box>
+          )}
         </Box>
       </CardContent>
     </MotionCard>
@@ -114,3 +114,4 @@ const StatCard = ({ title, value, limit, icon, color, trend }) => {
 };
 
 export default StatCard;
+

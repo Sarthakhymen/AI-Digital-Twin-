@@ -2,35 +2,27 @@ import React from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
-import { Paper, Typography, Box, useTheme } from '@mui/material';
-
-// Premium Clean Mixins
-const getGlassyStyles = (theme) => ({
-  background: theme.palette.mode === 'dark' ? '#0a0a0f' : '#ffffff',
-  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
-  boxShadow: theme.palette.mode === 'dark' ? '0 4px 24px -4px rgba(0, 0, 0, 0.3)' : '0 4px 24px -4px rgba(0, 0, 0, 0.05)',
-});
+import { Paper, Typography, Box } from '@mui/material';
 
 const CustomTooltip = ({ active, payload, label }) => {
-  const theme = useTheme();
   if (!active || !payload?.length) return null;
   return (
     <Box
       sx={{
-        background: theme.palette.mode === 'dark' ? 'rgba(30, 30, 35, 0.8)' : 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(12px)',
-        border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
-        borderRadius: '12px',
+        background: 'rgba(7,8,12,0.92)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(0,212,255,0.15)',
+        borderRadius: '10px',
         px: 2.5,
         py: 1.5,
-        boxShadow: theme.palette.mode === 'dark' ? '0 4px 24px -4px rgba(0,0,0,0.5)' : '0 4px 24px -4px rgba(0,0,0,0.1)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       }}
     >
-      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+      <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', fontSize: '0.68rem' }}>
         {label}
       </Typography>
-      <Typography variant="body1" sx={{ fontWeight: 800, color: 'text.primary', mt: 0.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Box sx={{ width: 8, height: 8, borderRadius: '50%', background: '#0070F3' }} />
+      <Typography variant="body1" sx={{ fontWeight: 800, color: '#ffffff', mt: 0.5, display: 'flex', alignItems: 'center', gap: 1, fontSize: '0.9rem' }}>
+        <Box sx={{ width: 7, height: 7, borderRadius: '50%', background: '#00D4FF', boxShadow: '0 0 6px #00D4FF' }} />
         {payload[0].value} conversations
       </Typography>
     </Box>
@@ -38,66 +30,66 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 const ConversationChart = ({ data }) => {
-  const theme = useTheme();
-
   return (
     <Paper
       elevation={0}
       sx={{
-        ...getGlassyStyles(theme),
+        background: 'rgba(255,255,255,0.015)',
+        border: '1px solid rgba(255,255,255,0.06)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         p: 3,
-        borderRadius: '24px',
+        borderRadius: '16px',
         position: 'relative',
         overflow: 'hidden'
       }}
     >
+      {/* Top accent line */}
+      <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, #00D4FF 30%, #00FFB3 70%, transparent)', opacity: 0.6 }} />
+
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>
+        <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '0.98rem', letterSpacing: '-0.01em', color: '#fff' }}>
           Conversation Trends
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ width: 12, height: 4, borderRadius: 2, background: '#0070F3' }} />
-          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600 }}>
+          <Box sx={{ width: 14, height: 3, borderRadius: 2, background: 'linear-gradient(90deg, #00D4FF, #00FFB3)' }} />
+          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.72rem', fontWeight: 600 }}>
             Messages
           </Typography>
         </Box>
       </Box>
 
-      <ResponsiveContainer width="100%" height={280}>
+      <ResponsiveContainer width="100%" height={260}>
         <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="colorConv" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#0070F3" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="#0070F3" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="strokeGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#0070F3" />
-              <stop offset="100%" stopColor="#00C6FF" />
+              <stop offset="5%" stopColor="#00D4FF" stopOpacity={0.25} />
+              <stop offset="95%" stopColor="#00D4FF" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
           <XAxis
             dataKey="date"
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 11, fill: theme.palette.mode === 'dark' ? '#94A3B8' : '#64748B', fontWeight: 500 }}
+            tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)', fontWeight: 500 }}
             dy={10}
           />
           <YAxis
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 11, fill: theme.palette.mode === 'dark' ? '#94A3B8' : '#64748B', fontWeight: 500 }}
+            tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)', fontWeight: 500 }}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(0, 112, 243, 0.3)', strokeWidth: 2, strokeDasharray: '4 4' }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(0,212,255,0.25)', strokeWidth: 1.5, strokeDasharray: '4 4' }} />
           <Area
             type="monotone"
             dataKey="conversations"
-            stroke="#0070F3"
-            strokeWidth={2.5}
+            stroke="#00D4FF"
+            strokeWidth={2}
             fill="url(#colorConv)"
             dot={false}
-            activeDot={{ r: 5, fill: '#0070F3', stroke: theme.palette.mode === 'dark' ? '#0a0a0f' : '#FFFFFF', strokeWidth: 2 }}
-            animationDuration={1500}
+            activeDot={{ r: 4, fill: '#00D4FF', stroke: '#07080C', strokeWidth: 2 }}
+            animationDuration={1200}
             animationEasing="ease-out"
           />
         </AreaChart>
@@ -107,3 +99,4 @@ const ConversationChart = ({ data }) => {
 };
 
 export default ConversationChart;
+

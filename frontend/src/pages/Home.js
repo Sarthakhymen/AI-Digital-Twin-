@@ -55,65 +55,52 @@ const staggerContainer = {
   }
 };
 
-// Deep Space Premium Background
+// Refined Dark Background — geometric, human, distinctive
 const PremiumBackground = () => {
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#030014]">
-      {/* Mesh gradients / Nebula glow */}
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" style={{ background: '#07080C' }}>
+      {/* Primary accent — warm electric cyan, top-left */}
       <motion.div
-        className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full opacity-35"
+        className="absolute -top-[15%] -left-[5%] w-[55%] h-[55%] rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%)',
-          filter: 'blur(100px)'
-        }}
-        animate={{
-          x: [0, 40, 0],
-          y: [0, -30, 0]
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      <motion.div
-        className="absolute top-[40%] -right-[10%] w-[50%] h-[50%] rounded-full opacity-25"
-        style={{
-          background: 'radial-gradient(circle, rgba(217, 70, 239, 0.2) 0%, transparent 70%)',
-          filter: 'blur(100px)'
-        }}
-        animate={{
-          x: [0, -50, 0],
-          y: [0, 50, 0]
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      <motion.div
-        className="absolute -bottom-[10%] left-[20%] w-[45%] h-[45%] rounded-full opacity-30"
-        style={{
-          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, transparent 75%)',
+          background: 'radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 65%)',
           filter: 'blur(90px)'
         }}
-        animate={{
-          scale: [1, 1.15, 1],
-          opacity: [0.25, 0.35, 0.25]
+        animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+      />
+      {/* Secondary accent — warm orange, bottom-right */}
+      <motion.div
+        className="absolute bottom-[5%] right-[0%] w-[40%] h-[40%] rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(255,107,53,0.06) 0%, transparent 65%)',
+          filter: 'blur(80px)'
         }}
-        transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "easeInOut"
+        animate={{ x: [0, -25, 0], y: [0, 20, 0] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+      />
+      {/* Tertiary — cool teal, center */}
+      <motion.div
+        className="absolute top-[45%] left-[35%] w-[35%] h-[35%] rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(0,200,180,0.04) 0%, transparent 70%)',
+          filter: 'blur(100px)'
+        }}
+        animate={{ scale: [1, 1.12, 1] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Fine diagonal line grid — more architectural than generic dot grid */}
+      <div
+        className="absolute inset-0 opacity-[0.025]"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)',
+          backgroundSize: '60px 60px'
         }}
       />
 
-      {/* Grid overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px] opacity-40" />
-
-      {/* Subtle base64 grain overlay */}
-      <div className="absolute inset-0 opacity-[0.015] mix-blend-overlay bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9pc2UpIi8+PC9zdmc+')] pointer-events-none" />
+      {/* Film grain texture */}
+      <div className="absolute inset-0 opacity-[0.018] mix-blend-overlay bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9pc2UpIi8+PC9zdmc+')] pointer-events-none" />
     </div>
   );
 };
@@ -314,7 +301,7 @@ const HeroSmartphoneVisualization = () => {
       <div className="md:hidden absolute -bottom-10 left-0 right-0 flex justify-center text-center select-none z-20">
         <span className="text-[12px] bg-slate-900/90 border border-white/10 px-4 py-2 rounded-full text-slate-300 font-medium tracking-wide backdrop-blur-md shadow-lg">
           Your twin is exactly talking like this with your{" "}
-          <span className="text-indigo-400 font-extrabold tracking-wider uppercase ml-1">
+          <span className="font-extrabold tracking-wider uppercase ml-1" style={{ color: '#00D4FF' }}>
             {TARGET_NAMES[nameIndex]}
           </span>
         </span>
@@ -438,39 +425,52 @@ const HeroSmartphoneVisualization = () => {
   );
 };
 
-// Futuristic Startup Hero Section
+// Hero Section — editorial, asymmetric, distinctive
 const Hero = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden z-10">
-      <div className="w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        
-        {/* Pitch Column */}
+    <section className="relative min-h-screen flex items-center justify-center pt-28 pb-20 overflow-hidden z-10">
+      {/* Thin top accent line */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#00D4FF]/40 to-transparent" />
+
+      <div className="w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+
+        {/* Text Column */}
         <motion.div
           initial="hidden"
           animate="visible"
           variants={staggerContainer}
-          className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6"
+          className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left space-y-7"
         >
-          {/* Badge */}
+          {/* Status pill */}
           <motion.div variants={fadeInUp}>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-bold tracking-wider text-indigo-300 uppercase">Next-Gen Cognitive Clones</span>
-              <ChevronRight className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full backdrop-blur-md"
+              style={{ background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.18)' }}>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span className="text-[11px] font-bold tracking-[0.12em] uppercase" style={{ color: '#00D4FF' }}>
+                AI-Powered Customer Intelligence
+              </span>
+              <ChevronRight className="w-3.5 h-3.5 opacity-60" style={{ color: '#00D4FF' }} />
             </div>
           </motion.div>
 
-          {/* Heading */}
+          {/* Headline — bold editorial contrast */}
           <motion.h1
             variants={fadeInUp}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-extrabold tracking-tight leading-[1.1]"
+            className="text-[2.8rem] sm:text-[3.6rem] md:text-[4.2rem] lg:text-[4.6rem] font-black leading-[1.05] tracking-[-0.03em]"
           >
-            <span className="block bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">
-              Clone Your Intelligence.
-            </span>
-            <span className="block bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <span className="block text-white">Clone Your</span>
+            <span className="block text-white">Intelligence.</span>
+            <span className="block mt-1" style={{
+              background: 'linear-gradient(100deg, #00D4FF 0%, #00FFB3 55%, #FF6B35 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>
               Automate Your Presence.
             </span>
           </motion.h1>
@@ -478,68 +478,90 @@ const Hero = () => {
           {/* Subheading */}
           <motion.p
             variants={fadeInUp}
-            className="text-base sm:text-lg text-slate-300 max-w-xl font-medium leading-relaxed"
+            className="text-base sm:text-lg max-w-xl font-normal leading-relaxed"
+            style={{ color: 'rgba(255,255,255,0.55)' }}
           >
-            Without writing <span className="text-indigo-400 font-semibold">1,000s of lines of code</span>, deploy your own <span className="text-purple-400 font-semibold">AI Digital Twin</span> that answers customer queries in both <span className="text-pink-400 font-semibold">English & Hindi</span>, handling every conversation with the exact same care, tone, and intelligence as you would, 24/7.
+            Without writing a single line of code, deploy your own{' '}
+            <span style={{ color: '#00D4FF', fontWeight: 600 }}>AI Digital Twin</span>{' '}
+            that answers customer queries in English & Hindi — with your exact care, tone, and intelligence — 24/7.
           </motion.p>
 
-          <motion.div variants={fadeInUp} className="flex items-center gap-2 mt-4 mb-6">
-            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm border border-emerald-500/30">⚡</span>
-            <p className="text-sm sm:text-base text-slate-400 font-medium">
-              You can make your twin in just <span className="text-emerald-400 font-bold">4-5 minutes</span>. Zero coding required.
+          {/* Speed callout */}
+          <motion.div variants={fadeInUp} className="flex items-center gap-2.5">
+            <div className="flex items-center justify-center w-7 h-7 rounded-lg"
+              style={{ background: 'rgba(0,255,179,0.1)', border: '1px solid rgba(0,255,179,0.25)' }}>
+              <Zap className="w-3.5 h-3.5" style={{ color: '#00FFB3' }} />
+            </div>
+            <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              Build your twin in{' '}
+              <span style={{ color: '#00FFB3', fontWeight: 700 }}>4-5 minutes</span>
+              {' '}— zero coding required.
             </p>
           </motion.div>
 
           {/* CTAs */}
           <motion.div
             variants={fadeInUp}
-            className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+            className="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto"
           >
+            {/* Primary CTA — solid fill, electric cyan */}
             <motion.button
               onClick={() => navigate('/register')}
-              className="w-full sm:w-auto group relative px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-2xl font-bold text-sm overflow-hidden shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] transition-all"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              className="w-full sm:w-auto group relative px-8 py-3.5 font-bold text-sm overflow-hidden flex items-center justify-center gap-2"
+              style={{
+                background: '#00D4FF',
+                color: '#07080C',
+                borderRadius: '10px',
+                boxShadow: '0 0 0 0 rgba(0,212,255,0)',
+                transition: 'box-shadow 0.3s ease, transform 0.2s ease'
+              }}
+              whileHover={{ scale: 1.03, boxShadow: '0 0 28px rgba(0,212,255,0.35)' }}
+              whileTap={{ scale: 0.97 }}
             >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                Create Your Twin Free
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </span>
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              Create Your Twin Free
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </motion.button>
 
+            {/* Secondary CTA — ghost */}
             <motion.button
               onClick={() => navigate('/pricing')}
-              className="w-full sm:w-auto px-8 py-4 bg-white/[0.04] border border-white/10 hover:border-white/20 text-white rounded-2xl font-bold text-sm backdrop-blur-md hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              className="w-full sm:w-auto px-8 py-3.5 font-semibold text-sm flex items-center justify-center gap-2 transition-all"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: '10px',
+                color: 'rgba(255,255,255,0.8)'
+              }}
+              whileHover={{ scale: 1.02, borderColor: 'rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)' }}
+              whileTap={{ scale: 0.97 }}
             >
-              <Zap className="w-4 h-4 text-indigo-400" />
-              View Standard Tier (₹1299)
+              View Pricing ₹1299/mo
             </motion.button>
           </motion.div>
 
-          {/* Micro stats banner */}
+          {/* Stat bar */}
           <motion.div
             variants={fadeInUp}
-            className="pt-6 grid grid-cols-3 gap-6 border-t border-white/5 w-full max-w-md"
+            className="pt-7 grid grid-cols-3 gap-8 w-full max-w-sm"
+            style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
           >
-            <div>
-              <span className="block text-xl font-bold text-white">Sub-100ms</span>
-              <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Response Speed</span>
-            </div>
-            <div>
-              <span className="block text-xl font-bold text-white">99.4%</span>
-              <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Accuracy Index</span>
-            </div>
-            <div>
-              <span className="block text-xl font-bold text-white">Omnichannel</span>
-              <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Web & WhatsApp</span>
-            </div>
+            {[
+              { value: '<100ms', label: 'Response Speed' },
+              { value: '99.4%', label: 'Accuracy Index' },
+              { value: '24 / 7', label: 'Always Online' }
+            ].map((s) => (
+              <div key={s.label}>
+                <span className="block text-[1.15rem] font-black text-white leading-none">{s.value}</span>
+                <span className="block mt-1.5 text-[9px] font-semibold uppercase tracking-[0.12em]"
+                  style={{ color: 'rgba(255,255,255,0.3)' }}>
+                  {s.label}
+                </span>
+              </div>
+            ))}
           </motion.div>
         </motion.div>
 
-        {/* Smartphone Simulator Mockup Column */}
+        {/* Phone Mockup Column */}
         <div className="lg:col-span-5 flex justify-center">
           <HeroSmartphoneVisualization />
         </div>
@@ -605,27 +627,27 @@ const CapabilitiesPlayground = () => {
   ];
 
   return (
-    <section className="relative py-24 bg-slate-950/20 border-t border-b border-white/5 overflow-hidden z-10">
+    <section className="relative py-24 overflow-hidden z-10" style={{ background: 'rgba(0,212,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
       <div className="max-w-7xl mx-auto px-6">
-        
+
         {/* Title */}
         <div className="text-center mb-16">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+          <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: '#00D4FF' }}>
             <Sliders className="w-4 h-4" /> Real-time Capability Sandbox
           </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h2 className="mt-4 text-3xl sm:text-4xl font-black text-white tracking-tight">
             See the Platform Features in Action
           </h2>
-          <p className="mt-4 text-slate-400 max-w-2xl mx-auto text-sm font-medium">
-            Test the real interactive capabilities that power your AI Digital Twin. Experience the exact functional components directly inside the browser.
+          <p className="mt-4 max-w-2xl mx-auto text-sm font-normal" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            Test the real interactive capabilities that power your AI Digital Twin.
           </p>
         </div>
 
         {/* Grid Wrapper */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* Tabs Selector list */}
-          <div className="lg:col-span-4 space-y-3">
+          <div className="lg:col-span-4 space-y-2.5">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -633,18 +655,30 @@ const CapabilitiesPlayground = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl border text-left transition-all ${
-                    isActive
-                      ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-indigo-500/40 text-white shadow-lg'
-                      : 'bg-white/[0.02] border-white/5 text-slate-400 hover:bg-white/[0.04] hover:text-white'
+                  className={`w-full flex items-center gap-4 px-5 py-4 rounded-xl border text-left transition-all duration-200 ${
+                    isActive ? 'text-white' : 'text-slate-400 hover:text-white'
                   }`}
+                  style={isActive ? {
+                    background: 'rgba(0,212,255,0.06)',
+                    border: '1px solid rgba(0,212,255,0.25)',
+                    boxShadow: '0 0 20px rgba(0,212,255,0.05)'
+                  } : {
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.05)'
+                  }}
                 >
-                  <div className={`p-2 rounded-xl ${isActive ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white/5 text-slate-500'}`}>
+                  <div className="p-2 rounded-lg" style={isActive ? {
+                    background: 'rgba(0,212,255,0.12)',
+                    color: '#00D4FF'
+                  } : {
+                    background: 'rgba(255,255,255,0.05)',
+                    color: 'rgba(255,255,255,0.4)'
+                  }}>
                     <Icon className="w-5 h-5" />
                   </div>
                   <div>
-                    <span className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Module</span>
-                    <span className="text-sm font-bold">{tab.label}</span>
+                    <span className="block text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: isActive ? 'rgba(0,212,255,0.7)' : 'rgba(255,255,255,0.25)' }}>Module</span>
+                    <span className="text-sm font-semibold">{tab.label}</span>
                   </div>
                 </button>
               );
@@ -652,10 +686,11 @@ const CapabilitiesPlayground = () => {
           </div>
 
           {/* Interactive Preview Container */}
-          <div className="lg:col-span-8 bg-white/[0.02] border border-white/5 rounded-3xl p-8 min-h-[400px] flex flex-col justify-between shadow-2xl relative overflow-hidden backdrop-blur-md">
-            
+          <div className="lg:col-span-8 rounded-2xl p-8 min-h-[400px] flex flex-col justify-between relative overflow-hidden backdrop-blur-md"
+            style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.06)' }}>
+
             {/* Ambient inner glow */}
-            <div className="absolute -top-12 -right-12 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl pointer-events-none" style={{ background: 'rgba(0,212,255,0.06)' }} />
 
             <AnimatePresence mode="wait">
               {activeTab === 'kb' && (
@@ -693,7 +728,7 @@ const CapabilitiesPlayground = () => {
                           <span>{percent}%</span>
                         </div>
                         <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden">
-                          <div className="bg-indigo-500 h-full transition-all duration-300" style={{ width: `${percent}%` }} />
+                          <div className="h-full transition-all duration-300" style={{ width: `${percent}%`, background: '#00D4FF' }} />
                         </div>
                       </div>
                     </div>
@@ -836,7 +871,8 @@ const CapabilitiesPlayground = () => {
                       <Mic className="w-12 h-12 text-indigo-400" />
                       <button
                         onClick={startVoiceSim}
-                        className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-xs rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.3)] hover:scale-105 transition-all"
+                        className="px-6 py-3 font-bold text-xs rounded-xl hover:scale-105 transition-all"
+                        style={{ background: '#00D4FF', color: '#07080C', boxShadow: '0 0 15px rgba(0,212,255,0.3)' }}
                       >
                         Start Voice Synthesis Recording
                       </button>
@@ -880,7 +916,8 @@ const CapabilitiesPlayground = () => {
                       <div className="flex gap-2">
                         <button
                           onClick={() => alert('Simulated Playback: "Hello! This is my AI digital twin cloned voice."')}
-                          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-colors"
+                          className="px-4 py-2 rounded-xl text-xs font-bold transition-colors"
+                          style={{ background: '#00D4FF', color: '#07080C' }}
                         >
                           Play Voice Profile Sample
                         </button>
@@ -915,7 +952,8 @@ const CapabilitiesPlayground = () => {
                       <Scan className="w-12 h-12 text-indigo-400" />
                       <button
                         onClick={startWaSim}
-                        className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-xs rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.3)] hover:scale-105 transition-all"
+                        className="px-6 py-3 font-bold text-xs rounded-xl hover:scale-105 transition-all"
+                        style={{ background: '#00D4FF', color: '#07080C', boxShadow: '0 0 15px rgba(0,212,255,0.3)' }}
                       >
                         Generate QR Code for Scan Linkage
                       </button>
@@ -1018,16 +1056,16 @@ const Features = () => {
   };
 
   return (
-    <section id="features" className="relative py-28 z-10 overflow-hidden bg-slate-950/40">
+    <section id="features" className="relative py-28 z-10 overflow-hidden" style={{ background: 'rgba(0,0,0,0.2)' }}>
       <div className="max-w-7xl mx-auto px-6">
         {/* Title */}
         <div className="text-center mb-16">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.25em]">Cognitive Core</span>
+          <span className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: '#00D4FF' }}>Cognitive Core</span>
           <h2 className="mt-4 text-4xl sm:text-5xl font-black text-white tracking-tight leading-none">
             Unified Platform Capabilities
           </h2>
-          <p className="mt-4 text-slate-400 max-w-xl mx-auto text-sm font-medium">
-            Explore our state-of-the-art interactive engines designed to scale your presence autonomously.
+          <p className="mt-4 max-w-xl mx-auto text-sm font-normal" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            State-of-the-art interactive engines designed to scale your presence autonomously.
           </p>
         </div>
 
@@ -1367,16 +1405,16 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="relative py-28 z-10 overflow-hidden bg-slate-950/20">
+    <section className="relative py-28 z-10 overflow-hidden" style={{ background: 'rgba(0,212,255,0.015)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
       <div className="max-w-7xl mx-auto px-6">
-        
+
         {/* Title */}
         <div className="text-center mb-20">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.25em]">Workflow Map</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <span className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: '#00D4FF' }}>Workflow Map</span>
+          <h2 className="mt-4 text-3xl sm:text-4xl font-black text-white tracking-tight">
             How Your Digital Twin is Created
           </h2>
-          <p className="mt-4 text-slate-400 max-w-md mx-auto text-sm font-medium">
+          <p className="mt-4 max-w-md mx-auto text-sm font-normal" style={{ color: 'rgba(255,255,255,0.45)' }}>
             A simple three-step deployment pipeline from ingestion to deployment.
           </p>
         </div>
@@ -1385,7 +1423,7 @@ const HowItWorks = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative items-stretch">
           {/* Horizontal connection line behind cards on large screens */}
           <div className="hidden lg:block absolute top-[52px] left-[15%] right-[15%] h-[1px] bg-gradient-to-r from-transparent via-slate-800 to-transparent -z-10" />
-          
+
           {steps.map((step, i) => (
             <motion.div
               key={step.step}
@@ -1395,33 +1433,34 @@ const HowItWorks = () => {
               transition={{ delay: i * 0.15, duration: 0.6 }}
               className="relative"
             >
-              <div className={`p-8 rounded-3xl gradient-border-card h-full flex flex-col justify-between overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md ${
+              <div className={`p-8 rounded-2xl h-full flex flex-col justify-between overflow-hidden gradient-border-card ${
                 i === 0 ? 'feature-card-cyan' : i === 1 ? 'feature-card-purple' : 'feature-card-emerald'
-              }`}>
+              }`}
+                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)' }}>
                 <div>
                   <div className="flex justify-between items-center">
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border font-mono text-base font-bold ${
-                      i === 0 
-                        ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)]' 
-                        : i === 1 
-                          ? 'bg-purple-500/10 border-purple-500/20 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.15)]' 
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center border font-mono text-base font-bold ${
+                      i === 0
+                        ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)]'
+                        : i === 1
+                          ? 'bg-purple-500/10 border-purple-500/20 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.15)]'
                           : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
                     }`}>
                       {step.step}
                     </div>
                     <span className={`text-[8px] font-mono font-bold border px-2.5 py-1 rounded-lg uppercase ${
-                      i === 0 
-                        ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400' 
-                        : i === 1 
-                          ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' 
+                      i === 0
+                        ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
+                        : i === 1
+                          ? 'bg-purple-500/10 border-purple-500/20 text-purple-400'
                           : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                     }`}>{step.badge}</span>
                   </div>
-                  
+
                   <h3 className="mt-6 text-xl font-bold text-white tracking-tight">{step.title}</h3>
-                  <span className="block text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 font-bold">{step.subtitle}</span>
-                  
-                  <p className="mt-4 text-slate-400 text-xs leading-relaxed font-medium">
+                  <span className="block text-[10px] uppercase tracking-widest mt-0.5 font-bold" style={{ color: 'rgba(255,255,255,0.3)' }}>{step.subtitle}</span>
+
+                  <p className="mt-4 text-xs leading-relaxed font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>
                     {step.description}
                   </p>
                 </div>
@@ -1744,22 +1783,22 @@ const UserGuideMindmap = () => {
   };
 
   return (
-    <section className="relative py-24 bg-slate-950/40 border-t border-b border-white/5 overflow-hidden z-10">
+    <section className="relative py-24 overflow-hidden z-10" style={{ background: 'rgba(0,0,0,0.2)', borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
       {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-1/10 w-96 h-96 bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/10 w-96 h-96 bg-violet-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/10 w-96 h-96 rounded-full blur-[120px] pointer-events-none" style={{ background: 'rgba(0,212,255,0.04)' }} />
+      <div className="absolute bottom-1/4 right-1/10 w-96 h-96 rounded-full blur-[120px] pointer-events-none" style={{ background: 'rgba(255,107,53,0.03)' }} />
 
       <div className="max-w-7xl mx-auto px-6">
-        
+
         {/* Title */}
         <div className="text-center mb-16">
-          <span className="text-xs font-bold text-rose-500 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
-            <Sparkles className="w-4 h-4 text-rose-500" /> AI Digital Twin Lifecycle
+          <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: '#00D4FF' }}>
+            <Sparkles className="w-4 h-4" /> AI Digital Twin Lifecycle
           </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h2 className="mt-4 text-3xl sm:text-4xl font-black text-white tracking-tight">
             Interactive User Guide & Workflow
           </h2>
-          <p className="mt-4 text-slate-400 max-w-2xl mx-auto text-sm font-medium">
+          <p className="mt-4 max-w-2xl mx-auto text-sm font-normal" style={{ color: 'rgba(255,255,255,0.45)' }}>
             Walk through the complete process of building your twin, embedding the widget, and retrieving live context from the database.
           </p>
         </div>
@@ -2528,6 +2567,7 @@ const UserGuideMindmap = () => {
                               <span>1. Vectorizing Input Query</span>
                             </div>
                             {ragPhase === 'vectorizing' && <span className="text-[8px] animate-pulse text-indigo-400">1536d Array...</span>}
+                            }
                           </div>
 
                           <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
@@ -2542,6 +2582,7 @@ const UserGuideMindmap = () => {
                               <span>2. Scanning ChromaDB index</span>
                             </div>
                             {ragPhase === 'searching' && <span className="text-[8px] animate-pulse text-indigo-400">Matching keys...</span>}
+                            }
                           </div>
 
                           <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
@@ -2556,6 +2597,7 @@ const UserGuideMindmap = () => {
                               <span>3. Retrieving Document Chunk</span>
                             </div>
                             {ragPhase === 'retrieving' && <span className="text-[8px] animate-pulse text-indigo-400">Extracting text...</span>}
+                            }
                           </div>
 
                           <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
@@ -2570,6 +2612,7 @@ const UserGuideMindmap = () => {
                               <span>4. LLM Synthesis & Output</span>
                             </div>
                             {ragPhase === 'synthesizing' && <span className="text-[8px] animate-pulse text-indigo-400">Generating token...</span>}
+                            }
                           </div>
                         </div>
                       </div>
@@ -2622,36 +2665,42 @@ const FAQ = () => {
   ];
 
   return (
-    <section className="relative py-28 z-10 bg-slate-950/40">
+    <section className="relative py-28 z-10" style={{ background: 'rgba(0,0,0,0.15)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
       <div className="max-w-3xl mx-auto px-6">
-        
+
         {/* Title */}
         <div className="text-center mb-16">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.25em]">Frequently Asked Questions</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <span className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: '#00D4FF' }}>Frequently Asked Questions</span>
+          <h2 className="mt-4 text-3xl sm:text-4xl font-black text-white tracking-tight">
             Technical FAQs
           </h2>
         </div>
 
         {/* Accordions */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
               <div
                 key={index}
-                className="bg-white/[0.01] border border-white/5 rounded-2xl overflow-hidden transition-all hover:bg-white/[0.02]"
+                className="overflow-hidden transition-all"
+                style={{
+                  background: isOpen ? 'rgba(0,212,255,0.03)' : 'rgba(255,255,255,0.01)',
+                  border: `1px solid ${isOpen ? 'rgba(0,212,255,0.15)' : 'rgba(255,255,255,0.05)'}`,
+                  borderRadius: '12px'
+                }}
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   className="w-full px-6 py-5 flex items-center justify-between text-left transition-colors"
                 >
-                  <span className="text-white font-bold text-sm sm:text-base">{faq.question}</span>
+                  <span className="text-white font-semibold text-sm sm:text-base pr-4">{faq.question}</span>
                   <motion.div
-                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    animate={{ rotate: isOpen ? 90 : 0 }}
                     transition={{ duration: 0.2 }}
+                    style={{ flexShrink: 0 }}
                   >
-                    <ChevronRight className="w-5 h-5 text-slate-500" />
+                    <ChevronRight className="w-5 h-5" style={{ color: isOpen ? '#00D4FF' : 'rgba(255,255,255,0.3)' }} />
                   </motion.div>
                 </button>
                 <AnimatePresence>
@@ -2663,7 +2712,7 @@ const FAQ = () => {
                       transition={{ duration: 0.3 }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 pb-5 text-slate-400 text-xs sm:text-sm font-medium leading-relaxed border-t border-white/5 pt-4">
+                      <div className="px-6 pb-5 text-xs sm:text-sm font-normal leading-relaxed pt-4" style={{ color: 'rgba(255,255,255,0.5)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -2679,60 +2728,83 @@ const FAQ = () => {
   );
 };
 
-// Premium high-tech CTA deck console
+// CTA Section — clean, bold, editorial
 const CTA = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative py-28 z-10 overflow-hidden bg-[#030014]">
+    <section className="relative py-28 z-10 overflow-hidden" style={{ background: '#07080C' }}>
+      {/* Top divider line */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#00D4FF]/30 to-transparent" />
+
       <div className="max-w-5xl mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="relative p-12 md:p-20 rounded-3xl bg-white/[0.01] border border-white/5 overflow-hidden shadow-2xl"
+          className="relative p-12 md:p-20 overflow-hidden"
+          style={{
+            background: 'rgba(0,212,255,0.03)',
+            border: '1px solid rgba(0,212,255,0.12)',
+            borderRadius: '20px'
+          }}
         >
-          {/* Cosmic gradient backdrop */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-60 h-60 bg-purple-500/5 rounded-full blur-[90px] pointer-events-none" />
+          {/* Ambient glows */}
+          <div className="absolute top-0 right-0 w-72 h-72 rounded-full blur-[100px] pointer-events-none" style={{ background: 'rgba(0,212,255,0.07)' }} />
+          <div className="absolute bottom-0 left-0 w-60 h-60 rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(255,107,53,0.04)' }} />
 
           <div className="relative text-center z-10 space-y-6">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+            {/* Overline */}
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em]" style={{ color: '#00D4FF' }}>
+              <span className="w-6 h-[1px] inline-block" style={{ background: '#00D4FF' }} />
+              Ready to scale your business?
+              <span className="w-6 h-[1px] inline-block" style={{ background: '#00D4FF' }} />
+            </div>
+
+            <h2 className="text-3xl md:text-[3.2rem] font-black text-white tracking-[-0.02em] leading-[1.1]">
               Initiate Your AI Digital Twin
             </h2>
-            <p className="text-slate-400 max-w-xl mx-auto text-xs sm:text-sm font-semibold leading-relaxed">
-              Create your autonomous intelligence clone today. Upload custom documentation, capture voice patterns, and activate standard widget integrations or scan WhatsApp-linked QR codes.
+            <p className="max-w-xl mx-auto text-sm font-normal leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              Create your autonomous intelligence clone today. Upload custom documentation, capture voice patterns, and activate widget integrations in minutes.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">
               <motion.button
                 onClick={() => navigate('/register')}
-                className="w-full sm:w-auto group relative px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-2xl font-bold text-sm overflow-hidden shadow-lg"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                className="w-full sm:w-auto group flex items-center justify-center gap-2 px-8 py-3.5 font-bold text-sm"
+                style={{
+                  background: '#00D4FF',
+                  color: '#07080C',
+                  borderRadius: '10px'
+                }}
+                whileHover={{ scale: 1.03, boxShadow: '0 0 30px rgba(0,212,255,0.4)' }}
+                whileTap={{ scale: 0.97 }}
               >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  Launch Console Panel
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                Launch Console Panel
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </motion.button>
-              
+
               <motion.button
                 onClick={() => navigate('/pricing')}
-                className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-bold text-sm hover:bg-white/10 transition-all flex items-center justify-center gap-2"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 font-semibold text-sm transition-all"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '10px',
+                  color: 'rgba(255,255,255,0.8)'
+                }}
+                whileHover={{ scale: 1.02, borderColor: 'rgba(255,255,255,0.22)', background: 'rgba(255,255,255,0.08)' }}
+                whileTap={{ scale: 0.97 }}
               >
                 Configure Tiers (₹1299/mo)
               </motion.button>
             </div>
 
-            <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-center gap-6 text-xs text-slate-500 font-mono uppercase tracking-wider">
+            <div className="pt-8 flex flex-col md:flex-row items-center justify-center gap-6 text-xs font-mono uppercase tracking-wider" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.3)' }}>
               <a href="mailto:nexora.aidigital.twin@gmail.com" className="hover:text-white transition-colors">
                 nexora.aidigital.twin@gmail.com
               </a>
-              <span className="hidden md:block text-slate-700">•</span>
+              <span className="hidden md:block" style={{ color: 'rgba(255,255,255,0.1)' }}>•</span>
               <a href="tel:+919625410112" className="hover:text-white transition-colors">
                 +91 9625410112
               </a>
@@ -2749,7 +2821,7 @@ const Footer = () => {
   const navigate = useNavigate();
 
   return (
-    <footer className="pt-16 pb-12 bg-slate-950 border-t border-white/5 relative z-10 overflow-hidden">
+    <footer className="pt-16 pb-12 relative z-10 overflow-hidden" style={{ background: '#05060A', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand details */}
@@ -2758,7 +2830,7 @@ const Footer = () => {
               onClick={() => navigate('/')}
               className="flex items-center gap-3 cursor-pointer group w-fit"
             >
-              <div className="flex items-center justify-center p-2 rounded-xl bg-white/5 group-hover:bg-indigo-500/10 transition-colors">
+              <div className="flex items-center justify-center p-2 rounded-xl" style={{ background: 'rgba(0,212,255,0.06)' }}>
                 <LogoIcon className="w-6 h-6" />
               </div>
               <span className="text-lg font-bold text-white tracking-tight">AI Digital Twin</span>
@@ -2776,7 +2848,7 @@ const Footer = () => {
                 <li>
                   <button
                     onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
+                    className="text-xs text-slate-500 hover:text-[#00D4FF] transition-colors font-medium uppercase tracking-wider text-left"
                   >
                     Features
                   </button>
@@ -2839,10 +2911,10 @@ const Footer = () => {
   );
 };
 
-// Main Home Component Redesign
+// Main Home Component
 const Home = () => {
   return (
-    <div className="relative min-h-screen bg-slate-950 text-white font-sans selection:bg-indigo-500/30 overflow-x-hidden">
+    <div className="relative min-h-screen text-white font-sans overflow-x-hidden" style={{ background: '#07080C', WebkitFontSmoothing: 'antialiased' }}>
       {/* Navigation */}
       <LandingNavbar />
 
