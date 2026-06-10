@@ -1,1471 +1,610 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  motion, AnimatePresence, useMotionValue, useSpring, useScroll, useTransform
+} from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  ArrowRight,
-  ChevronRight,
-  Zap,
-  Shield,
-  BarChart3,
-  Mic,
-  Brain,
-  Database,
-  Sliders,
-  Lock,
-  Cpu,
-  Sparkles,
-  Smartphone,
-  CheckCircle,
-  Terminal,
-  FileText,
-  Volume2,
-  Scan,
-  RefreshCw,
-  Check,
-  Globe,
-  Users,
-  MessageCircle,
-  CreditCard,
-  Briefcase,
-  Settings,
-  Power,
-  Code2
+  ArrowRight, Copy, Check, Globe2, ShieldCheck, Zap, Clock,
+  MessagesSquare, BookOpen, Palette, BarChart3, Languages, PlugZap
 } from 'lucide-react';
 import LandingNavbar from '../components/LandingNavbar';
 import LogoIcon from '../components/LogoIcon';
 
-// Premium animation variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
-  }
-};
+/* =============================================================================
+   ASKLY — AI customer-support assistant
+   A cohesive, full-bleed, NON-card homepage. One <script> tag → a live AI
+   assistant on any website. Hand-built SVGs, continuous bands, kinetic copy.
+   ============================================================================= */
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1
-    }
-  }
-};
+const EASE = [0.16, 1, 0.3, 1];
 
-// Refined Dark Background — geometric, human, distinctive
-const PremiumBackground = () => {
+const Reveal = ({ children, delay = 0, y = 26, className = '' }) => (
+  <motion.div
+    className={className}
+    initial={{ opacity: 0, y }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-70px' }}
+    transition={{ duration: 0.85, ease: EASE, delay }}
+  >
+    {children}
+  </motion.div>
+);
+
+/* ---------- Magnetic CTA ---------- */
+const Magnetic = ({ children, onClick, className = '' }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 220, damping: 18 });
+  const sy = useSpring(y, { stiffness: 220, damping: 18 });
+  const move = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    x.set((e.clientX - (r.left + r.width / 2)) * 0.3);
+    y.set((e.clientY - (r.top + r.height / 2)) * 0.3);
+  };
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" style={{ background: '#07080C' }}>
-      {/* Primary accent — warm electric cyan, top-left */}
-      <motion.div
-        className="absolute -top-[15%] -left-[5%] w-[55%] h-[55%] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 65%)',
-          filter: 'blur(90px)'
-        }}
-        animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-      />
-      {/* Secondary accent — warm orange, bottom-right */}
-      <motion.div
-        className="absolute bottom-[5%] right-[0%] w-[40%] h-[40%] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(255,107,53,0.06) 0%, transparent 65%)',
-          filter: 'blur(80px)'
-        }}
-        animate={{ x: [0, -25, 0], y: [0, 20, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-      />
-      {/* Tertiary — cool teal, center */}
-      <motion.div
-        className="absolute top-[45%] left-[35%] w-[35%] h-[35%] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(0,200,180,0.04) 0%, transparent 70%)',
-          filter: 'blur(100px)'
-        }}
-        animate={{ scale: [1, 1.12, 1] }}
-        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      {/* Fine diagonal line grid — more architectural than generic dot grid */}
-      <div
-        className="absolute inset-0 opacity-[0.025]"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)',
-          backgroundSize: '60px 60px'
-        }}
-      />
-
-      {/* Film grain texture */}
-      <div className="absolute inset-0 opacity-[0.018] mix-blend-overlay bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9pc2UpIi8+PC9zdmc+')] pointer-events-none" />
-    </div>
+    <motion.button
+      onClick={onClick}
+      onMouseMove={move}
+      onMouseLeave={() => { x.set(0); y.set(0); }}
+      style={{ x: sx, y: sy }}
+      whileTap={{ scale: 0.97 }}
+      className={className}
+    >
+      {children}
+    </motion.button>
   );
 };
 
-// Real multi-business conversation cycles showing real product behaviors
-const BUSINESS_CONVOS = [
-  {
-    business: '🍕 Spicy Basil Restaurant',
-    color: '#F59E0B',
-    greeting: "Hi! 👋 Welcome to Spicy Basil! Ask me about our menu, table booking, or orders.",
-    userMsg: 'Do you have gluten-free options and can I book a table for 4 tonight?',
-    botReply: "Yes! We have gluten-free wood-fired pizzas 🍕 and pastas. I've booked a table for 4 at 8:00 PM under your name. See you tonight! ✨",
-  },
-  {
-    business: '🏥 CareFirst Dental Clinic',
-    color: '#06B6D4',
-    greeting: "Hi! 👋 Welcome to CareFirst Dental. How can I help you schedule an appointment or query treatments today?",
-    userMsg: 'What are your clinic hours and how can I schedule an emergency extraction?',
-    botReply: "We are open 9 AM - 8 PM daily. I can book you for a dental emergency slot today at 4:30 PM. Would you like to confirm? 🦷",
-  },
-  {
-    business: '👗 Aura Boutique (Store)',
-    color: '#EC4899',
-    greeting: "Hi! 👋 Aura Boutique here! Ask me about new collections, sizing, shipping, or returns.",
-    userMsg: 'Do you ship internationally and what is your return policy?',
-    botReply: "We ship worldwide with free delivery above $100! ✈️ Returns are easy & free within 14 days of receipt. No questions asked!",
-  },
-  {
-    business: '🏡 Zenith Real Estate',
-    color: '#6366F1',
-    greeting: "Hi! 👋 Welcome to Zenith Real Estate. Ask me about properties, pricing, and active listings.",
-    userMsg: 'Are there any 2BHK apartments available under 50 Lakhs in Sector 62?',
-    botReply: "Yes! We have 3 premium 2BHK listings starting at 45 Lakhs in Sector 62 with modern amenities. Would you like to see photos? 🔑",
-  },
-  {
-    business: '🏋️ Apex Fitness Gym',
-    color: '#10B981',
-    greeting: "Hi! 👋 Welcome to Apex Fitness. How can I assist you with memberships, timings, or personal training?",
-    userMsg: 'What is your monthly membership fee and do you offer personal training?',
-    botReply: "Our membership starts at ₹1,499/mo. We have certified trainers for customized fat loss & strength programs. Want a free 1-day pass? 💪",
-  },
-  {
-    business: '🚘 DriveAuto Rentals',
-    color: '#EF4444',
-    greeting: "Hi! 👋 DriveAuto rentals here. Ask me about car models, prices, or documents needed to rent.",
-    userMsg: 'Can I rent a self-drive SUV for this weekend and what docs do I need?',
-    botReply: "Sure! We have SUVs like Thar & Creta available from ₹2,500/day. Just upload your Driving License & Aadhaar to start. 🚗",
-  }
-];
+/* =============================================================================
+   BOT MARK — a custom, hand-built SVG assistant face (used across the page)
+   ============================================================================= */
+const BotMark = ({ size = 44, className = '', talking = false }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
+    <defs>
+      <linearGradient id="botgrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor="#FFC56B" />
+        <stop offset="0.55" stopColor="#F5A623" />
+        <stop offset="1" stopColor="#FF6B5E" />
+      </linearGradient>
+    </defs>
+    {/* antenna */}
+    <motion.g
+      animate={talking ? { rotate: [0, -8, 8, 0] } : {}}
+      transition={{ duration: 1.6, repeat: Infinity }}
+      style={{ transformOrigin: '32px 14px' }}
+    >
+      <line x1="32" y1="14" x2="32" y2="6" stroke="url(#botgrad)" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="32" cy="5" r="3" fill="url(#botgrad)" />
+    </motion.g>
+    {/* head */}
+    <rect x="12" y="14" width="40" height="34" rx="12" stroke="url(#botgrad)" strokeWidth="3" />
+    {/* eyes */}
+    <motion.circle cx="25" cy="30" r="3.4" fill="url(#botgrad)"
+      animate={{ scaleY: [1, 1, 0.15, 1, 1] }} transition={{ duration: 4, repeat: Infinity }} style={{ transformOrigin: '25px 30px' }} />
+    <motion.circle cx="39" cy="30" r="3.4" fill="url(#botgrad)"
+      animate={{ scaleY: [1, 1, 0.15, 1, 1] }} transition={{ duration: 4, repeat: Infinity }} style={{ transformOrigin: '39px 30px' }} />
+    {/* smile */}
+    <path d="M24 38 Q32 43 40 38" stroke="url(#botgrad)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+    {/* base ears */}
+    <line x1="9" y1="28" x2="9" y2="36" stroke="url(#botgrad)" strokeWidth="3" strokeLinecap="round" />
+    <line x1="55" y1="28" x2="55" y2="36" stroke="url(#botgrad)" strokeWidth="3" strokeLinecap="round" />
+  </svg>
+);
 
-const TARGET_NAMES = ["Customers", "Clients", "Users", "Leads", "Buyers", "Students", "Patients", "Followers", "Guests"];
+/* =============================================================================
+   HERO — full-bleed. Left: editorial headline. Right: a live "embed" terminal
+   that types the one-liner, then a chat bubble bursts onto a faux website.
+   ============================================================================= */
+const SCRIPT_LINE = `<script src="https://askly.ai/widget.js" data-id="acme"></script>`;
 
-// Smartphone Widget Simulator Component
-const HeroSmartphoneVisualization = () => {
-  const [phase, setPhase] = useState('greeting'); // greeting | userMsg | typing | botReply | pause
-  const [convoIndex, setConvoIndex] = useState(0);
-  const [messages, setMessages] = useState([]);
-
-  const [nameIndex, setNameIndex] = useState(0);
-
-  // Parallax tilt spring states
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  
-  const springConfig = { damping: 30, stiffness: 120 };
-  const rotateX = useSpring(useTransform(mouseY, [-300, 300], [12, -12]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-300, 300], [-12, 12]), springConfig);
-
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const xVal = e.clientX - (rect.left + width / 2);
-    const yVal = e.clientY - (rect.top + height / 2);
-    mouseX.set(xVal);
-    mouseY.set(yVal);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
+const HeroTerminal = () => {
+  const [typed, setTyped] = useState('');
+  const [done, setDone] = useState(false);
+  const [live, setLive] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setNameIndex((prev) => (prev + 1) % TARGET_NAMES.length);
-    }, 1500);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const run = async () => {
-      if (!mounted) return;
-      
-      // Initialize with first conversation's greeting
-      const firstConvo = BUSINESS_CONVOS[0];
-      const initialGreeting = { role: 'bot', content: firstConvo.greeting };
-      setMessages([initialGreeting]);
-      setPhase('greeting');
-      await new Promise(r => setTimeout(r, 2200));
-
-      let idx = 0;
-      while (mounted) {
-        const convo = BUSINESS_CONVOS[idx % BUSINESS_CONVOS.length];
-        const greetingMsg = { role: 'bot', content: convo.greeting };
-
-        // User message appears
-        if (!mounted) break;
-        setMessages([greetingMsg, { role: 'user', content: convo.userMsg }]);
-        setPhase('userMsg');
-        await new Promise(r => setTimeout(r, 1500));
-
-        // Typing indicator
-        if (!mounted) break;
-        setPhase('typing');
-        await new Promise(r => setTimeout(r, 1600));
-
-        // Bot reply appears
-        if (!mounted) break;
-        setMessages([
-          greetingMsg,
-          { role: 'user', content: convo.userMsg },
-          { role: 'bot', content: convo.botReply },
-        ]);
-        setPhase('botReply');
-        await new Promise(r => setTimeout(r, 3800));
-
-        // Reset for next conversation
-        if (!mounted) break;
-        setMessages([]);
-        setPhase('pause');
-        await new Promise(r => setTimeout(r, 800));
-
-        idx++;
-        const nextConvo = BUSINESS_CONVOS[idx % BUSINESS_CONVOS.length];
-        const nextGreetingMsg = { role: 'bot', content: nextConvo.greeting };
-        setConvoIndex(idx % BUSINESS_CONVOS.length);
-        if (!mounted) break;
-        setMessages([nextGreetingMsg]);
-        setPhase('greeting');
-        await new Promise(r => setTimeout(r, 1600));
+    let i = 0;
+    let alive = true;
+    const tick = () => {
+      if (!alive) return;
+      if (i <= SCRIPT_LINE.length) {
+        setTyped(SCRIPT_LINE.slice(0, i));
+        i++;
+        setTimeout(tick, 34);
+      } else {
+        setDone(true);
+        setTimeout(() => alive && setLive(true), 650);
       }
     };
-
-    run();
-    return () => { mounted = false; };
+    const start = setTimeout(tick, 700);
+    return () => { alive = false; clearTimeout(start); };
   }, []);
 
-  const currentConvo = BUSINESS_CONVOS[convoIndex];
-  const accentColor = currentConvo.color;
-
   return (
-    <div className="relative flex items-center justify-center w-full lg:max-w-md mx-auto pb-16 md:pb-0">
-      {/* Dynamic Spiral Arrow Callout (Visible on md and larger) */}
-      <div className="hidden md:flex absolute -left-[11rem] lg:-left-[13rem] top-[28%] flex-col items-end z-20 max-w-[200px] text-right pointer-events-none select-none">
-        <div className="font-handwriting text-[23px] text-slate-100 leading-tight transform -rotate-3 filter drop-shadow-[0_2px_10px_rgba(244,63,94,0.2)]">
-          Your twin is exactly talking like this with your
-          <div className="h-9 overflow-hidden mt-0.5 flex justify-end items-center">
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={nameIndex}
-                initial={{ y: 15, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -15, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="block text-pink-400 font-extrabold tracking-wider text-[21px] uppercase font-sans"
-              >
-                {TARGET_NAMES[nameIndex]}
-              </motion.span>
-            </AnimatePresence>
-          </div>
-        </div>
-        
-        {/* Curved swooping arrow pointing to screen */}
-        <div className="mt-1 mr-4 transform translate-x-4 text-pink-400 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]">
-          <svg viewBox="0 0 100 50" className="w-24 h-12 overflow-visible" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path 
-              d="M 10 5 C 35 28, 55 32, 80 12" 
-              stroke="currentColor" 
-              strokeWidth="2.5" 
-              strokeLinecap="round" 
-              strokeDasharray="4 3"
-            />
-            <path 
-              d="M 68 8 L 82 12 L 76 25" 
-              stroke="currentColor" 
-              strokeWidth="2.5" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
-      </div>
-
-      {/* Dynamic Callout (Visible on mobile only below phone) */}
-      <div className="md:hidden absolute -bottom-10 left-0 right-0 flex justify-center text-center select-none z-20">
-        <span className="text-[12px] bg-slate-900/90 border border-white/10 px-4 py-2 rounded-full text-slate-300 font-medium tracking-wide backdrop-blur-md shadow-lg">
-          Your twin is exactly talking like this with your{" "}
-          <span className="font-extrabold tracking-wider uppercase ml-1" style={{ color: '#00D4FF' }}>
-            {TARGET_NAMES[nameIndex]}
-          </span>
-        </span>
-      </div>
-
-      {/* Decorative background glow behind phone */}
+    <div className="relative w-full max-w-[520px] mx-auto">
+      {/* faux browser window — the user's website */}
       <motion.div
-        className="absolute w-72 h-96 rounded-full blur-3xl -z-10 opacity-30"
-        style={{ backgroundColor: accentColor }}
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      {/* Phone Body Wrapper */}
-      <motion.div
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }}
-        className="relative w-[280px] min-[380px]:w-[300px] h-[560px] min-[380px]:h-[600px] bg-[#0c0d12] rounded-[3.2rem] border-[6px] border-[#222530] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden ring-1 ring-white/10 cursor-grab active:cursor-grabbing will-change-transform"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: EASE }}
+        className="relative rounded-2xl overflow-hidden"
+        style={{ background: '#0E0C0A', border: '1px solid rgba(247,243,236,0.1)', boxShadow: '0 40px 90px -30px rgba(0,0,0,0.8)' }}
       >
-        
-        {/* Notch / Speaker */}
-        <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-30">
-          <div className="w-32 h-5 bg-[#222530] rounded-b-2xl flex items-center justify-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#0c0d12]" />
-            <div className="w-10 h-1 bg-[#15171e] rounded-full" />
+        {/* browser chrome */}
+        <div className="flex items-center gap-2 px-4 py-3" style={{ background: 'rgba(247,243,236,0.03)', borderBottom: '1px solid rgba(247,243,236,0.07)' }}>
+          <span className="w-3 h-3 rounded-full" style={{ background: '#FF6B5E' }} />
+          <span className="w-3 h-3 rounded-full" style={{ background: '#FFC56B' }} />
+          <span className="w-3 h-3 rounded-full" style={{ background: '#9AB39A' }} />
+          <div className="ml-3 flex-1 h-6 rounded-md flex items-center px-3 gap-2" style={{ background: 'rgba(247,243,236,0.04)' }}>
+            <Globe2 className="w-3 h-3 text-paper/35" />
+            <span className="text-[11px] text-paper/45 font-mono">yourbusiness.com</span>
           </div>
         </div>
 
-        {/* Screen Content */}
-        <div className="absolute inset-0 pt-8 pb-4 px-3 flex flex-col justify-between bg-slate-950">
-          {/* Header */}
-          <div className="flex items-center justify-between px-2 py-2.5 border-b border-white/5">
-            <div className="flex items-center gap-2">
+        {/* faux website body */}
+        <div className="relative h-[300px] p-6 overflow-hidden">
+          <div className="h-4 w-2/3 rounded-full" style={{ background: 'rgba(247,243,236,0.08)' }} />
+          <div className="mt-3 h-3 w-1/2 rounded-full" style={{ background: 'rgba(247,243,236,0.05)' }} />
+          <div className="mt-7 h-24 rounded-xl" style={{ background: 'rgba(247,243,236,0.03)', border: '1px solid rgba(247,243,236,0.05)' }} />
+          <div className="mt-5 grid grid-cols-3 gap-3">
+            {[0, 1, 2].map((k) => (
+              <div key={k} className="h-14 rounded-lg" style={{ background: 'rgba(247,243,236,0.03)' }} />
+            ))}
+          </div>
+
+          {/* the assistant bubble that appears once "live" */}
+          <AnimatePresence>
+            {live && (
               <motion.div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
-                style={{ background: `${accentColor}22`, border: `1px solid ${accentColor}44` }}
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                key="bubble"
+                initial={{ scale: 0, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+                className="absolute bottom-5 right-5 flex flex-col items-end gap-2"
               >
-                {currentConvo.business.split(' ')[0]}
+                <motion.div
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="max-w-[190px] text-[11px] leading-snug px-3 py-2 rounded-2xl rounded-br-sm text-paper/90 font-medium"
+                  style={{ background: 'rgba(247,243,236,0.07)', border: '1px solid rgba(247,243,236,0.1)' }}
+                >
+                  Hi! 👋 I'm your assistant. Ask me anything about your order or hours.
+                </motion.div>
+                <motion.div
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                  style={{ background: 'linear-gradient(135deg,#FFC56B,#F5A623,#FF6B5E)' }}
+                  animate={{ boxShadow: ['0 0 0 0 rgba(245,166,35,0.5)', '0 0 0 14px rgba(245,166,35,0)'] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <BotMark size={28} talking />
+                </motion.div>
               </motion.div>
-              <div>
-                <p className="text-[11px] font-bold text-white leading-none">{currentConvo.business.split(' ').slice(1).join(' ')}</p>
-                <p className="text-[9px] text-emerald-400 font-semibold mt-0.5">● Twin Answering</p>
-              </div>
-            </div>
-            <span className="text-[8px] bg-white/5 border border-white/10 px-1.5 py-0.5 rounded-md text-slate-400 font-mono">v1.2</span>
-          </div>
-
-          {/* Messages */}
-          <div className="flex-1 overflow-hidden flex flex-col gap-2.5 justify-end py-3 px-1">
-            <AnimatePresence mode="popLayout">
-              {messages.map((msg, idx) => (
-                <motion.div
-                  key={`${convoIndex}-${idx}`}
-                  initial={{ opacity: 0, y: 12, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.92, y: -6 }}
-                  transition={{ duration: 0.35, ease: 'easeOut' }}
-                  className={`max-w-[85%] text-[11px] font-medium leading-relaxed px-3 py-2 rounded-2xl ${
-                    msg.role === 'user'
-                      ? 'self-end text-white rounded-br-sm shadow-md'
-                      : 'self-start text-slate-200 bg-white/5 border border-white/10 rounded-bl-sm'
-                  }`}
-                  style={msg.role === 'user' ? { background: accentColor } : {}}
-                >
-                  {msg.content}
-                </motion.div>
-              ))}
-
-              {/* Typing indicator */}
-              {phase === 'typing' && (
-                <motion.div
-                  key="typing"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="self-start bg-white/5 border border-white/10 rounded-2xl rounded-bl-sm px-3.5 py-2.5 flex gap-1.5 items-center"
-                >
-                  {[0, 0.2, 0.4].map((delay, i) => (
-                    <motion.div
-                      key={i}
-                      className="w-1.5 h-1.5 rounded-full"
-                      style={{ background: accentColor }}
-                      animate={{ y: [0, -3, 0], opacity: [0.5, 1, 0.5] }}
-                      transition={{ repeat: Infinity, duration: 0.7, delay }}
-                    />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Interactive Watermark (Brand Name Update) */}
-          <div className="text-center py-1 border-t border-white/5 bg-slate-950">
-            <span className="text-[8px] text-slate-500 font-medium tracking-wide">
-              Powered by <span className="text-indigo-400 font-semibold">AI Digital Twin</span>
-            </span>
-          </div>
-
-          {/* Mock Input Bar */}
-          <div className="pt-2 flex items-center gap-2 px-1">
-            <div className="flex-1 h-8 bg-white/5 rounded-full border border-white/10 flex items-center px-3">
-              <span className="text-[10px] text-slate-500">Ask the digital twin...</span>
-            </div>
-            <motion.div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white shadow flex-shrink-0"
-              style={{ background: accentColor }}
-              animate={{ scale: [1, 1.06, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 ml-0.5">
-                <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-              </svg>
-            </motion.div>
-          </div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
+
+      {/* the code paste — slotted UNDER the browser as one continuous object */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.8, ease: EASE }}
+        className="relative -mt-4 mx-4 rounded-xl px-4 py-3.5 font-mono text-[12px] leading-relaxed"
+        style={{ background: '#06201a', border: '1px solid rgba(154,179,154,0.25)', boxShadow: '0 20px 50px -20px rgba(0,0,0,0.7)' }}
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-[9px] uppercase tracking-[0.2em] font-sans font-bold text-sage/70">paste once, anywhere in your html</span>
+        </div>
+        <code className="block break-all text-paper/85 min-h-[34px]">
+          {typed}
+          {!done && <span className="inline-block w-[7px] h-[14px] -mb-[2px] ml-0.5 bg-sage caret-blink" />}
+        </code>
+      </motion.div>
+
+      {/* hand-drawn callout */}
+      <div className="hidden xl:flex absolute -right-[8.5rem] top-[42%] flex-col items-start max-w-[150px] pointer-events-none select-none">
+        <svg viewBox="0 0 100 60" className="w-20 h-12 -scale-x-100" style={{ color: '#9AB39A' }}>
+          <path d="M 88 8 C 60 30, 40 34, 14 16" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeDasharray="4 4" fill="none" />
+          <path d="M 26 8 L 12 16 L 20 28" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        </svg>
+        <span className="font-handwriting text-[20px] leading-tight text-sage -rotate-2 mt-1">that's literally it — one line.</span>
+      </div>
     </div>
   );
 };
 
-// Hero Section — editorial, asymmetric, distinctive
+const ROTATING = ['customer queries', 'order questions', 'booking requests', 'support tickets', 'FAQs at 2 AM'];
+
 const Hero = () => {
   const navigate = useNavigate();
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setW((p) => (p + 1) % ROTATING.length), 2100);
+    return () => clearInterval(t);
+  }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-28 pb-20 overflow-hidden z-10">
-      {/* Thin top accent line */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#00D4FF]/40 to-transparent" />
-
-      <div className="w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-
-        {/* Text Column */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-          className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left space-y-7"
-        >
-          {/* Status pill */}
-          <motion.div variants={fadeInUp}>
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full backdrop-blur-md"
-              style={{ background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.18)' }}>
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+    <section className="relative min-h-screen flex items-center pt-32 pb-20 z-10">
+      <div className="w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-20 items-center">
+        {/* copy */}
+        <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
+          <Reveal>
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full"
+              style={{ background: 'rgba(247,243,236,0.04)', border: '1px solid rgba(247,243,236,0.1)' }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-sage live-dot" />
+              <span className="text-[11px] font-semibold tracking-[0.14em] uppercase text-paper/70">
+                The 1-line AI support assistant
               </span>
-              <span className="text-[11px] font-bold tracking-[0.12em] uppercase" style={{ color: '#00D4FF' }}>
-                AI-Powered Customer Intelligence
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.06}>
+            <h1 className="mt-7 text-[2.7rem] sm:text-[3.4rem] lg:text-[4.1rem] font-black leading-[1.03] tracking-[-0.035em] text-paper">
+              Answer every
+              <span className="relative inline-block mx-2 align-bottom h-[1.1em] overflow-hidden">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={w}
+                    initial={{ y: '100%', opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: '-100%', opacity: 0 }}
+                    transition={{ duration: 0.5, ease: EASE }}
+                    className="block font-editorial italic font-medium text-amber-grad whitespace-nowrap pr-1"
+                  >
+                    {ROTATING[w]}
+                  </motion.span>
+                </AnimatePresence>
               </span>
-              <ChevronRight className="w-3.5 h-3.5 opacity-60" style={{ color: '#00D4FF' }} />
-            </div>
-          </motion.div>
+              <br className="hidden sm:block" />
+              with a single line of code.
+            </h1>
+          </Reveal>
 
-          {/* Headline — bold editorial contrast */}
-          <motion.h1
-            variants={fadeInUp}
-            className="text-[2.8rem] sm:text-[3.6rem] md:text-[4.2rem] lg:text-[4.6rem] font-black leading-[1.05] tracking-[-0.03em]"
-          >
-            <span className="block text-white">Clone Your</span>
-            <span className="block text-white">Intelligence.</span>
-            <span className="block mt-1" style={{
-              background: 'linear-gradient(100deg, #00D4FF 0%, #00FFB3 55%, #FF6B35 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}>
-              Automate Your Presence.
-            </span>
-          </motion.h1>
-
-          {/* Subheading */}
-          <motion.p
-            variants={fadeInUp}
-            className="text-base sm:text-lg max-w-xl font-normal leading-relaxed"
-            style={{ color: 'rgba(255,255,255,0.55)' }}
-          >
-            Without writing a single line of code, deploy your own{' '}
-            <span style={{ color: '#00D4FF', fontWeight: 600 }}>AI Digital Twin</span>{' '}
-            that answers customer queries in English & Hindi — with your exact care, tone, and intelligence — 24/7.
-          </motion.p>
-
-          {/* Speed callout */}
-          <motion.div variants={fadeInUp} className="flex items-center gap-2.5">
-            <div className="flex items-center justify-center w-7 h-7 rounded-lg"
-              style={{ background: 'rgba(0,255,179,0.1)', border: '1px solid rgba(0,255,179,0.25)' }}>
-              <Zap className="w-3.5 h-3.5" style={{ color: '#00FFB3' }} />
-            </div>
-            <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              Build your twin in{' '}
-              <span style={{ color: '#00FFB3', fontWeight: 700 }}>4-5 minutes</span>
-              {' '}— zero coding required.
+          <Reveal delay={0.12}>
+            <p className="mt-7 text-base sm:text-lg max-w-xl leading-relaxed text-paper/55">
+              Askly is an <span className="text-paper font-semibold">AI assistant</span> that learns your business
+              and replies to customers instantly — on chat, in English &amp; Hindi. Drop in
+              <span className="font-mono text-sage"> one &lt;script&gt; tag</span> and it goes live. No SDKs, no
+              build steps, no thousand lines of code.
             </p>
-          </motion.div>
+          </Reveal>
 
-          {/* CTAs */}
-          <motion.div
-            variants={fadeInUp}
-            className="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto"
-          >
-            {/* Primary CTA — solid fill, electric cyan */}
-            <motion.button
-              onClick={() => navigate('/register')}
-              className="w-full sm:w-auto group relative px-8 py-3.5 font-bold text-sm overflow-hidden flex items-center justify-center gap-2"
-              style={{
-                background: '#00D4FF',
-                color: '#07080C',
-                borderRadius: '10px',
-                boxShadow: '0 0 0 0 rgba(0,212,255,0)',
-                transition: 'box-shadow 0.3s ease, transform 0.2s ease'
-              }}
-              whileHover={{ scale: 1.03, boxShadow: '0 0 28px rgba(0,212,255,0.35)' }}
-              whileTap={{ scale: 0.97 }}
-            >
-              Create Your Twin Free
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-
-            {/* Secondary CTA — ghost */}
-            <motion.button
-              onClick={() => navigate('/pricing')}
-              className="w-full sm:w-auto px-8 py-3.5 font-semibold text-sm flex items-center justify-center gap-2 transition-all"
-              style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: '10px',
-                color: 'rgba(255,255,255,0.8)'
-              }}
-              whileHover={{ scale: 1.02, borderColor: 'rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)' }}
-              whileTap={{ scale: 0.97 }}
-            >
-              View Pricing ₹1299/mo
-            </motion.button>
-          </motion.div>
-
-          {/* Stat bar */}
-          <motion.div
-            variants={fadeInUp}
-            className="pt-7 grid grid-cols-3 gap-8 w-full max-w-sm"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
-          >
-            {[
-              { value: '<100ms', label: 'Response Speed' },
-              { value: '99.4%', label: 'Accuracy Index' },
-              { value: '24 / 7', label: 'Always Online' }
-            ].map((s) => (
-              <div key={s.label}>
-                <span className="block text-[1.15rem] font-black text-white leading-none">{s.value}</span>
-                <span className="block mt-1.5 text-[9px] font-semibold uppercase tracking-[0.12em]"
-                  style={{ color: 'rgba(255,255,255,0.3)' }}>
-                  {s.label}
-                </span>
-              </div>
-            ))}
-          </motion.div>
-        </motion.div>
-
-        {/* Phone Mockup Column */}
-        <div className="lg:col-span-5 flex justify-center">
-          <HeroSmartphoneVisualization />
-        </div>
-
-      </div>
-    </section>
-  );
-};
-
-// Interactive Capabilities Playground (NEW Component - No Fake Data)
-const CapabilitiesPlayground = () => {
-  const [activeTab, setActiveTab] = useState('kb'); // kb | widget | voice | whatsapp
-  
-  // Customizer state for Widget Tab
-  const [widgetColor, setWidgetColor] = useState('#6366F1');
-  const [showWatermark, setShowWatermark] = useState(true);
-
-  // Ingest states
-  const [uploadState, setUploadState] = useState('idle'); // idle | uploading | parsed
-  const [percent, setPercent] = useState(0);
-
-  const startUploadSim = () => {
-    setUploadState('uploading');
-    setPercent(0);
-    const interval = setInterval(() => {
-      setPercent((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setUploadState('parsed');
-          return 100;
-        }
-        return prev + 20;
-      });
-    }, 300);
-  };
-
-  // Voice synthesis states
-  const [voiceState, setVoiceState] = useState('idle'); // idle | recording | synth | complete
-  const startVoiceSim = () => {
-    setVoiceState('recording');
-    setTimeout(() => {
-      setVoiceState('synth');
-      setTimeout(() => {
-        setVoiceState('complete');
-      }, 2000);
-    }, 2000);
-  };
-
-  // WhatsApp states
-  const [waState, setWaState] = useState('idle'); // idle | scanning | connected
-  const startWaSim = () => {
-    setWaState('scanning');
-    setTimeout(() => {
-      setWaState('connected');
-    }, 3000);
-  };
-
-  const tabs = [
-    { id: 'kb', label: 'Knowledge Base Ingestion', icon: Database },
-    { id: 'widget', label: 'Web Chat Widget Customizer', icon: Smartphone },
-    { id: 'voice', label: 'Neural Voice Synthesis', icon: Mic },
-    { id: 'whatsapp', label: 'WhatsApp QR Linkage', icon: Scan }
-  ];
-
-  return (
-    <section className="relative py-24 overflow-hidden z-10" style={{ background: 'rgba(0,212,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-      <div className="max-w-7xl mx-auto px-6">
-
-        {/* Title */}
-        <div className="text-center mb-16">
-          <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: '#00D4FF' }}>
-            <Sliders className="w-4 h-4" /> Real-time Capability Sandbox
-          </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-black text-white tracking-tight">
-            See the Platform Features in Action
-          </h2>
-          <p className="mt-4 max-w-2xl mx-auto text-sm font-normal" style={{ color: 'rgba(255,255,255,0.45)' }}>
-            Test the real interactive capabilities that power your AI Digital Twin.
-          </p>
-        </div>
-
-        {/* Grid Wrapper */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-          {/* Tabs Selector list */}
-          <div className="lg:col-span-4 space-y-2.5">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-4 px-5 py-4 rounded-xl border text-left transition-all duration-200 ${
-                    isActive ? 'text-white' : 'text-slate-400 hover:text-white'
-                  }`}
-                  style={isActive ? {
-                    background: 'rgba(0,212,255,0.06)',
-                    border: '1px solid rgba(0,212,255,0.25)',
-                    boxShadow: '0 0 20px rgba(0,212,255,0.05)'
-                  } : {
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid rgba(255,255,255,0.05)'
-                  }}
-                >
-                  <div className="p-2 rounded-lg" style={isActive ? {
-                    background: 'rgba(0,212,255,0.12)',
-                    color: '#00D4FF'
-                  } : {
-                    background: 'rgba(255,255,255,0.05)',
-                    color: 'rgba(255,255,255,0.4)'
-                  }}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="block text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: isActive ? 'rgba(0,212,255,0.7)' : 'rgba(255,255,255,0.25)' }}>Module</span>
-                    <span className="text-sm font-semibold">{tab.label}</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Interactive Preview Container */}
-          <div className="lg:col-span-8 rounded-2xl p-8 min-h-[400px] flex flex-col justify-between relative overflow-hidden backdrop-blur-md"
-            style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.06)' }}>
-
-            {/* Ambient inner glow */}
-            <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl pointer-events-none" style={{ background: 'rgba(0,212,255,0.06)' }} />
-
-            <AnimatePresence mode="wait">
-              {activeTab === 'kb' && (
-                <motion.div
-                  key="kb"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-6"
-                >
-                  <div className="border-b border-white/5 pb-4">
-                    <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[9px] font-bold rounded uppercase tracking-wider border border-indigo-500/20">Knowledge Core</span>
-                    <h3 className="text-xl font-bold text-white mt-2">Vector Ingestion Pipeline</h3>
-                    <p className="text-xs text-slate-400 mt-1">Upload knowledge parameters. The pipeline tokenizes, indexes, and syncs vectors directly to the Digital Twin database.</p>
-                  </div>
-
-                  {/* Simulator Area */}
-                  {uploadState === 'idle' && (
-                    <div
-                      onClick={startUploadSim}
-                      className="border border-dashed border-white/10 hover:border-indigo-500/30 bg-slate-950/40 rounded-2xl p-8 flex flex-col items-center justify-center space-y-3 cursor-pointer transition-all"
-                    >
-                      <FileText className="w-10 h-10 text-indigo-400 animate-pulse" />
-                      <span className="text-xs font-semibold text-slate-200">Click to upload mock files (e.g. faq.pdf, pricing_terms.txt)</span>
-                      <span className="text-[10px] text-slate-500">Simulates vector processing and database injection</span>
-                    </div>
-                  )}
-
-                  {uploadState === 'uploading' && (
-                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
-                      <RefreshCw className="w-8 h-8 text-indigo-400 animate-spin" />
-                      <div className="w-full max-w-xs space-y-2">
-                        <div className="flex justify-between text-xs font-mono text-slate-400">
-                          <span>Tokenizing & Embedding...</span>
-                          <span>{percent}%</span>
-                        </div>
-                        <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden">
-                          <div className="h-full transition-all duration-300" style={{ width: `${percent}%`, background: '#00D4FF' }} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {uploadState === 'parsed' && (
-                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
-                      <CheckCircle className="w-10 h-10 text-emerald-400 animate-bounce" />
-                      <div className="text-center space-y-1">
-                        <span className="text-sm font-bold text-white">Database Synchronization Successful!</span>
-                        <p className="text-[11px] text-slate-500">25,840 vectors processed and indexed into ChromaDB tenant instance.</p>
-                      </div>
-                      <button
-                        onClick={() => setUploadState('idle')}
-                        className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
-                      >
-                        Reset Pipeline
-                      </button>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-
-              {activeTab === 'widget' && (
-                <motion.div
-                  key="widget"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-8"
-                >
-                  {/* Customizer Toggles */}
-                  <div className="space-y-6">
-                    <div>
-                      <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[9px] font-bold rounded uppercase tracking-wider border border-indigo-500/20">Customizer</span>
-                      <h3 className="text-xl font-bold text-white mt-2">Widget Editor</h3>
-                      <p className="text-xs text-slate-400 mt-1">Configure layout options. Changes will apply to the web integration preview immediately.</p>
-                    </div>
-
-                    {/* Colors selection */}
-                    <div className="space-y-2">
-                      <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Widget Color Theme</label>
-                      <div className="flex gap-3">
-                        {['#6366F1', '#D946EF', '#06B6D4', '#10B981', '#F59E0B'].map((color) => (
-                          <button
-                            key={color}
-                            onClick={() => setWidgetColor(color)}
-                            className="w-8 h-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center"
-                            style={{
-                              backgroundColor: color,
-                              borderColor: widgetColor === color ? 'white' : 'transparent'
-                            }}
-                          >
-                            {widgetColor === color && <Check className="w-4 h-4 text-white" />}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Watermark Toggle */}
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        id="wt"
-                        checked={showWatermark}
-                        onChange={(e) => setShowWatermark(e.target.checked)}
-                        className="w-4 h-4 accent-indigo-500 rounded bg-slate-900 border-white/10"
-                      />
-                      <label htmlFor="wt" className="text-xs text-slate-300 font-medium">
-                        Show "Powered by AI Digital Twin" watermark
-                      </label>
-                    </div>
-
-                    <div className="p-3.5 bg-white/5 border border-white/10 rounded-2xl text-[10px] text-slate-500 leading-normal">
-                      💡 Standard Plan (₹1599 → ₹1299/mo Launch Offer) removes the "Powered by AI Digital Twin" watermark branding completely.
-                    </div>
-                  </div>
-
-                  {/* Mock Widget Preview */}
-                  <div className="bg-slate-950/80 border border-white/10 rounded-2xl p-4 flex flex-col justify-between h-[300px] shadow-inner">
-                    {/* Widget Top bar */}
-                    <div className="flex items-center gap-2.5 pb-2.5 border-b border-white/5">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: widgetColor }}>
-                        🤖
-                      </div>
-                      <div>
-                        <span className="block text-[10px] font-bold text-white">AI Twin Assistant</span>
-                        <span className="block text-[8px] text-emerald-400 font-semibold">● Active</span>
-                      </div>
-                    </div>
-
-                    {/* Bubbles */}
-                    <div className="flex-1 flex flex-col gap-2 justify-end py-4">
-                      <div className="bg-white/5 border border-white/5 px-3 py-1.5 rounded-2xl rounded-bl-sm text-[9px] text-slate-300 self-start max-w-[85%]">
-                        Hello! Welcome to our website. How can I help you today?
-                      </div>
-                      <div className="px-3 py-1.5 rounded-2xl rounded-br-sm text-[9px] text-white self-end max-w-[85%]" style={{ backgroundColor: widgetColor }}>
-                        Show me standard plan details.
-                      </div>
-                    </div>
-
-                    {/* Branding watermarks */}
-                    {showWatermark && (
-                      <div className="text-center py-1 bg-slate-900/50 rounded-md border border-white/5 mb-2">
-                        <span className="text-[8px] text-slate-500">
-                          Powered by <span className="text-slate-400 font-bold">AI Digital Twin</span>
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Chat Input block */}
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-7 bg-white/5 rounded-full border border-white/10 px-2 flex items-center">
-                        <span className="text-[8px] text-slate-500">Ask a question...</span>
-                      </div>
-                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: widgetColor }}>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {activeTab === 'voice' && (
-                <motion.div
-                  key="voice"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-6"
-                >
-                  <div className="border-b border-white/5 pb-4">
-                    <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[9px] font-bold rounded uppercase tracking-wider border border-indigo-500/20">Acoustic Synthesizer</span>
-                    <h3 className="text-xl font-bold text-white mt-2">Neural Voice Synthesis</h3>
-                    <p className="text-xs text-slate-400 mt-1">Record a 10-second audio profile. The AI models capture pitch, accent, and speech speed variables to clone your voice.</p>
-                  </div>
-
-                  {voiceState === 'idle' && (
-                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
-                      <Mic className="w-12 h-12 text-indigo-400" />
-                      <button
-                        onClick={startVoiceSim}
-                        className="px-6 py-3 font-bold text-xs rounded-xl hover:scale-105 transition-all"
-                        style={{ background: '#00D4FF', color: '#07080C', boxShadow: '0 0 15px rgba(0,212,255,0.3)' }}
-                      >
-                        Start Voice Synthesis Recording
-                      </button>
-                      <p className="text-[10px] text-slate-500">Requires microphone permission (Simulated playground)</p>
-                    </div>
-                  )}
-
-                  {voiceState === 'recording' && (
-                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
-                      <div className="flex items-center gap-1.5 h-8">
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((bar) => (
-                          <motion.div
-                            key={bar}
-                            className="w-1 bg-red-500 rounded-full"
-                            style={{ height: 8 }}
-                            animate={{ height: [8, 32, 8] }}
-                            transition={{ duration: 0.5, repeat: Infinity, delay: bar * 0.05 }}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-xs font-mono text-red-500 font-bold uppercase animate-pulse">Recording voice prints... Speak clearly</span>
-                    </div>
-                  )}
-
-                  {voiceState === 'synth' && (
-                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
-                      <RefreshCw className="w-8 h-8 text-indigo-400 animate-spin" />
-                      <span className="text-xs text-slate-300 font-semibold uppercase tracking-wider">Extracting phonetic parameters...</span>
-                      <p className="text-[10px] text-slate-500">Mapping pitch vectors and sentence alignments</p>
-                    </div>
-                  )}
-
-                  {voiceState === 'complete' && (
-                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
-                      <Volume2 className="w-12 h-12 text-emerald-400 animate-bounce" />
-                      <div className="text-center space-y-1">
-                        <span className="text-xs font-mono text-emerald-400 font-bold">SYNTHESIS SUCCESSFUL</span>
-                        <h4 className="text-sm font-bold text-white">Your Cloned Voice Profile is Active</h4>
-                        <p className="text-[10px] text-slate-500">Twin can now process live WebRTC voice streams with 180ms latency.</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => alert('Simulated Playback: "Hello! This is my AI digital twin cloned voice."')}
-                          className="px-4 py-2 rounded-xl text-xs font-bold transition-colors"
-                          style={{ background: '#00D4FF', color: '#07080C' }}
-                        >
-                          Play Voice Profile Sample
-                        </button>
-                        <button
-                          onClick={() => setVoiceState('idle')}
-                          className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300 hover:bg-white/10 transition-colors"
-                        >
-                          Re-record
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-
-              {activeTab === 'whatsapp' && (
-                <motion.div
-                  key="whatsapp"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-6"
-                >
-                  <div className="border-b border-white/5 pb-4">
-                    <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[9px] font-bold rounded uppercase tracking-wider border border-indigo-500/20">Messaging Gateway</span>
-                    <h3 className="text-xl font-bold text-white mt-2">WhatsApp Scanner Linkage</h3>
-                    <p className="text-xs text-slate-400 mt-1">Scan our dashboard QR code using WhatsApp linked devices. The system registers your WhatsApp session to automatically reply to customers.</p>
-                  </div>
-
-                  {waState === 'idle' && (
-                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
-                      <Scan className="w-12 h-12 text-indigo-400" />
-                      <button
-                        onClick={startWaSim}
-                        className="px-6 py-3 font-bold text-xs rounded-xl hover:scale-105 transition-all"
-                        style={{ background: '#00D4FF', color: '#07080C', boxShadow: '0 0 15px rgba(0,212,255,0.3)' }}
-                      >
-                        Generate QR Code for Scan Linkage
-                      </button>
-                    </div>
-                  )}
-
-                  {waState === 'scanning' && (
-                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4 relative">
-                      <div className="w-36 h-36 bg-white border-4 border-slate-900 rounded-xl relative overflow-hidden flex items-center justify-center shadow-lg">
-                        {/* Mock QR image */}
-                        <div className="w-32 h-32 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900 via-slate-950 to-black opacity-90 p-2 grid grid-cols-6 grid-rows-6 gap-1">
-                          {[...Array(36)].map((_, i) => (
-                            <div key={i} className={`rounded-[2px] ${i % 3 === 0 || i % 7 === 0 ? 'bg-white' : 'bg-transparent'}`} />
-                          ))}
-                        </div>
-                        {/* Laser line scan */}
-                        <motion.div
-                          className="absolute inset-x-0 h-1 bg-emerald-500 shadow-[0_0_8px_#10b981]"
-                          animate={{ top: ['0%', '100%', '0%'] }}
-                          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                        />
-                      </div>
-                      <span className="text-xs font-mono text-indigo-400 animate-pulse uppercase tracking-wider font-bold">Scanning devices... Scan QR Code using WhatsApp</span>
-                    </div>
-                  )}
-
-                  {waState === 'connected' && (
-                    <div className="bg-slate-950/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center space-y-4">
-                      <CheckCircle className="w-10 h-10 text-emerald-400 animate-bounce" />
-                      <div className="text-center space-y-1">
-                        <span className="text-xs font-mono text-emerald-400 font-bold">DEVICE REGISTERED</span>
-                        <h4 className="text-sm font-bold text-white">WhatsApp Account Linked Successfully</h4>
-                        <p className="text-[10px] text-slate-500">Your AI Digital Twin is now auto-replying to incoming chats on your WhatsApp number.</p>
-                      </div>
-                      <button
-                        onClick={() => setWaState('idle')}
-                        className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300 hover:bg-white/10 transition-colors"
-                      >
-                        Disconnect Session
-                      </button>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Platform status telemetry */}
-            <div className="mt-8 pt-4 border-t border-white/5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-left font-mono text-[9px] text-slate-500">
-              <div>
-                <span className="block text-slate-600 uppercase font-bold">Latency</span>
-                <span className="text-slate-400 font-extrabold">{activeTab === 'kb' ? '15ms' : activeTab === 'widget' ? '35ms' : activeTab === 'voice' ? '180ms' : '62ms'}</span>
-              </div>
-              <div>
-                <span className="block text-slate-600 uppercase font-bold">Endpoint Route</span>
-                <span className="text-slate-400 font-extrabold truncate block">
-                  {activeTab === 'kb' ? '/api/v1/knowledge' : activeTab === 'widget' ? '/api/v1/integrations/widget' : activeTab === 'voice' ? '/api/v1/voice/clone' : '/api/v1/integrations/whatsapp'}
-                </span>
-              </div>
-              <div>
-                <span className="block text-slate-600 uppercase font-bold">Access Check</span>
-                <span className="text-slate-400 font-extrabold uppercase">{activeTab === 'kb' || activeTab === 'widget' ? 'Standard (₹1299)' : 'Business Pro'}</span>
-              </div>
-              <div>
-                <span className="block text-slate-600 uppercase font-bold">Gating Policy</span>
-                <span className="text-emerald-400 font-extrabold">STRICT_ENFORCE</span>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-  );
-};
-
-// Premium Features Cards Section
-const Features = () => {
-  
-  // Voice Twin wave play state
-  const [isVoicePlaying, setIsVoicePlaying] = useState(false);
-  
-  // WhatsApp Scanner Link state
-  const [isWALinked, setIsWALinked] = useState(false);
-  
-  // Mini Widget Customizer color state
-  const [widgetColor, setWidgetColor] = useState('#06b6d4'); // Cyan default
-
-  // Gating guard request logs state
-  const [gateLog, setGateLog] = useState([
-    { method: 'POST', endpoint: '/api/v1/twin/chat', status: 200, role: 'Business Pro' }
-  ]);
-  
-  const addGateLog = (role, status) => {
-    setGateLog(prev => [
-      { method: 'POST', endpoint: '/api/v1/twin/chat', status, role },
-      ...prev.slice(0, 3)
-    ]);
-  };
-
-  return (
-    <section id="features" className="relative py-28 z-10 overflow-hidden" style={{ background: 'rgba(0,0,0,0.2)' }}>
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Title */}
-        <div className="text-center mb-16">
-          <span className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: '#00D4FF' }}>Cognitive Core</span>
-          <h2 className="mt-4 text-4xl sm:text-5xl font-black text-white tracking-tight leading-none">
-            Unified Platform Capabilities
-          </h2>
-          <p className="mt-4 max-w-xl mx-auto text-sm font-normal" style={{ color: 'rgba(255,255,255,0.45)' }}>
-            State-of-the-art interactive engines designed to scale your presence autonomously.
-          </p>
-        </div>
-
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Card 1: Voice cloning (Ch 1) - col-span-2 */}
-          <div className="md:col-span-2 p-8 rounded-3xl gradient-border-card feature-card-rose flex flex-col justify-between h-[380px] group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded-xl">
-                  <Mic className="w-4 h-4 text-rose-405" />
-                  <span className="text-[10px] font-bold tracking-wider text-rose-300 uppercase">Voice Synthesizer</span>
-                </div>
-                <span className="text-[9px] font-mono bg-rose-500/25 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">Business Pro</span>
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Voice Cloning Synthesizer</h3>
-              <p className="text-xs text-slate-400 max-w-lg leading-relaxed font-medium">
-                Clone your acoustic voice signature from a simple 10-second audio recording. Power voice call automation with natural pitch, speed, and cadence mapping.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center mt-6">
-              {/* Waveform Visualization */}
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center justify-center gap-3">
-                <div className="flex items-center gap-1 h-10">
-                  {Array.from({ length: 18 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-1 bg-gradient-to-t from-rose-500 to-pink-500 rounded-full"
-                      style={{
-                        height: isVoicePlaying ? '100%' : '15%',
-                        animation: isVoicePlaying ? `voice-wave 0.8s ease-in-out infinite alternate` : 'none',
-                        animationDelay: `${i * 0.04}s`,
-                        transformOrigin: 'bottom center'
-                      }}
-                    />
-                  ))}
-                </div>
-                <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Acoustic prints</span>
-              </div>
-
-              <button
-                onClick={() => setIsVoicePlaying(!isVoicePlaying)}
-                className="w-full py-3.5 rounded-2xl text-xs font-extrabold bg-rose-500 hover:bg-rose-600 text-white transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(244,63,94,0.3)] group-hover:scale-[1.02]"
+          <Reveal delay={0.18}>
+            <div className="mt-9 flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto">
+              <Magnetic
+                onClick={() => navigate('/register')}
+                className="btn-shine relative w-full sm:w-auto group px-8 py-4 rounded-xl text-sm font-bold text-[#0B0A09] inline-flex items-center justify-center gap-2 overflow-hidden"
               >
-                {isVoicePlaying ? (
-                  <>
-                    <Volume2 className="w-4 h-4 animate-bounce" />
-                    Stop Voice Sample
-                  </>
-                ) : (
-                  <>
-                    <Mic className="w-4 h-4" />
-                    Listen Cloned Voice
-                  </>
-                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  Get your assistant — free
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <span className="absolute inset-0" style={{ background: 'linear-gradient(100deg,#FFC56B,#F5A623 55%,#FF6B5E)' }} />
+              </Magnetic>
+              <button
+                onClick={() => navigate('/pricing')}
+                className="w-full sm:w-auto px-8 py-4 rounded-xl text-sm font-semibold text-paper/85 transition-all hover:text-paper"
+                style={{ background: 'rgba(247,243,236,0.04)', border: '1px solid rgba(247,243,236,0.12)' }}
+              >
+                See pricing
               </button>
             </div>
-          </div>
+          </Reveal>
 
-          {/* Card 2: Knowledge Ingest (Ch 2) - col-span-1 */}
-          <div className="p-8 rounded-3xl gradient-border-card feature-card-cyan flex flex-col justify-between h-[380px] group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 rounded-xl">
-                  <Database className="w-4 h-4 text-cyan-400" />
-                  <span className="text-[10px] font-bold tracking-wider text-cyan-300 uppercase">Knowledge Vectorizer</span>
-                </div>
-                <span className="text-[9px] font-mono bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">Standard</span>
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Multi-Format Ingestion</h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                Upload PDF documentation, raw text sheets, or scan custom site URLs. Chunk content into embedding indices instantly.
-              </p>
+          <Reveal delay={0.24}>
+            <div className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-x-7 gap-y-3 text-paper/45">
+              {[
+                { icon: Zap, t: 'Live in ~5 min' },
+                { icon: Clock, t: 'Replies under 1s' },
+                { icon: ShieldCheck, t: 'Your data stays yours' },
+              ].map((x) => (
+                <span key={x.t} className="flex items-center gap-2 text-[13px] font-medium">
+                  <x.icon className="w-4 h-4 text-amber" /> {x.t}
+                </span>
+              ))}
             </div>
+          </Reveal>
+        </div>
 
-            <div className="p-3 bg-white/5 border border-white/5 rounded-2xl mt-4">
-              <svg viewBox="0 0 260 100" className="w-full h-20">
-                <rect x="10" y="5" width="45" height="18" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
-                <text x="32" y="16" fill="#94a3b8" fontSize="7" textAnchor="middle">PDF Doc</text>
-
-                <rect x="10" y="40" width="45" height="18" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
-                <text x="32" y="51" fill="#94a3b8" fontSize="7" textAnchor="middle">TXT Sheet</text>
-
-                <rect x="10" y="75" width="45" height="18" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
-                <text x="32" y="86" fill="#94a3b8" fontSize="7" textAnchor="middle">URL Link</text>
-
-                <circle cx="130" cy="50" r="20" fill="rgba(6,182,212,0.1)" stroke="rgba(6,182,212,0.3)" />
-                <text x="130" y="52" fill="#22d3ee" fontSize="7" textAnchor="middle" fontWeight="bold">Chunker</text>
-
-                <rect x="200" y="37" width="50" height="26" rx="4" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.4)" />
-                <text x="225" y="52" fill="#22d3ee" fontSize="8" textAnchor="middle" fontWeight="bold">Vector DB</text>
-
-                <path d="M 55 14 L 110 40" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
-                <path d="M 55 49 L 110 49" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
-                <path d="M 55 84 L 110 60" fill="none" stroke="#22d3ee" strokeWidth="1" className="flow-line-animated" />
-                <path d="M 150 49 L 200 49" fill="none" stroke="#22d3ee" strokeWidth="1.5" className="flow-line-animated" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Card 3: WhatsApp Linker (Ch 3) - col-span-1 */}
-          <div className="p-8 rounded-3xl gradient-border-card feature-card-emerald flex flex-col justify-between h-[380px] group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-xl">
-                  <Scan className="w-4 h-4 text-emerald-400" />
-                  <span className="text-[10px] font-bold tracking-wider text-emerald-300 uppercase">WhatsApp Gateway</span>
-                </div>
-                <span className="text-[9px] font-mono bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">Business Pro</span>
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2 tracking-tight">WhatsApp Linkage</h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                Link customer contacts instantly by scanning QR codes. Automate client chat sessions on secure webhook nodes.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex items-center gap-4 mt-4">
-              <div className="relative w-14 h-14 bg-white p-1 rounded-xl flex-shrink-0">
-                <div className="w-full h-full bg-slate-900 rounded-lg flex flex-col justify-between p-1">
-                  <div className="flex justify-between">
-                    <div className="w-3.5 h-3.5 border border-white rounded-xs" />
-                    <div className="w-3.5 h-3.5 border border-white rounded-xs" />
-                  </div>
-                  <div className="flex justify-between items-end">
-                    <div className="w-3.5 h-3.5 border border-white rounded-xs" />
-                    <div className="w-2.5 h-2.5 bg-white rounded-xs" />
-                  </div>
-                </div>
-                {!isWALinked && (
-                  <motion.div
-                    className="absolute left-0 inset-x-0 h-0.5 bg-emerald-400 shadow-md"
-                    animate={{ top: ['4px', '52px', '4px'] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`w-1.5 h-1.5 rounded-full ${isWALinked ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-                  <span className="text-[9px] font-mono font-bold text-slate-300 truncate">
-                    {isWALinked ? 'Gateway Linked' : 'Awaiting QR Scan'}
-                  </span>
-                </div>
-                <button
-                  onClick={() => setIsWALinked(!isWALinked)}
-                  className={`w-full py-1.5 px-3 rounded-lg text-[9px] font-extrabold border transition-all truncate ${
-                    isWALinked
-                      ? 'bg-transparent border-slate-700 text-slate-400 hover:text-slate-200'
-                      : 'bg-emerald-500 hover:bg-emerald-600 border-transparent text-white shadow-lg'
-                  }`}
-                >
-                  {isWALinked ? 'Disconnect' : 'Scan Test QR'}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 4: Web widget Customizer (Ch 4) - col-span-2 */}
-          <div className="md:col-span-2 p-8 rounded-3xl gradient-border-card feature-card-purple flex flex-col justify-between h-[380px] group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-xl">
-                  <Smartphone className="w-4 h-4 text-purple-400" />
-                  <span className="text-[10px] font-bold tracking-wider text-purple-300 uppercase">Chat Widget</span>
-                </div>
-                <span className="text-[9px] font-mono bg-purple-500/25 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">Standard</span>
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Embedded Web Chat Widget</h3>
-              <p className="text-xs text-slate-400 max-w-lg leading-relaxed font-medium">
-                Configure brand identities, colors, and layout components. Embed a lightweight floating chat widget into client applications with a single line of code.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center mt-6">
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-[9px] text-slate-500 font-extrabold uppercase tracking-wider block">Widget Theme</label>
-                  <div className="flex gap-2">
-                    {['#06b6d4', '#d946ef', '#10b981', '#f59e0b', '#f43f5e'].map((col) => (
-                      <button
-                        key={col}
-                        className="w-5 h-5 rounded-full border border-white/10 transition-transform hover:scale-110 flex items-center justify-center"
-                        style={{ backgroundColor: col }}
-                        onClick={() => setWidgetColor(col)}
-                      >
-                        {widgetColor === col && <Check className="w-3 h-3 text-white" />}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="p-3 bg-white/5 border border-white/5 rounded-2xl text-[9px] text-slate-500 leading-normal">
-                  💡 Dynamic updates reflect instantly on the interactive sandbox widget preview panel.
-                </div>
-              </div>
-
-              {/* Chat widget preview */}
-              <div className="bg-slate-950 p-4 rounded-2xl border border-white/10 flex flex-col justify-between h-[130px] shadow-inner">
-                <div className="flex items-center justify-between pb-2 border-b border-white/5">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] text-white" style={{ backgroundColor: widgetColor }}>
-                      🤖
-                    </div>
-                    <span className="text-[9px] font-bold text-white">Digital Twin Support</span>
-                  </div>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                </div>
-                <div className="flex-1 flex flex-col gap-1 justify-end py-2">
-                  <div className="bg-white/5 border border-white/5 px-2 py-1 rounded-xl text-[8px] text-slate-300 self-start max-w-[85%]">
-                    Hello! Ask me anything.
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="flex-1 h-6 bg-white/5 rounded-full border border-white/10 px-2 flex items-center">
-                    <span className="text-[8px] text-slate-500">Ask a question...</span>
-                  </div>
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: widgetColor }}>
-                    <ArrowRight className="w-3 h-3" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 5: Analytics (Ch 5) - col-span-1 */}
-          <div className="p-8 rounded-3xl gradient-border-card feature-card-amber flex flex-col justify-between h-[380px] group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-xl">
-                  <BarChart3 className="w-4 h-4 text-amber-400" />
-                  <span className="text-[10px] font-bold tracking-wider text-amber-300 uppercase">Analytics</span>
-                </div>
-                <span className="text-[9px] font-mono bg-amber-500/25 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">Standard</span>
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Analytical Reporting</h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                Track resolution index rates, response latency statistics, and active monthly message telemetry indexes.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-3 mt-4">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="bg-slate-900/60 p-1.5 rounded-lg border border-white/5 text-center">
-                  <span className="text-[8px] text-slate-500 block uppercase">Accuracy</span>
-                  <span className="text-xs font-black text-amber-400">99.4%</span>
-                </div>
-                <div className="bg-slate-900/60 p-1.5 rounded-lg border border-white/5 text-center">
-                  <span className="text-[8px] text-slate-500 block uppercase">Latency</span>
-                  <span className="text-xs font-black text-amber-400">85ms</span>
-                </div>
-              </div>
-              <div className="h-10 flex items-end justify-between px-1">
-                {[45, 62, 55, 78, 92, 98].map((h, i) => (
-                  <div key={i} className="w-4 bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-sm" style={{ height: `${h}%` }} />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Card 6: Route Security Gate (Ch 6) - col-span-3 */}
-          <div className="md:col-span-2 lg:col-span-3 p-8 rounded-3xl gradient-border-card feature-card-indigo flex flex-col lg:flex-row justify-between lg:items-center gap-6 group relative overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-md">
-            <div className="lg:max-w-md">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 px-3 py-1 rounded-xl">
-                  <Shield className="w-4 h-4 text-indigo-400" />
-                  <span className="text-[10px] font-bold tracking-wider text-indigo-300 uppercase">Security Gate</span>
-                </div>
-                <span className="text-[9px] font-mono bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-lg uppercase font-bold">System-wide</span>
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Route Gating Guard</h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                Secure your workspace nodes. Standard subscription keys are automatically blocked from premium endpoints to prevent query abuse.
-              </p>
-            </div>
-
-            <div className="flex-1 max-w-md p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-3">
-              <div className="flex justify-between items-center gap-2">
-                <button
-                  onClick={() => addGateLog('Standard', 403)}
-                  className="flex-1 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-[9px] font-bold text-amber-300 hover:bg-amber-500/20 transition-all text-center"
-                >
-                  Simulate Standard Key
-                </button>
-                <button
-                  onClick={() => addGateLog('Business Pro', 200)}
-                  className="flex-1 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-[9px] font-bold text-emerald-300 hover:bg-emerald-500/20 transition-all text-center"
-                >
-                  Simulate Pro Key
-                </button>
-              </div>
-
-              <div className="space-y-1.5 font-mono text-[8px] bg-slate-950 p-2.5 rounded-xl border border-white/5">
-                {gateLog.map((log, idx) => (
-                  <div key={idx} className="flex justify-between items-center py-0.5 border-b border-white/5 last:border-0">
-                    <span className="text-indigo-400">{log.method} {log.endpoint}</span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-slate-500">[{log.role}]</span>
-                      <span className={log.status === 200 ? 'text-emerald-400' : 'text-rose-400'}>
-                        {log.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        {/* live embed terminal */}
+        <div className="lg:col-span-6">
+          <HeroTerminal />
         </div>
       </div>
     </section>
   );
 };
 
-// Premium How It Works Timeline Flow
-const HowItWorks = () => {
+/* =============================================================================
+   LOGO / TRUST STRIP — continuous, no boxes
+   ============================================================================= */
+const TrustStrip = () => {
+  const items = ['Restaurants', 'Clinics', 'Boutiques', 'Real estate', 'Gyms', 'Salons', 'Cafés', 'Agencies', 'Coaching', 'E-commerce'];
+  const row = [...items, ...items];
+  return (
+    <div className="relative z-10 py-9 border-y" style={{ borderColor: 'rgba(247,243,236,0.06)' }}>
+      <p className="text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-paper/35 mb-6">
+        Quietly answering customers for businesses like
+      </p>
+      <div className="marquee-mask overflow-hidden">
+        <div className="marquee-track gap-10">
+          {row.map((t, i) => (
+            <span key={i} className="whitespace-nowrap text-lg font-semibold text-paper/30 flex items-center gap-10">
+              {t}
+              <span className="w-1 h-1 rounded-full bg-amber/50" />
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* =============================================================================
+   HOW IT WORKS — a continuous VERTICAL spine (not cards). A single line runs
+   down the center; steps alternate; an SVG path connects everything.
+   ============================================================================= */
+const Spine = () => {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 70%', 'end 60%'] });
+  const height = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+
   const steps = [
     {
-      step: '01',
-      title: 'Knowledge Ingest',
-      subtitle: 'Upload documents or site links',
-      description: 'Upload PDF guides, text sheets, or website URLs. The vectorizer parses and tokenizes raw content into cognitive indexes instantly.',
-      badge: 'Database Synced'
+      n: '01', icon: BookOpen, accent: '#F5A623',
+      title: 'It reads your business',
+      body: 'Paste your website link, drop a PDF menu or price list, or type your FAQs. Askly studies it all and learns exactly how you answer customers.',
     },
     {
-      step: '02',
-      title: 'Neural Fine-Tuning',
-      subtitle: 'Prompt tuning & voice synthesis',
-      description: 'Configure specific prompt rules, constraints, and record a 10-second voice clip to synchronize speaking tone, speed, and cadence.',
-      badge: 'Synthesizer Synced'
+      n: '02', icon: Palette, accent: '#FF6B5E',
+      title: 'You style it in a click',
+      body: 'Pick a brand colour, a greeting, and a tone — warm, professional, or playful. A preview updates live as you go. No designer needed.',
     },
     {
-      step: '03',
-      title: 'Live Omnichannel API',
-      subtitle: 'Deploy to Web chat & WhatsApp',
-      description: 'Inject a single-line script on your site or scan a WhatsApp QR code to link devices. Your digital twin auto-replies to clients immediately.',
-      badge: 'Autonomous Active'
-    }
+      n: '03', icon: PlugZap, accent: '#9AB39A',
+      title: 'You paste one line',
+      body: 'Copy a single <script> tag into your site’s HTML — once. The assistant appears as a chat bubble and starts answering the moment the page loads.',
+    },
   ];
 
   return (
-    <section className="relative py-28 z-10 overflow-hidden" style={{ background: 'rgba(0,212,255,0.015)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-      <div className="max-w-7xl mx-auto px-6">
-
-        {/* Title */}
-        <div className="text-center mb-20">
-          <span className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: '#00D4FF' }}>Workflow Map</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-black text-white tracking-tight">
-            How Your Digital Twin is Created
+    <section className="relative py-28 z-10" style={{ borderTop: '1px solid rgba(247,243,236,0.05)' }}>
+      <div className="max-w-3xl mx-auto px-6 text-center mb-20">
+        <Reveal>
+          <span className="text-xs font-bold uppercase tracking-[0.24em] text-amber">How it works</span>
+          <h2 className="mt-4 text-4xl sm:text-5xl font-black text-paper tracking-[-0.03em] leading-[1.05]">
+            From zero to live in <span className="font-editorial italic font-medium text-paper/70">three moves.</span>
           </h2>
-          <p className="mt-4 max-w-md mx-auto text-sm font-normal" style={{ color: 'rgba(255,255,255,0.45)' }}>
-            A simple three-step deployment pipeline from ingestion to deployment.
-          </p>
-        </div>
+        </Reveal>
+      </div>
 
-        {/* Steps Grid connection line */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative items-stretch">
-          {/* Horizontal connection line behind cards on large screens */}
-          <div className="hidden lg:block absolute top-[52px] left-[15%] right-[15%] h-[1px] bg-gradient-to-r from-transparent via-slate-800 to-transparent -z-10" />
+      <div ref={ref} className="relative max-w-4xl mx-auto px-6">
+        {/* spine track */}
+        <div className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 hidden md:block" style={{ background: 'rgba(247,243,236,0.08)' }} />
+        <motion.div
+          className="absolute left-1/2 top-0 w-px -translate-x-1/2 hidden md:block"
+          style={{ height, background: 'linear-gradient(180deg,#FFC56B,#F5A623,#FF6B5E)' }}
+        />
 
-          {steps.map((step, i) => (
-            <motion.div
-              key={step.step}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15, duration: 0.6 }}
-              className="relative"
-            >
-              <div className={`p-8 rounded-2xl h-full flex flex-col justify-between overflow-hidden gradient-border-card ${
-                i === 0 ? 'feature-card-cyan' : i === 1 ? 'feature-card-purple' : 'feature-card-emerald'
-              }`}
-                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)' }}>
-                <div>
-                  <div className="flex justify-between items-center">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center border font-mono text-base font-bold ${
-                      i === 0
-                        ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)]'
-                        : i === 1
-                          ? 'bg-purple-500/10 border-purple-500/20 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.15)]'
-                          : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
-                    }`}>
-                      {step.step}
-                    </div>
-                    <span className={`text-[8px] font-mono font-bold border px-2.5 py-1 rounded-lg uppercase ${
-                      i === 0
-                        ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
-                        : i === 1
-                          ? 'bg-purple-500/10 border-purple-500/20 text-purple-400'
-                          : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                    }`}>{step.badge}</span>
+        <div className="flex flex-col gap-16 md:gap-4">
+          {steps.map((s, i) => {
+            const left = i % 2 === 0;
+            return (
+              <Reveal key={s.n} delay={i * 0.05}>
+                <div className={`relative flex flex-col md:flex-row items-center ${left ? '' : 'md:flex-row-reverse'} gap-6`}>
+                  {/* text half */}
+                  <div className={`flex-1 ${left ? 'md:text-right md:pr-14' : 'md:text-left md:pl-14'} text-center`}>
+                    <span className="font-editorial italic text-6xl font-medium" style={{ color: s.accent, opacity: 0.25 }}>{s.n}</span>
+                    <h3 className="mt-1 text-2xl font-bold text-paper tracking-tight">{s.title}</h3>
+                    <p className="mt-3 text-[15px] text-paper/55 leading-relaxed max-w-sm md:inline-block" style={{ marginLeft: left ? 'auto' : 0 }}>{s.body}</p>
                   </div>
-
-                  <h3 className="mt-6 text-xl font-bold text-white tracking-tight">{step.title}</h3>
-                  <span className="block text-[10px] uppercase tracking-widest mt-0.5 font-bold" style={{ color: 'rgba(255,255,255,0.3)' }}>{step.subtitle}</span>
-
-                  <p className="mt-4 text-xs leading-relaxed font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                    {step.description}
-                  </p>
+                  {/* node */}
+                  <div className="relative z-10 flex-shrink-0">
+                    <motion.div
+                      whileInView={{ scale: [0.6, 1.1, 1] }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, ease: EASE }}
+                      className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                      style={{ background: `${s.accent}16`, border: `1.5px solid ${s.accent}55`, color: s.accent }}
+                    >
+                      <s.icon className="w-7 h-7" />
+                    </motion.div>
+                  </div>
+                  {/* spacer half */}
+                  <div className="flex-1 hidden md:block" />
                 </div>
+              </Reveal>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* =============================================================================
+   LIVE CONVERSATION BAND — a single, full-bleed split. Left: a real-feeling
+   chat that plays through industries. Right: editorial copy. Not a card grid.
+   ============================================================================= */
+const CONVOS = [
+  { tag: 'Restaurant', q: 'Do you have gluten-free pizza? Table for 4 at 8?', a: "Yes — all our wood-fired pizzas come gluten-free 🍕. I've held a table for 4 at 8:00 PM under your name. See you then!" },
+  { tag: 'Dental clinic', q: 'Any emergency slot today? What are your hours?', a: "We're open 9 AM–8 PM daily. I can fit you into a 4:30 PM emergency slot today — shall I confirm it?" },
+  { tag: 'Boutique', q: 'Do you ship internationally and how are returns?', a: 'We ship worldwide — free over ₹8,000 ✈️. Returns are free within 14 days, no questions asked.' },
+  { tag: 'Gym', q: 'Monthly membership price? Personal training?', a: 'Memberships start at ₹1,499/mo, and yes — certified coaches build custom plans. Want a free day pass?' },
+];
+
+const ConversationBand = () => {
+  const [idx, setIdx] = useState(0);
+  const [msgs, setMsgs] = useState([]);
+  const [typing, setTyping] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const run = async () => {
+      let i = 0;
+      while (alive) {
+        const c = CONVOS[i % CONVOS.length];
+        setIdx(i % CONVOS.length);
+        setMsgs([{ r: 'u', t: c.q }]);
+        await sleep(1100); if (!alive) break;
+        setTyping(true);
+        await sleep(1400); if (!alive) break;
+        setTyping(false);
+        setMsgs([{ r: 'u', t: c.q }, { r: 'b', t: c.a }]);
+        await sleep(3600); if (!alive) break;
+        setMsgs([]);
+        await sleep(500);
+        i++;
+      }
+    };
+    run();
+    return () => { alive = false; };
+  }, []);
+
+  return (
+    <section className="relative py-28 z-10 overflow-hidden" style={{ background: 'rgba(0,0,0,0.22)', borderTop: '1px solid rgba(247,243,236,0.05)' }}>
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        {/* chat (no outer card — it's a bare, branded chat surface) */}
+        <Reveal>
+          <div className="relative max-w-md mx-auto w-full">
+            <div className="flex items-center gap-3 mb-5 pl-1">
+              <div className="w-11 h-11 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#FFC56B,#F5A623,#FF6B5E)' }}>
+                <BotMark size={26} talking />
               </div>
-            </motion.div>
+              <div>
+                <p className="text-sm font-bold text-paper leading-none">Askly assistant</p>
+                <p className="text-[11px] text-sage font-semibold mt-1 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sage live-dot" /> typically replies instantly
+                </p>
+              </div>
+              <span className="ml-auto text-[10px] font-mono px-2.5 py-1 rounded-full text-paper/50" style={{ background: 'rgba(247,243,236,0.05)' }}>
+                {CONVOS[idx].tag}
+              </span>
+            </div>
+
+            <div className="min-h-[210px] flex flex-col justify-end gap-3">
+              <AnimatePresence mode="popLayout">
+                {msgs.map((m, k) => (
+                  <motion.div
+                    key={`${idx}-${k}`}
+                    initial={{ opacity: 0, y: 14, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.94 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                    className={`max-w-[88%] text-[13.5px] leading-relaxed px-4 py-2.5 rounded-2xl ${
+                      m.r === 'u'
+                        ? 'self-end text-[#0B0A09] rounded-br-md font-semibold'
+                        : 'self-start text-paper/90 rounded-bl-md font-medium'
+                    }`}
+                    style={m.r === 'u'
+                      ? { background: 'linear-gradient(120deg,#FFC56B,#F5A623)' }
+                      : { background: 'rgba(247,243,236,0.06)', border: '1px solid rgba(247,243,236,0.1)' }}
+                  >
+                    {m.t}
+                  </motion.div>
+                ))}
+                {typing && (
+                  <motion.div
+                    key="typing"
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="self-start px-4 py-3 rounded-2xl rounded-bl-md flex gap-1.5"
+                    style={{ background: 'rgba(247,243,236,0.06)', border: '1px solid rgba(247,243,236,0.1)' }}
+                  >
+                    {[0, 0.15, 0.3].map((d, i) => (
+                      <motion.span key={i} className="w-1.5 h-1.5 rounded-full bg-amber"
+                        animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
+                        transition={{ repeat: Infinity, duration: 0.7, delay: d }} />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div className="mt-5 flex items-center gap-2.5">
+              <div className="flex-1 h-11 rounded-full flex items-center px-4 text-[13px] text-paper/35" style={{ background: 'rgba(247,243,236,0.04)', border: '1px solid rgba(247,243,236,0.09)' }}>
+                Ask anything…
+              </div>
+              <div className="w-11 h-11 rounded-full flex items-center justify-center text-[#0B0A09]" style={{ background: 'linear-gradient(120deg,#FFC56B,#F5A623)' }}>
+                <ArrowRight className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* copy */}
+        <Reveal delay={0.1}>
+          <div>
+            <span className="text-xs font-bold uppercase tracking-[0.24em] text-amber">Real conversations</span>
+            <h2 className="mt-4 text-4xl sm:text-5xl font-black text-paper tracking-[-0.03em] leading-[1.05]">
+              It talks like a teammate — <span className="font-editorial italic font-medium text-paper/70">not a bot.</span>
+            </h2>
+            <p className="mt-6 text-base text-paper/55 leading-relaxed max-w-lg">
+              Askly understands intent, not just keywords. It pulls the right answer from your own content,
+              keeps context across the chat, and switches between English and Hindi the moment a customer does.
+            </p>
+            <ul className="mt-8 space-y-4">
+              {[
+                'Books, quotes, and captures leads inside the chat',
+                'Hands off to a human the instant it’s unsure',
+                'Remembers what was said earlier in the conversation',
+              ].map((t) => (
+                <li key={t} className="flex items-start gap-3 text-[15px] text-paper/75">
+                  <span className="mt-1 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(154,179,154,0.18)' }}>
+                    <Check className="w-3 h-3 text-sage" />
+                  </span>
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+};
+
+/* =============================================================================
+   CAPABILITIES — a continuous editorial list, NOT a card grid. Each row is a
+   full-width band split into an icon-label rail and a description, divided by
+   thin rules. Reads like a beautifully typeset spec sheet.
+   ============================================================================= */
+const Capabilities = () => {
+  const rows = [
+    { icon: BookOpen, accent: '#F5A623', k: 'Knows your business', d: 'Feed it your site, PDFs, price lists and FAQs. It answers from your real content — never makes things up.' },
+    { icon: Languages, accent: '#9AB39A', k: 'English & Hindi, fluently', d: 'Replies naturally in both languages and switches mid-conversation to match each customer.' },
+    { icon: MessagesSquare, accent: '#FF6B5E', k: 'Captures every lead', d: 'Collects names, numbers and intent right inside the chat, then drops them straight into your dashboard.' },
+    { icon: Palette, accent: '#FFC56B', k: 'Matches your brand', d: 'Set the colour, greeting and avatar. The widget feels like part of your site — not a bolted-on bot.' },
+    { icon: BarChart3, accent: '#C98BFF', k: 'Shows you what works', d: 'See top questions, busiest hours, and where customers get stuck — so you can fix gaps fast.' },
+    { icon: ShieldCheck, accent: '#9AB39A', k: 'Private by default', d: 'Your knowledge stays isolated to your workspace. Review or delete it anytime — it’s yours.' },
+  ];
+
+  return (
+    <section id="features" className="relative py-28 z-10" style={{ borderTop: '1px solid rgba(247,243,236,0.05)' }}>
+      <div className="max-w-5xl mx-auto px-6">
+        <Reveal className="max-w-2xl mb-14">
+          <span className="text-xs font-bold uppercase tracking-[0.24em] text-amber">What it does</span>
+          <h2 className="mt-4 text-4xl sm:text-5xl font-black text-paper tracking-[-0.03em] leading-[1.05]">
+            Everything you'd hire a support rep for — <span className="font-editorial italic font-medium text-paper/70">handled.</span>
+          </h2>
+        </Reveal>
+
+        <div style={{ borderTop: '1px solid rgba(247,243,236,0.08)' }}>
+          {rows.map((r, i) => (
+            <Reveal key={r.k} delay={i * 0.04}>
+              <div className="group grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-8 items-center py-7 transition-colors"
+                style={{ borderBottom: '1px solid rgba(247,243,236,0.08)' }}>
+                <div className="md:col-span-5 flex items-center gap-4">
+                  <span className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:-rotate-6 group-hover:scale-110"
+                    style={{ background: `${r.accent}16`, border: `1px solid ${r.accent}40`, color: r.accent }}>
+                    <r.icon className="w-5 h-5" />
+                  </span>
+                  <h3 className="text-lg font-bold text-paper tracking-tight">{r.k}</h3>
+                </div>
+                <p className="md:col-span-7 text-[15px] text-paper/55 leading-relaxed">{r.d}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -1473,1248 +612,188 @@ const HowItWorks = () => {
   );
 };
 
-const UserGuideMindmap = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-
-  // Form states to make the user guide interactive
-  const [workspaceName, setWorkspaceName] = useState("Amit's Coffee Shop");
-  const [workspaceWebsite, setWorkspaceWebsite] = useState("amitcoffeeshop.com");
-  const [twinName, setTwinName] = useState("Coffee Guide");
-  const [twinTone, setTwinTone] = useState("Friendly");
-  const [isTwinActive, setIsTwinActive] = useState(true);
+/* =============================================================================
+   THE ONE-LINER — full-bleed feature band with copy-to-clipboard. The product's
+   core promise, front and center.
+   ============================================================================= */
+const OneLiner = () => {
   const [copied, setCopied] = useState(false);
-  const [ingestedFiles, setIngestedFiles] = useState([]);
-  const [ingestProgress, setIngestProgress] = useState(0);
-  const [isIngesting, setIsIngesting] = useState(false);
-
-  const [ragQuery, setRagQuery] = useState("");
-  const [ragPhase, setRagPhase] = useState("idle"); // idle | vectorizing | searching | retrieving | synthesizing | done
-  const [ragOutput, setRagOutput] = useState("");
-  const [ragSource, setRagSource] = useState("");
-  const [ragConfidence, setRagConfidence] = useState("");
-
-  // Simulated Lead Generation states for sandbox guide
-  const [simulatedLeads, setSimulatedLeads] = useState([]);
-  const [showLeadWidget, setShowLeadWidget] = useState(false);
-  const [leadFormName, setLeadFormName] = useState("");
-  const [leadFormEmail, setLeadFormEmail] = useState("");
-  const [leadFormPhone, setLeadFormPhone] = useState("");
-  const [leadSubmitted, setLeadSubmitted] = useState(false);
-
-  const steps = [
-    {
-      id: "auth",
-      label: "1. Signup & Login",
-      title: "User Registers & Authenticates",
-      description: "First, the user creates an account and logs into the secure digital twin builder dashboard.",
-      icon: <Lock className="w-5 h-5 text-rose-400" />,
-      x: 250,
-      y: 70
-    },
-    {
-      id: "plan",
-      label: "2. Plan Selection",
-      title: "Activate Standard Subscription",
-      description: "Select the Standard Tier at ₹1299/month (Launch Offer, originally ₹1599) to enable custom AI twins, vector indexes, and widget scripts.",
-      icon: <CreditCard className="w-5 h-5 text-indigo-400" />,
-      x: 250,
-      y: 170
-    },
-    {
-      id: "workspace",
-      label: "3. Workspace Setup",
-      title: "Register Business Workspace",
-      description: "Enter your business name and website directory URL to initialize a multi-tenant workspace.",
-      icon: <Briefcase className="w-5 h-5 text-cyan-400" />,
-      x: 250,
-      y: 270
-    },
-    {
-      id: "details",
-      label: "4. Train AI Twin",
-      title: "Specify Character & Knowledge",
-      description: "Customize your twin name, set its response tone, and upload documentation (PDF, TXT) or enter URLs.",
-      icon: <Settings className="w-5 h-5 text-emerald-400" />,
-      x: 130,
-      y: 395
-    },
-    {
-      id: "activate",
-      label: "5. Activation Switch",
-      title: "Synchronize & Activate Twin",
-      description: "Once knowledge is synchronized, toggle your twin online to start processing live request threads.",
-      icon: <Power className="w-5 h-5 text-amber-400" />,
-      x: 130,
-      y: 515
-    },
-    {
-      id: "script",
-      label: "6. Embed Script",
-      title: "Copy Lightweight Widget Script",
-      description: "Copy the single-line integration script and paste it into your local project website directory.",
-      icon: <Code2 className="w-5 h-5 text-purple-400" />,
-      x: 370,
-      y: 395
-    },
-    {
-      id: "live",
-      label: "7. Go Live!",
-      title: "Twin Live on Your Website",
-      description: "The digital twin script activates immediately, displaying a sleek floating widget on your website.",
-      icon: <Globe className="w-5 h-5 text-pink-400" />,
-      x: 370,
-      y: 515
-    },
-    {
-      id: "rag",
-      label: "8. Live Database Query",
-      title: "Input Query to Output Retrieval",
-      description: "Type or click a question to trace the live vector-matching search loop and retrieve output from the DB.",
-      icon: <Database className="w-5 h-5 text-teal-400" />,
-      x: 250,
-      y: 640
-    }
-  ];
-
-  const handleCopyScript = () => {
+  const copy = () => {
+    navigator.clipboard?.writeText(SCRIPT_LINE).catch(() => {});
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 1800);
   };
-
-  const handleSimulateIngestion = () => {
-    setIsIngesting(true);
-    setIngestProgress(0);
-    const interval = setInterval(() => {
-      setIngestProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsIngesting(false);
-          setIngestedFiles(["pricing_menu.pdf", "timings_guide.txt"]);
-          return 100;
-        }
-        return prev + 25;
-      });
-    }, 450);
-  };
-
-  const handleRagSearch = (queryText) => {
-    setRagQuery(queryText);
-    setRagPhase("vectorizing");
-    setRagOutput("");
-    setRagSource("");
-    setRagConfidence("");
-
-    setTimeout(() => {
-      setRagPhase("searching");
-      setTimeout(() => {
-        setRagPhase("retrieving");
-        setTimeout(() => {
-          setRagPhase("synthesizing");
-          setTimeout(() => {
-            setRagPhase("done");
-            const q = queryText.toLowerCase();
-            if (q.includes("mocha") || q.includes("ice") || q.includes("drink") || q.includes("price") || q.includes("cost") || q.includes("menu")) {
-              setRagOutput(`"Yes, we serve delicious Iced Mocha for ₹120. We also have Espresso (₹80) and Cappuccino (₹100) on our menu."`);
-              setRagSource("pricing_menu.pdf (Chunk 2, Lines 12-16)");
-              setRagConfidence("98.8% Cosine Similarity Match");
-            } else if (q.includes("time") || q.includes("timing") || q.includes("open") || q.includes("close")) {
-              setRagOutput(`"Our coffee shop is open daily from 8 AM to 10 PM, Monday through Sunday."`);
-              setRagSource("timings_guide.txt (Chunk 1, Lines 3-5)");
-              setRagConfidence("96.5% Cosine Similarity Match");
-            } else if (q.includes("delivery") || q.includes("home") || q.includes("order")) {
-              setRagOutput(`"Yes! We offer home delivery within a 5km radius of our coffee shop. Delivery is free for orders above ₹300."`);
-              setRagSource("pricing_menu.pdf (Chunk 4, Lines 22-25)");
-              setRagConfidence("97.2% Cosine Similarity Match");
-            } else {
-              setRagOutput(`"Hello! I am ${twinName}, Amit's AI Digital Twin. I can assist you with our menu prices, operating hours, and ordering options."`);
-              setRagSource("general_context.docx (Chunk 1, Line 2)");
-              setRagConfidence("89.4% Generic Match");
-            }
-          }, 800);
-        }, 800);
-      }, 800);
-    }, 800);
-  };
-
-  const renderSvgMindmap = () => {
-    return (
-      <svg viewBox="0 0 500 720" className="w-full h-auto overflow-visible select-none my-auto">
+  return (
+    <section className="relative py-28 z-10 overflow-hidden" style={{ background: 'rgba(245,166,35,0.025)', borderTop: '1px solid rgba(247,243,236,0.05)', borderBottom: '1px solid rgba(247,243,236,0.05)' }}>
+      {/* ambient line-art constellation behind */}
+      <svg className="absolute inset-0 w-full h-full opacity-[0.06] pointer-events-none" preserveAspectRatio="none">
         <defs>
-          {/* Active Glowing Flow Gradient (Vertical Flow) */}
-          <linearGradient id="active-glow-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#ec4899" />
-            <stop offset="50%" stopColor="#a855f7" />
-            <stop offset="100%" stopColor="#6366f1" />
-          </linearGradient>
-          {/* Completed Channel Flow Gradient (Vertical Flow) */}
-          <linearGradient id="completed-glow-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#10b981" />
-            <stop offset="100%" stopColor="#059669" />
-          </linearGradient>
-          
-          {/* Faint Dot Grid Pattern */}
-          <pattern id="dot-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-            <circle cx="1.5" cy="1.5" r="0.75" fill="rgba(255, 255, 255, 0.05)" />
+          <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1.2" fill="#F5A623" />
           </pattern>
         </defs>
-
-        {/* Faint Dot Grid Background */}
-        <rect width="100%" height="100%" fill="url(#dot-grid)" rx="16" />
-
-        {/* Bezier and Linear connection paths */}
-        {(() => {
-          const getLinkStatus = (fromIdx, toIdx) => {
-            if (currentStep >= toIdx) return "completed";
-            if (currentStep >= fromIdx && currentStep < toIdx) return "active";
-            return "pending";
-          };
-          
-          const guideLinks = [
-            { from: 0, to: 1, d: "M 250 70 L 250 170" },
-            { from: 1, to: 2, d: "M 250 170 L 250 270" },
-            { from: 2, to: 3, d: "M 250 270 C 250 320, 130 345, 130 395" },
-            { from: 2, to: 5, d: "M 250 270 C 250 320, 370 345, 370 395" },
-            { from: 3, to: 4, d: "M 130 395 L 130 515" },
-            { from: 5, to: 6, d: "M 370 395 L 370 515" },
-            { from: 4, to: 7, d: "M 130 515 C 130 565, 250 590, 250 640" },
-            { from: 6, to: 7, d: "M 370 515 C 370 565, 250 590, 250 640" }
-          ];
-
-          return guideLinks.map((link, lIdx) => {
-            const status = getLinkStatus(link.from, link.to);
-            const isCompleted = status === "completed";
-            const isActive = status === "active";
-            
-            return (
-              <g key={lIdx}>
-                {/* Background backing line */}
-                <path
-                  d={link.d}
-                  fill="none"
-                  stroke={isCompleted ? "rgba(16, 185, 129, 0.45)" : isActive ? "rgba(244, 63, 94, 0.15)" : "rgba(255, 255, 255, 0.04)"}
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                />
-                {/* Animated glowing flow path (only on the active path) */}
-                {isActive && (
-                  <path
-                    d={link.d}
-                    fill="none"
-                    stroke="url(#active-glow-grad)"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    strokeDasharray="10 25"
-                    className="animate-pulse-flow"
-                    style={{
-                      animationDuration: '2.2s'
-                    }}
-                  />
-                )}
-              </g>
-            );
-          });
-        })()}
-
-        {/* Node circle icons & text labels */}
-        {steps.map((step, idx) => {
-          const isActive = currentStep === idx;
-          const isCompleted = idx < currentStep;
-          
-          const themeGlowClass = 
-            idx === 0 || idx === 6 ? 'group-hover:shadow-[0_0_15px_rgba(244,63,94,0.3)]' : // pink/rose
-            idx === 1 || idx === 5 ? 'group-hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]' : // indigo/purple
-            idx === 2 ? 'group-hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]' : // cyan
-            idx === 3 ? 'group-hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]' : // emerald
-            idx === 4 ? 'group-hover:shadow-[0_0_15px_rgba(245,158,11,0.3)]' : // amber
-            'group-hover:shadow-[0_0_15px_rgba(20,184,166,0.3)]'; // teal
-            
-          return (
-            <foreignObject 
-              key={step.id} 
-              x={step.x - 70} 
-              y={step.y - 65} 
-              width="140" 
-              height="130"
-              className="overflow-visible"
-            >
-              <div 
-                onClick={() => setCurrentStep(idx)}
-                className="flex flex-col items-center justify-center w-full h-full group cursor-pointer"
-              >
-                <div className="relative flex items-center justify-center">
-                  {/* Pulsing ring behind the active node */}
-                  {isActive && (
-                    <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-rose-500 to-indigo-500 opacity-75 blur-sm animate-pulse-opacity" />
-                  )}
-
-                  {/* Icon Container Circle */}
-                  <div className={`w-14 h-14 rounded-full flex items-center justify-center border z-10 transition-all duration-300 ${
-                    isActive
-                      ? 'bg-slate-955 border-transparent text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.45)] scale-110'
-                      : isCompleted
-                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                        : `bg-slate-900 border-white/5 text-slate-400 group-hover:border-white/20 group-hover:text-white group-hover:bg-slate-800 ${themeGlowClass}`
-                  }`}>
-                    {step.icon}
-                  </div>
-
-                  {/* Check badge when completed */}
-                  {isCompleted && (
-                    <div className="absolute -top-1 -right-1 w-5.5 h-5.5 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center border border-slate-950 z-20 shadow-[0_0_8px_rgba(16,185,129,0.5)]">
-                      <Check className="w-3 h-3 stroke-[3.5]" />
-                    </div>
-                  )}
-                </div>
-
-                {/* Node Text Title */}
-                <span className={`mt-3 text-[10px] font-black text-center tracking-wider transition-colors font-sans uppercase ${
-                  isActive 
-                    ? 'text-white' 
-                    : 'text-slate-500 group-hover:text-slate-350'
-                }`}>
-                  {step.label.split(". ")[1]}
-                </span>
-              </div>
-            </foreignObject>
-          );
-        })}
+        <rect width="100%" height="100%" fill="url(#dots)" />
       </svg>
-    );
-  };
 
-  return (
-    <section className="relative py-24 overflow-hidden z-10" style={{ background: 'rgba(0,0,0,0.2)', borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-      {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-1/10 w-96 h-96 rounded-full blur-[120px] pointer-events-none" style={{ background: 'rgba(0,212,255,0.04)' }} />
-      <div className="absolute bottom-1/4 right-1/10 w-96 h-96 rounded-full blur-[120px] pointer-events-none" style={{ background: 'rgba(255,107,53,0.03)' }} />
-
-      <div className="max-w-7xl mx-auto px-6">
-
-        {/* Title */}
-        <div className="text-center mb-16">
-          <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: '#00D4FF' }}>
-            <Sparkles className="w-4 h-4" /> AI Digital Twin Lifecycle
-          </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Interactive User Guide & Workflow
+      <div className="relative max-w-4xl mx-auto px-6 text-center">
+        <Reveal>
+          <span className="text-xs font-bold uppercase tracking-[0.24em] text-amber">No code, no kidding</span>
+          <h2 className="mt-4 text-4xl sm:text-5xl font-black text-paper tracking-[-0.03em] leading-[1.05]">
+            Your whole assistant is <span className="font-editorial italic font-medium text-paper/70">one line long.</span>
           </h2>
-          <p className="mt-4 max-w-2xl mx-auto text-sm font-normal" style={{ color: 'rgba(255,255,255,0.45)' }}>
-            Walk through the complete process of building your twin, embedding the widget, and retrieving live context from the database.
+          <p className="mt-6 text-base text-paper/55 max-w-xl mx-auto leading-relaxed">
+            Forget SDKs, npm installs and thousand-line integrations. Paste this into your site’s HTML,
+            hit save, and your AI assistant is live.
           </p>
-        </div>
+        </Reveal>
 
-        {/* Dynamic Styles for pulse-flow animations */}
-        <style dangerouslySetInnerHTML={{__html: `
-          @keyframes pulse-flow {
-            0% {
-              stroke-dashoffset: 40;
-            }
-            100% {
-              stroke-dashoffset: 0;
-            }
-          }
-          .animate-pulse-flow {
-            animation: pulse-flow 2s linear infinite;
-          }
-          @keyframes pulse-opacity-fast {
-            0% {
-              opacity: 0.3;
-              transform: scale(0.95);
-            }
-            100% {
-              opacity: 0.85;
-              transform: scale(1.05);
-            }
-          }
-          .animate-pulse-opacity {
-            animation: pulse-opacity-fast 1.6s ease-in-out infinite alternate;
-          }
-        `}} />
-
-        {/* Mobile Stepper Timeline (Visible on Mobile) */}
-        <div className="md:hidden flex flex-col gap-4 mb-10 border-b border-white/5 pb-6 font-sans">
-          <div className="relative pl-8 space-y-4">
-            {/* Vertical Line */}
-            <div className="absolute left-3.5 top-2 bottom-2 w-0.5 bg-white/5">
-              <div 
-                className="bg-gradient-to-b from-rose-500 to-indigo-600 w-full transition-all duration-500" 
-                style={{ height: `${(currentStep / 7) * 100}%` }}
-              />
-            </div>
-
-            {steps.map((step, idx) => {
-              const isActive = currentStep === idx;
-              const isCompleted = idx < currentStep;
-              return (
-                <div 
-                  key={step.id} 
-                  onClick={() => setCurrentStep(idx)}
-                  className={`flex items-start gap-4 p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-white/[0.02] border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.08)]'
-                      : 'bg-transparent border-transparent'
-                  }`}
-                >
-                  {/* Node Circle */}
-                  <div className="absolute left-1.5 flex items-center justify-center mt-0.5">
-                    <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center transition-all ${
-                      isActive
-                        ? 'bg-rose-500 border-rose-455 shadow-[0_0_8px_rgba(244,63,94,0.5)]'
-                        : isCompleted
-                          ? 'bg-emerald-500 border-emerald-400'
-                          : 'bg-slate-900 border-white/10'
-                    }`}>
-                      {isCompleted && <Check className="w-2.5 h-2.5 text-slate-950 stroke-[3.5]" />}
-                    </div>
-                  </div>
-
-                  <div className="flex-grow">
-                    <div className="flex items-center justify-between">
-                      <span className={`text-[11px] font-black uppercase tracking-wide transition-colors ${isActive ? 'text-white' : 'text-slate-500'}`}>
-                        {step.label}
-                      </span>
-                      {isActive && (
-                        <span className="text-[7px] font-mono font-bold bg-rose-500/10 border border-rose-500/20 text-rose-400 px-1.5 py-0.2 rounded uppercase">
-                          ACTIVE
-                        </span>
-                      )}
-                    </div>
-                    {isActive && (
-                      <p className="mt-1.5 text-[10px] text-slate-400 leading-relaxed font-semibold">
-                        {step.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Main Grid Wrapper */}
-        <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-8 items-stretch">
-          
-          {/* Unified Mindmap Graph Canvas (Visible on Tablet & Desktop) */}
-          <div className="hidden md:block md:col-span-5 md:row-span-2 lg:col-span-4 lg:row-span-1 bg-slate-900/[0.15] border border-white/5 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md flex flex-col justify-center h-full">
-            {/* Blueprint style telemetry label */}
-            <div className="absolute top-3 left-4 text-[7px] font-mono text-slate-600 uppercase tracking-widest">NEURAL NETWORK ENGINE v1.2</div>
-            <div className="absolute top-3 right-4 text-[7px] font-mono text-emerald-500/40 uppercase tracking-widest flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-emerald-500 animate-ping" />
-              Active Channels: {currentStep + 1} / 8
-            </div>
-            {renderSvgMindmap()}
-          </div>
-          
-          {/* Left panel: Info & Explanation */}
-          <div className="col-span-12 md:col-span-7 lg:col-span-4 flex flex-col justify-between bg-slate-900/40 md:bg-white/[0.01] border border-white/5 rounded-3xl p-8 relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-[60px]" />
-            
-            <div className="space-y-6 font-sans">
-              <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                <span className="px-2.5 py-0.5 bg-rose-500/10 text-rose-400 font-mono text-[9px] rounded uppercase tracking-widest font-bold border border-rose-500/20">
-                  Step {currentStep + 1} of 8
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] text-emerald-400 font-mono font-bold tracking-wider">ACTIVE PIPELINE</span>
-                </span>
+        <Reveal delay={0.1}>
+          <div className="mt-10 group relative rounded-2xl overflow-hidden text-left"
+            style={{ background: '#0E0C0A', border: '1px solid rgba(247,243,236,0.1)', boxShadow: '0 30px 70px -30px rgba(0,0,0,0.8)' }}>
+            <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: '1px solid rgba(247,243,236,0.07)' }}>
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#FF6B5E' }} />
+                <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#FFC56B' }} />
+                <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#9AB39A' }} />
+                <span className="ml-2 text-[11px] font-mono text-paper/40">index.html</span>
               </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 border border-white/10 flex items-center justify-center">
-                  {steps[currentStep].icon}
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">{steps[currentStep].title}</h3>
-                  <span className="text-[9px] text-slate-500 font-mono tracking-widest uppercase font-bold">Workspace Phase</span>
-                </div>
-              </div>
-
-              <p className="text-sm text-slate-300 leading-relaxed font-semibold">
-                {steps[currentStep].description}
-              </p>
-
-              {/* Tips Callout */}
-              <div className="bg-slate-950/60 border border-white/5 rounded-2xl p-4 mt-2">
-                <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                  💡 {
-                    currentStep === 0 ? "You can login securely via Google auth or standard password credentials. Each login triggers a personalized dashboard greeting."
-                    : currentStep === 1 ? "The Standard Tier is configured for sandbox test verification at ₹1299 (Launch Offer). Payment gating rules are enforced strictly."
-                    : currentStep === 2 ? "Setting up a business folder isolation model ensures that different company chatbots cannot read each other's data."
-                    : currentStep === 3 ? "Ingested files are parsed, split into overlaps, embedded via OpenAI text models, and saved inside a tenant-isolated ChromaDB."
-                    : currentStep === 4 ? "Activating the switch sets the twin status flag to 'ONLINE'. OFFLINE twins automatically alert visitors to upgrade or return later."
-                    : currentStep === 5 ? "The single script tag contains async attributes, which ensures it does not impact your page loading times and speed metrics."
-                    : currentStep === 6 ? "The web chat widget will automatically read your theme color settings and place itself fixed at the bottom right corner."
-                    : "Simulate a search: click on a query preset button and watch the RAG matching sequence execute live between the LLM and the Vector DB."
-                  }
-                </p>
-              </div>
-            </div>
-
-            {/* Stepper buttons */}
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/5 font-sans">
-              <button
-                disabled={currentStep === 0}
-                onClick={() => setCurrentStep((prev) => prev - 1)}
-                className="px-4 py-2.5 rounded-xl border border-white/5 text-xs font-bold text-slate-400 hover:bg-white/5 hover:text-white transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
-              >
-                Back Step
-              </button>
-              <button
-                onClick={() => {
-                  if (currentStep < 7) {
-                    setCurrentStep((prev) => prev + 1);
-                  } else {
-                    setCurrentStep(0); // reset
-                  }
-                }}
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-violet-600 hover:from-rose-400 hover:to-violet-500 text-white text-xs font-bold transition-all shadow-[0_0_20px_rgba(244,63,94,0.3)] flex items-center gap-1.5"
-              >
-                {currentStep === 7 ? "Restart Tour" : "Next Step"} <ArrowRight className="w-3.5 h-3.5" />
+              <button onClick={copy} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all"
+                style={{ background: copied ? 'rgba(154,179,154,0.2)' : 'rgba(247,243,236,0.06)', color: copied ? '#9AB39A' : 'rgba(247,243,236,0.7)' }}>
+                {copied ? <><Check className="w-3.5 h-3.5" /> Copied</> : <><Copy className="w-3.5 h-3.5" /> Copy</>}
               </button>
             </div>
+            <pre className="px-5 py-6 font-mono text-[13px] sm:text-[15px] leading-relaxed overflow-x-auto">
+              <code className="text-paper/85">
+                <span className="text-paper/35">&lt;</span><span className="text-coral">script</span>{' '}
+                <span className="text-sage">src</span><span className="text-paper/35">=</span><span className="text-amber-soft">"https://askly.ai/widget.js"</span>{' '}
+                <span className="text-sage">data-id</span><span className="text-paper/35">=</span><span className="text-amber-soft">"acme"</span>
+                <span className="text-paper/35">&gt;&lt;/</span><span className="text-coral">script</span><span className="text-paper/35">&gt;</span>
+              </code>
+            </pre>
           </div>
-
-          {/* Right panel: Visual Demonstration */}
-          <div className="col-span-12 md:col-span-7 lg:col-span-4 bg-slate-950/60 border border-white/5 rounded-3xl p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden backdrop-blur-none md:backdrop-blur-md">
-            
-            {/* Screen Container */}
-            <div className="w-full flex-grow flex flex-col justify-center min-h-[360px]">
-              
-              <AnimatePresence mode="wait">
-                
-                {/* 1. Signup / Login Screen */}
-                {steps[currentStep].id === 'auth' && (
-                  <motion.div
-                    key="auth"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    className="max-w-sm mx-auto w-full bg-slate-900/90 border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl font-sans"
-                  >
-                    <div className="text-center space-y-1">
-                      <h4 className="text-sm font-bold text-white">Access AI Twin Builder</h4>
-                      <p className="text-[10px] text-slate-500">Sign in to your application dashboard</p>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Email Address</label>
-                        <input
-                          type="text"
-                          disabled
-                          value="sarthak@domain.com"
-                          className="w-full h-8 bg-slate-955 border border-white/5 rounded px-3 text-xs text-slate-350 focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Password</label>
-                        <input
-                          type="password"
-                          disabled
-                          value="•••••••••••••••"
-                          className="w-full h-8 bg-slate-955 border border-white/5 rounded px-3 text-xs text-slate-450 focus:outline-none"
-                        />
-                      </div>
-                      <button
-                        onClick={() => setCurrentStep(1)}
-                        className="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white rounded text-xs font-bold transition-all mt-2 flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(225,29,72,0.2)] animate-pulse"
-                      >
-                        Sign In Securely <ChevronRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* 2. Select Plan Screen */}
-                {steps[currentStep].id === 'plan' && (
-                  <motion.div
-                    key="plan"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    className="w-full space-y-4 font-sans"
-                  >
-                    <div className="text-center">
-                      <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Choose Subscription tier</h4>
-                      <p className="text-[10px] text-slate-500 mt-0.5">Standard is active for ₹1299 launch tests</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-                      <div className="bg-slate-900/40 border border-white/5 rounded-xl p-4 opacity-50 flex flex-col justify-between">
-                        <div>
-                          <span className="text-[9px] font-bold text-slate-500 uppercase">Free Trial</span>
-                          <span className="block text-lg font-bold text-slate-400 mt-1">₹0</span>
-                          <span className="block text-[8px] text-slate-500 mt-1">3 days limit & 50 messages limit</span>
-                        </div>
-                        <span className="text-[9px] text-slate-500 mt-4 block text-center">Gated Tier</span>
-                      </div>
-
-                      <div className="bg-slate-900 border-2 border-indigo-500/50 rounded-xl p-4 flex flex-col justify-between shadow-[0_0_20px_rgba(99,102,241,0.15)] relative">
-                        <div className="absolute top-2 right-2 bg-indigo-500 text-slate-950 font-bold text-[8px] px-1.5 py-0.5 rounded-full uppercase">
-                          ACTIVE
-                        </div>
-                        <div>
-                          <span className="text-[9px] font-bold text-indigo-400 uppercase">Standard Tier</span>
-                          <span className="block text-lg font-bold text-white mt-1">₹1299 <span className="text-xs text-slate-400 font-normal line-through">₹1599</span> <span className="text-xs text-emerald-400 font-semibold">/mo</span></span>
-                          <span className="block text-[8px] text-slate-350 mt-1">Unlimited responses, custom widgets, scraping</span>
-                        </div>
-                        <button
-                          onClick={() => setCurrentStep(2)}
-                          className="w-full py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[10px] font-bold transition-all mt-4"
-                        >
-                          Selected (Proceed)
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* 3. Add Business Screen */}
-                {steps[currentStep].id === 'workspace' && (
-                  <motion.div
-                    key="workspace"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    className="max-w-sm mx-auto w-full bg-slate-900/90 border border-white/10 rounded-2xl p-6 space-y-4 font-sans"
-                  >
-                    <div className="border-b border-white/5 pb-2">
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">Initialize Business Workspace</h4>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1">Business Name</label>
-                        <input
-                          type="text"
-                          value={workspaceName}
-                          onChange={(e) => setWorkspaceName(e.target.value)}
-                          className="w-full h-8 bg-slate-950 border border-white/10 rounded px-3 text-xs text-white focus:outline-none focus:border-cyan-500"
-                          placeholder="e.g. Acme Coffee House"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1">Website URL</label>
-                        <input
-                          type="text"
-                          value={workspaceWebsite}
-                          onChange={(e) => setWorkspaceWebsite(e.target.value)}
-                          className="w-full h-8 bg-slate-955 border border-white/10 rounded px-3 text-xs text-white focus:outline-none focus:border-cyan-500"
-                          placeholder="e.g. amitcoffeeshop.com"
-                        />
-                      </div>
-                      <button
-                        onClick={() => setCurrentStep(3)}
-                        className="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded text-xs font-bold transition-all mt-2"
-                      >
-                        Create Business Folder
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* 4. Train AI Twin Screen */}
-                {steps[currentStep].id === 'details' && (
-                  <motion.div
-                    key="details"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    className="max-w-md mx-auto w-full bg-slate-900/95 border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl font-sans"
-                  >
-                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">Configure & Ingest Knowledge</h4>
-                      <span className="text-[8px] text-slate-500 font-mono">Workspace: {workspaceName}</span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="block text-[8px] font-bold text-slate-400 uppercase">Twin Custom Name</label>
-                        <input
-                          type="text"
-                          value={twinName}
-                          onChange={(e) => setTwinName(e.target.value)}
-                          className="w-full h-7 bg-slate-955 border border-white/5 rounded px-2.5 text-xs text-white focus:outline-none"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="block text-[8px] font-bold text-slate-400 uppercase">Conversation Tone</label>
-                        <select
-                          value={twinTone}
-                          onChange={(e) => setTwinTone(e.target.value)}
-                          className="w-full h-7 bg-slate-955 border border-white/5 rounded px-2.5 text-xs text-white focus:outline-none"
-                        >
-                          <option value="Friendly">Friendly & Warm</option>
-                          <option value="Formal">Formal & Business</option>
-                          <option value="Analytical">Analytical & Direct</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Simulator Dropzone */}
-                    <div className="space-y-2 pt-2">
-                      <label className="block text-[8px] font-bold text-slate-400 uppercase">Vector Datasets (Files & Links)</label>
-                      
-                      {ingestedFiles.length === 0 && !isIngesting ? (
-                        <div
-                          onClick={handleSimulateIngestion}
-                          className="border border-dashed border-white/10 hover:border-emerald-500/30 bg-slate-955 rounded-xl p-6 flex flex-col items-center justify-center space-y-2 cursor-pointer transition-colors"
-                        >
-                          <Database className="w-6 h-6 text-emerald-500 animate-bounce" />
-                          <span className="text-[10px] text-slate-355 font-medium">Click to ingest coffee menu PDFs & urls</span>
-                          <span className="text-[8px] text-slate-500 font-mono">Simulates embedding conversion to Vector DB</span>
-                        </div>
-                      ) : isIngesting ? (
-                        <div className="bg-slate-950/60 border border-white/5 rounded-xl p-6 flex flex-col items-center justify-center space-y-2">
-                          <RefreshCw className="w-5 h-5 text-emerald-400 animate-spin" />
-                          <span className="text-[10px] text-slate-300 font-medium">Extracting paragraphs & generating vectors...</span>
-                          <div className="w-full max-w-xs bg-slate-905 h-1.5 rounded-full overflow-hidden">
-                            <div className="bg-emerald-500 h-full transition-all duration-300" style={{ width: `${ingestProgress}%` }} />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="bg-slate-955 border border-white/10 rounded-xl p-4 space-y-3">
-                          <div className="flex items-center justify-between text-[9px] text-slate-450 font-bold">
-                            <span>Ingestion Status:</span>
-                            <span className="text-emerald-400 font-bold uppercase">15,840 Vectors Sync Complete</span>
-                          </div>
-                          <div className="space-y-1.5">
-                            {ingestedFiles.map((file) => (
-                              <div key={file} className="flex items-center gap-1.5 text-[9px] text-slate-300 bg-slate-900/60 p-1 px-2.5 rounded border border-white/5 font-mono">
-                                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                                <span>{file} (Indexed)</span>
-                              </div>
-                            ))}
-                          </div>
-                          <button
-                            onClick={() => setIngestedFiles([])}
-                            className="text-[9px] text-slate-500 hover:text-slate-300 underline font-mono"
-                          >
-                            Re-upload datasets
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* 5. Activate Switch Screen */}
-                {steps[currentStep].id === 'activate' && (
-                  <motion.div
-                    key="activate"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    className="max-w-xs mx-auto w-full bg-slate-900 border border-white/10 rounded-2xl p-6 space-y-5 text-center shadow-xl font-sans"
-                  >
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Twin Activation Console</h4>
-                    
-                    <div className="flex flex-col items-center justify-center p-6 bg-slate-950/60 rounded-xl border border-white/5 space-y-3">
-                      <div className={`w-3.5 h-3.5 rounded-full ${isTwinActive ? 'bg-emerald-500 animate-ping' : 'bg-rose-500'}`} />
-                      <span className={`text-xs font-bold font-mono uppercase tracking-widest ${isTwinActive ? 'text-emerald-400' : 'text-rose-500'}`}>
-                        Twin Status: {isTwinActive ? 'ONLINE' : 'OFFLINE'}
-                      </span>
-
-                      {/* Toggle Switch */}
-                      <button
-                        onClick={() => setIsTwinActive(!isTwinActive)}
-                        className={`w-14 h-7 rounded-full transition-all relative p-1 mt-2 ${isTwinActive ? 'bg-emerald-600' : 'bg-slate-800'}`}
-                      >
-                        <div className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 ${isTwinActive ? 'translate-x-7' : 'translate-x-0'}`} />
-                      </button>
-                    </div>
-
-                    <div className="flex gap-2 justify-center text-[9px] font-mono text-slate-500">
-                      <span>RAG: CONNECTED</span>
-                      <span>•</span>
-                      <span>LATENCY: 84ms</span>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* 6. Copy Script Screen */}
-                {steps[currentStep].id === 'script' && (
-                  <motion.div
-                    key="script"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    className="max-w-lg mx-auto w-full bg-slate-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl font-sans"
-                  >
-                    {/* Header bar */}
-                    <div className="flex items-center justify-between bg-slate-950 px-4 py-2 border-b border-white/5">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                      </div>
-                      <span className="text-[9px] font-mono text-slate-500">index.html (Acme Website Directory)</span>
-                    </div>
-
-                    <div className="p-4 space-y-4">
-                      <p className="text-[10px] text-slate-400 font-semibold">Copy and paste this script tag inside your HTML body:</p>
-                      
-                      <div className="bg-slate-955 p-4.5 rounded-xl border border-white/5 font-mono text-[10px] text-indigo-300 relative group overflow-x-auto whitespace-pre select-all">
-                        <code>{`<!-- AI Digital Twin Chat Widget Integration -->\n<script\n  src="https://ai-twin-2le9.onrender.com/api/v1/widget.js"\n  data-twin-id="${twinName.toLowerCase().replace(/\s+/g, '-')}"\n  data-theme="#6366f1">\n</script>`}</code>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-[9px] text-slate-500 font-mono font-medium">Requires no extra dependencies or frameworks</span>
-                        <button
-                          onClick={handleCopyScript}
-                          className={`px-4 py-1.5 rounded text-xs font-bold transition-all ${
-                            copied 
-                              ? 'bg-emerald-600 text-white' 
-                              : 'bg-white/5 border border-white/10 text-slate-200 hover:bg-white/10'
-                          }`}
-                        >
-                          {copied ? "Copied tag!" : "Copy Embed Script"}
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* 7. Twin Live Website Screen */}
-                {steps[currentStep].id === 'live' && (
-                  <motion.div
-                    key="live"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    className="max-w-md mx-auto w-full flex flex-col gap-4 font-sans"
-                  >
-                    {/* Simulated Live Webpage & Floating Widget */}
-                    <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative">
-                      {/* Browser Address Bar */}
-                      <div className="flex items-center gap-2 bg-slate-950 px-4 py-2 border-b border-white/5 text-[10px] font-mono text-slate-500">
-                        <div className="flex gap-1">
-                          <div className="w-2 h-2 rounded-full bg-white/20" />
-                          <div className="w-2 h-2 rounded-full bg-white/20" />
-                        </div>
-                        <div className="bg-slate-900 px-3 py-0.5 rounded w-full max-w-[200px] text-slate-400 text-center truncate">
-                          https://www.{workspaceWebsite || 'amitcoffeeshop.com'}
-                        </div>
-                      </div>
-
-                      {/* Simulated Coffee Shop Webpage Content */}
-                      <div className="p-6 h-[240px] bg-slate-950/20 flex flex-col justify-between relative overflow-hidden">
-                        <div className="space-y-2">
-                          <span className="text-[9px] font-bold text-rose-500 uppercase tracking-widest">{workspaceName || "Amit's Coffee Shop"}</span>
-                          <h4 className="text-lg font-black text-white leading-tight">Fresh Roasted Artisan Beans</h4>
-                          <p className="text-[10px] text-slate-400 max-w-[80%]">Crafted with precision, serving premium espressos, gourmet teas, and warm delivery daily.</p>
-                        </div>
-
-                        {/* If widget is closed, show floating button & prompt bubble */}
-                        {!showLeadWidget && (
-                          <div className="absolute bottom-4 right-4 flex flex-col items-end space-y-2">
-                            <div className="bg-slate-900/95 border border-white/10 rounded-xl p-3 shadow-2xl max-w-[220px] text-[9px] space-y-1.5 backdrop-blur-sm">
-                              <div className="flex items-center gap-1.5 border-b border-white/5 pb-1">
-                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                                <span className="font-bold text-white">{twinName} (Online)</span>
-                              </div>
-                              <p className="text-slate-300">"Hi! Click my chat bubble below to test the Lead Generation Form!"</p>
-                            </div>
-                            
-                            <button
-                              onClick={() => setShowLeadWidget(true)}
-                              className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(99,102,241,0.4)] animate-bounce cursor-pointer hover:scale-110 transition-transform"
-                            >
-                              <MessageCircle className="w-5 h-5 text-white" />
-                            </button>
-                          </div>
-                        )}
-
-                        {/* Simulated Chat Widget Window overlay */}
-                        {showLeadWidget && (
-                          <div className="absolute inset-x-4 bottom-4 top-4 bg-slate-900 border border-white/15 rounded-xl shadow-2xl flex flex-col justify-between overflow-hidden">
-                            {/* Widget Header */}
-                            <div className="bg-slate-950 px-4 py-2 border-b border-white/10 flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                <span className="text-[10px] font-bold text-white">{twinName} Assistant</span>
-                              </div>
-                              <button 
-                                onClick={() => setShowLeadWidget(false)}
-                                className="text-slate-400 hover:text-white text-[10px] font-bold"
-                              >
-                                Close
-                              </button>
-                            </div>
-
-                            {/* Chat Area */}
-                            <div className="flex-grow p-4 overflow-y-auto space-y-3 flex flex-col justify-center">
-                              {!leadSubmitted ? (
-                                /* Lead Form */
-                                <div className="space-y-2.5">
-                                  <div className="text-center">
-                                    <h5 className="text-[10px] font-extrabold text-white uppercase tracking-wider">Start Consultation</h5>
-                                    <p className="text-[9px] text-slate-400">Introduce yourself to start chatting with {twinName}!</p>
-                                  </div>
-                                  <div className="space-y-1.5">
-                                    <input 
-                                      type="text" 
-                                      placeholder="Full Name" 
-                                      value={leadFormName}
-                                      onChange={(e) => setLeadFormName(e.target.value)}
-                                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-[9px] text-white focus:outline-none focus:border-indigo-500 transition-colors"
-                                    />
-                                    <input 
-                                      type="email" 
-                                      placeholder="Email Address" 
-                                      value={leadFormEmail}
-                                      onChange={(e) => setLeadFormEmail(e.target.value)}
-                                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-[9px] text-white focus:outline-none focus:border-indigo-500 transition-colors"
-                                    />
-                                    <input 
-                                      type="text" 
-                                      placeholder="Phone Number (Optional)" 
-                                      value={leadFormPhone}
-                                      onChange={(e) => setLeadFormPhone(e.target.value)}
-                                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-[9px] text-white focus:outline-none focus:border-indigo-500 transition-colors"
-                                    />
-                                  </div>
-                                  <button
-                                    onClick={() => {
-                                      if (!leadFormName || !leadFormEmail) {
-                                        alert("Please enter both Name and Email!");
-                                        return;
-                                      }
-                                      const newLead = {
-                                        id: Date.now(),
-                                        name: leadFormName,
-                                        email: leadFormEmail,
-                                        phone: leadFormPhone || "—",
-                                        created_at: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
-                                      };
-                                      setSimulatedLeads([newLead, ...simulatedLeads]);
-                                      setLeadSubmitted(true);
-                                    }}
-                                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-[9px] py-1.5 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all"
-                                  >
-                                    Submit Details & Chat
-                                  </button>
-                                </div>
-                              ) : (
-                                /* Chat Session unlocked! */
-                                <div className="space-y-3 flex-grow flex flex-col justify-end">
-                                  <div className="bg-slate-955 border border-white/5 rounded-lg p-2 text-[9px] text-slate-350 self-end max-w-[85%]">
-                                    Hi! My name is {leadFormName} ({leadFormEmail}).
-                                  </div>
-                                  <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-2 text-[9px] text-slate-200 self-start max-w-[85%]">
-                                    👋 Welcome, {leadFormName}! Thank you for introducing yourself. I am ready to answer your questions.
-                                  </div>
-                                  <div className="flex items-center gap-1.5 justify-center py-1 text-[8px] font-mono text-emerald-400 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
-                                    <Check className="w-3 h-3 text-emerald-400" />
-                                    <span>LEAD SAVED TO DASHBOARD DATABASE</span>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Chat Input footer if submitted */}
-                            {leadSubmitted && (
-                              <div className="bg-slate-950 p-2 border-t border-white/10 flex items-center justify-between gap-2">
-                                <span className="text-[8px] text-slate-400 font-mono">Form captured successfully!</span>
-                                <button
-                                  onClick={() => {
-                                    setLeadSubmitted(false);
-                                    setLeadFormName("");
-                                    setLeadFormEmail("");
-                                    setLeadFormPhone("");
-                                  }}
-                                  className="text-[8px] text-indigo-400 hover:text-indigo-300 font-bold underline"
-                                >
-                                  Reset Form
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Simulated Dashboard Leads Database View */}
-                    <div className="bg-slate-950 border border-white/10 rounded-2xl p-4 flex flex-col gap-2.5">
-                      <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                        <div className="flex items-center gap-2">
-                          <Users className="w-3.5 h-3.5 text-amber-500" />
-                          <span className="text-[10px] font-bold text-white uppercase tracking-wider">📁 Dashboard leads Database</span>
-                        </div>
-                        <span className="text-[8px] bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded font-mono font-extrabold uppercase">Saved Live</span>
-                      </div>
-
-                      {simulatedLeads.length === 0 ? (
-                        <div className="py-6 flex flex-col items-center justify-center text-center border border-dashed border-white/5 rounded-xl bg-slate-900/20">
-                          <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center mb-1 text-slate-500 text-xs font-bold animate-pulse">!</div>
-                          <p className="text-[9px] text-slate-500 font-medium">Database is empty.</p>
-                          <p className="text-[8px] text-slate-600 max-w-[80%] mt-0.5">Submit the widget's Lead Gen Form above to watch this database populate in real-time!</p>
-                        </div>
-                      ) : (
-                        <div className="max-h-[110px] overflow-y-auto space-y-1.5">
-                          {simulatedLeads.map((lead) => (
-                            <div key={lead.id} className="flex items-center justify-between bg-slate-900 border border-white/5 rounded-xl p-2 text-[9px] font-mono hover:border-indigo-500/20 transition-all">
-                              <div className="space-y-0.5">
-                                <p className="font-bold text-white leading-none">{lead.name}</p>
-                                <p className="text-[8px] text-slate-400 leading-none">{lead.email}</p>
-                              </div>
-                              <div className="text-right space-y-0.5">
-                                <p className="text-slate-350 leading-none">{lead.phone}</p>
-                                <p className="text-[7px] text-slate-500 leading-none">{lead.created_at}</p>
-                              </div>
-                              <span className="text-[7px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 py-0.2 rounded font-bold">SAVED</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* 8. Live Database RAG Query Simulator Screen */}
-                {steps[currentStep].id === 'rag' && (
-                  <motion.div
-                    key="rag"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch font-sans"
-                  >
-                    
-                    {/* Chat Widget Panel */}
-                    <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 flex flex-col justify-between space-y-3">
-                      <div>
-                        <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-2">
-                          <span className="text-[10px] font-bold text-white uppercase tracking-wider">{twinName} Assistant</span>
-                          <span className="text-[8px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.2 rounded font-mono">CHROME_DB_SYNC</span>
-                        </div>
-                        
-                        {/* Conversation dialogue box */}
-                        <div className="space-y-2 h-[130px] overflow-y-auto p-1">
-                          {ragQuery ? (
-                            <div className="flex flex-col space-y-2">
-                              {/* Visitor Input */}
-                              <div className="px-3 py-1.5 bg-slate-950/80 rounded-xl rounded-tr-none text-[10px] text-white self-end max-w-[85%] border border-white/5">
-                                {ragQuery}
-                              </div>
-                              
-                              {/* RAG response */}
-                              {ragPhase === 'done' && (
-                                <div className="px-3 py-1.5 bg-indigo-500/10 text-slate-200 text-[10px] rounded-xl rounded-tl-none self-start max-w-[85%] border border-indigo-500/20">
-                                  {ragOutput}
-                                  <span className="block text-[7px] text-slate-500 font-mono mt-1 uppercase">Source: {ragSource.split(" ")[0]}</span>
-                                </div>
-                              )}
-
-                              {ragPhase !== 'done' && (
-                                <div className="px-3 py-1.5 bg-slate-950/40 text-slate-500 text-[9px] rounded-xl rounded-tl-none self-start max-w-[85%] border border-dashed border-white/5 animate-pulse font-mono uppercase">
-                                  Retrieving answer...
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="flex flex-col items-center justify-center h-full text-center text-slate-500">
-                              <MessageCircle className="w-6 h-6 text-slate-600 mb-1" />
-                              <p className="text-[9px]">Select a preset query below to test RAG database retrieval</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Quick preset buttons */}
-                      <div className="space-y-1.5 pt-2 border-t border-white/5">
-                        <span className="text-[8px] text-slate-500 font-bold uppercase tracking-wider block">Query Presets</span>
-                        <div className="flex flex-wrap gap-1.5">
-                          <button
-                            onClick={() => handleRagSearch("Do you have Iced Mocha? What is the price?")}
-                            className="px-2 py-1 bg-white/5 border border-white/5 hover:border-indigo-500/30 text-[9px] font-semibold text-slate-350 rounded-lg hover:text-white transition-all animate-pulse"
-                          >
-                            "Mocha price?"
-                          </button>
-                          <button
-                            onClick={() => handleRagSearch("What are your coffee shop timings?")}
-                            className="px-2 py-1 bg-white/5 border border-white/5 hover:border-indigo-500/30 text-[9px] font-semibold text-slate-350 rounded-lg hover:text-white transition-all animate-pulse"
-                          >
-                            "Shop Timings?"
-                          </button>
-                          <button
-                            onClick={() => handleRagSearch("Is home delivery available?")}
-                            className="px-2 py-1 bg-white/5 border border-white/5 hover:border-indigo-500/30 text-[9px] font-semibold text-slate-355 rounded-lg hover:text-white transition-all animate-pulse"
-                          >
-                            "Home Delivery?"
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* RAG pipeline execution console */}
-                    <div className="bg-slate-950 border border-white/10 rounded-2xl p-4 flex flex-col justify-between font-mono text-[9px]">
-                      <div>
-                        <div className="flex items-center gap-1.5 border-b border-white/5 pb-2 mb-3">
-                          <Terminal className="w-3.5 h-3.5 text-indigo-400" />
-                          <span className="text-slate-400 font-bold">RAG Retrieval Telemetry</span>
-                        </div>
-
-                        {/* List of steps and checkmarks */}
-                        <div className="space-y-2">
-                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
-                            ragPhase === 'vectorizing' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
-                          }`}>
-                            <div className="flex items-center gap-2">
-                              {['vectorizing', 'searching', 'retrieving', 'synthesizing', 'done'].indexOf(ragPhase) > 0 ? (
-                                <Check className="w-3 h-3 text-emerald-400" />
-                              ) : (
-                                <Cpu className={`w-3 h-3 ${ragPhase === 'vectorizing' ? 'animate-spin' : ''}`} />
-                              )}
-                              <span>1. Vectorizing Input Query</span>
-                            </div>
-                            {ragPhase === 'vectorizing' && <span className="text-[8px] animate-pulse text-indigo-400">1536d Array...</span>}
-                            }
-                          </div>
-
-                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
-                            ragPhase === 'searching' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
-                          }`}>
-                            <div className="flex items-center gap-2">
-                              {['searching', 'retrieving', 'synthesizing', 'done'].indexOf(ragPhase) > 1 ? (
-                                <Check className="w-3 h-3 text-emerald-400" />
-                              ) : (
-                                <Database className={`w-3 h-3 ${ragPhase === 'searching' ? 'animate-bounce' : ''}`} />
-                              )}
-                              <span>2. Scanning ChromaDB index</span>
-                            </div>
-                            {ragPhase === 'searching' && <span className="text-[8px] animate-pulse text-indigo-400">Matching keys...</span>}
-                            }
-                          </div>
-
-                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
-                            ragPhase === 'retrieving' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
-                          }`}>
-                            <div className="flex items-center gap-2">
-                              {['retrieving', 'synthesizing', 'done'].indexOf(ragPhase) > 2 ? (
-                                <Check className="w-3 h-3 text-emerald-400" />
-                              ) : (
-                                <FileText className="w-3 h-3" />
-                              )}
-                              <span>3. Retrieving Document Chunk</span>
-                            </div>
-                            {ragPhase === 'retrieving' && <span className="text-[8px] animate-pulse text-indigo-400">Extracting text...</span>}
-                            }
-                          </div>
-
-                          <div className={`flex items-center justify-between p-1.5 rounded transition-colors ${
-                            ragPhase === 'synthesizing' ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'text-slate-500'
-                          }`}>
-                            <div className="flex items-center gap-2">
-                              {['synthesizing', 'done'].indexOf(ragPhase) > 3 ? (
-                                <Check className="w-3 h-3 text-emerald-400" />
-                              ) : (
-                                <Brain className="w-3 h-3" />
-                              )}
-                              <span>4. LLM Synthesis & Output</span>
-                            </div>
-                            {ragPhase === 'synthesizing' && <span className="text-[8px] animate-pulse text-indigo-400">Generating token...</span>}
-                            }
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Display retrieved metrics */}
-                      {ragPhase === 'done' && (
-                        <div className="mt-3 bg-slate-900 border border-white/5 rounded-lg p-2 space-y-1.5 text-[8px] text-slate-400">
-                          <div><span className="text-slate-500 font-bold uppercase">Nearest Neighbor:</span> <span className="text-indigo-300">{ragSource}</span></div>
-                          <div><span className="text-slate-500 font-bold uppercase">Confidence Score:</span> <span className="text-emerald-400">{ragConfidence}</span></div>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-
-              </AnimatePresence>
-
-            </div>
-
-          </div>
-
-        </div>
-
+        </Reveal>
       </div>
     </section>
   );
 };
 
-// Technical Accordion FAQ Section
-const FAQ = () => {
-  const [openIndex, setOpenIndex] = useState(null);
-
-  const faqs = [
-    {
-      question: "What underlying AI models power the Digital Twin?",
-      answer: "We utilize fine-tuned, low-latency Large Language Models combined with ChromaDB vector indexers. This creates a secure Retrieval-Augmented Generation (RAG) loop matching your specific files, docs, and URLs with zero hallucination."
-    },
-    {
-      question: "How does Standard plan pricing work?",
-      answer: "The Standard plan is priced at ₹1599/month, but we're currently running a Launch Offer at just ₹1299/month. This grants unlimited web chat assistant executions, customizable theme skins without branding watermarks, lead captures, and URL indexing."
-    },
-    {
-      question: "What is Business Pro plan availability?",
-      answer: "Business Pro features (including live WhatsApp scanners, voice calling cloning synthesizers, and WebRTC streaming dialers) are currently Coming Soon. You can join the waitlist from our Dashboard."
-    },
-    {
-      question: "Can I inspect conversation history or limits?",
-      answer: "Absolutely. Users have access to full telemetry logs, conversational history tables, captured leads, and active message counts directly from their Dashboard. Free trials are strictly gated at 3 days / 50 messages."
-    }
+/* =============================================================================
+   STATS BAND — full-bleed numbers, continuous, divided by thin verticals
+   ============================================================================= */
+const Stats = () => {
+  const stats = [
+    { v: '< 1s', l: 'average reply time' },
+    { v: '99.4%', l: 'answers on-topic' },
+    { v: '24 / 7', l: 'always awake' },
+    { v: '2', l: 'languages, fluent' },
   ];
+  return (
+    <section className="relative py-20 z-10" style={{ borderTop: '1px solid rgba(247,243,236,0.05)' }}>
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-y-10">
+        {stats.map((s, i) => (
+          <Reveal key={s.l} delay={i * 0.06}>
+            <div className={`text-center px-4 ${i !== 0 ? 'md:border-l' : ''}`} style={{ borderColor: 'rgba(247,243,236,0.1)' }}>
+              <span className="block text-4xl sm:text-5xl font-black text-amber-grad leading-none">{s.v}</span>
+              <span className="block mt-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-paper/40">{s.l}</span>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+/* =============================================================================
+   VOICES — testimonials as a continuous quote wall (no boxes). Big editorial
+   pull-quote that rotates, with a row of small attributions.
+   ============================================================================= */
+const Voices = () => {
+  const quotes = [
+    { name: 'Priya Sharma', role: 'Aura Boutique', text: 'Customers used to wait hours. Now Askly replies in seconds and it sounds exactly like us — we stopped losing late-night orders overnight.' },
+    { name: 'Dr. Anil Mehta', role: 'CareFirst Dental', text: 'It books appointments while I’m with patients. Half the front-desk work just disappeared. Setup took one coffee break.' },
+    { name: 'Rahul Verma', role: 'Apex Fitness', text: 'People ask the same five questions all day. Askly handles every one, in Hindi and English, without me lifting a finger.' },
+  ];
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setI((p) => (p + 1) % quotes.length), 5000);
+    return () => clearInterval(t);
+  }, [quotes.length]);
 
   return (
-    <section className="relative py-28 z-10" style={{ background: 'rgba(0,0,0,0.15)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-      <div className="max-w-3xl mx-auto px-6">
-
-        {/* Title */}
-        <div className="text-center mb-16">
-          <span className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: '#00D4FF' }}>Frequently Asked Questions</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Technical FAQs
-          </h2>
+    <section className="relative py-32 z-10 overflow-hidden" style={{ background: 'rgba(0,0,0,0.22)', borderTop: '1px solid rgba(247,243,236,0.05)' }}>
+      <div className="max-w-4xl mx-auto px-6 text-center">
+        <Reveal>
+          <svg viewBox="0 0 40 30" className="w-12 h-9 mx-auto mb-8" style={{ color: '#F5A623' }} fill="currentColor">
+            <path d="M0 30V16C0 7 5 1 14 0l2 5C10 7 8 10 8 14h6v16H0zm22 0V16C22 7 27 1 36 0l2 5c-6 2-8 5-8 9h6v16H22z" opacity="0.8" />
+          </svg>
+        </Reveal>
+        <div className="min-h-[220px] flex flex-col justify-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -18 }}
+              transition={{ duration: 0.6, ease: EASE }}
+            >
+              <p className="text-2xl sm:text-[2.1rem] font-editorial italic font-medium text-paper leading-snug tracking-tight">
+                “{quotes[i].text}”
+              </p>
+              <div className="mt-8 flex items-center justify-center gap-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-[#0B0A09]" style={{ background: 'linear-gradient(135deg,#FFC56B,#F5A623)' }}>
+                  {quotes[i].name.charAt(0)}
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-bold text-paper leading-none">{quotes[i].name}</p>
+                  <p className="text-xs text-paper/45 mt-1">{quotes[i].role}</p>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
+        <div className="mt-6 flex items-center justify-center gap-2">
+          {quotes.map((_, k) => (
+            <button key={k} onClick={() => setI(k)} className="h-1.5 rounded-full transition-all"
+              style={{ width: k === i ? 28 : 8, background: k === i ? '#F5A623' : 'rgba(247,243,236,0.2)' }} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
-        {/* Accordions */}
-        <div className="space-y-3">
-          {faqs.map((faq, index) => {
-            const isOpen = openIndex === index;
+/* =============================================================================
+   FAQ — clean accordion, full-width rules, no boxes
+   ============================================================================= */
+const FAQ = () => {
+  const [open, setOpen] = useState(0);
+  const faqs = [
+    { q: 'Do I really only need one line of code?', a: 'Yes. You copy a single <script> tag into your site’s HTML — once. No npm, no SDK, no build step. The assistant loads itself and starts working immediately.' },
+    { q: 'Will it actually sound like my business?', a: 'It learns from your own content — your site, PDFs and FAQs — and you set the tone and greeting. Replies feel written by you, not a generic bot.' },
+    { q: 'What if it doesn’t know an answer?', a: 'It won’t guess. When it’s unsure it says so honestly and can hand the conversation off to a human or capture the lead for you to follow up.' },
+    { q: 'Can it speak Hindi?', a: 'Fluently. It replies in both English and Hindi and switches naturally the moment a customer does.' },
+    { q: 'Is my data safe?', a: 'Your knowledge stays isolated to your own workspace — never mixed with other businesses. You can review or delete everything anytime.' },
+  ];
+  return (
+    <section className="relative py-28 z-10" style={{ borderTop: '1px solid rgba(247,243,236,0.05)' }}>
+      <div className="max-w-3xl mx-auto px-6">
+        <Reveal className="text-center mb-14">
+          <span className="text-xs font-bold uppercase tracking-[0.24em] text-amber">Questions?</span>
+          <h2 className="mt-4 text-3xl sm:text-4xl font-black text-paper tracking-[-0.03em]">The honest answers</h2>
+        </Reveal>
+        <div style={{ borderTop: '1px solid rgba(247,243,236,0.08)' }}>
+          {faqs.map((f, i) => {
+            const isOpen = open === i;
             return (
-              <div
-                key={index}
-                className="overflow-hidden transition-all"
-                style={{
-                  background: isOpen ? 'rgba(0,212,255,0.03)' : 'rgba(255,255,255,0.01)',
-                  border: `1px solid ${isOpen ? 'rgba(0,212,255,0.15)' : 'rgba(255,255,255,0.05)'}`,
-                  borderRadius: '12px'
-                }}
-              >
-                <button
-                  onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left transition-colors"
-                >
-                  <span className="text-white font-semibold text-sm sm:text-base pr-4">{faq.question}</span>
-                  <motion.div
-                    animate={{ rotate: isOpen ? 90 : 0 }}
-                    transition={{ duration: 0.2 }}
-                    style={{ flexShrink: 0 }}
-                  >
-                    <ChevronRight className="w-5 h-5" style={{ color: isOpen ? '#00D4FF' : 'rgba(255,255,255,0.3)' }} />
-                  </motion.div>
+              <div key={i} style={{ borderBottom: '1px solid rgba(247,243,236,0.08)' }}>
+                <button onClick={() => setOpen(isOpen ? -1 : i)} className="w-full py-5 flex items-center justify-between text-left gap-4 group">
+                  <span className={`font-semibold text-[16px] transition-colors ${isOpen ? 'text-amber' : 'text-paper group-hover:text-paper/80'}`}>{f.q}</span>
+                  <motion.span animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.25 }} className="flex-shrink-0 text-2xl font-light leading-none" style={{ color: isOpen ? '#F5A623' : 'rgba(247,243,236,0.4)' }}>+</motion.span>
                 </button>
                 <AnimatePresence>
                   {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-6 pb-5 text-xs sm:text-sm font-normal leading-relaxed pt-4" style={{ color: 'rgba(255,255,255,0.5)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                        {faq.answer}
-                      </div>
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: EASE }} className="overflow-hidden">
+                      <p className="pb-6 pr-8 text-[15px] text-paper/55 leading-relaxed">{f.a}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -2722,188 +801,92 @@ const FAQ = () => {
             );
           })}
         </div>
-
       </div>
     </section>
   );
 };
 
-// CTA Section — clean, bold, editorial
+/* =============================================================================
+   CTA — full-bleed warm band, no inner card
+   ============================================================================= */
 const CTA = () => {
   const navigate = useNavigate();
-
   return (
-    <section className="relative py-28 z-10 overflow-hidden" style={{ background: '#07080C' }}>
-      {/* Top divider line */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#00D4FF]/30 to-transparent" />
-
-      <div className="max-w-5xl mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="relative p-12 md:p-20 overflow-hidden"
-          style={{
-            background: 'rgba(0,212,255,0.03)',
-            border: '1px solid rgba(0,212,255,0.12)',
-            borderRadius: '20px'
-          }}
-        >
-          {/* Ambient glows */}
-          <div className="absolute top-0 right-0 w-72 h-72 rounded-full blur-[100px] pointer-events-none" style={{ background: 'rgba(0,212,255,0.07)' }} />
-          <div className="absolute bottom-0 left-0 w-60 h-60 rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(255,107,53,0.04)' }} />
-
-          <div className="relative text-center z-10 space-y-6">
-            {/* Overline */}
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em]" style={{ color: '#00D4FF' }}>
-              <span className="w-6 h-[1px] inline-block" style={{ background: '#00D4FF' }} />
-              Ready to scale your business?
-              <span className="w-6 h-[1px] inline-block" style={{ background: '#00D4FF' }} />
-            </div>
-
-            <h2 className="text-3xl md:text-[3.2rem] font-black text-white tracking-[-0.02em] leading-[1.1]">
-              Initiate Your AI Digital Twin
-            </h2>
-            <p className="max-w-xl mx-auto text-sm font-normal leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              Create your autonomous intelligence clone today. Upload custom documentation, capture voice patterns, and activate widget integrations in minutes.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">
-              <motion.button
-                onClick={() => navigate('/register')}
-                className="w-full sm:w-auto group flex items-center justify-center gap-2 px-8 py-3.5 font-bold text-sm"
-                style={{
-                  background: '#00D4FF',
-                  color: '#07080C',
-                  borderRadius: '10px'
-                }}
-                whileHover={{ scale: 1.03, boxShadow: '0 0 30px rgba(0,212,255,0.4)' }}
-                whileTap={{ scale: 0.97 }}
-              >
-                Launch Console Panel
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </motion.button>
-
-              <motion.button
-                onClick={() => navigate('/pricing')}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 font-semibold text-sm transition-all"
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '10px',
-                  color: 'rgba(255,255,255,0.8)'
-                }}
-                whileHover={{ scale: 1.02, borderColor: 'rgba(255,255,255,0.22)', background: 'rgba(255,255,255,0.08)' }}
-                whileTap={{ scale: 0.97 }}
-              >
-                Configure Tiers (₹1299/mo)
-              </motion.button>
-            </div>
-
-            <div className="pt-8 flex flex-col md:flex-row items-center justify-center gap-6 text-xs font-mono uppercase tracking-wider" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.3)' }}>
-              <a href="mailto:nexora.aidigital.twin@gmail.com" className="hover:text-white transition-colors">
-                nexora.aidigital.twin@gmail.com
-              </a>
-              <span className="hidden md:block" style={{ color: 'rgba(255,255,255,0.1)' }}>•</span>
-              <a href="tel:+919625410112" className="hover:text-white transition-colors">
-                +91 9625410112
-              </a>
-            </div>
+    <section className="relative py-32 z-10 overflow-hidden" style={{ borderTop: '1px solid rgba(247,243,236,0.05)' }}>
+      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[60%] h-72 rounded-full blur-[120px] breathe" style={{ background: 'rgba(245,166,35,0.14)' }} />
+      <div className="relative max-w-3xl mx-auto px-6 text-center">
+        <Reveal>
+          <BotMark size={56} talking className="mx-auto mb-7" />
+          <h2 className="text-4xl md:text-[3.4rem] font-black text-paper tracking-[-0.03em] leading-[1.05]">
+            Give your customers an answer
+            <br />before they even refresh.
+          </h2>
+          <p className="mt-6 max-w-lg mx-auto text-base text-paper/55 leading-relaxed">
+            Build your AI assistant free, paste one line, and watch it go live in minutes. No card, no code, no commitment.
+          </p>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+            <Magnetic onClick={() => navigate('/register')} className="btn-shine relative w-full sm:w-auto group px-9 py-4 rounded-xl text-sm font-bold text-[#0B0A09] inline-flex items-center justify-center gap-2 overflow-hidden">
+              <span className="relative z-10 flex items-center gap-2">Start free<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
+              <span className="absolute inset-0" style={{ background: 'linear-gradient(100deg,#FFC56B,#F5A623 55%,#FF6B5E)' }} />
+            </Magnetic>
+            <button onClick={() => navigate('/pricing')} className="w-full sm:w-auto px-9 py-4 rounded-xl text-sm font-semibold text-paper/85 transition-all hover:text-paper" style={{ background: 'rgba(247,243,236,0.05)', border: '1px solid rgba(247,243,236,0.12)' }}>
+              Compare plans
+            </button>
           </div>
-        </motion.div>
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 text-xs text-paper/40 font-medium">
+            <span className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-sage" /> Your data stays yours</span>
+            <span className="flex items-center gap-2"><Clock className="w-4 h-4 text-amber" /> Live in ~5 minutes</span>
+            <a href="mailto:nexora.aidigital.twin@gmail.com" className="link-underline hover:text-paper transition-colors">Talk to us</a>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
 };
 
-// Premium startup Footer
+/* =============================================================================
+   FOOTER
+   ============================================================================= */
 const Footer = () => {
   const navigate = useNavigate();
-
   return (
-    <footer className="pt-16 pb-12 relative z-10 overflow-hidden" style={{ background: '#05060A', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+    <footer className="pt-16 pb-12 relative z-10" style={{ background: '#080706', borderTop: '1px solid rgba(247,243,236,0.06)' }}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-          {/* Brand details */}
           <div className="space-y-4">
-            <div
-              onClick={() => navigate('/')}
-              className="flex items-center gap-3 cursor-pointer group w-fit"
-            >
-              <div className="flex items-center justify-center p-2 rounded-xl" style={{ background: 'rgba(0,212,255,0.06)' }}>
+            <div onClick={() => navigate('/')} className="flex items-center gap-3 cursor-pointer w-fit">
+              <div className="flex items-center justify-center p-2 rounded-xl" style={{ background: 'rgba(245,166,35,0.1)' }}>
                 <LogoIcon className="w-6 h-6" />
               </div>
-              <span className="text-lg font-bold text-white tracking-tight">AI Digital Twin</span>
+              <span className="text-lg font-bold text-paper tracking-tight">Askly</span>
             </div>
-            <p className="text-xs text-slate-500 max-w-xs font-semibold leading-relaxed">
-              Automate customer queries over chat widgets and WhatsApp 24/7 on autopilot.
+            <p className="text-sm text-paper/45 max-w-xs leading-relaxed">
+              The one-line AI assistant that answers your customers — instantly, in your voice, around the clock.
             </p>
           </div>
-
-          {/* Links Column */}
           <div className="grid grid-cols-2 gap-8 md:col-span-2">
             <div>
-              <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-widest">Product</h4>
+              <h4 className="text-xs font-bold text-paper mb-4 uppercase tracking-widest">Product</h4>
               <ul className="space-y-3">
-                <li>
-                  <button
-                    onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="text-xs text-slate-500 hover:text-[#00D4FF] transition-colors font-medium uppercase tracking-wider text-left"
-                  >
-                    Features
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => navigate('/pricing')}
-                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
-                  >
-                    Pricing
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => navigate('/guide')}
-                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
-                  >
-                    System Guide
-                  </button>
-                </li>
+                <li><button onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="text-sm text-paper/45 hover:text-amber transition-colors">Features</button></li>
+                <li><button onClick={() => navigate('/pricing')} className="text-sm text-paper/45 hover:text-amber transition-colors">Pricing</button></li>
+                <li><button onClick={() => navigate('/guide')} className="text-sm text-paper/45 hover:text-amber transition-colors">Setup guide</button></li>
               </ul>
             </div>
-
             <div>
-              <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-widest">Support</h4>
+              <h4 className="text-xs font-bold text-paper mb-4 uppercase tracking-widest">Support</h4>
               <ul className="space-y-3">
-                <li>
-                  <a
-                    href="mailto:nexora.aidigital.twin@gmail.com"
-                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left break-all"
-                  >
-                    nexora.aidigital.twin@gmail.com
-                  </a>
-                </li>
-                <li>
-                  <button
-                    onClick={() => navigate('/legal')}
-                    className="text-xs text-slate-500 hover:text-white transition-colors font-semibold uppercase tracking-wider text-left"
-                  >
-                    Terms & Privacy
-                  </button>
-                </li>
+                <li><a href="mailto:nexora.aidigital.twin@gmail.com" className="text-sm text-paper/45 hover:text-amber transition-colors break-all">Email us</a></li>
+                <li><button onClick={() => navigate('/legal')} className="text-sm text-paper/45 hover:text-amber transition-colors">Terms &amp; privacy</button></li>
               </ul>
             </div>
           </div>
         </div>
-
-        {/* System operational status banner */}
-        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">
-            &copy; {new Date().getFullYear()} AI Digital Twin.
-          </p>
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-            <span className="text-[9px] font-mono text-emerald-500 uppercase tracking-widest font-extrabold">All Systems Operational</span>
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderTop: '1px solid rgba(247,243,236,0.06)' }}>
+          <p className="text-[11px] text-paper/35 font-medium">&copy; {new Date().getFullYear()} Askly. Made with care.</p>
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-sage live-dot" />
+            <span className="text-[10px] font-semibold text-sage uppercase tracking-widest">All systems running</span>
           </div>
         </div>
       </div>
@@ -2911,31 +894,47 @@ const Footer = () => {
   );
 };
 
-// Main Home Component
-const Home = () => {
-  return (
-    <div className="relative min-h-screen text-white font-sans overflow-x-hidden" style={{ background: '#07080C', WebkitFontSmoothing: 'antialiased' }}>
-      {/* Navigation */}
-      <LandingNavbar />
+/* =============================================================================
+   AMBIENT BG — warm, organic; same language, kept subtle
+   ============================================================================= */
+const WarmBackground = () => (
+  <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" style={{ background: '#0B0A09' }}>
+    <div className="absolute -top-[18%] -left-[8%] w-[60%] h-[60%] rounded-full drift-a"
+      style={{ background: 'radial-gradient(circle, rgba(245,166,35,0.10) 0%, transparent 62%)', filter: 'blur(80px)' }} />
+    <div className="absolute bottom-[2%] right-[-4%] w-[46%] h-[46%] rounded-full drift-b"
+      style={{ background: 'radial-gradient(circle, rgba(255,107,94,0.07) 0%, transparent 65%)', filter: 'blur(90px)' }} />
+    <div className="absolute inset-0 opacity-[0.04]"
+      style={{
+        backgroundImage: 'linear-gradient(rgba(247,243,236,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(247,243,236,0.5) 1px, transparent 1px)',
+        backgroundSize: '74px 74px',
+        maskImage: 'radial-gradient(ellipse at 50% 20%, #000 30%, transparent 80%)',
+        WebkitMaskImage: 'radial-gradient(ellipse at 50% 20%, #000 30%, transparent 80%)'
+      }} />
+  </div>
+);
 
-      {/* Background gradients */}
-      <PremiumBackground />
-
-      {/* Page layout structure */}
-      <main className="relative">
-        <Hero />
-        <CapabilitiesPlayground />
-        <Features />
-        <HowItWorks />
-        <UserGuideMindmap />
-        <FAQ />
-        <CTA />
-      </main>
-
-      {/* Footer */}
-      <Footer />
-    </div>
-  );
-};
+/* =============================================================================
+   PAGE
+   ============================================================================= */
+const Home = () => (
+  <div className="relative min-h-screen text-paper font-sans overflow-x-hidden" style={{ background: '#0B0A09' }}>
+    <LandingNavbar />
+    <WarmBackground />
+    <div className="grain-layer" />
+    <main className="relative">
+      <Hero />
+      <TrustStrip />
+      <Spine />
+      <ConversationBand />
+      <Capabilities />
+      <OneLiner />
+      <Stats />
+      <Voices />
+      <FAQ />
+      <CTA />
+    </main>
+    <Footer />
+  </div>
+);
 
 export default Home;
