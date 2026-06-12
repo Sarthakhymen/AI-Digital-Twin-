@@ -1,151 +1,215 @@
 import React from 'react';
-import { List, ListItem, ListItemText, ListItemIcon, Typography, Paper, Box, useTheme } from '@mui/material';
-import { Chat, Business, SmartToy } from '@mui/icons-material';
+import { Chat, Business, SmartToy, CalendarCheck, UserPlus, Rocket } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const MotionListItem = motion(ListItem);
+const activityConfig = {
+  conversation: { icon: Chat, color: '#5B8CFF', bg: 'rgba(91, 140, 255, 0.08)', border: 'rgba(91, 140, 255, 0.15)', label: 'Conversation' },
+  business: { icon: Business, color: '#F7B955', bg: 'rgba(247, 185, 85, 0.08)', border: 'rgba(247, 185, 85, 0.15)', label: 'Business' },
+  twin: { icon: SmartToy, color: '#18C37E', bg: 'rgba(24, 195, 126, 0.08)', border: 'rgba(24, 195, 126, 0.15)', label: 'Twin' },
+  lead: { icon: UserPlus, color: '#22D3EE', bg: 'rgba(34, 211, 238, 0.08)', border: 'rgba(34, 211, 238, 0.15)', label: 'Lead' },
+  appointment: { icon: CalendarCheck, color: '#5B8CFF', bg: 'rgba(91, 140, 255, 0.08)', border: 'rgba(91, 140, 255, 0.15)', label: 'Appointment' },
+  campaign: { icon: Rocket, color: '#F06060', bg: 'rgba(240, 96, 96, 0.08)', border: 'rgba(240, 96, 96, 0.15)', label: 'Campaign' },
+};
 
-// Premium Clean Mixins
-const getGlassyStyles = (theme) => ({
-  background: theme.palette.mode === 'dark' ? '#0a0a0f' : '#ffffff',
-  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
-  boxShadow: theme.palette.mode === 'dark' ? '0 4px 24px -4px rgba(0, 0, 0, 0.3)' : '0 4px 24px -4px rgba(0, 0, 0, 0.05)',
-});
+const formatTime = (timestamp) => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
+};
 
 const RecentActivity = ({ activities }) => {
-  const theme = useTheme();
-
-  const getIcon = (type) => {
-    const iconMap = {
-      conversation: { icon: <Chat />, color: '#0070F3', bg: 'rgba(0,112,243,0.1)', border: 'rgba(0,112,243,0.2)' },
-      business: { icon: <Business />, color: '#F59E0B', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.2)' },
-      twin: { icon: <SmartToy />, color: '#10B981', bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.2)' },
-    };
-    return iconMap[type] || iconMap.conversation;
-  };
-
-  const formatTime = (timestamp) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
-  };
-
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        ...getGlassyStyles(theme),
-        p: 0,
-        borderRadius: '24px',
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      style={{
+        background: 'rgba(23, 27, 36, 0.5)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
+        borderRadius: '16px',
         overflow: 'hidden',
         position: 'relative',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
       }}
     >
-      {/* Subtle top line */}
-      <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: '#10B981', opacity: 0.8 }} />
+      {/* Subtle top accent */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '1px',
+        background: 'linear-gradient(90deg, transparent, #18C37E 50%, transparent)',
+        opacity: 0.4,
+      }} />
 
-      <Box
-        sx={{
-          px: 3,
-          py: 2.5,
-          borderBottom: '1px solid',
-          borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>
-          Recent Activity
-        </Typography>
-        <Box
-          sx={{
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            bgcolor: '#10B981',
-          }}
-        />
-      </Box>
+      {/* Header */}
+      <div style={{
+        padding: '20px 24px',
+        borderBottom: '1px solid rgba(255,255,255,0.04)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <div>
+          <h3 style={{ fontWeight: 700, fontSize: '0.95rem', letterSpacing: '-0.01em', color: '#fff', marginBottom: '2px' }}>
+            Live Activity
+          </h3>
+          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem', fontWeight: 500 }}>
+            Real-time workforce events
+          </span>
+        </div>
+        {/* Live indicator */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{
+            width: 6, height: 6, borderRadius: '50%',
+            background: '#18C37E',
+            boxShadow: '0 0 6px rgba(24, 195, 126, 0.4)',
+            position: 'relative',
+          }}>
+            <div style={{
+              position: 'absolute', inset: 0, borderRadius: '50%',
+              background: '#18C37E',
+              animation: 'status-pulse 2s ease-in-out infinite',
+            }} />
+          </div>
+          <span style={{ color: 'rgba(24, 195, 126, 0.6)', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            Live
+          </span>
+        </div>
+      </div>
 
-      <List sx={{ py: 0 }}>
+      {/* Feed Timeline */}
+      <div style={{ padding: '8px 0' }}>
         <AnimatePresence>
           {activities?.length > 0 ? (
             activities.map((activity, index) => {
-              const { icon, color, bg, border } = getIcon(activity.type);
+              const config = activityConfig[activity.type] || activityConfig.conversation;
+              const Icon = config.icon;
               return (
-                <MotionListItem
+                <motion.div
                   key={index}
-                  initial={{ opacity: 0, x: -10 }}
+                  initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.06, duration: 0.3 }}
-                  sx={{
-                    px: 3,
-                    py: 2,
-                    borderBottom: '1px solid',
-                    borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
-                    '&:last-child': { borderBottom: 'none' },
-                    '&:hover': { 
-                      background: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
-                    },
-                    transition: 'all 0.2s ease',
-                    cursor: 'pointer'
+                  transition={{
+                    delay: index * 0.05,
+                    duration: 0.4,
+                    ease: [0.22, 1, 0.36, 1]
                   }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '14px',
+                    padding: '12px 24px',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s ease',
+                    position: 'relative',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  <ListItemIcon sx={{ minWidth: 48 }}>
-                    <Box
-                      sx={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: '10px',
-                        background: bg,
-                        border: `1px solid ${border}`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: `inset 0 0 8px ${border}`
-                      }}
-                    >
-                      {React.cloneElement(icon, { sx: { fontSize: 18, color } })}
-                    </Box>
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={activity.description}
-                    secondary={formatTime(activity.timestamp)}
-                    primaryTypographyProps={{
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      noWrap: true,
-                    }}
-                    secondaryTypographyProps={{
-                      fontSize: '0.75rem',
-                      fontWeight: 500,
-                      color: 'text.secondary',
-                      mt: 0.5
-                    }}
-                  />
-                </MotionListItem>
+                  {/* Timeline connector */}
+                  <div style={{
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    flexShrink: 0,
+                    paddingTop: '2px',
+                  }}>
+                    {/* Icon circle */}
+                    <div style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '10px',
+                      background: config.bg,
+                      border: `1px solid ${config.border}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      position: 'relative',
+                      zIndex: 1,
+                    }}>
+                      <Icon sx={{ fontSize: 16, color: config.color }} />
+                    </div>
+                    {/* Timeline line */}
+                    {index < activities.length - 1 && (
+                      <div style={{
+                        width: '1px',
+                        flex: 1,
+                        minHeight: '16px',
+                        background: 'linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
+                        marginTop: '4px',
+                      }} />
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div style={{ flex: 1, minWidth: 0, paddingBottom: index < activities.length - 1 ? '8px' : '0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '2px' }}>
+                      <span style={{
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        color: 'rgba(255,255,255,0.85)',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}>
+                        {activity.description}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{
+                        fontSize: '0.65rem',
+                        fontWeight: 600,
+                        color: config.color,
+                        opacity: 0.7,
+                        letterSpacing: '0.02em',
+                      }}>
+                        {config.label}
+                      </span>
+                      <span style={{ color: 'rgba(255,255,255,0.06)' }}>·</span>
+                      <span style={{
+                        fontSize: '0.65rem',
+                        fontWeight: 500,
+                        color: 'rgba(255,255,255,0.25)',
+                      }}>
+                        {formatTime(activity.timestamp)}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
               );
             })
           ) : (
-            <Box sx={{ p: 4, textAlign: 'center' }}>
-              <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+            <div style={{ padding: '40px 24px', textAlign: 'center' }}>
+              <div style={{
+                width: 48, height: 48, borderRadius: '12px',
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.04)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 12px',
+              }}>
+                <SmartToy sx={{ fontSize: 22, color: 'rgba(255,255,255,0.15)' }} />
+              </div>
+              <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.8rem', fontWeight: 500 }}>
                 No recent activity
-              </Typography>
-            </Box>
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.72rem', fontWeight: 400, marginTop: '4px' }}>
+                Activity will appear here as your twins work
+              </p>
+            </div>
           )}
         </AnimatePresence>
-      </List>
-    </Paper>
+      </div>
+    </motion.div>
   );
 };
 

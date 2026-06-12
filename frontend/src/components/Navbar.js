@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, ArrowRight, Settings, LayoutDashboard, BookOpen, Building2, BarChart3, Mic, Shield, LogOut } from 'lucide-react';
+import { Menu, X, ArrowRight, Settings, LayoutDashboard, BookOpen, Building2, ChartBar as BarChart3, Mic, Shield, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LogoIcon from './LogoIcon';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hoveredLink, setHoveredLink] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { user, userFeatures, loading, logout } = useAuth();
   const navigate = useNavigate();
@@ -67,101 +66,77 @@ const Navbar = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled
-          ? 'bg-gradient-to-b from-black/80 via-black/60 to-transparent backdrop-blur-2xl border-b border-white/5 py-3'
-          : 'bg-gradient-to-b from-black/90 to-black/80 backdrop-blur-xl border-b border-white/5 py-4'
-          }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
+          ? 'bg-[#0F1117]/90 backdrop-blur-2xl border-b border-white/[0.04] py-2.5'
+          : 'bg-gradient-to-b from-[#0F1117] via-[#0F1117]/80 to-transparent backdrop-blur-xl py-4'
+        }`}
       >
-        {/* Animated gradient background */}
+        {/* Subtle ambient glow */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 opacity-0"
-          animate={{ opacity: scrolled ? 1 : 0.5 }}
-          transition={{ duration: 0.5 }}
-        />
-
-        {/* Glow effect */}
-        <motion.div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[200px] bg-gradient-to-b from-indigo-500/20 to-transparent blur-3xl"
-          animate={{ opacity: scrolled ? 0.5 : 0.3 }}
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[150px] blur-3xl pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse, rgba(91, 140, 255, 0.08) 0%, transparent 70%)' }}
+          animate={{ opacity: scrolled ? 0.6 : 0.3 }}
           transition={{ duration: 0.5 }}
         />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo - Left with enhanced animation */}
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
             <motion.div
               variants={itemVariants}
               onClick={() => navigate('/')}
               className="flex items-center gap-3 group cursor-pointer relative"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <motion.div
-                className="relative"
-                whileHover={{ rotate: [0, -5, 5, -5, 0] }}
-                transition={{ duration: 0.5 }}
-              >
-                <LogoIcon className="h-12 w-auto" />
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 blur-xl opacity-0 group-hover:opacity-30 transition-opacity"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              </motion.div>
-
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                style={{ background: 'linear-gradient(135deg, #5B8CFF, #18C37E)' }}>
+                <LogoIcon className="h-5 w-auto text-white" />
+              </div>
+              <div className="hidden sm:flex flex-col">
+                <span className="text-white font-bold text-[14px] tracking-tight leading-tight">AI Digital Twin</span>
+                <span className="text-[9px] font-medium tracking-wider uppercase" style={{ color: 'rgba(91, 140, 255, 0.5)' }}>Creator</span>
+              </div>
             </motion.div>
 
-            {/* Desktop Navigation - Center with billboard style */}
+            {/* Desktop Navigation */}
             <motion.div
               variants={itemVariants}
               className="hidden lg:flex items-center justify-center gap-1"
             >
-              <div className="relative">
-                {/* Glassmorphism container */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 blur-xl opacity-50"
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    opacity: [0.3, 0.5, 0.3]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
-                <div className="relative flex items-center gap-2 bg-black/40 backdrop-blur-2xl border border-white/10 rounded-2xl px-4 py-3">
-                  {navLinks.map((link, index) => (
-                    <motion.div
-                      key={link.name}
-                      onHoverStart={() => setHoveredLink(link.name)}
-                      onHoverEnd={() => setHoveredLink(null)}
-                    >
-                      <motion.button
-                        onClick={() => navigate(link.href)}
-                        className={`relative px-3 py-2 text-[12px] font-semibold tracking-wide rounded-xl transition-all duration-300 flex items-center gap-2 ${location.pathname === link.href
-                          ? 'text-white bg-gradient-to-r from-indigo-500/20 to-purple-500/20'
-                          : link.special
-                            ? 'text-yellow-400 hover:text-yellow-300 hover:bg-yellow-500/10'
-                            : 'text-slate-400 hover:text-white hover:bg-white/5'
-                          }`}
-                        whileHover={{ y: -2, scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                      >
-                        <link.icon className="w-4 h-4" />
-                        {link.name}
-                        {hoveredLink === link.name && (
-                          <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-xl"
-                            layoutId="hoverBackground"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                          />
-                        )}
-                      </motion.button>
-                    </motion.div>
-                  ))}
-                </div>
+              <div
+                className="flex items-center gap-1 rounded-xl px-2 py-1.5"
+                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}
+              >
+                {navLinks.map((link, index) => (
+                  <motion.button
+                    key={link.name}
+                    onClick={() => navigate(link.href)}
+                    className={`relative px-3 py-1.5 text-[12px] font-semibold tracking-wide rounded-lg transition-all duration-200 flex items-center gap-2 ${
+                      location.pathname === link.href
+                        ? 'text-white'
+                        : link.special
+                          ? 'text-amber-400/60 hover:text-amber-400'
+                          : 'text-slate-500 hover:text-white'
+                    }`}
+                    whileHover={{ y: -1 }}
+                    whileTap={{ scale: 0.97 }}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.04 }}
+                  >
+                    {location.pathname === link.href && (
+                      <motion.div
+                        layoutId="navbar-active"
+                        className="absolute inset-0 rounded-lg"
+                        style={{ background: 'rgba(91, 140, 255, 0.1)', border: '1px solid rgba(91, 140, 255, 0.15)' }}
+                        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                      />
+                    )}
+                    <link.icon className="w-3.5 h-3.5 relative z-10" />
+                    <span className="relative z-10">{link.name}</span>
+                  </motion.button>
+                ))}
               </div>
             </motion.div>
 
@@ -171,26 +146,25 @@ const Navbar = () => {
               className="flex-1 hidden lg:flex items-center justify-end gap-4"
             >
               {loading ? (
-                <motion.div
-                  className="h-12 w-32 bg-white/5 animate-pulse rounded-2xl"
-                  whileHover={{ scale: 1.02 }}
-                />
+                <div className="h-9 w-28 bg-white/[0.03] animate-pulse rounded-xl" />
               ) : user ? (
                 <div className="relative">
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="flex items-center gap-2 focus:outline-none focus:ring-0"
+                    className="flex items-center gap-2 focus:outline-none bg-transparent border-0 cursor-pointer p-0"
                   >
                     {user.profile_picture ? (
-                       <img
-                         src={user.profile_picture}
-                         alt={user.full_name || "Profile"}
-                         className="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/50 hover:ring-indigo-500 transition-all duration-300 shadow-md"
-                         referrerPolicy="no-referrer"
-                       />
+                      <img
+                        src={user.profile_picture}
+                        alt={user.full_name || "Profile"}
+                        className="w-8 h-8 rounded-full object-cover ring-1 ring-white/10 hover:ring-[#5B8CFF]/30 transition-all duration-200"
+                        referrerPolicy="no-referrer"
+                      />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm ring-2 ring-indigo-500/50 hover:ring-indigo-500 transition-all duration-300 shadow-md">
-                        {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U')}
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ring-1 ring-white/10 hover:ring-[#5B8CFF]/30 transition-all duration-200"
+                        style={{ background: 'linear-gradient(135deg, #5B8CFF, #18C37E)' }}
+                      >
+                        <span className="text-white">{user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U')}</span>
                       </div>
                     )}
                   </button>
@@ -200,40 +174,55 @@ const Navbar = () => {
                       <>
                         <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
                         <motion.div
-                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          initial={{ opacity: 0, y: 8, scale: 0.97 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                          transition={{ duration: 0.2, ease: "easeOut" }}
-                          className="absolute right-0 mt-3 w-64 bg-slate-900/95 border border-white/10 backdrop-blur-2xl rounded-2xl p-4 shadow-2xl z-20 flex flex-col gap-3"
+                          exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                          transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                          className="absolute right-0 mt-2.5 w-60 p-4 shadow-2xl z-20 flex flex-col gap-3"
+                          style={{
+                            background: 'rgba(23, 27, 36, 0.95)',
+                            border: '1px solid rgba(255,255,255,0.06)',
+                            backdropFilter: 'blur(20px)',
+                            borderRadius: '14px',
+                          }}
                         >
-                          <div className="flex flex-col border-b border-white/5 pb-3">
-                            <span className="text-[10px] text-indigo-400 font-extrabold tracking-wider uppercase text-left">Account</span>
-                            <span className="text-sm font-bold text-white truncate mt-1 text-left">{user.full_name || 'User'}</span>
-                            <span className="text-[11px] text-slate-400 truncate text-left">{user.email}</span>
+                          <div className="flex flex-col pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                            <span className="text-[9px] font-bold tracking-widest uppercase text-left" style={{ color: '#5B8CFF' }}>Account</span>
+                            <span className="text-[13px] font-semibold text-white truncate mt-1.5 text-left">{user.full_name || 'User'}</span>
+                            <span className="text-[11px] text-slate-500 truncate text-left">{user.email}</span>
                             {user.subscription_plan && (
-                              <span className="inline-block self-start mt-2 px-2 py-0.5 text-[9px] font-extrabold tracking-wider uppercase rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                              <span className="inline-block self-start mt-2 px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase rounded-md"
+                                style={{ background: 'rgba(91, 140, 255, 0.1)', color: '#5B8CFF', border: '1px solid rgba(91, 140, 255, 0.15)' }}
+                              >
                                 {user.subscription_plan === 'business_pro' || user.subscription_plan === 'pro' ? 'Pro Plan' : user.subscription_plan === 'free' ? 'Free Trial' : 'Standard Plan'}
                               </span>
                             )}
                           </div>
-                          <div className="flex flex-col gap-1">
+                          <div className="flex flex-col gap-0.5">
                             <button
                               onClick={() => { setDropdownOpen(false); navigate('/'); }}
-                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all text-left text-xs font-bold"
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white transition-all text-left text-[12px] font-medium border-0 bg-transparent cursor-pointer"
+                              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             >
-                              <LayoutDashboard className="w-4 h-4 text-indigo-400" />
+                              <LayoutDashboard className="w-4 h-4" style={{ color: '#5B8CFF' }} />
                               Landing Page
                             </button>
                             <button
                               onClick={() => { setDropdownOpen(false); navigate('/settings'); }}
-                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all text-left text-xs font-bold"
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white transition-all text-left text-[12px] font-medium border-0 bg-transparent cursor-pointer"
+                              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             >
-                              <Settings className="w-4 h-4 text-purple-400" />
+                              <Settings className="w-4 h-4 text-slate-500" />
                               Settings
                             </button>
                             <button
                               onClick={() => { setDropdownOpen(false); handleLogout(); }}
-                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all text-left text-xs font-bold"
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all text-left text-[12px] font-medium border-0 bg-transparent cursor-pointer"
+                              style={{ color: '#F06060' }}
+                              onMouseEnter={e => e.currentTarget.style.background = 'rgba(240, 96, 96, 0.08)'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             >
                               <LogOut className="w-4 h-4" />
                               Logout
@@ -254,20 +243,16 @@ const Navbar = () => {
               variants={itemVariants}
               className="lg:hidden text-white relative"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 blur-xl opacity-0"
-                animate={{ opacity: mobileMenuOpen ? 0.3 : 0 }}
-              />
-              {mobileMenuOpen ? <X className="w-6 h-6 relative" /> : <Menu className="w-6 h-6 relative" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 relative" /> : <Menu className="w-5 h-5 relative" />}
             </motion.button>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu with enhanced animations */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -275,7 +260,8 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-40 bg-black/95 backdrop-blur-3xl pt-28 px-6 lg:hidden overflow-y-auto"
+            className="fixed inset-0 z-40 pt-24 px-6 lg:hidden overflow-y-auto"
+            style={{ background: 'rgba(15, 17, 23, 0.97)', backdropFilter: 'blur(24px)' }}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -283,36 +269,33 @@ const Navbar = () => {
               transition={{ delay: 0.1 }}
               className="mb-8 flex justify-center"
             >
-              <motion.div
-                whileHover={{ rotate: [0, -5, 5, -5, 0] }}
-                transition={{ duration: 0.5 }}
-              >
-                <LogoIcon className="h-20 w-auto" />
-              </motion.div>
+              <LogoIcon className="h-16 w-auto" />
             </motion.div>
-
-
 
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="flex flex-col gap-4"
+              className="flex flex-col gap-2"
             >
               {navLinks.map((link, index) => (
                 <motion.button
                   key={link.name}
                   onClick={() => { navigate(link.href); setMobileMenuOpen(false); }}
-                  className={`text-xl font-medium py-4 text-left px-6 rounded-2xl transition-all flex items-center gap-3 ${location.pathname === link.href
-                    ? 'text-white bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30'
-                    : link.special
-                      ? 'text-yellow-400 hover:text-yellow-300 hover:bg-yellow-500/10'
-                      : 'text-slate-300 hover:text-white hover:bg-white/5'
-                    }`}
-                  initial={{ opacity: 0, x: -20 }}
+                  className={`text-base font-medium py-3.5 text-left px-5 rounded-xl transition-all flex items-center gap-3 ${
+                    location.pathname === link.href
+                      ? 'text-white border'
+                      : link.special
+                        ? 'text-amber-400/60 hover:text-amber-400'
+                        : 'text-slate-400 hover:text-white hover:bg-white/[0.03]'
+                  }`}
+                  style={location.pathname === link.href ? {
+                    background: 'rgba(91, 140, 255, 0.08)',
+                    borderColor: 'rgba(91, 140, 255, 0.15)',
+                  } : {}}
+                  initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + index * 0.05 }}
-                  whileHover={{ scale: 1.02, x: 5 }}
+                  transition={{ delay: 0.3 + index * 0.04 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <link.icon className="w-5 h-5" />
@@ -324,46 +307,40 @@ const Navbar = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="flex flex-col gap-4 mt-6 pt-6 border-t border-slate-800"
+                className="flex flex-col gap-3 mt-4 pt-4"
+                style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}
               >
                 {loading ? (
-                  <div className="h-14 w-full bg-slate-800 animate-pulse rounded-2xl" />
+                  <div className="h-12 w-full bg-white/[0.03] animate-pulse rounded-xl" />
                 ) : user ? (
                   <>
-                    <div className="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-2xl border border-white/10 mb-2 text-left">
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-left"
+                      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
                       {user.profile_picture ? (
-                        <img src={user.profile_picture} alt="Profile" className="w-12 h-12 rounded-full object-cover ring-2 ring-indigo-500/30" referrerPolicy="no-referrer" />
+                        <img src={user.profile_picture} alt="Profile" className="w-10 h-10 rounded-full object-cover ring-1 ring-white/10" referrerPolicy="no-referrer" />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-lg">
-                          {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U')}
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm"
+                          style={{ background: 'linear-gradient(135deg, #5B8CFF, #18C37E)' }}>
+                          <span className="text-white">{user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U')}</span>
                         </div>
                       )}
                       <div className="flex flex-col min-w-0">
-                        <span className="text-sm font-bold text-white truncate">{user.full_name || 'User'}</span>
-                        <span className="text-[11px] text-slate-400 truncate">{user.email}</span>
+                        <span className="text-sm font-semibold text-white truncate">{user.full_name || 'User'}</span>
+                        <span className="text-[11px] text-slate-500 truncate">{user.email}</span>
                       </div>
                     </div>
                     <motion.button
                       onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
-                      className="w-full py-4 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-2xl font-semibold flex items-center justify-center gap-2"
-                      whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(239, 68, 68, 0.4)' }}
+                      className="w-full py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm transition-all"
+                      style={{ background: 'rgba(240, 96, 96, 0.1)', color: '#F06060', border: '1px solid rgba(240, 96, 96, 0.15)' }}
+                      whileHover={{ background: 'rgba(240, 96, 96, 0.15)' }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <ArrowRight className="w-5 h-5" />
+                      <ArrowRight className="w-4 h-4" />
                       Logout
                     </motion.button>
                   </>
-                ) : (
-                  <motion.button
-                    onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
-                    className="w-full py-4 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-2xl font-semibold flex items-center justify-center gap-2"
-                    whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(239, 68, 68, 0.4)' }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <ArrowRight className="w-5 h-5" />
-                    Logout
-                  </motion.button>
-                )}
+                ) : null}
               </motion.div>
             </motion.div>
           </motion.div>
